@@ -12,7 +12,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-aria.min.js"></script>
     <script src="/bower_components/angular-material/angular-material.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/socket.io.js"></script>
     <script src="/js/socket.js"></script>
     <script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="/js/dev-ctrl.js"></script>

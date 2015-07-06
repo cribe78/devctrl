@@ -37,7 +37,7 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
             });
 
         $urlRouterProvider
-            .when("/", "/locations");
+            .when("/", "/rooms");
 
         $locationProvider.html5Mode(true);
     }];

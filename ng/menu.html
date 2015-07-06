@@ -1,7 +1,7 @@
 <md-list>
     <md-list-item ng-repeat-start="item in menu.items" ng-click="main.go(item.state)">
         <p>{{item.text}}</p>
-        <md-icon md-svg-icon="navigation:ic_expand_less_24px"></md-icon>
+        <md-icon md-font-set="material-icons">expand_more</md-icon>
     </md-list-item>
     <md-list-item ng-repeat="subitem in item.submenu" ng-click="main.go(subitem.state)">
         <p>{{subitem.text}}</p>

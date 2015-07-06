@@ -1,0 +1,104 @@
+#!/usr/bin/perl
+
+use Getopt::Long;
+use IO::Socket::INET;
+use warnings;
+use strict;
+
+# IA200 command
+# A
+# 00
+# W   // write
+# B   // inputs
+# A   // video input
+# B (RGB) or C (DVI)
+
+
+my $scaler = 2;
+my $command = '';
+my $menu = '';
+my $function = '';
+my $subfunction = '';
+my $value = '';
+
+my $result = GetOptions(
+                "scaler=s" => \$scaler,
+                "command=s" => \$command,
+                "menu=s" => \$menu,
+                "function=s" => \$function,
+                "subfunction=s" => \$subfunction,
+                "value=s" => \$value );
+
+my %ip_addrs = ( "1" => "0",
+                 "2" => "1",
+                 "3" => "2",
+                 "4" => "3",
+                 "5" => "4",
+                 "FL" => "0",
+                 "L" => "1",
+                 "C" => "2",
+                 "R" => "3",
+                 "FR" => "4" );
+$scaler = uc($scaler);
+if ( ! defined($ip_addrs{$scaler})) {
+    die "invalid scaler specified: $scaler\n";
+}
+my $addr = "192.168.1.20" . $ip_addrs{$scaler};
+
+my $readwrite = "R";
+if ($value) {
+    $readwrite = "W";
+}
+
+
+if (! $command) { 
+    if (! ($menu && $function)) {
+        die "command or menu and function required";
+    }
+    if ( $menu eq "C" || 
+         $menu eq "D" ||
+         $menu eq "B" && $subfunction) {
+        $readwrite = "W";
+    }
+
+    $command = $readwrite . $menu . $function . $subfunction . $value;
+
+}
+
+my $raw_command = "A00" . $command . "\n";
+
+
+my $sock = IO::Socket::INET->new(
+                PeerAddr => $addr,
+                PeerPort => '30001',
+                Proto => 'tcp');
+if (! $sock) { 
+    die "could not open socket";
+}
+
+$sock->print($raw_command);
+my $resp;
+
+
+my $read = $sock->read($resp, 1);
+if ( $resp eq "K" ) {
+    print "OK\n";
+}
+elsif ( $resp eq "E" ) {
+    print "Error\n";
+}
+elsif ( $resp eq "V" ) {
+    $sock->read($resp, 4);
+    print "$resp\n";
+}
+elsif( $resp eq "v") {
+    my @chars = ();
+    while ($resp ne "\r") {
+        $sock->read($resp, 1);
+        push(@chars, $resp);
+    }
+    $resp = join('',@chars);
+    print "$resp\n";
+}
+
+

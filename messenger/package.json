@@ -1,0 +1,9 @@
+{
+  "name": "devctrl-messenger",
+  "version": "0.0.1",
+  "description": "socket.io messaging for DevCtrl",
+  "dependencies": {
+    "express": "^4.12.4",
+    "socket.io": "^1.3.5"
+  }
+}

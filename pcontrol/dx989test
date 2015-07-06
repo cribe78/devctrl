@@ -1,0 +1,124 @@
+#!/usr/bin/perl
+# test the serial control protocol of the ts-dx989 receiver
+
+use Getopt::Long;
+use IO::Socket::INET;
+use Time::HiRes qw( usleep );
+use warnings;
+use strict;
+
+
+$|++;
+
+my $device_ip = "10.5.162.232";
+my $device_port = 4001;
+my $command;
+my $debug = 1;
+
+my $res = GetOptions( "command=s" => \$command);
+
+
+my $sock = device_connect();
+
+$command = "!1PWRQSTN\r\n";
+
+
+$sock->print($command);
+usleep(200000);
+#print "command sent\n";
+my $resp = line_read($sock);
+    
+print "response: $resp\n";
+
+$command = "!1MVLQSTN\r\n";
+
+$sock->print($command);
+#print "2nd command sent\n";
+usleep(200000);
+$resp = line_read($sock);
+print "2nd response: $resp\n"; 
+    
+my $strlen = length($resp);
+print join ",", unpack("W*", $resp);
+print "\n";
+
+my $val = substr($resp, 5);
+$val = hex( $val);
+
+print "val: $val\n";
+
+
+
+# Read a line from a non-blocking telnet connection.
+
+sub line_read {
+    my ($sock) = (@_);
+        
+    my $buf; 
+    my $res = ""; 
+    my $wait_us = 20000;
+    my $char_missed = 0; 
+
+    while (1) {
+        my $rres = $sock->read($buf, 1);
+
+        if (! defined($rres)) {
+            if ($char_missed) {
+                dwdebug("2nd char missed");
+                chomp $res;
+                return $res;
+            }
+            else {
+                dwdebug("char missed");
+                $char_missed = 1;
+                usleep($wait_us);
+            }
+        }
+        elsif ($rres == 0) {
+            dwdebug("EOF read");
+            return $res;
+        }    
+        else {
+            if ($buf eq "\r") {
+                dwdebug("newline read");
+                return $res;
+            }
+            elsif ($buf eq "\x1A") {
+                dwdebug("0x1A read");
+                return $res;
+            }
+
+            $res .= $buf;
+            $char_missed = 0;
+        }
+    }
+}
+
+sub device_connect {
+    my $sock = IO::Socket::INET->new(
+                PeerAddr => $device_ip,
+                PeerPort => $device_port,
+                Proto => 'tcp',
+                Blocking => 0,
+                Timeout => 5);
+    if (! $sock) { 
+        syslog("err", "could not open socket to device");
+    }
+
+
+    return $sock;    
+}
+
+
+sub dwdebug {
+    my ($msg) = (@_);
+    if ($debug) {
+        dwlog($msg);
+   }
+}
+
+
+sub dwlog {
+    my ($msg) = (@_);
+    print  "$msg\n";
+}

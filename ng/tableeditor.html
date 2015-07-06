@@ -27,8 +27,8 @@
                         <p ng-switch-when="fk">{{table.fkDisplayVal(field, row)}}</p>
                         <div ng-switch-when="bool">
                             <md-checkbox class="md-primary"
-                                         ng-true-value="'1'"
-                                         ng-false-value="'0'"
+                                         ng-true-value="1"
+                                         ng-false-value="0"
                                          ng-model="row.fields[field.name]"></md-checkbox>
                         </div>
                         <p ng-switch-default>{{row.fields[field.name]}}</p>

@@ -1,13 +1,5 @@
 <?php
 
-// A library of controller functions
-// ct = control_type
-// cn = control_name
-// tt = target_type
-// tn = target_num 
-
-include("sub/controldefs.php");
-include("sub/targetdefs.php");
 include(__DIR__ . "/schema.php");
 
 

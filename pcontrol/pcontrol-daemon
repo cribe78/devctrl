@@ -1124,6 +1124,9 @@ sub handle_unexpected_response {
 			$last_communication = time();
 		}
 	}
+	elsif ( $proto eq "xap800") {
+	    handle_unexpected_response(@_);
+	}
 	else {
 		dwlog("unhandled unexpected response ($proto): $resp");
 	}

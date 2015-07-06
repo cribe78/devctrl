@@ -11,15 +11,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-aria.min.js"></script>
-    <script src="/js/angular-material.js"></script>
-    <script src="/js/angular-debounce.js"></script>
+    <script src="/bower_components/angular-material/angular-material.js"></script>
     <script src="/js/socket.io.js"></script>
     <script src="/js/socket.js"></script>
-    <script src="/js/angular-ui-router.js"></script>
+    <script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="/dev-ctrl.js"></script>
 
     <base href="/" />
-    <link rel="stylesheet" href="/css/angular-material.css">
+    <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="/css/dev-ctrl.css">

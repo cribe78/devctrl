@@ -1,0 +1,53 @@
+<md-dialog>
+    <md-toolbar layout-align="center center">{{record.table.schema.label}} - {{record.id}}</md-toolbar>
+    <md-dialog-content>
+
+        <md-list>
+            <md-subheader>Edit</md-subheader>
+            <md-list-item class="md-list-item-text"
+                 ng-repeat="field in record.table.schema.fields"
+                 ng-switch="field.type">
+                <md-input-container ng-if="field.type == 'string'">
+                    <label>{{field.label}}</label>
+                    <input  ng-model="record.obj.fields[field.name]">
+                </md-input-container>
+                <md-input-container ng-if="field.type == 'int'">
+                    <label>{{field.label}}</label>
+                    <input  type="number" ng-model="record.obj.fields[field.name]">
+                </md-input-container>
+                <fk-select ng-if="field.type == 'fk'"
+                           table="record.schema.foreign_keys[field.name]"
+                           field="field"
+                           select-model="record.obj.fields">
+                </fk-select>
+                <enum-select ng-if="field.type == 'enum'"
+                             table="record.obj.tableName"
+                             field="field"
+                             select-model="record.obj.fields">
+                </enum-select>
+                <md-checkbox ng-if="field.type == 'bool'"
+                             ng-true-value="'1'"
+                             ng-false-value="'0'"
+                             ng-model="record.obj.fields[field.name]">
+                    {{field.label}}
+                </md-checkbox>
+            </md-list-item>
+            <md-list-item>
+                <div layout="row">
+                    <md-button class="md-primary" ng-click="record.updateRow()">Update</md-button>
+                    <md-button class="md-primary md-hue-1" ng-click="record.cloneRow()">Clone</md-button>
+                    <md-button class="md-warn" ng-click="record.deleteRow()">Delete</md-button>
+                    <md-button ng-click="record.close()">Cancel</md-button>
+                </div>
+            </md-list-item>
+            <md-divider></md-divider>
+            <md-subheader>Referenced by</md-subheader>
+            <div ng-repeat="(tableName, references) in record.obj.referenced">
+                <md-list-item ng-repeat="(id, ref) in references">
+                    <span>{{tableName}} - {{id}}</span>
+                </md-list-item>
+            </div>
+        </md-list>
+
+    </md-dialog-content>
+</md-dialog>

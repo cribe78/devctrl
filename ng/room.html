@@ -1,0 +1,22 @@
+<div>
+    <md-card>
+        <md-card-content>
+            <span class="text-title">{{room.obj.fields.name}}</span>
+            <md-list>
+                <div ng-repeat="(key, panel) in room.panels">
+                    <md-divider></md-divider>
+                    <md-list-item flex layout="row" ng-click="room.togglePanel(panel)">
+                        {{panel.fields.name}}
+                        <span flex></span>
+                        <span class="toggle-icon" ng-class="{ toggled : room.isPanelOpen(panel) }">
+                            <md-icon md-font-set="material-icons" >expand_more</md-icon>
+                        </span>
+                    </md-list-item>
+                    <md-list-item ng-repeat="(pctrlId, pctrl) in room.panelControls(panel)" ng-show="room.isPanelOpen(panel)">
+                        <ctrl flex panel-control="pctrl"></ctrl>
+                    </md-list-item>
+                </div>
+            </md-list>
+        </md-card-content>
+    </md-card>
+</div>

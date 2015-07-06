@@ -1,0 +1,8 @@
+<md-input-container>
+    <label>{{enumSelect.field.label}}</label>
+    <md-select placeholder={{enumSelect.field.label}} ng-model="enumSelect.selectModel[enumSelect.field.name]">
+         <md-option ng-value="obj.fields.value" ng-repeat="(key, obj) in enumSelect.options()">
+             {{obj.fields.name}}
+         </md-option>
+     </md-select>
+</md-input-container>

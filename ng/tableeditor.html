@@ -1,0 +1,77 @@
+<div>
+    <md-card>
+        <md-card-content>
+            <span class="text-title">{{table.schema.label}}</span>
+
+            <md-list>
+                <md-list-item layout="row">
+                    <div flex="5">
+                        ID
+                    </div>
+                    <div ng-repeat="field in table.schema.fields" flex class="table-header">
+                        {{field.label}}
+                    </div>
+                    <div flex="5"></div>
+                </md-list-item>
+                <md-divider></md-divider>
+                <md-list-item ng-repeat-start="row in table.data.listed"
+                              layout="row"
+                              ng-click="table.openRecord($event, row.id)">
+                    <div flex="5">
+                        <span>{{row.id}}</span>
+                    </div>
+                    <div class="md-list-item-text"
+                         ng-repeat="field in table.schema.fields"
+                         ng-switch="field.type"
+                         flex>
+                        <p ng-switch-when="fk">{{table.fkDisplayVal(field, row)}}</p>
+                        <div ng-switch-when="bool">
+                            <md-checkbox class="md-primary"
+                                         ng-true-value="'1'"
+                                         ng-false-value="'0'"
+                                         ng-model="row.fields[field.name]"></md-checkbox>
+                        </div>
+                        <p ng-switch-default>{{row.fields[field.name]}}</p>
+
+                    </div>
+                    <div flex="5"></div>
+                </md-list-item>
+                <md-divider ng-repeat-end></md-divider>
+            </md-list>
+            <form name="newRowForm">
+                <div layout="" layout-sm="column">
+                    <div flex="5"></div>
+                    <div ng-repeat="field in table.schema.fields" flex>
+                        <md-input-container ng-if="field.type == 'string'" flex="">
+                            <label>{{field.label}}</label>
+                            <input  ng-model="table.newRow[field.name]">
+                        </md-input-container>
+                        <md-input-container ng-if="field.type == 'int'" flex="">
+                            <label>{{field.label}}</label>
+                            <input  type="number" ng-model="table.newRow[field.name]">
+                        </md-input-container>
+                        <fk-select ng-if="field.type == 'fk'"
+                                   table="table.schema.foreign_keys[field.name]"
+                                   field="field"
+                                   select-model="table.newRow">
+                        </fk-select>
+                        <enum-select ng-if="field.type == 'enum'"
+                                     table="table.tableName"
+                                   field="field"
+                                   select-model="table.newRow">
+                        </enum-select>
+                        <md-checkbox ng-if="field.type == 'bool'"
+                                     ng-true-value="1"
+                                     ng-false-value="0"
+                                     ng-model="table.newRow[field.name]">
+                            {{field.label}}
+                        </md-checkbox>
+                    </div>
+                    <div layout="" layout-align="left" flex="5">
+                        <md-button class="md-primary" ng-click="table.addRow()">Add</md-button>
+                    </div>
+                </div>
+            </form>
+        </md-card-content>
+    </md-card>
+</div>

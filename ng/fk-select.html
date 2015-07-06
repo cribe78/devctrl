@@ -1,0 +1,5 @@
+ <md-select placeholder={{fkSelect.field.label}} ng-model="fkSelect.selectModel[fkSelect.field.name]">
+     <md-option ng-value="key" ng-repeat="(key, row) in fkSelect.options.indexed">
+         {{row.fields[fkSelect.schema.fk_name]}}
+     </md-option>
+ </md-select>

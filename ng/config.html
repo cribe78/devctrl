@@ -1,0 +1,14 @@
+<div layout="column">
+
+    <md-list>
+        <md-list-item ng-repeat="(name, schema) in main.schema">
+            <md-button ui-sref="root.config.table({table: name})">{{schema.label}}</md-button>
+        </md-list-item>
+        <md-list-item>
+            <md-button>Sequences</md-button>
+        </md-list-item>
+        <md-list-item>
+            <md-button>Panels</md-button>
+        </md-list-item>
+    </md-list>
+</div>

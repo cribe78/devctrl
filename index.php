@@ -15,7 +15,7 @@
     <script src="/js/socket.io.js"></script>
     <script src="/js/socket.js"></script>
     <script src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="/dev-ctrl.js"></script>
+    <script src="/js/dev-ctrl.js"></script>
 
     <base href="/" />
     <link rel="stylesheet" href="/bower_components/angular-material/angular-material.css">

@@ -29,7 +29,7 @@
 <body layout="column" ng-controller="MainCtrl as main">
     <md-toolbar layout="row">
         <md-button ng-click="main.toggleSidenav('left')" hide-gt-md class="md-icon-button">
-            <md-icon aria-label="Menu" md-svg-icon="navigation:ic_menu_24px"></md-icon>
+            <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
         </md-button>
         <h1 class="md-toolbar-tools" layout-align-gt-sm="center">DevCtrl</h1>
     </md-toolbar>

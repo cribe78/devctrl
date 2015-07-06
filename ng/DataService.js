@@ -1,13 +1,13 @@
 goog.provide('DevCtrl.DataService.factory');
 
-DevCtrl.DataService.factory = ['$http', '$mdToast', 'debounce', 'socketFactory',
-    function($http, $mdToast, debounce, socketFactory) {
+DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
+    function($http, $mdToast, $timeout, socketFactory) {
         var dataModel = {};
         var schema = {};
 
         var ioSocket = io('https://devctrl.dwi.ufl.edu:2878', { secure: true});
         var messenger = socketFactory({ ioSocket: ioSocket});
-        var pendingDebounce = false;
+        var pendingUpdates = {};
 
         /*
         * data row properties:
@@ -306,31 +306,27 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', 'debounce', 'socketFactory',
             updateControlValue : function(control) {
                 var self = this;
 
-                if ( pendingDebounce && pendingDebounce == control.id) {
-                    this.updateControlValueDebounce(control, this);
+                if (angular.isDefined(pendingUpdates[control.id])) {
+                    $timeout.cancel(pendingUpdates[control.id]);
                 }
-                else {
-                    debounce.flushPending();
-                    this.updateControlValueDebounce(control, this);
-                    pendingDebounce = control.id;
-                }
+
+                pendingUpdates[control.id] = $timeout(function(control, self) {
+                    var resource = "control.php/" + control.id;
+                    pendingDebounce = false;
+
+                    $http.put(resource, control.fields)
+                        .success(function(data) {
+                            self.loadData(data);
+                        })
+                        .error(function (data) {
+                            self.errorToast(data);
+                        })
+                }, 200, true, control, self);
             },
 
             // Use the debounce module to rate limit update requests
             // This function will execute the ajax request 100ms after it is called,
             // unless cancelled
-            updateControlValueDebounce : debounce(100, function(control, self) {
-                var resource = "control.php/" + control.id;
-                pendingDebounce = false;
-
-                $http.put(resource, control.fields)
-                    .success(function(data) {
-                        self.loadData(data);
-                    })
-                    .error(function (data) {
-                        self.errorToast(data);
-                    })
-            }),
 
             updateRow : function(row) {
                 var self = this;

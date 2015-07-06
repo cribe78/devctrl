@@ -7,7 +7,6 @@ goog.require("DevCtrl.Menu.Directive");
 goog.require("DevCtrl.FkSelect.Directive");
 goog.require("DevCtrl.EnumSelect.Directive");
 goog.require("DevCtrl.SwitchSet.Directive");
-goog.require("DevCtrl.IconConfig");
 goog.require("DevCtrl.Table.Ctrl");
 goog.require("DevCtrl.Table.Resolve");
 goog.require("DevCtrl.Record.Ctrl");
@@ -15,8 +14,7 @@ goog.require("DevCtrl.Record.Resolve");
 goog.require("DevCtrl.Room.Ctrl");
 goog.require("DevCtrl.Room.Resolve");
 
-
-DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'rt.debounce', 'btford.socket-io'])
+DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])
     .factory('DataService', DevCtrl.DataService.factory)
     .directive('ctrl', DevCtrl.Ctrl.Directive)
     .directive('coeMenu', DevCtrl.Menu.Directive)
@@ -28,7 +26,6 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'rt.debou
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)
     .controller('RoomCtrl', DevCtrl.Room.Ctrl)
     .config(DevCtrl.stateConfig)
-    .config(DevCtrl.IconConfig)
 
 
     .run (['$rootScope', function($rootScope) {

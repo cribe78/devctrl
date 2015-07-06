@@ -53,4 +53,8 @@ foreach ($source_lines as $line) {
     }
 }
 
-file_put_contents("../js/dev-ctrl.js", $output);
+echo "line 173: " . $output[173];
+$outfile = "../js/dev-ctrl.js";
+unlink($outfile);
+$bytes_written = file_put_contents($outfile, $output);
+echo "$bytes_written bytes written to $outfile";

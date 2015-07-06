@@ -9,5 +9,4 @@
 ../ng/RecordCtrl.js
 ../ng/FkSelectDirective.js
 ../ng/TableCtrl.js
-../ng/IconConfig.js
 ../ng/DevCtrlApp.js

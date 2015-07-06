@@ -3,15 +3,17 @@ var app = express();
 var fs = require('fs');
 var net = require('net');
 
-var key = fs.readFileSync('/home/chris/devctrl.dwi.ufl.edu.self.key');
-var cert = fs.readFileSync('/etc/ssl/certs/devctrl_dwi_ufl_edu_cert.cer');
+//var key = fs.readFileSync('/home/chris/devctrl.dwi.ufl.edu.self.key');
+//var cert = fs.readFileSync('/etc/ssl/certs/devctrl_dwi_ufl_edu_cert.cer');
 
-var https = require('https').createServer({
-    key: key,
-    cert: cert
-}, app);
+var http = require('http').Server(app);
 
-var io = require('socket.io')(https);
+//var https = require('https').createServer({
+//    key: key,
+//    cert: cert
+//}, app);
+
+var io = require('socket.io')(http);
 
 app.get('/', function(req, res) {
     res.send('<h1>Hello World</h1>');
@@ -25,7 +27,7 @@ io.on('connection', function(socket) {
     });
 });
 
-https.listen(2878, function() {
+http.listen(2878, function() {
     console.log('listening on *:2878');
 });
 

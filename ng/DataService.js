@@ -5,7 +5,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
         var dataModel = {};
         var schema = {};
 
-        var ioSocket = io('https://devctrl.dwi.ufl.edu:2878', { secure: true});
+        var ioSocket = io('https://devctrl.dwi.ufl.edu/');
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
 

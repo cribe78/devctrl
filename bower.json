@@ -1,0 +1,17 @@
+{
+  "name": "controller",
+  "version": "1.0.0",
+  "description": "Web application for control of serial devices",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-ui-router": "~0.2.15",
+    "angular-material": "~0.10.0"
+  }
+}

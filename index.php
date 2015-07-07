@@ -31,7 +31,7 @@
         <md-button ng-click="main.toggleSidenav('left')" hide-gt-md class="md-icon-button">
             <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
         </md-button>
-        <h1 class="md-toolbar-tools" layout-align-gt-sm="center">DevCtrl</h1>
+        <h1 class="md-toolbar-tools" layout-align-gt-sm="center">{{main.menu.pageTitle}}</h1>
     </md-toolbar>
     <div layout="row" flex>
         <md-sidenav layout="column"

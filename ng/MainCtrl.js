@@ -1,7 +1,7 @@
 goog.provide("DevCtrl.MainCtrl");
 
-DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService',
-    function($state, $mdSidenav, DataService) {
+DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
+    function($state, $mdSidenav, DataService, MenuService) {
         this.msg = "Hello World!";
         this.tiles = [
             {
@@ -15,7 +15,8 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService',
             }
         ];
 
-        this.menu = DataService.getMenu();
+
+        this.menu = MenuService;
         this.schema = DataService.getSchemas();
 
         this.toggleSidenav = function(menuId) {
@@ -32,5 +33,8 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService',
         };
 
         this.dataModel = DataService.dataModel;
+
+        this.title = "DevCtrl";
+        this.top = true;
     }
 ];

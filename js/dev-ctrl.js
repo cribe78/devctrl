@@ -5,32 +5,51 @@ DevCtrl = {};
 DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvider',
     function ($stateProvider, $locationProvider, $urlRouterProvider) {
         $stateProvider
-            .state('root', {
-                'abstract': true,
-                url: '',
-                template: '<ui-view />'
-            })
-            .state('root.rooms', {
+            .state('rooms', {
                 url: '/rooms',
-                templateUrl: 'ng/locations.html'
+                controller: function() {},
+                controlerAs: 'roomsCtrl',
+                templateUrl: 'ng/locations.html',
+                resolve : {
+                    $state : '$state',
+                    setMenu : function(MenuService) {
+                        MenuService.pageTitle = 'Locations';
+                        MenuService.parentState = 'root';
+                    }
+                },
+                data : {
+                    title: 'Locations'
+                }
             })
-            .state('root.room', {
-                url: '/room/:name',
+            .state('rooms.room', {
+                url: '/:name',
                 templateUrl: 'ng/room.html',
                 controller: 'RoomCtrl',
                 controllerAs: 'room',
-                resolve: DevCtrl.Room.Resolve
+                resolve: DevCtrl.Room.Resolve,
+                data : {
+                        listByName : 'rooms'
+                }
             })
-            .state('root.config' , {
+            .state('config' , {
                 'abstract': true,
                 url: '/config',
-                template: '<ui-view />'
+                template: '<ui-view />',
+                data : {
+                    title : 'Configuration'
+                }
             })
-            .state('root.config.all', {
-                url: '',
-                templateUrl: 'ng/config.html'
+            .state('config.data', {
+                url: '/data',
+                templateUrl: 'ng/data.html',
+                resolve : {
+                    $state : '$state'
+                },
+                data : {
+                    title : 'Table Data'
+                }
             })
-            .state('root.config.table', {
+            .state('config.data.table', {
                 url: '/:table',
                 templateUrl: 'ng/tableeditor.html',
                 controller: 'TableCtrl',
@@ -66,7 +85,7 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             if (angular.isDefined(panel.referenced['panel_controls'])) {
                 return panel.referenced['panel_controls'];
             }
-        }
+        };
 
         this.togglePanel = function(panel) {
             if (! angular.isDefined(panel.opened)) {
@@ -75,13 +94,13 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             else {
                 panel.opened = ! panel.opened;
             }
-        }
+        };
 
         this.isPanelOpen = function(panel) {
             var open = angular.isDefined(panel.opened) && panel.opened;
             return open;
 
-        }
+        };
     }
 ];
 
@@ -109,12 +128,16 @@ DevCtrl.Room.Resolve = {
 
     loadControlSets : function(DataService) {
         return DataService.getTablePromise('control_sets');
+    },
+
+    setMenu : function($stateParams, MenuService) {
+        MenuService.pageTitle = $stateParams.name;
     }
 };
 // ../ng/MainCtrl.js
 
-DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService',
-    function($state, $mdSidenav, DataService) {
+DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
+    function($state, $mdSidenav, DataService, MenuService) {
         this.msg = "Hello World!";
         this.tiles = [
             {
@@ -128,7 +151,8 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService',
             }
         ];
 
-        this.menu = DataService.getMenu();
+
+        this.menu = MenuService;
         this.schema = DataService.getSchemas();
 
         this.toggleSidenav = function(menuId) {
@@ -145,23 +169,27 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService',
         };
 
         this.dataModel = DataService.dataModel;
+
+        this.title = "DevCtrl";
+        this.top = true;
     }
 ];
 // ../ng/MenuDirective.js
 DevCtrl.Menu = {};
 
-DevCtrl.Menu.Directive = function() {
-    return {
-        scope: true,
-        bindToController: {
-            items: '='
-        },
-        controller: function() {
-        },
-        controllerAs: 'menu',
-        templateUrl: 'ng/menu.html'
+DevCtrl.Menu.Directive = ['MenuService', '$state',
+    function(MenuService, $state) {
+        return {
+            scope: true,
+            bindToController: {},
+            controller: function(MenuService, $state) {
+                this.service = MenuService;
+            },
+            controllerAs: 'menu',
+            templateUrl: 'ng/menu.html'
+        }
     }
-};
+];
 // ../ng/DataService.js
 DevCtrl.DataService = {};
 
@@ -510,7 +538,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
         messenger.on('control-data', function(data) {
             methods.loadData(data);
-            console.log("socket control data received");
+            //console.log("socket control data received");
         });
 
 
@@ -706,6 +734,83 @@ DevCtrl.Record.Resolve = {
         }
     ]
 }
+// ../ng/MenuService.js
+DevCtrl.MenuService = {};
+
+DevCtrl.MenuService.factory = ['$state', 'DataService',
+    function ($state, DataService) {
+        var items = {};
+
+
+        var self = {
+            pageTitle : 'DevCtrl',
+            parentState : 'root',
+            items : items,
+            states : function () {
+                return $state.get();
+            },
+
+            menuItems : function() {
+                var states = $state.get();
+
+                // Loop through once to identify top level states
+                angular.forEach(states, function(state, key) {
+                    if (state.name == "") {
+                        return;
+                    }
+                    var parent = $state.get('^', state);
+
+                    if (parent.name == "") {
+                        self.items[state.name] = state;
+                        if (! angular.isDefined(state.substates)) {
+                            state.substates = {};
+                        }
+                    }
+
+                    if (angular.isDefined(state.data.title)) {
+                        state.title = state.data.title;
+                    }
+                });
+
+                // Populate second level states
+                angular.forEach(states, function(state, key) {
+                    if (state.name == "") {
+                        return;
+                    }
+
+                    var parent = $state.get('^', state);
+                    if (angular.isDefined(self.items[parent.name])) {
+                        if (angular.isDefined(state.data.listByName)) {
+                            var records = DataService.getTable(state.data.listByName).listed;
+
+                            angular.forEach(records, function(record) {
+                                if (! angular.isDefined(parent.substates[record.id])) {
+                                    parent.substates[record.id] = {
+                                        name: state.name,
+                                        params: {
+                                            name: record.fields.name
+                                        },
+                                        title: record.fields.name
+                                    };
+                                }
+                                else {
+                                    parent.substates[record.id].params.name  = record.fields.name;
+                                    parent.substates[record.id].title = record.fields.name;
+                                }
+                            });
+                        }
+                        else {
+                            self.items[parent.name].substates[state.name] = state;
+                        }
+                    }
+                });
+
+                return self.items;
+            }
+        };
+
+        return self;
+    }];
 // ../ng/FkSelectDirective.js
 DevCtrl.FkSelect = {};
 
@@ -803,6 +908,7 @@ DevCtrl.Table.Resolve = {
 
 DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])
     .factory('DataService', DevCtrl.DataService.factory)
+    .factory('MenuService', DevCtrl.MenuService.factory)
     .directive('ctrl', DevCtrl.Ctrl.Directive)
     .directive('coeMenu', DevCtrl.Menu.Directive)
     .directive('fkSelect', DevCtrl.FkSelect.Directive)

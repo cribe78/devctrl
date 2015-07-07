@@ -1,0 +1,200 @@
+AAMB*†
+Selects/reports Adapt Ambient setting
+
+LVLRRATE
+Sets the level report rate for the unit
+
+AEC
+Selects/reports acoustic echo canceller setting
+
+MACRO*†
+Executes macro or reports last macro executed
+
+AGC*†
+Enables/disables AGC
+
+MASTER*†
+Reports the mode of the unit
+
+AGCSET
+Selects/reports AGC settings on inputs
+
+MAX*
+Changes/rprts max gain sttng for in, out, prcs block
+
+AMBLVL*†
+Selects/reports Ambient Level
+
+MDMODE
+Enables/disables modem mode
+
+BAUD
+Sets/reports RS-232 port baud rate
+
+MIN*
+Changes/rprts min gain sttng for in, out, prcs block
+
+CGROUP *†
+Selects/reports compressor group setting
+
+MINIT
+Sets/reports modem initialization string of serial prt
+
+CHAIRO*†
+Selects/reports chairman override setting
+
+MINMAX
+Changes/reports min and max gain for in, out, proc
+
+COMPRESS*
+Sets/reports compressor on audio proc. chnl.
+
+MLINE*†
+Selects/reports coarse gain adj. on inputs 1-8
+
+COMPSEL*†
+Selects/reports comprsr activity for procs.
+
+MMAX*†
+Selects/reports max # mics for each mic gating grp
+
+DECAY*†
+Sets/reports decay rate
+
+MPASS
+Sets password setting when using modem mode
+
+DELAY*†
+Sets/reports delay rate
+
+MTRX*
+Selects/reports matrix routing of an input to output
+
+DELAYSEL*†
+Selects/reports processor channel delay
+
+MTRXLVL*
+Selects/reports matrix level at the cross point
+
+DFLTM
+Sets/reports default meter
+
+MUTE*†
+Sets/reports mute status
+
+DID
+Selects/reports device ID
+
+NCD*†
+Selects/rprts noise canc. amount for each mic chnl
+
+DSPVER
+Reports DSP firmware version
+
+NCSEL*†
+Selects/reports noise canc. on/off for each mic chnl
+
+FILTER*
+Selects/reports inpt/proc channel filter setting
+
+NLP*†
+Selects/reports non-linear proc. for each mic channl
+
+FILTSEL*†
+Enables/disables filters on inpt/proc channel
+
+NOM*†
+Selects/reports the NOM setting on output channels
+
+FLOW
+Selects/reports flow control of serial port
+
+OFFA*†
+Selects/reports Off Atten. mode for inputs 1-8
+
+FMP*†
+Sets/rprts 1st Mic Prior. for mic gating group
+
+PAA*†
+Selects/reports PA Adapt mode for specified input
+
+FPP
+Sets/reports current pass code setting
+
+PP†
+Selects/reports phantom power setting
+
+GAIN*†
+Changes/reports gain for in, out, or proc
+
+PRESET*†
+Executes preset or reports last executed preset
+
+GATE
+Reports gate status of channels 1-8
+
+PRGSTRING
+Sets/reports a programmed string
+
+GHOLD*†
+Selects/reports hold time setting
+
+REFSEL*†
+Selects/rprts outpts for mic(s) for PA adapt mode
+
+GMODE*†
+Selects/reports gating mode setting
+
+SERECHO
+Selects/reports the serial echo of the RS-232 port
+
+GOVER*†
+Selects/reports gating override setting
+
+SERMODE
+Selects/reports the serial mode of the RS-232 port
+
+GRATIO*†
+Selects/reports gate ratio setting
+
+SIGGEN*
+Selects/reports signal generator activation
+
+GREPORT
+Selects/reports gate status report frequency
+
+SIGTOUT
+Sets the signal generator time out for the unit
+
+GRPSEL*†
+Selects/rprts input gating group assignments
+
+SLVL*†
+Selects/reports mic auto level setting
+
+LABEL
+Selects/reports label of channel specified
+
+STRING*†
+Sends the specified string out the serial port
+
+LFP†
+Sets/reports status of front panel access
+
+TOUT
+Selects/reports the title screen inactivity time-out
+
+LMO*†
+Selects/reports Last Mic On mode
+
+UID
+Reports unit ID
+
+LVL
+Reports in, out, or processor level
+
+VER
+Reports unit version
+
+LVLREPORT
+Selects/reports level status

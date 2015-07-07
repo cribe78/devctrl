@@ -21,7 +21,7 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             if (angular.isDefined(panel.referenced['panel_controls'])) {
                 return panel.referenced['panel_controls'];
             }
-        }
+        };
 
         this.togglePanel = function(panel) {
             if (! angular.isDefined(panel.opened)) {
@@ -30,13 +30,13 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             else {
                 panel.opened = ! panel.opened;
             }
-        }
+        };
 
         this.isPanelOpen = function(panel) {
             var open = angular.isDefined(panel.opened) && panel.opened;
             return open;
 
-        }
+        };
     }
 ];
 
@@ -64,5 +64,9 @@ DevCtrl.Room.Resolve = {
 
     loadControlSets : function(DataService) {
         return DataService.getTablePromise('control_sets');
+    },
+
+    setMenu : function($stateParams, MenuService) {
+        MenuService.pageTitle = $stateParams.name;
     }
 };

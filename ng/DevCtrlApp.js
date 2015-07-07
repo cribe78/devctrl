@@ -2,6 +2,7 @@ goog.provide("DevCtrl.App");
 goog.require("DevCtrl.MainCtrl");
 goog.require("DevCtrl.stateConfig");
 goog.require("DevCtrl.DataService.factory");
+goog.require("DevCtrl.MenuService.factory");
 goog.require("DevCtrl.Ctrl.Directive");
 goog.require("DevCtrl.Menu.Directive");
 goog.require("DevCtrl.FkSelect.Directive");
@@ -16,6 +17,7 @@ goog.require("DevCtrl.Room.Resolve");
 
 DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])
     .factory('DataService', DevCtrl.DataService.factory)
+    .factory('MenuService', DevCtrl.MenuService.factory)
     .directive('ctrl', DevCtrl.Ctrl.Directive)
     .directive('coeMenu', DevCtrl.Menu.Directive)
     .directive('fkSelect', DevCtrl.FkSelect.Directive)

@@ -887,7 +887,7 @@ sub execute_command_xap {
 	if ( $command{command_type} eq 'query' ) {
 		$cmd_value = "";
 	}
-	elsif ( $command{command} =~ /MTRXLVL/ ) {
+	elsif ( $command{command} =~ /MTRXLVL/ || $command{command} =~ /GAIN/) {
 		dwdebug("append A/R");
 		$cmd_value .= " A";
 	}
@@ -1298,6 +1298,10 @@ sub parse_xap {
 		# Generic command of form COMMAND CHANNEL GROUP VALUE
 		$ret{command} = $1;
 		$ret{value}        = $2;
+	}
+	elsif ( $str =~ /^(\w+) (\d\d?)/ ) {
+		$ret{command} = $1;
+		$ret{value} = $2;
 	}
 	else {
 		dwdebug("unparsed xap command: $str");

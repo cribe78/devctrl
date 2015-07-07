@@ -345,7 +345,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
         messenger.on('control-data', function(data) {
             methods.loadData(data);
-            console.log("socket control data received");
+            //console.log("socket control data received");
         });
 
 

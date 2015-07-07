@@ -1,10 +1,10 @@
 <md-list>
-    <md-list-item ng-repeat-start="item in menu.items" ng-click="main.go(item.state)">
-        <p>{{item.text}}</p>
+    <md-list-item ng-repeat-start="(state, item) in menu.service.menuItems()" ng-click="main.go(item)">
+        <p>{{item.title}}</p>
         <md-icon md-font-set="material-icons">expand_more</md-icon>
     </md-list-item>
-    <md-list-item ng-repeat="subitem in item.submenu" ng-click="main.go(subitem.state)">
-        <p>{{subitem.text}}</p>
+    <md-list-item ng-repeat="(substate, subitem) in item.substates" ng-click="main.go(subitem)">
+        <p>{{subitem.title}}</p>
     </md-list-item>
     <md-divider ng-repeat-end></md-divider>
 </md-list>

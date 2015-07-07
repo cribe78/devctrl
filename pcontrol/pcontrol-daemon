@@ -881,13 +881,13 @@ sub execute_command_xap {
 	my ($cmd_ref) = (@_);
 	my %command = %$cmd_ref;
 
-	my $cmd_string = "#50 " . $command{command_name} . " ";
+	my $cmd_string = "#50 " . $command{command} . " ";
 
 	my $cmd_value = $command{value};
 	if ( $command{command_type} eq 'query' ) {
 		$cmd_value = "";
 	}
-	elsif ( $command{command_name} =~ /MTRXLVL/ ) {
+	elsif ( $command{command} =~ /MTRXLVL/ ) {
 		dwdebug("append A/R");
 		$cmd_value .= " A";
 	}
@@ -923,11 +923,11 @@ sub execute_command_xap {
 
 		my %parsed = %$pref;
 
-		if ( $parsed{command_name} eq $command{command_name} ) {
+		if ( $parsed{command} eq $command{command} ) {
 
 			# Expected resp
 			dwdebug("resp recieved: $resp");
-			update_command_value( $command{cq_id}, $parsed{value} );
+			update_control_value( $command{control_id}, $parsed{value} );
 			return 1;
 		}
 
@@ -1124,8 +1124,8 @@ sub handle_unexpected_response {
 			$last_communication = time();
 		}
 	}
-	elsif ( $proto eq "xap800") {
-	    handle_unexpected_response(@_);
+	elsif ( $proto eq "xap") {
+	    handle_unexpected_response_xap(@_);
 	}
 	else {
 		dwlog("unhandled unexpected response ($proto): $resp");
@@ -1152,16 +1152,20 @@ sub handle_unexpected_response_xap {
 		%cmd = %$cmd;
 	}
 
-	dwdebug("unexpected command handled: $cmd{command_name} = $cmd{value}");
-	insert_new_executed( $cmd{command_name}, $cmd{value} );
+	dwdebug("unexpected command handled: $cmd{command} = $cmd{value}");
+	insert_new_executed( $cmd{command}, $cmd{value} );
 }
 
 sub insert_new_executed {
 	my ( $command, $value ) = (@_);
 	
-	my %control = get_control_by_command($command);
-	
-	return update_control_value( $control{id}, $value );
+	if (get_control_by_command($command)) {
+		my %control = get_control_by_command($command);
+		return update_control_value( $control{id}, $value );
+	}
+	else {
+		dwdebug("discarding unrecognized command $command");
+	}
 }
 
 # Connect to the IO server for streaming data to clients
@@ -1261,15 +1265,15 @@ sub parse_xap {
 
 	if ( $cmd eq "MTRXLVL" || $cmd eq "MTRX" ) {
 		if ( $str =~ /^(\w+ \w\d? \w \w\d? \w)/ ) {
-			$ret{command_name} = $1;
-			dwdebug("xap cmd parsed: $ret{command_name}");
+			$ret{command} = $1;
+			dwdebug("xap cmd parsed: $ret{command}");
 		}
 		else {
 			dwlog("parse xap MTRX failed: $str");
 			return 0;
 		}
 
-		my $val = substr( $str, length( $ret{command_name} ) );
+		my $val = substr( $str, length( $ret{command} ) );
 
 		$val =~ s/^\s//;
 
@@ -1279,20 +1283,20 @@ sub parse_xap {
 
 		# Level report
 		if ( $str =~ /^(\w+ \w\d? \w \w) (.+)/ ) {
-			$ret{command_name} = $1;
+			$ret{command} = $1;
 			$ret{value}        = $2;
 		}
 	}
 	elsif ( $cmd eq "LVLRRATE" ) {
 		if ( $str =~ /LVLRRATE (\d+)/ ) {
-			$ret{command_name} = "LVLRRATE";
+			$ret{command} = "LVLRRATE";
 			$ret{value}        = $1;
 		}
 	}
 	elsif ( $str =~ /^(\w+ \w\d? \w) (.+)/ ) {
 
 		# Generic command of form COMMAND CHANNEL GROUP VALUE
-		$ret{command_name} = $1;
+		$ret{command} = $1;
 		$ret{value}        = $2;
 	}
 	else {

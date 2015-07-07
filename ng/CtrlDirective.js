@@ -17,6 +17,21 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
 
             var self = this;
 
+            this.normalizedValue = function() {
+                // Normalize a numeric value to a scale of 0 - 100
+                var rawVal = self.ctrl.fields.value;
+                var max = self.template.fields.max;
+                var min = self.template.fields.min;
+
+                rawVal = rawVal < min ? min : rawVal;
+                rawVal = rawVal > max ? max : rawVal;
+
+                var normVal = (rawVal + ( 0 - min )) * ( max - min ) / ( 100 - 0);
+
+                return normVal;
+            };
+
+
             this.updateValue = function() {
                 DataService.updateControlValue(self.ctrl);
             };

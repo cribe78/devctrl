@@ -25,7 +25,7 @@
 
 <div class="coe-ctrl-level" layout ng-if="ctrl.type == 'level'">
     <label flex="30" class="text-menu">{{ctrl.name}}</label>
-    <md-progress-linear md-mode="determinate" value="{{ctrl.ctrl.fields.value}}"></md-progress-linear>
+    <md-progress-linear md-mode="determinate" value="{{ctrl.normalizedValue()}}"></md-progress-linear>
 </div>
 
 <div layout="row" class="coe-ctrl-switch" ng-if="ctrl.type == 'switch'">

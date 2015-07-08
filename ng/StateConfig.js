@@ -6,15 +6,10 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
             .state('rooms', {
                 url: '/rooms',
                 scope: true,
-                controller: function($scope, $state) {
-                    this.foo = "bar";
-                    this.$state = $state;
-                },
-                controllerAs: 'roomsCtrl',
+                controller: 'RoomsCtrl',
+                controllerAs: 'rooms',
                 templateUrl: 'ng/locations.html',
-                resolve : {
-                    state : '$state',
-                },
+                resolve: DevCtrl.Common.Resolve,
                 data : {
                     title: 'Locations'
                 }
@@ -24,15 +19,34 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
                 templateUrl: 'ng/room.html',
                 controller: 'RoomCtrl',
                 controllerAs: 'room',
-                resolve: DevCtrl.Room.Resolve,
                 data : {
-                        listByName : 'rooms'
+                        listByName : 'rooms',
+                        title : false
+                }
+            })
+            .state('endpoints', {
+                url: '/devices',
+                templateUrl : 'ng/endpoints.html',
+                resolve: DevCtrl.Common.Resolve,
+                data : {
+                    title : 'Devices'
+                }
+            })
+            .state('endpoints.endpoint', {
+                url: '/:id',
+                templateUrl : 'ng/endpoint.html',
+                controller: 'EndpointCtrl',
+                controllerAs: 'endpoint',
+                data : {
+                    listByName : 'rooms',
+                    title : false
                 }
             })
             .state('config' , {
-                'abstract': true,
                 url: '/config',
-                template: '<ui-view />',
+                scope: true,
+                templateUrl: 'ng/config.html',
+                resolve : DevCtrl.Common.Resolve,
                 data : {
                     title : 'Configuration'
                 }
@@ -40,19 +54,19 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
             .state('config.data', {
                 url: '/data',
                 templateUrl: 'ng/data.html',
-                resolve : {
-                    $state : '$state'
-                },
                 data : {
-                    title : 'Table Data'
+                    title : 'Data Tables'
                 }
             })
             .state('config.data.table', {
-                url: '/:table',
+                url: '/:name',
                 templateUrl: 'ng/tableeditor.html',
                 controller: 'TableCtrl',
                 controllerAs: 'table',
-                resolve: DevCtrl.Table.Resolve
+                resolve: DevCtrl.Table.Resolve,
+                data : {
+                    title : "Table Editor"
+                }
             });
 
         $urlRouterProvider

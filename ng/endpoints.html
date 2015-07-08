@@ -1,9 +1,9 @@
-<div layout="column" ng-if="main.$state.is('config.data')">
+<div layout="column" ng-if="main.$state.is('endpoints')">
     <md-card>
         <md-card-content>
             <md-list>
-                <md-list-item ng-repeat-start="(name, schema) in main.schema" ng-click="main.go({ name: 'config.data.table', params : { name : name }})">
-                    {{schema.label}}
+                <md-list-item ng-repeat-start="(id, device) in main.control_endpoints.indexed" ng-click="main.go({ name: 'endpoints.endpoint', params : { name : device.fields.name, id : id }})">
+                    {{device.fields.name}}
                     <span flex></span>
                     <md-icon md-font-set="material-icons" >chevron_right</md-icon>
                 </md-list-item>

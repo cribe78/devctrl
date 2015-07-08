@@ -3,13 +3,21 @@ goog.provide('DevCtrl.Ctrl.Directive');
 DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
     return {
         scope: {
-            panelControl: '='
+            panelControl: '=',
+            controlId: '='
         },
         bindToController: true,
         controller: function(DataService) {
-            this.ctrl = this.panelControl.foreign.controls;
+            if (angular.isDefined(this.panelControl)) {
+                this.ctrl = this.panelControl.foreign.controls;
+                this.name = this.panelControl.fields.name;
+            }
+            else {
+                this.ctrl = DataService.getTable('controls').indexed[this.controlId];
+                this.name = this.ctrl.fields.name;
+            }
             this.template = this.ctrl.foreign['control_templates'];
-            this.name = this.panelControl.fields.name;
+
             this.type = this.template.fields.usertype;
 
             this.enums = DataService.getTable('enums');

@@ -3,7 +3,7 @@ goog.provide('DevCtrl.DataService.factory');
 DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
     function($http, $mdToast, $timeout, socketFactory) {
         var dataModel = {};
-        var schema = {};
+        var schema = { promise : false, loaded : false };
 
         var ioSocket = io('https://devctrl.dwi.ufl.edu/');
         var messenger = socketFactory({ ioSocket: ioSocket});
@@ -19,12 +19,11 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
         */
 
 
-        var methods = {
+        var self = {
             messenger: messenger,
             dataModel : dataModel,
+            schema : schema,
             addRow : function(row) {
-                var self = this;
-
                 $http.post("data.php", row)
                     .success(function(data) {
                         self.loadData(data);
@@ -41,7 +40,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             deleteRow : function(row) {
-                var self = this;
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
                 $http.delete(resource)
@@ -99,8 +97,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
             getMenu : function() {
-                var self = this;
-
                 if (! angular.isDefined(dataModel.menu)) {
                     dataModel.menu = { items : {}};
 
@@ -123,13 +119,18 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             getSchema : function(table) {
-                var self = this;
-
                 // The table argument is only used to determine if the schema has been loaded
                 if (! angular.isDefined(schema[table])) {
                     self.getSchemaRef(table);
+                    self.getSchemaPromise();
+                }
 
-                    $http.get('schema.php')
+                return schema[table];
+            },
+
+            getSchemaPromise : function() {
+                if (! schema.promise) {
+                    schema.promise = $http.get('schema.php')
                         .success(function(data) {
                             if (angular.isDefined(data.schema) ) {
                                 angular.forEach(data.schema, function(value, tableName) {
@@ -143,14 +144,18 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                                     }
                                 })
                             }
+
+                            schema.promise = schema;
+                            schema.loaded = true;
                         })
                         .error(function (data) {
                             self.errorToast(data);
-                        })
+                        });
                 }
 
-                return schema[table];
+                return schema.promise;
             },
+
 
             getSchemaRef : function(tableName) {
                 if (! angular.isDefined(schema[tableName])) {
@@ -187,7 +192,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
              * @returns {*}
              */
             getTablePromise : function(table) {
-                var self = this;
                 if (angular.isDefined(table)) {
                     return $http.get('data.php?table=' + table)
                         .success(function (data) {
@@ -221,8 +225,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             loadData : function(data) {
-                var self = this;
-
                 if (angular.isDefined(data.update)) {
                     angular.forEach(data.update, function(tableData, tableName) {
                         angular.forEach(tableData, function(value, key) {
@@ -304,8 +306,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
             updateControlValue : function(control) {
-                var self = this;
-
                 if (angular.isDefined(pendingUpdates[control.id])) {
                     $timeout.cancel(pendingUpdates[control.id]);
                 }
@@ -329,7 +329,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             // unless cancelled
 
             updateRow : function(row) {
-                var self = this;
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
                 $http.put(resource, row.fields)
@@ -344,11 +343,11 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
         messenger.on('control-data', function(data) {
-            methods.loadData(data);
+            self.loadData(data);
             //console.log("socket control data received");
         });
 
 
-        return methods;
+        return self;
     }
 ];

@@ -10,10 +10,12 @@ goog.require("DevCtrl.EnumSelect.Directive");
 goog.require("DevCtrl.SwitchSet.Directive");
 goog.require("DevCtrl.Table.Ctrl");
 goog.require("DevCtrl.Table.Resolve");
+goog.require("DevCtrl.Endpoint.Ctrl");
 goog.require("DevCtrl.Record.Ctrl");
 goog.require("DevCtrl.Record.Resolve");
-goog.require("DevCtrl.Room.Ctrl");
-goog.require("DevCtrl.Room.Resolve");
+goog.require("DevCtrl.Room.Ctrl")
+goog.require("DevCtrl.Rooms.Ctrl");
+goog.require("DevCtrl.Common.Resolve");
 
 DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])
     .factory('DataService', DevCtrl.DataService.factory)
@@ -24,9 +26,11 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('enumSelect', DevCtrl.EnumSelect.Directive)
     .directive('switchSet', DevCtrl.SwitchSet.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
+    .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)
     .controller('RoomCtrl', DevCtrl.Room.Ctrl)
+    .controller('RoomsCtrl', DevCtrl.Rooms.Ctrl)
     .config(DevCtrl.stateConfig)
 
 

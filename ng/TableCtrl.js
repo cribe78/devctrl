@@ -3,7 +3,7 @@ goog.provide("DevCtrl.Table.Resolve");
 
 DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
     function($scope, $stateParams, $mdDialog, DataService) {
-        this.tableName = $stateParams.table;
+        this.tableName = $stateParams.name;
         this.data = DataService.getTable(this.tableName);
         this.schema = DataService.getSchema(this.tableName);
         this.newRow = { table: this.tableName };

@@ -1,0 +1,12 @@
+<div>
+    <md-card>
+        <md-card-content>
+            <md-list>
+                <md-list-item ng-repeat-start="(key, control) in endpoint.controls">
+                    <ctrl flex control-id="key"></ctrl>
+                </md-list-item>
+                <md-divider ng-repeat-end></md-divider>
+            </md-list>
+        </md-card-content>
+    </md-card>
+</div>

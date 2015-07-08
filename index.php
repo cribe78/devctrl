@@ -26,22 +26,31 @@
     <meta name="viewport" content="initial-scale=1" />
     <title>DWI DevCtrl</title>
 </head>
-<body layout="column" ng-controller="MainCtrl as main">
-    <md-toolbar layout="row">
-        <md-button ng-click="main.toggleSidenav('left')" hide-gt-md class="md-icon-button">
-            <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
-        </md-button>
-        <h1 class="md-toolbar-tools" layout-align-gt-sm="center">{{main.menu.pageTitle()}}</h1>
-    </md-toolbar>
-    <div layout="row" flex>
-        <md-sidenav layout="column"
-                    class="md-sidenav-left md-whiteframe-z2"
-                    md-component-id="left"
-                    md-is-locked-open="$mdMedia('gt-md')">
-            <md-content flex role="navigation">
-                <coe-menu items="main.menu.items"></coe-menu>
-            </md-content>
-        </md-sidenav>
+<body layout="row" ng-controller="MainCtrl as main">
+    <md-sidenav layout="column"
+                class="md-sidenav-left md-whiteframe-z2"
+                md-component-id="left"
+                md-is-locked-open="$mdMedia('gt-md')">
+        <div layout="row" layout-align="left center">
+            <md-button ng-click="main.toggleSidenav('left')" hide-gt-md class="md-icon-button">
+                <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
+            </md-button>
+            <span flex class="text-display-1 md-primary md-hue-1">DWI DevCtrl</span>
+        </div>
+        <md-content flex role="navigation">
+            <coe-menu items="main.menu.items"></coe-menu>
+        </md-content>
+    </md-sidenav>
+    <div layout="column" flex>
+        <md-toolbar layout="row" layout-align="center center">
+            <md-button ng-if="main.menu.isFirstLevel()" ng-click="main.toggleSidenav('left')" hide-gt-md class="md-icon-button">
+                <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
+            </md-button>
+            <md-button ng-if="! main.menu.isFirstLevel()" ng-click="main.go(main.menu.parentState())">
+                <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
+            </md-button>
+            <span flex class="title text-headline">{{main.menu.pageTitle()}}</span>
+        </md-toolbar>
         <md-content layout="column" flex layout-margin id="content">
             <ui-view></ui-view>
         </md-content>

@@ -9,7 +9,12 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
             pageTitle : function() {
                 return $state.current.title || $state.params.name;
             },
-            parentState : 'root',
+            parentState : function() {
+                return $state.get('^');
+            },
+            isFirstLevel : function() {
+                return $state.current.name === "" || $state.get('^').name === "";
+            },
             items : items,
             states : function () {
                 return $state.get();

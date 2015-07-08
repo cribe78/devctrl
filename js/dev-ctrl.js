@@ -1,95 +1,6 @@
 
-// ../ng/EnumSelectDirective.js
-DevCtrl = {};
-DevCtrl.EnumSelect = {};
-
-DevCtrl.EnumSelect.Directive = ['DataService', function(DataService) {
-    return {
-        scope: {
-            tableName: '=table',
-            field: '=',
-            selectModel: '='
-        },
-        bindToController: true,
-        controller: function(DataService) {
-            this.enums = DataService.getTable('enums');
-            this.enumVals = DataService.getTable('enum_vals');
-            this.schema = DataService.getSchema(this.tableName);
-
-            this.enumId = function() {
-                var myId = 0;
-                var enumName = this.tableName + "." + this.field.name;
-
-                angular.forEach(this.enums.indexed, function(obj, id) {
-                    if (obj.fields.name == enumName) {
-                        myId = id;
-                    }
-                });
-
-                return myId;
-            };
-
-
-            this.options = function() {
-                var eid = this.enumId();
-
-                var ret = {};
-                if (eid > 0) {
-                    ret = this.enums.indexed[eid].referenced['enum_vals'];
-                }
-
-                return ret;
-            }
-        },
-        controllerAs: 'enumSelect',
-        templateUrl: 'ng/enum-select.html'
-    }
-}];
-// ../ng/SwitchSetDirective.js
-DevCtrl.SwitchSet = {};
-
-DevCtrl.SwitchSet.Directive  = ['DataService', function(DataService) {
-    return {
-        scope: true,
-        bindToController: {
-            control: '='
-        },
-        controller: function(DataService) {
-            var self = this;
-
-            var slaves = {};
-            var slaveNames = {};
-
-            this.setAll = function(value) {
-                angular.forEach(slaves, function(slave, id) {
-                    slave.fields.value = value;
-                    DataService.updateControlValue(slave);
-                })
-            };
-
-            this.slaveControls = function() {
-                angular.forEach(self.control.referenced.control_sets, function(cs, csid) {
-                    slaveNames[cs.foreign.slave_control_id.id] = cs.fields.name;
-                    slaves[cs.foreign.slave_control_id.id] = cs.foreign.slave_control_id;
-                });
-
-                return slaves;
-            };
-
-            this.slaveName = function(slave) {
-                return slaveNames[slave.id];
-            };
-
-            this.updateCtrlValue = function(uctrl) {
-                DataService.updateControlValue(uctrl);
-            };
-        },
-        controllerAs: 'switchSet',
-        templateUrl: 'ng/switch-set.html'
-    }
-}];
-
 // ../ng/StateConfig.js
+DevCtrl = {};
 
 DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvider',
     function ($stateProvider, $locationProvider, $urlRouterProvider) {
@@ -97,15 +8,10 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
             .state('rooms', {
                 url: '/rooms',
                 scope: true,
-                controller: function($scope, $state) {
-                    this.foo = "bar";
-                    this.$state = $state;
-                },
-                controllerAs: 'roomsCtrl',
+                controller: 'RoomsCtrl',
+                controllerAs: 'rooms',
                 templateUrl: 'ng/locations.html',
-                resolve : {
-                    state : '$state',
-                },
+                resolve: DevCtrl.Common.Resolve,
                 data : {
                     title: 'Locations'
                 }
@@ -115,15 +21,34 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
                 templateUrl: 'ng/room.html',
                 controller: 'RoomCtrl',
                 controllerAs: 'room',
-                resolve: DevCtrl.Room.Resolve,
                 data : {
-                        listByName : 'rooms'
+                        listByName : 'rooms',
+                        title : false
+                }
+            })
+            .state('endpoints', {
+                url: '/devices',
+                templateUrl : 'ng/endpoints.html',
+                resolve: DevCtrl.Common.Resolve,
+                data : {
+                    title : 'Devices'
+                }
+            })
+            .state('endpoints.endpoint', {
+                url: '/:id',
+                templateUrl : 'ng/endpoint.html',
+                controller: 'EndpointCtrl',
+                controllerAs: 'endpoint',
+                data : {
+                    listByName : 'rooms',
+                    title : false
                 }
             })
             .state('config' , {
-                'abstract': true,
                 url: '/config',
-                template: '<ui-view />',
+                scope: true,
+                templateUrl: 'ng/config.html',
+                resolve : DevCtrl.Common.Resolve,
                 data : {
                     title : 'Configuration'
                 }
@@ -131,19 +56,19 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
             .state('config.data', {
                 url: '/data',
                 templateUrl: 'ng/data.html',
-                resolve : {
-                    $state : '$state'
-                },
                 data : {
-                    title : 'Table Data'
+                    title : 'Data Tables'
                 }
             })
             .state('config.data.table', {
-                url: '/:table',
+                url: '/:name',
                 templateUrl: 'ng/tableeditor.html',
                 controller: 'TableCtrl',
                 controllerAs: 'table',
-                resolve: DevCtrl.Table.Resolve
+                resolve: DevCtrl.Table.Resolve,
+                data : {
+                    title : "Table Editor"
+                }
             });
 
         $urlRouterProvider
@@ -151,6 +76,39 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
 
         $locationProvider.html5Mode(true);
     }];
+// ../ng/CommonResolve.js
+DevCtrl.Common = {};
+
+DevCtrl.Common.Resolve = {
+    // Load all controls.  Do something smarter with this if it starts slowing us down
+    loadSchema : function(DataService) {
+        return DataService.getSchemaPromise();
+    },
+
+    loadControls: function(DataService, loadSchema) {
+        return DataService.getTablePromise('controls');
+    },
+
+    loadControlTemplates: function(DataService, loadSchema) {
+        return DataService.getTablePromise('control_templates');
+    },
+
+    loadRooms : function(DataService, loadSchema) {
+        return DataService.getTablePromise('rooms');
+    },
+
+    loadPanels : function(DataService, loadSchema) {
+        return DataService.getTablePromise('panels');
+    },
+
+    loadPanelControls : function(DataService, loadSchema) {
+        return DataService.getTablePromise('panel_controls');
+    },
+
+    loadControlSets : function(DataService, loadSchema) {
+        return DataService.getTablePromise('control_sets');
+    }
+};
 // ../ng/RoomCtrl.js
 DevCtrl.Room = {};
 
@@ -193,39 +151,70 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
     }
 ];
 
-DevCtrl.Room.Resolve = {
-    // Load all controls.  Do something smarter with this if it starts slowing us down
-    loadControls: function(DataService) {
-        return DataService.getTablePromise('controls');
-    },
+// ../ng/MainCtrl.js
 
-    loadControlTemplates: function(DataService) {
-        return DataService.getTablePromise('control_templates');
-    },
+DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
+    function($state, $mdSidenav, DataService, MenuService) {
+        this.msg = "Hello World!";
+        this.tiles = [
+            {
+                img: "/images/orc.png"
+            },
+            {
+                img: "/images/pict.png"
+            },
+            {
+                img: "/images/sage.png"
+            }
+        ];
 
-    loadRooms : function(DataService) {
-        return DataService.getTablePromise('rooms');
-    },
+        this.$state = $state;
+        this.menu = MenuService;
+        this.schema = DataService.getSchemas();
+        this.control_endpoints = DataService.getTable('control_endpoints');
 
-    loadPanels : function(DataService) {
-        return DataService.getTablePromise('panels');
-    },
+        this.toggleSidenav = function(menuId) {
+            $mdSidenav(menuId).toggle();
+        };
 
-    loadPanelControls : function(DataService) {
-        return DataService.getTablePromise('panel_controls');
-    },
+        this.go = function(state) {
+            if (angular.isString(state)) {
+                $state.go(state);
+            }
+            else {
+                $state.go(state.name, state.params);
+            }
+        };
 
-    loadControlSets : function(DataService) {
-        return DataService.getTablePromise('control_sets');
+        this.dataModel = DataService.dataModel;
+
+        this.title = "DevCtrl";
+        this.top = true;
     }
-};
+];
+// ../ng/MenuDirective.js
+DevCtrl.Menu = {};
+
+DevCtrl.Menu.Directive = ['MenuService', '$state',
+    function(MenuService, $state) {
+        return {
+            scope: true,
+            bindToController: {},
+            controller: function(MenuService, $state) {
+                this.service = MenuService;
+            },
+            controllerAs: 'menu',
+            templateUrl: 'ng/menu.html'
+        }
+    }
+];
 // ../ng/DataService.js
 DevCtrl.DataService = {};
 
 DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
     function($http, $mdToast, $timeout, socketFactory) {
         var dataModel = {};
-        var schema = {};
+        var schema = { promise : false, loaded : false };
 
         var ioSocket = io('https://devctrl.dwi.ufl.edu/');
         var messenger = socketFactory({ ioSocket: ioSocket});
@@ -241,12 +230,11 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
         */
 
 
-        var methods = {
+        var self = {
             messenger: messenger,
             dataModel : dataModel,
+            schema : schema,
             addRow : function(row) {
-                var self = this;
-
                 $http.post("data.php", row)
                     .success(function(data) {
                         self.loadData(data);
@@ -263,7 +251,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             deleteRow : function(row) {
-                var self = this;
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
                 $http.delete(resource)
@@ -321,8 +308,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
             getMenu : function() {
-                var self = this;
-
                 if (! angular.isDefined(dataModel.menu)) {
                     dataModel.menu = { items : {}};
 
@@ -345,13 +330,18 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             getSchema : function(table) {
-                var self = this;
-
                 // The table argument is only used to determine if the schema has been loaded
                 if (! angular.isDefined(schema[table])) {
                     self.getSchemaRef(table);
+                    self.getSchemaPromise();
+                }
 
-                    $http.get('schema.php')
+                return schema[table];
+            },
+
+            getSchemaPromise : function() {
+                if (! schema.promise) {
+                    schema.promise = $http.get('schema.php')
                         .success(function(data) {
                             if (angular.isDefined(data.schema) ) {
                                 angular.forEach(data.schema, function(value, tableName) {
@@ -365,14 +355,18 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                                     }
                                 })
                             }
+
+                            schema.promise = schema;
+                            schema.loaded = true;
                         })
                         .error(function (data) {
                             self.errorToast(data);
-                        })
+                        });
                 }
 
-                return schema[table];
+                return schema.promise;
             },
+
 
             getSchemaRef : function(tableName) {
                 if (! angular.isDefined(schema[tableName])) {
@@ -409,7 +403,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
              * @returns {*}
              */
             getTablePromise : function(table) {
-                var self = this;
                 if (angular.isDefined(table)) {
                     return $http.get('data.php?table=' + table)
                         .success(function (data) {
@@ -443,8 +436,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             loadData : function(data) {
-                var self = this;
-
                 if (angular.isDefined(data.update)) {
                     angular.forEach(data.update, function(tableData, tableName) {
                         angular.forEach(tableData, function(value, key) {
@@ -526,8 +517,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
             updateControlValue : function(control) {
-                var self = this;
-
                 if (angular.isDefined(pendingUpdates[control.id])) {
                     $timeout.cancel(pendingUpdates[control.id]);
                 }
@@ -551,7 +540,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             // unless cancelled
 
             updateRow : function(row) {
-                var self = this;
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
                 $http.put(resource, row.fields)
@@ -566,124 +554,80 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
         messenger.on('control-data', function(data) {
-            methods.loadData(data);
+            self.loadData(data);
             //console.log("socket control data received");
         });
 
 
-        return methods;
+        return self;
     }
 ];
-// ../ng/MenuDirective.js
-DevCtrl.Menu = {};
+// ../ng/EnumSelectDirective.js
+DevCtrl.EnumSelect = {};
 
-DevCtrl.Menu.Directive = ['MenuService', '$state',
-    function(MenuService, $state) {
-        return {
-            scope: true,
-            bindToController: {},
-            controller: function(MenuService, $state) {
-                this.service = MenuService;
-            },
-            controllerAs: 'menu',
-            templateUrl: 'ng/menu.html'
-        }
-    }
-];
-// ../ng/RecordCtrl.js
-DevCtrl.Record = {};
+DevCtrl.EnumSelect.Directive = ['DataService', function(DataService) {
+    return {
+        scope: {
+            tableName: '=table',
+            field: '=',
+            selectModel: '='
+        },
+        bindToController: true,
+        controller: function(DataService) {
+            this.enums = DataService.getTable('enums');
+            this.enumVals = DataService.getTable('enum_vals');
+            this.schema = DataService.getSchema(this.tableName);
 
-DevCtrl.Record.Ctrl = ['DataService',
-    function(DataService) {
-        this.obj = this.table.data.indexed[this.id];
-        this.schema = this.table.schema;
+            this.enumId = function() {
+                var myId = 0;
+                var enumName = this.tableName + "." + this.field.name;
 
-        var self = this;
+                angular.forEach(this.enums.indexed, function(obj, id) {
+                    if (obj.fields.name == enumName) {
+                        myId = id;
+                    }
+                });
 
-        this.deleteRow = function() {
-            DataService.deleteRow(self.obj);
-            this.table.closeRecord();
-        };
+                return myId;
+            };
 
-        this.updateRow = function() {
-            DataService.updateRow(self.obj);
-            this.table.closeRecord();
-        }
 
-        this.cloneRow = function() {
-            var newRow = angular.copy(self.obj.fields);
-            newRow.table = self.obj.tableName;
+            this.options = function() {
+                var eid = this.enumId();
 
-            DataService.addRow(newRow);
-            this.table.closeRecord();
-        }
+                var ret = {};
+                if (eid > 0) {
+                    ret = this.enums.indexed[eid].referenced['enum_vals'];
+                }
 
-        this.close = function() {
-            this.table.closeRecord();
-        }
-    }
-];
-
-DevCtrl.Record.Resolve = {
-    loadTable : ['tableName', 'DataService',
-        function(tableName, DataService) {
-            return DataService.getTablePromise(tableName);
-        }
-    ]
-}
-// ../ng/MainCtrl.js
-
-DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
-    function($state, $mdSidenav, DataService, MenuService) {
-        this.msg = "Hello World!";
-        this.tiles = [
-            {
-                img: "/images/orc.png"
-            },
-            {
-                img: "/images/pict.png"
-            },
-            {
-                img: "/images/sage.png"
+                return ret;
             }
-        ];
-
-
-        this.menu = MenuService;
-        this.schema = DataService.getSchemas();
-
-        this.toggleSidenav = function(menuId) {
-            $mdSidenav(menuId).toggle();
-        };
-
-        this.go = function(state) {
-            if (angular.isString(state)) {
-                $state.go(state);
-            }
-            else {
-                $state.go(state.name, state.params);
-            }
-        };
-
-        this.dataModel = DataService.dataModel;
-
-        this.title = "DevCtrl";
-        this.top = true;
+        },
+        controllerAs: 'enumSelect',
+        templateUrl: 'ng/enum-select.html'
     }
-];
+}];
 // ../ng/CtrlDirective.js
 DevCtrl.Ctrl = {};
 
 DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
     return {
         scope: {
-            panelControl: '='
+            panelControl: '=',
+            controlId: '='
         },
         bindToController: true,
         controller: function(DataService) {
-            this.ctrl = this.panelControl.foreign.controls;
+            if (angular.isDefined(this.panelControl)) {
+                this.ctrl = this.panelControl.foreign.controls;
+                this.name = this.panelControl.fields.name;
+            }
+            else {
+                this.ctrl = DataService.getTable('controls').indexed[this.controlId];
+                this.name = this.ctrl.fields.name;
+            }
             this.template = this.ctrl.foreign['control_templates'];
-            this.name = this.panelControl.fields.name;
+
             this.type = this.template.fields.usertype;
 
             this.enums = DataService.getTable('enums');
@@ -730,99 +674,91 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
         templateUrl: 'ng/ctrl.html'
     }
 }];
-// ../ng/FkSelectDirective.js
-DevCtrl.FkSelect = {};
+// ../ng/SwitchSetDirective.js
+DevCtrl.SwitchSet = {};
 
-DevCtrl.FkSelect.Directive = ['DataService', function(DataService) {
+DevCtrl.SwitchSet.Directive  = ['DataService', function(DataService) {
     return {
-        scope: {
-            tableName: '=table',
-            field: '=',
-            selectModel: '='
+        scope: true,
+        bindToController: {
+            control: '='
         },
-        bindToController: true,
         controller: function(DataService) {
-            this.options = DataService.getTable(this.tableName);
-            this.schema = DataService.getSchema(this.tableName);
+            var self = this;
+
+            var slaves = {};
+            var slaveNames = {};
+
+            this.setAll = function(value) {
+                angular.forEach(slaves, function(slave, id) {
+                    slave.fields.value = value;
+                    DataService.updateControlValue(slave);
+                })
+            };
+
+            this.slaveControls = function() {
+                angular.forEach(self.control.referenced.control_sets, function(cs, csid) {
+                    slaveNames[cs.foreign.slave_control_id.id] = cs.fields.name;
+                    slaves[cs.foreign.slave_control_id.id] = cs.foreign.slave_control_id;
+                });
+
+                return slaves;
+            };
+
+            this.slaveName = function(slave) {
+                return slaveNames[slave.id];
+            };
+
+            this.updateCtrlValue = function(uctrl) {
+                DataService.updateControlValue(uctrl);
+            };
         },
-        controllerAs: 'fkSelect',
-        templateUrl: 'ng/fk-select.html'
+        controllerAs: 'switchSet',
+        templateUrl: 'ng/switch-set.html'
     }
 }];
-// ../ng/TableCtrl.js
-DevCtrl.Table = {};
 
-DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
-    function($scope, $stateParams, $mdDialog, DataService) {
-        this.tableName = $stateParams.table;
-        this.data = DataService.getTable(this.tableName);
-        this.schema = DataService.getSchema(this.tableName);
-        this.newRow = { table: this.tableName };
+// ../ng/RecordCtrl.js
+DevCtrl.Record = {};
 
-        DataService.messenger.emit('status-update', {
-           message: "table " + this.tableName + " loaded"
-        });
-
-        this.addRow = function() {
-            DataService.addRow(this.newRow);
-        };
-
-        this.deleteRow = function(row) {
-            row.table = this.tableName;
-            DataService.deleteRow(row);
-        };
-
-        this.fkDisplayVal = function(field, row) {
-            var fkTable = this.schema.foreign_keys[field.name];
-            var fkSchema = DataService.getSchema(fkTable);
-
-            if (! angular.isDefined(row.foreign[field.name])) {
-                return '';
-            }
-
-            var foreign = row.foreign[field.name];
-
-            if (foreign == null) {
-                return 'NULL';
-            }
-
-            var val = foreign.id;
-            if (angular.isDefined(foreign.fields[fkSchema.fk_name])) {
-                val = foreign.fields[fkSchema.fk_name];
-            }
-
-            return val;
-        };
+DevCtrl.Record.Ctrl = ['DataService',
+    function(DataService) {
+        this.obj = this.table.data.indexed[this.id];
+        this.schema = this.table.schema;
 
         var self = this;
 
-        this.openRecord = function($event, id) {
-            $mdDialog.show({
-                targetEvent: $event,
-                locals: {
-                    id: id,
-                    table: self
-                },
-                controller: DevCtrl.Record.Ctrl,
-                controllerAs: 'record',
-                bindToController: true,
-                templateUrl: 'ng/record.html',
-                clickOutsideToClose: true,
-                hasBackdrop : false
-            });
+        this.deleteRow = function() {
+            DataService.deleteRow(self.obj);
+            this.table.closeRecord();
+        };
+
+        this.updateRow = function() {
+            DataService.updateRow(self.obj);
+            this.table.closeRecord();
         }
 
-        this.closeRecord = function() {
-            $mdDialog.hide();
+        this.cloneRow = function() {
+            var newRow = angular.copy(self.obj.fields);
+            newRow.table = self.obj.tableName;
+
+            DataService.addRow(newRow);
+            this.table.closeRecord();
+        }
+
+        this.close = function() {
+            this.table.closeRecord();
         }
     }
 ];
 
-DevCtrl.Table.Resolve = {
-    tableName: ['$stateParams', function ($stateParams) {
-        return $stateParams.table;
-    }]
-};
+DevCtrl.Record.Resolve = {
+    loadTable : ['tableName', 'DataService',
+        function(tableName, DataService) {
+            return DataService.getTablePromise(tableName);
+        }
+    ]
+}
 // ../ng/MenuService.js
 DevCtrl.MenuService = {};
 
@@ -835,7 +771,12 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
             pageTitle : function() {
                 return $state.current.title || $state.params.name;
             },
-            parentState : 'root',
+            parentState : function() {
+                return $state.get('^');
+            },
+            isFirstLevel : function() {
+                return $state.current.name === "" || $state.get('^').name === "";
+            },
             items : items,
             states : function () {
                 return $state.get();
@@ -905,6 +846,147 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
 
         return self;
     }];
+// ../ng/EndpointCtrl.js
+DevCtrl.Endpoint = {};
+
+DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
+    function($stateParams, DataService) {
+        var self = this;
+        this.endpointId = $stateParams.id;
+        this.endpoints = DataService.getTable('control_endpoints');
+        this.obj = this.endpoints.indexed[this.endpointId];
+
+        // The toolbar title uses this
+        $stateParams.name = this.obj.fields.name;
+
+        // This function is here to prevent null reference errors
+        this.controls = this.obj.referenced['controls'];
+
+        this.togglePanel = function(panel) {
+            if (! angular.isDefined(panel.opened)) {
+                panel.opened = true;
+            }
+            else {
+                panel.opened = ! panel.opened;
+            }
+        };
+
+        this.isPanelOpen = function(panel) {
+            var open = angular.isDefined(panel.opened) && panel.opened;
+            return open;
+
+        };
+    }
+];
+
+
+// ../ng/FkSelectDirective.js
+DevCtrl.FkSelect = {};
+
+DevCtrl.FkSelect.Directive = ['DataService', function(DataService) {
+    return {
+        scope: {
+            tableName: '=table',
+            field: '=',
+            selectModel: '='
+        },
+        bindToController: true,
+        controller: function(DataService) {
+            this.options = DataService.getTable(this.tableName);
+            this.schema = DataService.getSchema(this.tableName);
+        },
+        controllerAs: 'fkSelect',
+        templateUrl: 'ng/fk-select.html'
+    }
+}];
+// ../ng/TableCtrl.js
+DevCtrl.Table = {};
+
+DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
+    function($scope, $stateParams, $mdDialog, DataService) {
+        this.tableName = $stateParams.name;
+        this.data = DataService.getTable(this.tableName);
+        this.schema = DataService.getSchema(this.tableName);
+        this.newRow = { table: this.tableName };
+
+        DataService.messenger.emit('status-update', {
+           message: "table " + this.tableName + " loaded"
+        });
+
+        this.addRow = function() {
+            DataService.addRow(this.newRow);
+        };
+
+        this.deleteRow = function(row) {
+            row.table = this.tableName;
+            DataService.deleteRow(row);
+        };
+
+        this.fkDisplayVal = function(field, row) {
+            var fkTable = this.schema.foreign_keys[field.name];
+            var fkSchema = DataService.getSchema(fkTable);
+
+            if (! angular.isDefined(row.foreign[field.name])) {
+                return '';
+            }
+
+            var foreign = row.foreign[field.name];
+
+            if (foreign == null) {
+                return 'NULL';
+            }
+
+            var val = foreign.id;
+            if (angular.isDefined(foreign.fields[fkSchema.fk_name])) {
+                val = foreign.fields[fkSchema.fk_name];
+            }
+
+            return val;
+        };
+
+        var self = this;
+
+        this.openRecord = function($event, id) {
+            $mdDialog.show({
+                targetEvent: $event,
+                locals: {
+                    id: id,
+                    table: self
+                },
+                controller: DevCtrl.Record.Ctrl,
+                controllerAs: 'record',
+                bindToController: true,
+                templateUrl: 'ng/record.html',
+                clickOutsideToClose: true,
+                hasBackdrop : false
+            });
+        }
+
+        this.closeRecord = function() {
+            $mdDialog.hide();
+        }
+    }
+];
+
+DevCtrl.Table.Resolve = {
+    tableName: ['$stateParams', function ($stateParams) {
+        return $stateParams.table;
+    }]
+};
+// ../ng/RoomsCtrl.js
+DevCtrl.Rooms = {};
+
+DevCtrl.Rooms.Ctrl = ['DataService',
+    function(DataService) {
+        this.list = DataService.getTable('rooms').listed;
+
+        this.imageUrl = function(room) {
+            return "/images/" + room.fields.name + ".png";
+        }
+
+    }
+];
+
 // ../ng/DevCtrlApp.js
 
 DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])
@@ -916,9 +998,11 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('enumSelect', DevCtrl.EnumSelect.Directive)
     .directive('switchSet', DevCtrl.SwitchSet.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
+    .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)
     .controller('RoomCtrl', DevCtrl.Room.Ctrl)
+    .controller('RoomsCtrl', DevCtrl.Rooms.Ctrl)
     .config(DevCtrl.stateConfig)
 
 

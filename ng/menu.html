@@ -8,6 +8,7 @@
     </md-list-item>
     <md-list-item ng-show="item.isOpened"
             ng-repeat="(substate, subitem) in item.substates" ng-click="main.go(subitem)">
+        <span flex="5"></span>
         <p>{{subitem.title}}</p>
     </md-list-item>
     <md-divider ng-repeat-end></md-divider>

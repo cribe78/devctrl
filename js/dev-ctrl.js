@@ -1,21 +1,110 @@
 
-// ../ng/StateConfig.js
+// ../ng/EnumSelectDirective.js
 DevCtrl = {};
+DevCtrl.EnumSelect = {};
+
+DevCtrl.EnumSelect.Directive = ['DataService', function(DataService) {
+    return {
+        scope: {
+            tableName: '=table',
+            field: '=',
+            selectModel: '='
+        },
+        bindToController: true,
+        controller: function(DataService) {
+            this.enums = DataService.getTable('enums');
+            this.enumVals = DataService.getTable('enum_vals');
+            this.schema = DataService.getSchema(this.tableName);
+
+            this.enumId = function() {
+                var myId = 0;
+                var enumName = this.tableName + "." + this.field.name;
+
+                angular.forEach(this.enums.indexed, function(obj, id) {
+                    if (obj.fields.name == enumName) {
+                        myId = id;
+                    }
+                });
+
+                return myId;
+            };
+
+
+            this.options = function() {
+                var eid = this.enumId();
+
+                var ret = {};
+                if (eid > 0) {
+                    ret = this.enums.indexed[eid].referenced['enum_vals'];
+                }
+
+                return ret;
+            }
+        },
+        controllerAs: 'enumSelect',
+        templateUrl: 'ng/enum-select.html'
+    }
+}];
+// ../ng/SwitchSetDirective.js
+DevCtrl.SwitchSet = {};
+
+DevCtrl.SwitchSet.Directive  = ['DataService', function(DataService) {
+    return {
+        scope: true,
+        bindToController: {
+            control: '='
+        },
+        controller: function(DataService) {
+            var self = this;
+
+            var slaves = {};
+            var slaveNames = {};
+
+            this.setAll = function(value) {
+                angular.forEach(slaves, function(slave, id) {
+                    slave.fields.value = value;
+                    DataService.updateControlValue(slave);
+                })
+            };
+
+            this.slaveControls = function() {
+                angular.forEach(self.control.referenced.control_sets, function(cs, csid) {
+                    slaveNames[cs.foreign.slave_control_id.id] = cs.fields.name;
+                    slaves[cs.foreign.slave_control_id.id] = cs.foreign.slave_control_id;
+                });
+
+                return slaves;
+            };
+
+            this.slaveName = function(slave) {
+                return slaveNames[slave.id];
+            };
+
+            this.updateCtrlValue = function(uctrl) {
+                DataService.updateControlValue(uctrl);
+            };
+        },
+        controllerAs: 'switchSet',
+        templateUrl: 'ng/switch-set.html'
+    }
+}];
+
+// ../ng/StateConfig.js
 
 DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvider',
     function ($stateProvider, $locationProvider, $urlRouterProvider) {
         $stateProvider
             .state('rooms', {
                 url: '/rooms',
-                controller: function() {},
-                controlerAs: 'roomsCtrl',
+                scope: true,
+                controller: function($scope, $state) {
+                    this.foo = "bar";
+                    this.$state = $state;
+                },
+                controllerAs: 'roomsCtrl',
                 templateUrl: 'ng/locations.html',
                 resolve : {
-                    $state : '$state',
-                    setMenu : function(MenuService) {
-                        MenuService.pageTitle = 'Locations';
-                        MenuService.parentState = 'root';
-                    }
+                    state : '$state',
                 },
                 data : {
                     title: 'Locations'
@@ -128,68 +217,8 @@ DevCtrl.Room.Resolve = {
 
     loadControlSets : function(DataService) {
         return DataService.getTablePromise('control_sets');
-    },
-
-    setMenu : function($stateParams, MenuService) {
-        MenuService.pageTitle = $stateParams.name;
     }
 };
-// ../ng/MainCtrl.js
-
-DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
-    function($state, $mdSidenav, DataService, MenuService) {
-        this.msg = "Hello World!";
-        this.tiles = [
-            {
-                img: "/images/orc.png"
-            },
-            {
-                img: "/images/pict.png"
-            },
-            {
-                img: "/images/sage.png"
-            }
-        ];
-
-
-        this.menu = MenuService;
-        this.schema = DataService.getSchemas();
-
-        this.toggleSidenav = function(menuId) {
-            $mdSidenav(menuId).toggle();
-        };
-
-        this.go = function(state) {
-            if (angular.isString(state)) {
-                $state.go(state);
-            }
-            else {
-                $state.go(state.name, state.params);
-            }
-        };
-
-        this.dataModel = DataService.dataModel;
-
-        this.title = "DevCtrl";
-        this.top = true;
-    }
-];
-// ../ng/MenuDirective.js
-DevCtrl.Menu = {};
-
-DevCtrl.Menu.Directive = ['MenuService', '$state',
-    function(MenuService, $state) {
-        return {
-            scope: true,
-            bindToController: {},
-            controller: function(MenuService, $state) {
-                this.service = MenuService;
-            },
-            controllerAs: 'menu',
-            templateUrl: 'ng/menu.html'
-        }
-    }
-];
 // ../ng/DataService.js
 DevCtrl.DataService = {};
 
@@ -545,51 +574,103 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
         return methods;
     }
 ];
-// ../ng/EnumSelectDirective.js
-DevCtrl.EnumSelect = {};
+// ../ng/MenuDirective.js
+DevCtrl.Menu = {};
 
-DevCtrl.EnumSelect.Directive = ['DataService', function(DataService) {
-    return {
-        scope: {
-            tableName: '=table',
-            field: '=',
-            selectModel: '='
-        },
-        bindToController: true,
-        controller: function(DataService) {
-            this.enums = DataService.getTable('enums');
-            this.enumVals = DataService.getTable('enum_vals');
-            this.schema = DataService.getSchema(this.tableName);
-
-            this.enumId = function() {
-                var myId = 0;
-                var enumName = this.tableName + "." + this.field.name;
-
-                angular.forEach(this.enums.indexed, function(obj, id) {
-                    if (obj.fields.name == enumName) {
-                        myId = id;
-                    }
-                });
-
-                return myId;
-            };
-
-
-            this.options = function() {
-                var eid = this.enumId();
-
-                var ret = {};
-                if (eid > 0) {
-                    ret = this.enums.indexed[eid].referenced['enum_vals'];
-                }
-
-                return ret;
-            }
-        },
-        controllerAs: 'enumSelect',
-        templateUrl: 'ng/enum-select.html'
+DevCtrl.Menu.Directive = ['MenuService', '$state',
+    function(MenuService, $state) {
+        return {
+            scope: true,
+            bindToController: {},
+            controller: function(MenuService, $state) {
+                this.service = MenuService;
+            },
+            controllerAs: 'menu',
+            templateUrl: 'ng/menu.html'
+        }
     }
-}];
+];
+// ../ng/RecordCtrl.js
+DevCtrl.Record = {};
+
+DevCtrl.Record.Ctrl = ['DataService',
+    function(DataService) {
+        this.obj = this.table.data.indexed[this.id];
+        this.schema = this.table.schema;
+
+        var self = this;
+
+        this.deleteRow = function() {
+            DataService.deleteRow(self.obj);
+            this.table.closeRecord();
+        };
+
+        this.updateRow = function() {
+            DataService.updateRow(self.obj);
+            this.table.closeRecord();
+        }
+
+        this.cloneRow = function() {
+            var newRow = angular.copy(self.obj.fields);
+            newRow.table = self.obj.tableName;
+
+            DataService.addRow(newRow);
+            this.table.closeRecord();
+        }
+
+        this.close = function() {
+            this.table.closeRecord();
+        }
+    }
+];
+
+DevCtrl.Record.Resolve = {
+    loadTable : ['tableName', 'DataService',
+        function(tableName, DataService) {
+            return DataService.getTablePromise(tableName);
+        }
+    ]
+}
+// ../ng/MainCtrl.js
+
+DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
+    function($state, $mdSidenav, DataService, MenuService) {
+        this.msg = "Hello World!";
+        this.tiles = [
+            {
+                img: "/images/orc.png"
+            },
+            {
+                img: "/images/pict.png"
+            },
+            {
+                img: "/images/sage.png"
+            }
+        ];
+
+
+        this.menu = MenuService;
+        this.schema = DataService.getSchemas();
+
+        this.toggleSidenav = function(menuId) {
+            $mdSidenav(menuId).toggle();
+        };
+
+        this.go = function(state) {
+            if (angular.isString(state)) {
+                $state.go(state);
+            }
+            else {
+                $state.go(state.name, state.params);
+            }
+        };
+
+        this.dataModel = DataService.dataModel;
+
+        this.title = "DevCtrl";
+        this.top = true;
+    }
+];
 // ../ng/CtrlDirective.js
 DevCtrl.Ctrl = {};
 
@@ -649,168 +730,6 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
         templateUrl: 'ng/ctrl.html'
     }
 }];
-// ../ng/SwitchSetDirective.js
-DevCtrl.SwitchSet = {};
-
-DevCtrl.SwitchSet.Directive  = ['DataService', function(DataService) {
-    return {
-        scope: true,
-        bindToController: {
-            control: '='
-        },
-        controller: function(DataService) {
-            var self = this;
-
-            var slaves = {};
-            var slaveNames = {};
-
-            this.setAll = function(value) {
-                angular.forEach(slaves, function(slave, id) {
-                    slave.fields.value = value;
-                    DataService.updateControlValue(slave);
-                })
-            };
-
-            this.slaveControls = function() {
-                angular.forEach(self.control.referenced.control_sets, function(cs, csid) {
-                    slaveNames[cs.foreign.slave_control_id.id] = cs.fields.name;
-                    slaves[cs.foreign.slave_control_id.id] = cs.foreign.slave_control_id;
-                });
-
-                return slaves;
-            };
-
-            this.slaveName = function(slave) {
-                return slaveNames[slave.id];
-            };
-
-            this.updateCtrlValue = function(uctrl) {
-                DataService.updateControlValue(uctrl);
-            };
-        },
-        controllerAs: 'switchSet',
-        templateUrl: 'ng/switch-set.html'
-    }
-}];
-
-// ../ng/RecordCtrl.js
-DevCtrl.Record = {};
-
-DevCtrl.Record.Ctrl = ['DataService',
-    function(DataService) {
-        this.obj = this.table.data.indexed[this.id];
-        this.schema = this.table.schema;
-
-        var self = this;
-
-        this.deleteRow = function() {
-            DataService.deleteRow(self.obj);
-            this.table.closeRecord();
-        };
-
-        this.updateRow = function() {
-            DataService.updateRow(self.obj);
-            this.table.closeRecord();
-        }
-
-        this.cloneRow = function() {
-            var newRow = angular.copy(self.obj.fields);
-            newRow.table = self.obj.tableName;
-
-            DataService.addRow(newRow);
-            this.table.closeRecord();
-        }
-
-        this.close = function() {
-            this.table.closeRecord();
-        }
-    }
-];
-
-DevCtrl.Record.Resolve = {
-    loadTable : ['tableName', 'DataService',
-        function(tableName, DataService) {
-            return DataService.getTablePromise(tableName);
-        }
-    ]
-}
-// ../ng/MenuService.js
-DevCtrl.MenuService = {};
-
-DevCtrl.MenuService.factory = ['$state', 'DataService',
-    function ($state, DataService) {
-        var items = {};
-
-
-        var self = {
-            pageTitle : 'DevCtrl',
-            parentState : 'root',
-            items : items,
-            states : function () {
-                return $state.get();
-            },
-
-            menuItems : function() {
-                var states = $state.get();
-
-                // Loop through once to identify top level states
-                angular.forEach(states, function(state, key) {
-                    if (state.name == "") {
-                        return;
-                    }
-                    var parent = $state.get('^', state);
-
-                    if (parent.name == "") {
-                        self.items[state.name] = state;
-                        if (! angular.isDefined(state.substates)) {
-                            state.substates = {};
-                        }
-                    }
-
-                    if (angular.isDefined(state.data.title)) {
-                        state.title = state.data.title;
-                    }
-                });
-
-                // Populate second level states
-                angular.forEach(states, function(state, key) {
-                    if (state.name == "") {
-                        return;
-                    }
-
-                    var parent = $state.get('^', state);
-                    if (angular.isDefined(self.items[parent.name])) {
-                        if (angular.isDefined(state.data.listByName)) {
-                            var records = DataService.getTable(state.data.listByName).listed;
-
-                            angular.forEach(records, function(record) {
-                                if (! angular.isDefined(parent.substates[record.id])) {
-                                    parent.substates[record.id] = {
-                                        name: state.name,
-                                        params: {
-                                            name: record.fields.name
-                                        },
-                                        title: record.fields.name
-                                    };
-                                }
-                                else {
-                                    parent.substates[record.id].params.name  = record.fields.name;
-                                    parent.substates[record.id].title = record.fields.name;
-                                }
-                            });
-                        }
-                        else {
-                            self.items[parent.name].substates[state.name] = state;
-                        }
-                    }
-                });
-
-                return self.items;
-            }
-        };
-
-        return self;
-    }];
 // ../ng/FkSelectDirective.js
 DevCtrl.FkSelect = {};
 
@@ -904,6 +823,88 @@ DevCtrl.Table.Resolve = {
         return $stateParams.table;
     }]
 };
+// ../ng/MenuService.js
+DevCtrl.MenuService = {};
+
+DevCtrl.MenuService.factory = ['$state', 'DataService',
+    function ($state, DataService) {
+        var items = {};
+
+
+        var self = {
+            pageTitle : function() {
+                return $state.current.title || $state.params.name;
+            },
+            parentState : 'root',
+            items : items,
+            states : function () {
+                return $state.get();
+            },
+
+            menuItems : function() {
+                var states = $state.get();
+
+                // Loop through once to identify top level states
+                angular.forEach(states, function(state, key) {
+                    if (state.name == "") {
+                        return;
+                    }
+
+                    state.isOpened = $state.includes(state);
+
+                    var parent = $state.get('^', state);
+
+                    if (parent.name == "") {
+                        self.items[state.name] = state;
+                        if (! angular.isDefined(state.substates)) {
+                            state.substates = {};
+                        }
+                    }
+
+                    if (angular.isDefined(state.data.title)) {
+                        state.title = state.data.title;
+                    }
+                });
+
+                // Populate second level states
+                angular.forEach(states, function(state, key) {
+                    if (state.name == "") {
+                        return;
+                    }
+
+                    var parent = $state.get('^', state);
+                    if (angular.isDefined(self.items[parent.name])) {
+                        if (angular.isDefined(state.data.listByName)) {
+                            var records = DataService.getTable(state.data.listByName).listed;
+
+                            angular.forEach(records, function(record) {
+                                if (! angular.isDefined(parent.substates[record.id])) {
+                                    parent.substates[record.id] = {
+                                        name: state.name,
+                                        params: {
+                                            name: record.fields.name
+                                        },
+                                        title: record.fields.name
+                                    };
+                                }
+                                else {
+                                    parent.substates[record.id].params.name  = record.fields.name;
+                                    parent.substates[record.id].title = record.fields.name;
+                                }
+                            });
+                        }
+                        else {
+                            self.items[parent.name].substates[state.name] = state;
+                        }
+                    }
+                });
+
+                return self.items;
+            }
+        };
+
+        return self;
+    }];
 // ../ng/DevCtrlApp.js
 
 DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])

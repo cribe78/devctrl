@@ -64,9 +64,5 @@ DevCtrl.Room.Resolve = {
 
     loadControlSets : function(DataService) {
         return DataService.getTablePromise('control_sets');
-    },
-
-    setMenu : function($stateParams, MenuService) {
-        MenuService.pageTitle = $stateParams.name;
     }
 };

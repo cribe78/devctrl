@@ -6,7 +6,9 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
 
 
         var self = {
-            pageTitle : 'DevCtrl',
+            pageTitle : function() {
+                return $state.current.title || $state.params.name;
+            },
             parentState : 'root',
             items : items,
             states : function () {
@@ -21,6 +23,9 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
                     if (state.name == "") {
                         return;
                     }
+
+                    state.isOpened = $state.includes(state);
+
                     var parent = $state.get('^', state);
 
                     if (parent.name == "") {

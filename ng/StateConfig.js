@@ -5,15 +5,15 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
         $stateProvider
             .state('rooms', {
                 url: '/rooms',
-                controller: function() {},
-                controlerAs: 'roomsCtrl',
+                scope: true,
+                controller: function($scope, $state) {
+                    this.foo = "bar";
+                    this.$state = $state;
+                },
+                controllerAs: 'roomsCtrl',
                 templateUrl: 'ng/locations.html',
                 resolve : {
-                    $state : '$state',
-                    setMenu : function(MenuService) {
-                        MenuService.pageTitle = 'Locations';
-                        MenuService.parentState = 'root';
-                    }
+                    state : '$state',
                 },
                 data : {
                     title: 'Locations'

@@ -1,9 +1,13 @@
 <md-list>
     <md-list-item ng-repeat-start="(state, item) in menu.service.menuItems()" ng-click="main.go(item)">
         <p>{{item.title}}</p>
-        <md-icon md-font-set="material-icons">expand_more</md-icon>
+
+        <span class="toggle-icon" ng-class="{ toggled : item.isOpened }">
+            <md-icon md-font-set="material-icons" >expand_more</md-icon>
+        </span>
     </md-list-item>
-    <md-list-item ng-repeat="(substate, subitem) in item.substates" ng-click="main.go(subitem)">
+    <md-list-item ng-show="item.isOpened"
+            ng-repeat="(substate, subitem) in item.substates" ng-click="main.go(subitem)">
         <p>{{subitem.title}}</p>
     </md-list-item>
     <md-divider ng-repeat-end></md-divider>

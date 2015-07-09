@@ -3,11 +3,34 @@ goog.provide('DevCtrl.DataService.factory');
 DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
     function($http, $mdToast, $timeout, socketFactory) {
         var dataModel = {};
-        var schema = { promise : false, loaded : false };
+        var schema = { loaded : false };
+
+        schema.promise = $http.get('schema.php')
+            .success(function(data) {
+                if (angular.isDefined(data.schema) ) {
+                    angular.forEach(data.schema, function(value, tableName) {
+                        var tschema = self.getSchema(tableName);
+                        angular.merge(tschema, value);
+
+                        if (angular.isDefined(tschema['foreign_keys'])) {
+                            angular.forEach(tschema['foreign_keys'], function(keyTable, keyName) {
+                                tschema.referenced[keyTable] = keyName;
+                            });
+                        }
+                    })
+                }
+
+                schema.loaded = true;
+            })
+            .error(function (data) {
+                self.errorToast(data);
+            });
+
 
         var ioSocket = io('https://devctrl.dwi.ufl.edu/');
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
+        var tablePromises = {};
 
         /*
         * data row properties:
@@ -119,68 +142,27 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             getSchema : function(table) {
-                // The table argument is only used to determine if the schema has been loaded
-                if (! angular.isDefined(schema[table])) {
-                    self.getSchemaRef(table);
-                    self.getSchemaPromise();
+                if (! schema.loaded) {
+                    // The table argument is only used to determine if the schema has been loaded
+                    if (! angular.isDefined(schema[table])) {
+                        schema[table] = {
+                            referenced : {},
+                            'foreign_keys' : {}
+                        };
+                    }
                 }
 
                 return schema[table];
             },
 
-            getSchemaPromise : function() {
-                if (! schema.promise) {
-                    schema.promise = $http.get('schema.php')
-                        .success(function(data) {
-                            if (angular.isDefined(data.schema) ) {
-                                angular.forEach(data.schema, function(value, tableName) {
-                                    var tschema = self.getSchemaRef(tableName);
-                                    angular.merge(tschema, value);
-
-                                    if (angular.isDefined(tschema['foreign_keys'])) {
-                                        angular.forEach(tschema['foreign_keys'], function(keyTable, keyName) {
-                                            tschema.referenced[keyTable] = keyName;
-                                        });
-                                    }
-                                })
-                            }
-
-                            schema.promise = schema;
-                            schema.loaded = true;
-                        })
-                        .error(function (data) {
-                            self.errorToast(data);
-                        });
-                }
-
-                return schema.promise;
-            },
-
-
-            getSchemaRef : function(tableName) {
-                if (! angular.isDefined(schema[tableName])) {
-                    schema[tableName] = {
-                        referenced : {},
-                        'foreign_keys' : {}
-                    };
-                }
-
-                return schema[tableName];
-            },
-
-            getSchemas : function() {
-                this.getSchema('controls');
-                return schema;
-            },
             getTable : function(table) {
                 //console.log("DataService.getTable(" + table + ")");
                 if (! angular.isDefined(dataModel[table])) {
                     this.getTableRef(table);
-                    this.getTablePromise(table);
+                    tablePromises[table] = this.getTablePromise(table);
                 }
-                else if (! dataModel[table].loaded) {
-                    dataModel[table].loaded = "pending";
-                    this.getTablePromise(table);
+                else if (! angular.isDefined(tablePromises[table])) {
+                    tablePromises[table] = this.getTablePromise(table);
                 }
 
                 return dataModel[table];
@@ -192,6 +174,10 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
              * @returns {*}
              */
             getTablePromise : function(table) {
+                if (angular.isDefined(tablePromises[table])) {
+                    return tablePromises[table];
+                }
+
                 if (angular.isDefined(table)) {
                     return $http.get('data.php?table=' + table)
                         .success(function (data) {
@@ -225,6 +211,19 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             loadData : function(data) {
+                if (schema.loaded) {
+                    //console.log("loading data");
+                    self.loadDataKernel(data);
+                } else {
+                    //console.log("deferring data loading");
+                    schema.promise = schema.promise.then( function() {
+                        //console.log("loading deffered data");
+                        self.loadDataKernel(data);
+                    });
+                }
+            },
+
+            loadDataKernel : function(data) {
                 if (angular.isDefined(data.update)) {
                     angular.forEach(data.update, function(tableData, tableName) {
                         angular.forEach(tableData, function(value, key) {
@@ -268,8 +267,6 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                                 console.error("Error loading %s, multi-keyed records not supported", tableName);
                             }
                         });
-
-                        dataModel[tableName].loaded = "loaded";
                     })
                 }
 

@@ -61,7 +61,8 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
                                     parent.substates[record.id] = {
                                         name: state.name,
                                         params: {
-                                            name: record.fields.name
+                                            name: record.fields.name,
+                                            id : record.id
                                         },
                                         title: record.fields.name
                                     };

@@ -33,7 +33,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .controller('RoomsCtrl', DevCtrl.Rooms.Ctrl)
     .config(DevCtrl.stateConfig)
 
-
+//state change debugging
     .run (['$rootScope', function($rootScope) {
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
             console.log('$stateChangeStart to ' + toState.to + '- fired when the transition begins. toState,toParams : \n', toState, toParams);

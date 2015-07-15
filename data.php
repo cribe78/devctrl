@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post = getPostData();
-    $table = getTableName($post['table']);
+    $table = getTableName($post['tableName']);
 
     if (! $table) {
         serverError("Error: {$post['table']} is not a valid table name");
@@ -29,8 +29,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $types = '';
     $qs = array();
     foreach ($fields as $field) {
-        if (isset($post[$field['name']])) {
-            $values[$field['name']] = &$post[$field['name']];
+        if (isset($post['fields'][$field['name']])) {
+            $values[$field['name']] = &$post['fields'][$field['name']];
             $qs[] = '?';
 
             $types .= paramTypeChar($field['type']);

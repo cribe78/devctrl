@@ -1,11 +1,12 @@
 goog.provide('DevCtrl.DataService.factory');
 
-DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
-    function($http, $mdToast, $timeout, socketFactory) {
+DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
+    function($http, $mdToast, $timeout, socketFactory, $mdDialog) {
         var dataModel = {};
-        var schema = { loaded : false };
+        var schema = {};
+        var schemaLoaded = false;
 
-        schema.promise = $http.get('schema.php')
+        var schemaPromise = $http.get('schema.php')
             .success(function(data) {
                 if (angular.isDefined(data.schema) ) {
                     angular.forEach(data.schema, function(value, tableName) {
@@ -20,7 +21,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                     })
                 }
 
-                schema.loaded = true;
+                schemaLoaded = true;
             })
             .error(function (data) {
                 self.errorToast(data);
@@ -74,6 +75,33 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                     });
             },
 
+            editRecord : function($event, id, tableName) {
+                var record;
+                if (id !== "0") {
+                    record = self.getRowRef(tableName, id);
+                }
+                else {
+                    record = self.getNewRowRef(tableName);
+                }
+
+                $mdDialog.show({
+                    targetEvent: $event,
+                    locals: {
+                        obj: record
+                    },
+                    controller: DevCtrl.Record.Ctrl,
+                    controllerAs: 'record',
+                    bindToController: true,
+                    templateUrl: 'ng/record.html',
+                    clickOutsideToClose: true,
+                    hasBackdrop : false
+                });
+            },
+
+            editRecordClose : function() {
+                $mdDialog.hide();
+            },
+
             errorToast: function(data) {
                 var errorText = "An unknown error has occured"
                 if (angular.isDefined(data.error)) {
@@ -81,6 +109,22 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                 }
 
                 $mdToast.show($mdToast.simple().content(errorText));
+            },
+
+            getNewRowRef : function(tableName) {
+                var newRow = {
+                    id : '0',
+                    referenced : {},
+                    tableName : tableName,
+                    fields : {}
+                };
+                var tSchema = self.getSchema(tableName);
+
+                angular.forEach(tSchema.fields, function(value, name) {
+                    newRow.fields[name] = '';
+                });
+
+                return newRow;
             },
 
             getRowRef : function(tableName, key) {
@@ -211,12 +255,12 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             loadData : function(data) {
-                if (schema.loaded) {
+                if (schemaLoaded) {
                     //console.log("loading data");
                     self.loadDataKernel(data);
                 } else {
                     //console.log("deferring data loading");
-                    schema.promise = schema.promise.then( function() {
+                    schemaPromise = schemaPromise.then( function() {
                         //console.log("loading deffered data");
                         self.loadDataKernel(data);
                     });

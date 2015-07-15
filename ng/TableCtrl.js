@@ -1,8 +1,10 @@
 goog.provide("DevCtrl.Table.Ctrl");
 goog.provide("DevCtrl.Table.Resolve");
 
-DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
-    function($scope, $stateParams, $mdDialog, DataService) {
+DevCtrl.Table.Ctrl = ['$scope', '$stateParams',  'DataService',
+    function($scope, $stateParams, DataService) {
+        var self = this;
+
         this.tableName = $stateParams.name;
         this.data = DataService.getTable(this.tableName);
         this.schema = DataService.getSchema(this.tableName);
@@ -12,8 +14,16 @@ DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
            message: "table " + this.tableName + " loaded"
         });
 
-        this.addRow = function() {
-            DataService.addRow(this.newRow);
+        this.sortColumn = 'id';
+        this.sortReversed = false;
+
+        this.setSortColumn = function(field) {
+          if ( 'fields.' + field.name === this.sortColumn ) {
+              this.sortReversed = !this.sortReversed;
+          }  else {
+              this.sortColumn = 'fields.' + field.name;
+              this.sortReversed = false;
+          }
         };
 
         this.deleteRow = function(row) {
@@ -43,27 +53,18 @@ DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
             return val;
         };
 
-        var self = this;
+        this.addRow = function($event) {
+            DataService.editRecord($event, '0', self.tableName);
+        };
 
         this.openRecord = function($event, id) {
-            $mdDialog.show({
-                targetEvent: $event,
-                locals: {
-                    id: id,
-                    table: self
-                },
-                controller: DevCtrl.Record.Ctrl,
-                controllerAs: 'record',
-                bindToController: true,
-                templateUrl: 'ng/record.html',
-                clickOutsideToClose: true,
-                hasBackdrop : false
-            });
+            DataService.editRecord($event, id, self.tableName);
         }
 
-        this.closeRecord = function() {
-            $mdDialog.hide();
+        this.updateRow = function($event, row) {
+            DataService.updateRow(row);
         }
+
     }
 ];
 

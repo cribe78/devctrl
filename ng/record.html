@@ -1,11 +1,11 @@
 <md-dialog>
-    <md-toolbar layout-align="center center">{{record.table.schema.label}} - {{record.id}}</md-toolbar>
+    <md-toolbar layout-align="center center">{{record.schema.label}} - {{record.obj.id}}</md-toolbar>
     <md-dialog-content>
 
         <md-list>
             <md-subheader>Edit</md-subheader>
             <md-list-item class="md-list-item-text"
-                 ng-repeat="field in record.table.schema.fields"
+                 ng-repeat="field in record.schema.fields"
                  ng-switch="field.type">
                 <md-input-container ng-if="field.type == 'string'">
                     <label>{{field.label}}</label>
@@ -26,17 +26,19 @@
                              select-model="record.obj.fields">
                 </enum-select>
                 <md-checkbox ng-if="field.type == 'bool'"
-                             ng-true-value="'1'"
-                             ng-false-value="'0'"
+                             class="md-primary"
+                             ng-true-value="1"
+                             ng-false-value="0"
                              ng-model="record.obj.fields[field.name]">
                     {{field.label}}
                 </md-checkbox>
             </md-list-item>
             <md-list-item>
                 <div layout="row">
-                    <md-button class="md-primary" ng-click="record.updateRow()">Update</md-button>
-                    <md-button class="md-primary md-hue-1" ng-click="record.cloneRow()">Clone</md-button>
-                    <md-button class="md-warn" ng-click="record.deleteRow()">Delete</md-button>
+                    <md-button ng-if="record.newRow" class="md-primary" ng-click="record.addRow()">Add</md-button>
+                    <md-button ng-if="! record.newRow" class="md-primary" ng-click="record.updateRow()">Update</md-button>
+                    <md-button ng-if="! record.newRow" class="md-primary md-hue-1" ng-click="record.cloneRow()">Clone</md-button>
+                    <md-button ng-if="! record.newRow" class="md-warn" ng-click="record.deleteRow()">Delete</md-button>
                     <md-button ng-click="record.close()">Cancel</md-button>
                 </div>
             </md-list-item>

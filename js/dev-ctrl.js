@@ -165,6 +165,7 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         ];
 
         this.$state = $state;
+        this.schema = DataService.schema;
         this.menu = MenuService;
         this.control_endpoints = DataService.getTable('control_endpoints');
 
@@ -206,12 +207,13 @@ DevCtrl.Menu.Directive = ['MenuService', '$state',
 // ../ng/DataService.js
 DevCtrl.DataService = {};
 
-DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
-    function($http, $mdToast, $timeout, socketFactory) {
+DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
+    function($http, $mdToast, $timeout, socketFactory, $mdDialog) {
         var dataModel = {};
-        var schema = { loaded : false };
+        var schema = {};
+        var schemaLoaded = false;
 
-        schema.promise = $http.get('schema.php')
+        var schemaPromise = $http.get('schema.php')
             .success(function(data) {
                 if (angular.isDefined(data.schema) ) {
                     angular.forEach(data.schema, function(value, tableName) {
@@ -226,7 +228,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                     })
                 }
 
-                schema.loaded = true;
+                schemaLoaded = true;
             })
             .error(function (data) {
                 self.errorToast(data);
@@ -280,6 +282,33 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                     });
             },
 
+            editRecord : function($event, id, tableName) {
+                var record;
+                if (id !== "0") {
+                    record = self.getRowRef(tableName, id);
+                }
+                else {
+                    record = self.getNewRowRef(tableName);
+                }
+
+                $mdDialog.show({
+                    targetEvent: $event,
+                    locals: {
+                        obj: record
+                    },
+                    controller: DevCtrl.Record.Ctrl,
+                    controllerAs: 'record',
+                    bindToController: true,
+                    templateUrl: 'ng/record.html',
+                    clickOutsideToClose: true,
+                    hasBackdrop : false
+                });
+            },
+
+            editRecordClose : function() {
+                $mdDialog.hide();
+            },
+
             errorToast: function(data) {
                 var errorText = "An unknown error has occured"
                 if (angular.isDefined(data.error)) {
@@ -287,6 +316,22 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                 }
 
                 $mdToast.show($mdToast.simple().content(errorText));
+            },
+
+            getNewRowRef : function(tableName) {
+                var newRow = {
+                    id : '0',
+                    referenced : {},
+                    tableName : tableName,
+                    fields : {}
+                };
+                var tSchema = self.getSchema(tableName);
+
+                angular.forEach(tSchema.fields, function(value, name) {
+                    newRow.fields[name] = '';
+                });
+
+                return newRow;
             },
 
             getRowRef : function(tableName, key) {
@@ -417,12 +462,12 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
             },
 
             loadData : function(data) {
-                if (schema.loaded) {
+                if (schemaLoaded) {
                     //console.log("loading data");
                     self.loadDataKernel(data);
                 } else {
                     //console.log("deferring data loading");
-                    schema.promise = schema.promise.then( function() {
+                    schemaPromise = schemaPromise.then( function() {
                         //console.log("loading deffered data");
                         self.loadDataKernel(data);
                     });
@@ -715,31 +760,35 @@ DevCtrl.Record = {};
 
 DevCtrl.Record.Ctrl = ['DataService',
     function(DataService) {
-        this.obj = this.table.data.indexed[this.id];
-        this.schema = this.table.schema;
+        this.newRow = this.obj.id === '0';
+        this.schema = DataService.getSchema(this.obj.tableName);
 
         var self = this;
 
+        this.addRow = function() {
+            DataService.addRow(self.obj);
+            DataService.editRecordClose();
+        };
+
         this.deleteRow = function() {
             DataService.deleteRow(self.obj);
-            this.table.closeRecord();
+            DataService.editRecordClose();
         };
 
         this.updateRow = function() {
             DataService.updateRow(self.obj);
-            this.table.closeRecord();
-        }
+            DataService.editRecordClose();
+        };
 
         this.cloneRow = function() {
-            var newRow = angular.copy(self.obj.fields);
-            newRow.table = self.obj.tableName;
+            var newRow = angular.copy(self.obj);
 
             DataService.addRow(newRow);
-            this.table.closeRecord();
-        }
+            DataService.editRecordClose();
+        };
 
         this.close = function() {
-            this.table.closeRecord();
+            DataService.editRecordClose();
         }
     }
 ];
@@ -895,8 +944,10 @@ DevCtrl.FkSelect.Directive = ['DataService', function(DataService) {
 // ../ng/TableCtrl.js
 DevCtrl.Table = {};
 
-DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
-    function($scope, $stateParams, $mdDialog, DataService) {
+DevCtrl.Table.Ctrl = ['$scope', '$stateParams',  'DataService',
+    function($scope, $stateParams, DataService) {
+        var self = this;
+
         this.tableName = $stateParams.name;
         this.data = DataService.getTable(this.tableName);
         this.schema = DataService.getSchema(this.tableName);
@@ -906,8 +957,16 @@ DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
            message: "table " + this.tableName + " loaded"
         });
 
-        this.addRow = function() {
-            DataService.addRow(this.newRow);
+        this.sortColumn = 'id';
+        this.sortReversed = false;
+
+        this.setSortColumn = function(field) {
+          if ( 'fields.' + field.name === this.sortColumn ) {
+              this.sortReversed = !this.sortReversed;
+          }  else {
+              this.sortColumn = 'fields.' + field.name;
+              this.sortReversed = false;
+          }
         };
 
         this.deleteRow = function(row) {
@@ -937,27 +996,18 @@ DevCtrl.Table.Ctrl = ['$scope', '$stateParams', '$mdDialog', 'DataService',
             return val;
         };
 
-        var self = this;
+        this.addRow = function($event) {
+            DataService.editRecord($event, '0', self.tableName);
+        };
 
         this.openRecord = function($event, id) {
-            $mdDialog.show({
-                targetEvent: $event,
-                locals: {
-                    id: id,
-                    table: self
-                },
-                controller: DevCtrl.Record.Ctrl,
-                controllerAs: 'record',
-                bindToController: true,
-                templateUrl: 'ng/record.html',
-                clickOutsideToClose: true,
-                hasBackdrop : false
-            });
+            DataService.editRecord($event, id, self.tableName);
         }
 
-        this.closeRecord = function() {
-            $mdDialog.hide();
+        this.updateRow = function($event, row) {
+            DataService.updateRow(row);
         }
+
     }
 ];
 

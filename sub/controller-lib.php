@@ -174,19 +174,7 @@ function getTableData($table, $use_cache = false, $where_cond = "") {
             }
         }
 
-        if (is_string($pk)) {
-            $rows[$row[$pk]] = $row;
-        }
-        else {
-            // $pk is a 2 element array
-            $pk0 = $row[$pk[0]];
-            $pk1 = $row[$pk[1]];
-            if (! array_key_exists($pk0, $rows)) {
-                $rows[$pk0] = array();
-            }
-
-            $rows[$pk0][$pk1] = $row;
-        }
+        $rows[$row[$pk]] = $row;
     }
 
     $cache[$table] = $rows;

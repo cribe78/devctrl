@@ -3,31 +3,35 @@ goog.provide("DevCtrl.Record.Resolve");
 
 DevCtrl.Record.Ctrl = ['DataService',
     function(DataService) {
-        this.obj = this.table.data.indexed[this.id];
-        this.schema = this.table.schema;
+        this.newRow = this.obj.id === '0';
+        this.schema = DataService.getSchema(this.obj.tableName);
 
         var self = this;
 
+        this.addRow = function() {
+            DataService.addRow(self.obj);
+            DataService.editRecordClose();
+        };
+
         this.deleteRow = function() {
             DataService.deleteRow(self.obj);
-            this.table.closeRecord();
+            DataService.editRecordClose();
         };
 
         this.updateRow = function() {
             DataService.updateRow(self.obj);
-            this.table.closeRecord();
-        }
+            DataService.editRecordClose();
+        };
 
         this.cloneRow = function() {
-            var newRow = angular.copy(self.obj.fields);
-            newRow.table = self.obj.tableName;
+            var newRow = angular.copy(self.obj);
 
             DataService.addRow(newRow);
-            this.table.closeRecord();
-        }
+            DataService.editRecordClose();
+        };
 
         this.close = function() {
-            this.table.closeRecord();
+            DataService.editRecordClose();
         }
     }
 ];

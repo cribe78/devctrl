@@ -99,10 +99,6 @@ DevCtrl.Common.Resolve = {
 
     loadPanelControls : function(DataService) {
         return DataService.getTablePromise('panel_controls');
-    },
-
-    loadControlSets : function(DataService) {
-        return DataService.getTablePromise('control_sets');
     }
 };
 // ../ng/RoomCtrl.js
@@ -123,6 +119,19 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
 
         this.panels = this.obj.referenced.panels;
 
+        this.openedGroup = "";
+
+        this.groups = [];
+        this.getGroups = function() {
+            angular.forEach(self.panels, function(panel) {
+                if (self.groups.indexOf(panel.fields.grouping) == -1) {
+                    self.groups.push(panel.fields.grouping);
+                }
+            });
+
+            return self.groups;
+        };
+
         // This function is here to prevent null reference errors
         this.panelControls = function(panel) {
             if (angular.isDefined(panel.referenced['panel_controls'])) {
@@ -130,17 +139,17 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             }
         };
 
-        this.togglePanel = function(panel) {
-            if (! angular.isDefined(panel.opened)) {
-                panel.opened = true;
+        this.toggleGroup = function(group) {
+            if (group == this.openedGroup) {
+                this.openedGroup = "";
             }
             else {
-                panel.opened = ! panel.opened;
+                this.openedGroup = group;
             }
         };
 
-        this.isPanelOpen = function(panel) {
-            var open = angular.isDefined(panel.opened) && panel.opened;
+        this.isGroupOpen = function(group) {
+            var open = group == this.openedGroup;
             return open;
 
         };
@@ -1030,13 +1039,32 @@ DevCtrl.Rooms.Ctrl = ['DataService',
     }
 ];
 
+// ../ng/PanelDirective.js
+DevCtrl.Panel = {};
+
+DevCtrl.Panel.Directive  = ['DataService', function(DataService) {
+    return {
+        scope: true,
+        bindToController : {
+            panelObj: '='
+        },
+        controller: function(DataService) {
+            this.fields = this.panelObj.fields;
+            this.pcontrols = this.panelObj.referenced.panel_controls;
+
+        },
+        controllerAs: 'panel',
+        templateUrl: 'ng/panel.html'
+    }
+}];
 // ../ng/DevCtrlApp.js
 
-DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])
+DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
     .factory('DataService', DevCtrl.DataService.factory)
     .factory('MenuService', DevCtrl.MenuService.factory)
     .directive('ctrl', DevCtrl.Ctrl.Directive)
     .directive('coeMenu', DevCtrl.Menu.Directive)
+    .directive('devctrlPanel', DevCtrl.Panel.Directive)
     .directive('fkSelect', DevCtrl.FkSelect.Directive)
     .directive('enumSelect', DevCtrl.EnumSelect.Directive)
     .directive('switchSet', DevCtrl.SwitchSet.Directive)

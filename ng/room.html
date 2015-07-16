@@ -3,18 +3,17 @@
         <md-card-content>
             <span class="text-title">{{room.obj.fields.name}}</span>
             <md-list>
-                <div ng-repeat="(key, panel) in room.panels">
+                <div ng-repeat="group in room.getGroups()">
                     <md-divider></md-divider>
-                    <md-list-item flex layout="row" ng-click="room.togglePanel(panel)">
-                        {{panel.fields.name}}
+                    <md-list-item flex layout="row" ng-click="room.toggleGroup(group)">
+                        {{group}}
                         <span flex></span>
-                        <span class="toggle-icon" ng-class="{ toggled : room.isPanelOpen(panel) }">
+                        <span class="toggle-icon" ng-class="{ toggled : room.isGroupOpen(group) }">
                             <md-icon md-font-set="material-icons" >expand_more</md-icon>
                         </span>
                     </md-list-item>
-                    <md-list-item ng-repeat="(pctrlId, pctrl) in room.panelControls(panel)" ng-show="room.isPanelOpen(panel)">
-                        <ctrl flex panel-control="pctrl"></ctrl>
-                    </md-list-item>
+                    <devctrl-panel ng-repeat="rpanel in room.panels | toArray | filter: { fields : { grouping : group }} | orderBy : fields.panel_index" panel-obj="rpanel" ng-show="room.isGroupOpen(group)">
+                    </devctrl-panel>
                 </div>
             </md-list>
         </md-card-content>

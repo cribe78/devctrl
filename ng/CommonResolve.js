@@ -20,9 +20,5 @@ DevCtrl.Common.Resolve = {
 
     loadPanelControls : function(DataService) {
         return DataService.getTablePromise('panel_controls');
-    },
-
-    loadControlSets : function(DataService) {
-        return DataService.getTablePromise('control_sets');
     }
 };

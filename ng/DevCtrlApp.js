@@ -7,6 +7,7 @@ goog.require("DevCtrl.Ctrl.Directive");
 goog.require("DevCtrl.Menu.Directive");
 goog.require("DevCtrl.FkSelect.Directive");
 goog.require("DevCtrl.EnumSelect.Directive");
+goog.require("DevCtrl.Panel.Directive");
 goog.require("DevCtrl.SwitchSet.Directive");
 goog.require("DevCtrl.Table.Ctrl");
 goog.require("DevCtrl.Table.Resolve");
@@ -17,11 +18,12 @@ goog.require("DevCtrl.Room.Ctrl")
 goog.require("DevCtrl.Rooms.Ctrl");
 goog.require("DevCtrl.Common.Resolve");
 
-DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io'])
+DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
     .factory('DataService', DevCtrl.DataService.factory)
     .factory('MenuService', DevCtrl.MenuService.factory)
     .directive('ctrl', DevCtrl.Ctrl.Directive)
     .directive('coeMenu', DevCtrl.Menu.Directive)
+    .directive('devctrlPanel', DevCtrl.Panel.Directive)
     .directive('fkSelect', DevCtrl.FkSelect.Directive)
     .directive('enumSelect', DevCtrl.EnumSelect.Directive)
     .directive('switchSet', DevCtrl.SwitchSet.Directive)

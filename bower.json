@@ -12,6 +12,7 @@
   ],
   "dependencies": {
     "angular-ui-router": "~0.2.15",
-    "angular-material": "~0.10.0"
+    "angular-material": "~0.10.0",
+    "angular-toArrayFilter": "~1.0.1"
   }
 }

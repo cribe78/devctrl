@@ -154,31 +154,6 @@ $g_schema = array(
         ),
 
     ),
-    'control_sets' => array(
-        'pk' => 'control_set_id',
-        'label' => 'Control Sets',
-        'foreign_keys' => array(
-            'master_control_id' => 'controls',
-            'slave_control_id' => 'controls'
-        ),
-        'fields' => array(
-            array(
-                'name' => 'master_control_id',
-                'type' => 'fk',
-                'label' => 'Master Control'
-            ),
-            array(
-                'name' => 'slave_control_id',
-                'type' => 'fk',
-                'label' => 'Slave Control'
-            ),
-            array(
-                'name' => 'name',
-                'type' => 'string',
-                'label' => 'Name'
-            )
-        )
-    ),
     'endpoint_types' => array(
         'pk' => 'endpoint_type_id',
         'fk_name' => 'name',
@@ -249,6 +224,21 @@ $g_schema = array(
                 'name' => 'room_id',
                 'type' => 'fk',
                 'label' => 'Room'
+            ),
+            array(
+                'name' => 'grouping',
+                'type' => 'string',
+                'label' => 'Subgroup',
+            ),
+            array(
+                'name' => 'type',
+                'type' => 'enum',
+                'label' => 'Type'
+            ),
+            array(
+                'name' => 'panel_index',
+                'type' => 'int',
+                'label' => 'Order'
             )
         )
     ),

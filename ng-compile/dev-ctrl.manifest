@@ -13,4 +13,5 @@
 ../ng/FkSelectDirective.js
 ../ng/TableCtrl.js
 ../ng/RoomsCtrl.js
+../ng/PanelDirective.js
 ../ng/DevCtrlApp.js

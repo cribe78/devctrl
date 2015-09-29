@@ -1,7 +1,12 @@
 <?php
+include(__DIR__ . "/../vendor/autoload.php");
+use OAuth\OAuth2\Service\Locus;
+use OAuth\Common\Storage\Session;
+use OAuth\Common\Consumer\Credentials;
+
 session_start();
 
-include("/var/www/html/locus.education.ufl.edu/coe_shib_proxy.php");
+
 
 $logged_in = 0;
 $client_access = 0;
@@ -95,16 +100,96 @@ if ($admin_identifier) {
 
 
 if (! ($logged_in || $public)) {
-    $login = coe_shib_proxy_auth_url( $identifier, $g_base_url . "shibid.php", $g_base_url . $_SERVER['REQUEST_URI']);
+    //Perform login via locus oauth2
+    $storage = new Session();
+    $credentials = new Credentials(
+        $g_oauth_client,
+        $g_oauth_secret,
+        $g_base_url . "index.php");
 
-    if ( $ctx == 'html' )  {
-        $_SESSION['request'] = $_SERVER['REQUEST_URI'];
+    $serviceFactory = new \OAuth\ServiceFactory();
+    /** @var $locusService Locus */
+    $locusService = $serviceFactory->createService('locus',
+        $credentials,
+        $storage,
+        array('profile', 'openid', 'email'));
 
-        header("Location: $login");
-        exit();
+    if (! empty($_GET['code'])) {
+        // retrieve the CSRF state parameter
+        $state = isset($_GET['state']) ? $_GET['state'] : null;
+
+        // This was a callback request from google, get the token
+        $locusService->requestAccessToken($_GET['code'], $state);
+
+        // Send a request with it
+        $result = json_decode($locusService->request('userinfo'), true);
+
+        if (!$result) {
+            errorResponse("Unauthorized", 401);
+        }
+        //Do something with userinfo
+        $select_user = $mysqli->prepare(
+            "select user_id, glid, groups from users where glid = ?"
+        );
+
+        if (! $select_user) {
+            errorResponse("prepare select_user error: {$mysqli->error}");
+        }
+
+        $glid = $result['preferred_username'];
+        $groups = $result['groups'];
+        $select_user->bind_param('s', $glid);
+
+        if (! $select_user->execute()) {
+            errorResponse("select_user error {$select_user->error}");
+        }
+
+        $res = $select_user->get_result();
+
+        // Create/update user record
+        $user_id = false;
+        if ($row = $res->fetch_assoc()) {
+            $user_id = $row['user_id'];
+        }
+
+        if ($user_id) {
+            coe_mysqli_prepare_bind_execute(
+                "update users set glid = ?, groups = ? where user_id = ?",
+                'ssi',
+                array( &$glid, &$groups, &$user_id)
+            );
+        }
+        else {
+            coe_mysqli_prepare_bind_execute(
+                "insert into users (glid, groups) values (?, ?)",
+                'ss',
+                array( &$glid, &$groups)
+            );
+
+            $user_id = $mysqli->insert_id;
+        }
+
+        // Update client record
+        coe_mysqli_prepare_bind_execute(
+            "update clients set added_user_id = ?",
+            'i',
+            array(&$user_id)
+        );
+
+        $logged_in = 1;
+
+        if (groupsHasClientAccess($result['groups'])) {
+            $client_access = 1;
+        }
+
+    }
+    elseif (!empty($_GET['error'])) {
+        errorResponse($_GET['error'], 401);
     }
     else {
-        errorResponse("Unauthorized", 401);
+        $url = $locusService->getAuthorizationUri();
+        header('Location: ' . $url);
+        exit();
     }
 }
 

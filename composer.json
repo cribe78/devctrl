@@ -1,0 +1,14 @@
+{
+"name": "chrisribe/devctrl",
+"description": "description_text",
+"minimum-stability": "stable",
+"license": "proprietary",
+"authors": [
+{            "name": "Chris Ribe",
+"email": "chrisribe@ufl.edu"
+}
+],
+"require" : {
+        "lusitanian/oauth": "v0.6.0"
+    }
+}

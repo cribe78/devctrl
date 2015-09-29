@@ -1,0 +1,200 @@
+#!/usr/bin/perl
+# test the serial control protocol of the ts-dx989 receiver
+
+use Getopt::Long;
+use IO::Socket::INET;
+use Time::HiRes qw( usleep );
+use Scalar::Util qw( looks_like_number );
+use warnings;
+use strict;
+
+
+$|++;
+
+my $device_ip = "baryon.dwi.ufl.edu";
+my $device_port = 4002;
+my $command;
+my $debug = 1;
+
+my $res = GetOptions( "command=s" => \$command);
+
+if ($command =~ /(\w+):([-\w]+)/) {
+	my $set = $1;
+	my $val = $2;
+	
+	#Auto exposure on/off
+	if ($set eq "ae") {
+		$command = "010439";
+		
+		if ($val eq "on") {
+			$command .= "00";
+		}
+		elsif ($val eq "off") {
+			$command .= "03";
+		}
+	} 
+	#Iris
+	elsif($set eq "iris") {
+		$command = "01044B" . hex_number($val, 4);
+	}
+	#Shutter
+	elsif($set eq "shutter") {
+		$command = "01044A" . hex_number($val, 4);
+	}	
+	#Gain
+	elsif($set eq "gain") {
+		$command = "01044C" . hex_number($val, 4);
+	}	
+	#Zoom
+	elsif($set eq "zoom") {
+		$command = "010447" . hex_number($val, 4);
+	}	
+	#Focus
+	elsif($set eq "focus") {
+		$command = "010448" . hex_number($val, 4);
+	}
+	elsif($set eq "pan") {
+		my $pan = "00";
+		my $tilt = "00";
+		if ($command =~ /pan:([\d-]+):([\d-]+)/) {
+			$pan = hex_number($1, 4);
+			$tilt = hex_number($2, 4);
+		}
+		
+		$command = "0106021010" . $pan . $tilt; 
+		
+		
+	}
+}
+
+if (substr($command, 0 ,2) ne "81") {
+	$command = "81" . $command;
+}
+
+my $cmd_len = length($command);
+my $idx = 0;
+my $bin_cmd = '';
+
+while ($idx <  $cmd_len) {
+	$bin_cmd .= pack('C', hex(substr($command, $idx, 2)));
+	$idx += 2;
+}
+
+$bin_cmd .= pack('C', hex("FF"));
+
+my $sock = device_connect();
+
+$sock->print($bin_cmd);
+usleep(200000);
+#print "command sent\n";
+my @resp = line_read($sock);
+
+my $resp_len = @resp;
+my $hex_resp = "";
+$idx = 0;
+while ($idx < $resp_len) {
+	$hex_resp .= sprintf("%02X ", ord($resp[$idx]));
+	$idx++;
+}
+  
+print "response: $hex_resp\n";
+
+
+
+# Read a line from a non-blocking telnet connection.
+
+sub line_read {
+    my ($sock) = (@_);
+       
+    my $buf;     
+    my @res; 
+    my $wait_us = 20000;
+    my $char_missed = 0; 
+    my $res_len = 0;
+
+    while (1) {
+        my $rres = $sock->read($buf, 1);
+
+		
+        if (! defined($rres)) {
+            if ($char_missed) {
+                dwdebug("2nd char missed");
+                chomp $res;
+                return $res;
+            }
+            else {
+                dwdebug("char missed");
+                $char_missed = 1;
+                usleep($wait_us);
+            }
+        }
+        elsif ($rres == 0) {
+            dwdebug("EOF read");
+            return $res;
+        }    
+        else {
+            if ($buf eq "\r") {
+                dwdebug("newline read");
+                return @res;
+            }
+            elsif ($buf eq "\xFF") {
+                dwdebug("0xFF read after $res_len bytes");
+                return @res;
+            }
+
+			$res_len++;
+            push(@res, $buf);
+            $char_missed = 0;
+        }
+    }
+}
+
+sub device_connect {
+    my $sock = IO::Socket::INET->new(
+                PeerAddr => $device_ip,
+                PeerPort => $device_port,
+                Proto => 'tcp',
+                Blocking => 0,
+                Timeout => 5);
+    if (! $sock) { 
+        syslog("err", "could not open socket to device");
+    }
+
+
+    return $sock;    
+}
+
+
+sub dwdebug {
+    my ($msg) = (@_);
+    if ($debug) {
+        dwlog($msg);
+   }
+}
+
+
+sub dwlog {
+    my ($msg) = (@_);
+    print  "$msg\n";
+}
+
+sub hex_number {
+	my ($num, $length) = (@_);
+	
+	if (! looks_like_number($num)) {
+		return $num;
+	}
+	
+	if ($length == 4) {
+		if ($num < 0) {
+			$num += 65536;
+		}
+		
+		my $hex = sprintf('%04X', $num);
+		my $bighex = "0" . substr($hex, 0, 1) . "0" . substr($hex, 1, 1) . "0" . substr($hex, 2, 1) . "0" . substr($hex, 3, 1);
+		
+		return $bighex;
+	}
+	
+	return sprintf('%02X', $num);
+}

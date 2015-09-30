@@ -29,6 +29,7 @@ my $device_pass    = "DWCONTROL";
 my $target_type    = "switcher-dxp";
 my $device_name    = "";
 my $device_enabled = 0;
+my $response_terminator = "\r";
 my $debug          = 1;
 my $io_server_port = 2879;
 my $poll_server    = 1;
@@ -165,6 +166,22 @@ my $poll_sock = server_start();
 my $io_sock = io_server_connect();
 
 run();
+
+
+# bin_to_ascii_hex
+# convert a scalar containing binary data to an ascii hex representation
+
+sub bin_to_ascii_hex {
+	my ($bin_str) = (@_);
+	my $hex_resp = "";
+	my $idx = 0;
+	while ($idx < length($bin_str)) {
+		$hex_resp .= sprintf("%02X:", ord(substr($bin_str, $idx, 1)));
+		$idx++;
+	}
+	
+	return $hex_resp;
+}
 
 # cleanup_commands
 # delete old records from the command queue have that have been obsoleted
@@ -346,6 +363,28 @@ sub dwlog {
 	}
 }
 
+sub evid31_hex_number {
+	my ($num, $length) = (@_);
+	
+	if (! looks_like_number($num)) {
+		return $num;
+	}
+	
+	if ($length == 4) {
+		if ($num < 0) {
+			$num += 65536;
+		}
+		
+		my $hex = sprintf('%04X', $num);
+		my $bighex = "0" . substr($hex, 0, 1) . "0" . substr($hex, 1, 1) . "0" . substr($hex, 2, 1) . "0" . substr($hex, 3, 1);
+		
+		return $bighex;
+	}
+	
+	return sprintf('%02X', $num);
+}
+
+
 sub execute_command {
 	my $res = 0;
 	if (! $last_communication) {
@@ -365,7 +404,8 @@ sub execute_command {
 		ia200 => \&execute_command_ia200,
 		benq  => \&execute_command_benq,
 		xap   => \&execute_command_xap,
-		dummy => \&execute_command_dummy
+		dummy => \&execute_command_dummy,
+		'evi-d31' => \&execute_command_evid31
 	);
 
 	if ( defined( $actions{$proto} ) ) {
@@ -442,7 +482,6 @@ sub execute_command_benq {
 			if ( $val eq "OFF" ) {
 				$val = 0;
 			}
-
 			if ( $val eq "ON" ) {
 				$val = 1;
 			}
@@ -548,6 +587,63 @@ sub execute_command_dxp {
 	dwlog("execute_command: $command{command} not supported");
 	return 0;
 }
+
+sub execute_command_evid31 {
+	my ($cmd_ref) = (@_);
+	my %command = %$cmd_ref;
+	
+	my $cmd;
+	
+	if ($command{command_type} eq "query") {
+		$cmd = "8109" . $command{command};	
+	}
+	else {
+		$cmd = "8101" . $command{command} . evid31_hex_number($command{value}, 4);
+	}
+	
+	my $cmd_len = length($cmd);
+	my $idx = 0;
+	my $bin_cmd = '';
+
+	while ($idx <  $cmd_len) {
+		$bin_cmd .= pack('C', hex(substr($cmd, $idx, 2)));
+		$idx += 2;
+	}
+	
+	$bin_cmd .= pack('C', hex("FF"));
+	
+	$sock->print($bin_cmd);
+	dwdebug("command sent: $cmd");
+	
+	$response_terminator = "\xFF";
+	poll_usleep(50000);
+	my $resp = telnet_read($sock);
+	my $resp_hex = bin_to_ascii_hex($resp);
+	
+	if ($command{command_type} eq "query") {
+		if ($resp_hex !~ /^90:50:/) {
+			dwdebug("unexpected query response: $resp_hex");
+			return 0;
+		}
+		elsif ($resp_hex =~ /^90:50:0(\w):0(\w):0(\w):0(\w)/) {
+			my $val = hex("$1$2$3$4");
+			dwdebug("response value: $val");
+			update_control_value( $command{control_id}, $val);
+			return 1;
+		}
+	}
+	elsif ($resp eq "\x90\x41") {
+		dwdebug("ACK recieved");
+		update_control_value( $command{control_id}, $command{value});
+		return 1;
+	}
+	else {
+		dwdebug("unhandled response: $resp_hex");
+		return 0;
+	}
+	
+}
+
 
 sub execute_command_f32 {
 	my ($cmd_ref) = (@_);
@@ -1127,6 +1223,10 @@ sub handle_unexpected_response {
 	elsif ( $proto eq "xap") {
 	    handle_unexpected_response_xap(@_);
 	}
+	elsif ( $proto eq "evi-d31") {
+		my $resp_hex = bin_to_ascii_hex($resp);
+		dwlog("unhandled unexpected response ($proto): $resp_hex");
+	}
 	else {
 		dwlog("unhandled unexpected response ($proto): $resp");
 	}
@@ -1507,7 +1607,7 @@ sub telnet_read {
 
 	while (1) {
 		if ( $sock->read( $buf, 1 ) ) {
-			if ( $buf eq "\r" ) {
+			if ( $buf eq $response_terminator ) {
 				$sock->read( $buf, 1 );
 				return $res;
 			}

@@ -87,13 +87,13 @@ my $sock = device_connect();
 $sock->print($bin_cmd);
 usleep(200000);
 #print "command sent\n";
-my @resp = line_read($sock);
+my $resp = line_read($sock);
 
-my $resp_len = @resp;
+my $resp_len = length($resp); #@resp;
 my $hex_resp = "";
 $idx = 0;
 while ($idx < $resp_len) {
-	$hex_resp .= sprintf("%02X ", ord($resp[$idx]));
+	$hex_resp .= sprintf("%02X ", ord(substr($resp, $idx, 1)));
 	$idx++;
 }
   
@@ -108,6 +108,7 @@ sub line_read {
        
     my $buf;     
     my @res; 
+    my $res;
     my $wait_us = 20000;
     my $char_missed = 0; 
     my $res_len = 0;
@@ -135,15 +136,16 @@ sub line_read {
         else {
             if ($buf eq "\r") {
                 dwdebug("newline read");
-                return @res;
+                return $res;
             }
             elsif ($buf eq "\xFF") {
                 dwdebug("0xFF read after $res_len bytes");
-                return @res;
+                return $res;
             }
 
 			$res_len++;
             push(@res, $buf);
+            $res .= $buf;
             $char_missed = 0;
         }
     }

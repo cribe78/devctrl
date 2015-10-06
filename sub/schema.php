@@ -42,6 +42,11 @@ $g_schema = array(
                 'type' => 'string',
                 'label' => 'Control Name'
             ),
+            array(
+                'name' => 'config',
+                'type' => 'object',
+                'label' => 'Config'
+            )
         )
     ),
     'control_endpoints' => array(
@@ -125,6 +130,11 @@ $g_schema = array(
                 'name' => 'command',
                 'type' => 'string',
                 'label' => 'Command',
+            ),
+            array(
+                'name' => 'config',
+                'type' => 'object',
+                'label' => 'Default Config'
             ),
             array(
                 'name' => 'enum_id',

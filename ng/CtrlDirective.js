@@ -8,7 +8,8 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
         },
         bindToController: true,
         controller: function(DataService) {
-            if (angular.isDefined(this.panelControl)) {
+            this.panelContext = angular.isDefined(this.panelControl);
+            if (this.panelContext) {
                 this.ctrl = this.panelControl.foreign.controls;
                 this.name = this.panelControl.fields.name;
             }
@@ -16,8 +17,35 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 this.ctrl = DataService.getTable('controls').indexed[this.controlId];
                 this.name = this.ctrl.fields.name;
             }
+
+            this.ctrlName = function() {
+                if (this.panelContext) {
+                    return this.panelControl.fields.name;
+                }
+                else {
+                    return this.ctrl.fields.name;
+                }
+            };
+
             this.template = this.ctrl.foreign['control_templates'];
 
+            this.config = function(key) {
+                if (angular.isObject(this.ctrl.fields.config) && angular.isDefined(this.ctrl.fields.config[key])) {
+                    return this.ctrl.fields.config[key];
+                }
+
+                if (angular.isObject(this.template.fields.config) && angular.isDefined(this.template.fields.config[key])) {
+                    return this.template.fields.config[key];
+                }
+            };
+
+            this.intConfig = function(key) {
+                var strConfig = self.config(key);
+
+                return parseInt(strConfig);
+            };
+
+            this.appConfig = DataService.config;
             this.type = this.template.fields.usertype;
 
             this.enums = DataService.getTable('enums');
@@ -58,7 +86,19 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 }
 
                 return ret;
-            }
+            };
+
+            this.editPanelControl = function($event) {
+                DataService.editRecord($event, self.panelControl.id, 'panel_controls');
+            };
+
+            this.editControl = function($event) {
+                DataService.editRecord($event, self.controlId, 'controls');
+            };
+
+            this.editTemplate = function($event) {
+                DataService.editRecord($event, self.template.id, 'control_templates');
+            };
         },
         controllerAs: 'ctrl',
         templateUrl: 'ng/ctrl.html'

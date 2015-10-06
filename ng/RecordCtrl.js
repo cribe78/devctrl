@@ -1,5 +1,4 @@
 goog.provide("DevCtrl.Record.Ctrl");
-goog.provide("DevCtrl.Record.Resolve");
 
 DevCtrl.Record.Ctrl = ['DataService',
     function(DataService) {
@@ -35,11 +34,3 @@ DevCtrl.Record.Ctrl = ['DataService',
         }
     }
 ];
-
-DevCtrl.Record.Resolve = {
-    loadTable : ['tableName', 'DataService',
-        function(tableName, DataService) {
-            return DataService.getTablePromise(tableName);
-        }
-    ]
-}

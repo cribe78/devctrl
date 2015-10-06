@@ -1,7 +1,7 @@
 <?php
     $public = 0;
     include(__DIR__ . "/sub/head.php");
-    $ng_ver = "1.4.1";
+    $ng_ver = "1.4.7";
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="EN"
@@ -52,6 +52,7 @@
                 <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
             </md-button>
             <span flex class="title text-headline">{{main.menu.pageTitle()}}</span>
+            <md-switch ng-model="main.config.editEnabled">Edit</md-switch>
         </md-toolbar>
         <md-content layout="column" flex layout-margin id="content">
             <ui-view></ui-view>

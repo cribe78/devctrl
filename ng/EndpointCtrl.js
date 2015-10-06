@@ -27,6 +27,14 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
             return open;
 
         };
+
+        this.addTemplate = function($event) {
+            DataService.editRecord($event, '0', 'control_templates',
+                {
+                    'endpoint_type_id' : self.obj.fields.endpoint_type_id
+                }
+            );
+        };
     }
 ];
 

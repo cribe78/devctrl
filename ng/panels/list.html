@@ -1,3 +1,7 @@
+<md-subheader>
+    {{panel.fields.name}}
+    <md-button ng-if="panel.appConfig.editEnabled" ng-click="panel.addControl($event)">Add Control</md-button>
+</md-subheader>
 <md-list-item ng-repeat="pcontrol in panel.pcontrols">
-    <ctrl panel-control="pcontrol"></ctrl>
+    <ctrl flex panel-control="pcontrol"></ctrl>
 </md-list-item>

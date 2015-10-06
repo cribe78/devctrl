@@ -593,12 +593,23 @@ sub execute_command_evid31 {
 	my %command = %$cmd_ref;
 	
 	my $cmd;
+	my $ascii_command = $command{command};
+	#strip a leading 0x
+	$ascii_command =~ s/^0x//;
 	
 	if ($command{command_type} eq "query") {
-		$cmd = "8109" . $command{command};	
+		$cmd = "8109" . $ascii_command;	
+		if ($ascii_command =~ /^0602/) {
+			$cmd = "81090612";  #Pan/Tilt inquiry is 0612 
+		}
+	}
+	#pan/tilt has 2 values
+	elsif ($ascii_command =~  /^0602/) {
+		my ($xval, $yval) = split(',',$command{value});
+		$cmd = "8101" . $ascii_command . evid31_hex_number($xval, 4) . evid31_hex_number($yval, 4); 
 	}
 	else {
-		$cmd = "8101" . $command{command} . evid31_hex_number($command{value}, 4);
+		$cmd = "8101" . $ascii_command . evid31_hex_number($command{value}, 4);
 	}
 	
 	my $cmd_len = length($cmd);
@@ -625,6 +636,13 @@ sub execute_command_evid31 {
 			dwdebug("unexpected query response: $resp_hex");
 			return 0;
 		}
+		elsif ($resp_hex =~ /^90:50:0(\w):0(\w):0(\w):0(\w):0(\w):0(\w):0(\w):0(\w)/) {
+			my $xval = hex("$1$2$3$4");
+			my $yval = hex("$5$6$7$8");
+			dwdebug("response value: $xval,$yval");
+			update_control_value( $command{control_id}, "$xval,$yval");
+			return 1;
+		}
 		elsif ($resp_hex =~ /^90:50:0(\w):0(\w):0(\w):0(\w)/) {
 			my $val = hex("$1$2$3$4");
 			dwdebug("response value: $val");
@@ -632,7 +650,7 @@ sub execute_command_evid31 {
 			return 1;
 		}
 	}
-	elsif ($resp eq "\x90\x41") {
+	elsif ($resp =~ /\x90[\x41-\x49]/) {
 		dwdebug("ACK recieved");
 		update_control_value( $command{control_id}, $command{value});
 		return 1;

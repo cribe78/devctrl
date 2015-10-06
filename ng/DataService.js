@@ -33,6 +33,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
         var pendingUpdates = {};
         var tablePromises = {};
 
+        var config = {};
         /*
         * data row properties:
         *   id - primary key value
@@ -44,6 +45,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
         var self = {
+            config : config,
             messenger: messenger,
             dataModel : dataModel,
             schema : schema,
@@ -75,13 +77,17 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                     });
             },
 
-            editRecord : function($event, id, tableName) {
+            editRecord : function($event, id, tableName, recordDefaults) {
                 var record;
                 if (id !== "0") {
                     record = self.getRowRef(tableName, id);
                 }
                 else {
                     record = self.getNewRowRef(tableName);
+
+                    if (angular.isObject(recordDefaults)) {
+                        angular.merge(record.fields, recordDefaults);
+                    }
                 }
 
                 $mdDialog.show({

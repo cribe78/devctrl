@@ -1,0 +1,25 @@
+<md-list>
+    <md-list-item class="md-list-item-text"
+                  ng-repeat="(key, value) in obj.object">
+        <md-input-container>
+            <label>{{key}}</label>
+            <input  ng-model="obj.object[key]">
+        </md-input-container>
+    </md-list-item>
+    <md-list-item>
+        <div layout="row">
+            <md-input-container>
+                <label>Key</label>
+                <input  ng-model="obj.newKey">
+            </md-input-container>
+            <md-input-container>
+                <label>Value</label>
+                <input  ng-model="obj.newVal">
+            </md-input-container>
+            <md-button ng-click="obj.addItem()">
+                Add
+            </md-button>
+        </div>
+    </md-list-item>
+
+</md-list>

@@ -60,7 +60,6 @@ if ($identifier != 'nouser') {
     }
 }
 else {
-    //TODO: add new client record
     $insert_client = $mysqli->prepare(
         "insert into clients (identifier, name) value (?, ?)"
     );
@@ -85,6 +84,12 @@ else {
 setcookie('identifier', $identifier, $client_expiration, "/");
 
 $admin_identifier = '';
+
+if (isset($_COOKIE['admin_identifier'])) {
+    $admin_identifier = $_COOKIE['admin_identifier'];
+}
+
+
 
 // Admin authentication
 if ($admin_identifier) {

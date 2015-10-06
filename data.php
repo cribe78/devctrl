@@ -30,6 +30,10 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $qs = array();
     foreach ($fields as $field) {
         if (isset($post['fields'][$field['name']])) {
+            if ($field['type'] == 'object') {
+                $post['fields'][$field['name']] = json_encode($post['fields'][$field['name']]);
+            }
+
             $values[$field['name']] = &$post['fields'][$field['name']];
             $qs[] = '?';
 
@@ -75,6 +79,10 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $types = '';
     foreach ($schema['fields'] as $field) {
         if (isset($post[$field['name']])) {
+            if ($field['type'] == 'object') {
+                $post[$field['name']] = json_encode($post[$field['name']]);
+            }
+
             $values[] = &$post[$field['name']];
             $terms[] = "{$field['name']} = ?";
 

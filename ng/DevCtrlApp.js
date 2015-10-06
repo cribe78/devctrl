@@ -7,14 +7,15 @@ goog.require("DevCtrl.Ctrl.Directive");
 goog.require("DevCtrl.Menu.Directive");
 goog.require("DevCtrl.FkSelect.Directive");
 goog.require("DevCtrl.EnumSelect.Directive");
+goog.require("DevCtrl.ObjectEditor.Directive");
 goog.require("DevCtrl.Panel.Directive");
-goog.require("DevCtrl.SwitchSet.Directive");
+goog.require("DevCtrl.Slider2d.Directive");
 goog.require("DevCtrl.Table.Ctrl");
 goog.require("DevCtrl.Table.Resolve");
+goog.require("DevCtrl.ControlSelector.Ctrl");
 goog.require("DevCtrl.Endpoint.Ctrl");
 goog.require("DevCtrl.Record.Ctrl");
-goog.require("DevCtrl.Record.Resolve");
-goog.require("DevCtrl.Room.Ctrl")
+goog.require("DevCtrl.Room.Ctrl");
 goog.require("DevCtrl.Rooms.Ctrl");
 goog.require("DevCtrl.Common.Resolve");
 
@@ -26,8 +27,10 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('devctrlPanel', DevCtrl.Panel.Directive)
     .directive('fkSelect', DevCtrl.FkSelect.Directive)
     .directive('enumSelect', DevCtrl.EnumSelect.Directive)
-    .directive('switchSet', DevCtrl.SwitchSet.Directive)
+    .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
+    .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
+    .controller('ControlSelectorCtrl', DevCtrl.ControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)

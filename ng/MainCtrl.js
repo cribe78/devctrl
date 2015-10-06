@@ -19,6 +19,7 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         this.schema = DataService.schema;
         this.menu = MenuService;
         this.control_endpoints = DataService.getTable('control_endpoints');
+        this.config = DataService.config;
 
         this.toggleSidenav = function(menuId) {
             $mdSidenav(menuId).toggle();

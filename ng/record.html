@@ -32,6 +32,9 @@
                              ng-model="record.obj.fields[field.name]">
                     {{field.label}}
                 </md-checkbox>
+                <devctrl-object-editor ng-if="field.type == 'object'"
+                                       object="record.obj.fields[field.name]">
+                </devctrl-object-editor>
             </md-list-item>
             <md-list-item>
                 <div layout="row">

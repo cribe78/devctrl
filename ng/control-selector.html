@@ -1,0 +1,50 @@
+<md-dialog>
+    <md-toolbar layout-align="center center">Select Control</md-toolbar>
+    <md-dialog-content>
+        <md-list>
+            <md-list-item class="md-list-item-text">
+                <md-select placeholder="Device Type"
+                           multiple="true"
+                           ng-model="selector.endpointTypesSelected">
+                    <md-option ng-value="key" ng-repeat="(key, row) in selector.getEndpointTypes()">
+                        {{row.fields.name}}
+                    </md-option>
+                </md-select>
+            </md-list-item>
+            <md-list-item class="md-list-item-text">
+                <md-select placeholder="Device"
+                           multiple="true"
+                           ng-model="selector.endpoint">
+                    <md-option ng-value="key" ng-repeat="(key, row) in selector.getEndpoints()">
+                        {{row.fields.name}}
+                    </md-option>
+                </md-select>
+            </md-list-item>
+            <md-list-item class="md-list-item-text">
+                <md-select placeholder="Control"
+                           ng-model="selector.control">
+                    <md-option ng-value="key" ng-repeat="(key, row) in selector.getControls()">
+                        {{row.fields.name}}
+                    </md-option>
+                </md-select>
+            </md-list-item>
+            <md-list-item>
+                <div layout="row">
+                    <md-button ng-if="record.newRow" class="md-primary" ng-click="record.addRow()">Add</md-button>
+                    <md-button ng-if="! record.newRow" class="md-primary" ng-click="record.updateRow()">Update</md-button>
+                    <md-button ng-if="! record.newRow" class="md-primary md-hue-1" ng-click="record.cloneRow()">Clone</md-button>
+                    <md-button ng-if="! record.newRow" class="md-warn" ng-click="record.deleteRow()">Delete</md-button>
+                    <md-button ng-click="record.close()">Cancel</md-button>
+                </div>
+            </md-list-item>
+            <md-divider></md-divider>
+            <md-subheader>Referenced by</md-subheader>
+            <div ng-repeat="(tableName, references) in record.obj.referenced">
+                <md-list-item ng-repeat="(id, ref) in references">
+                    <span>{{tableName}} - {{id}}</span>
+                </md-list-item>
+            </div>
+        </md-list>
+
+    </md-dialog-content>
+</md-dialog>

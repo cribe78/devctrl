@@ -59,11 +59,11 @@ DevCtrl.Table.Ctrl = ['$scope', '$stateParams',  'DataService',
 
         this.openRecord = function($event, id) {
             DataService.editRecord($event, id, self.tableName);
-        }
+        };
 
         this.updateRow = function($event, row) {
             DataService.updateRow(row);
-        }
+        };
 
     }
 ];

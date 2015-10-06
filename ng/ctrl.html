@@ -1,38 +1,52 @@
-<div class="coe-ctrl" layout ng-if="ctrl.type == 'slider'">
-    <div flex="10" layout layout-align="center center">
-        <span class="text-caption">{{ctrl.name}}</span>
+<div layout="row">
+    <div class="coe-ctrl" flex layout ng-if="ctrl.type == 'slider'">
+        <div flex="10" layout layout-align="center center">
+            <span class="text-caption">{{ctrl.ctrlName()}}</span>
+        </div>
+        <md-slider flex
+                   min="{{ctrl.template.fields.min}}"
+                   max="{{ctrl.template.fields.max}}"
+                   ng-model="ctrl.ctrl.fields.value"
+                   ng-change="ctrl.updateValue()"
+                   aria-label="{{ctrl.name}}">
+        </md-slider>
+        <div flex="20" layout layout-align="center center">
+            <input class="coe-ctrl-slider-input" type="number" ng-model="ctrl.ctrl.fields.value" ng-change="ctrl.updateValue()">
+        </div>
     </div>
-    <md-slider flex
-               min="{{ctrl.template.fields.min}}"
-               max="{{ctrl.template.fields.max}}"
-               ng-model="ctrl.ctrl.fields.value"
-               ng-change="ctrl.updateValue()"
-               aria-label="{{ctrl.name}}">
-    </md-slider>
-    <div flex="20" layout layout-align="center center">
-        <input type="number" ng-model="ctrl.ctrl.fields.value" ng-change="ctrl.updateValue()">
+
+    <div class="coe-ctrl-select" flex layout="column" ng-if="ctrl.type == 'select'">
+        <label class="text-menu">{{ctrl.ctrlName()}}</label>
+        <md-select placeholder="Select" ng-model="ctrl.ctrl.fields.value" ng-change="ctrl.updateValue()">
+            <md-option ng-value="obj.fields.value" ng-repeat="(key, obj) in ctrl.selectOptions()">
+                {{obj.fields.name}}
+            </md-option>
+        </md-select>
     </div>
-</div>
 
-<div class="coe-ctrl-select" layout="column" ng-if="ctrl.type == 'select'">
-    <label class="text-menu">{{ctrl.name}}</label>
-    <md-select placeholder="Select" ng-model="ctrl.ctrl.fields.value" ng-change="ctrl.updateValue()">
-        <md-option ng-value="obj.fields.value" ng-repeat="(key, obj) in ctrl.selectOptions()">
-            {{obj.fields.name}}
-        </md-option>
-    </md-select>
-</div>
+    <div class="coe-ctrl-level" flex layout ng-if="ctrl.type == 'level'">
+        <label flex="30" class="text-menu">{{ctrl.ctrlName()}}</label>
+        <md-progress-linear md-mode="determinate" value="{{ctrl.normalizedValue()}}"></md-progress-linear>
+    </div>
 
-<div class="coe-ctrl-level" layout ng-if="ctrl.type == 'level'">
-    <label flex="30" class="text-menu">{{ctrl.name}}</label>
-    <md-progress-linear md-mode="determinate" value="{{ctrl.normalizedValue()}}"></md-progress-linear>
-</div>
+    <div layout="row" class="coe-ctrl-switch" flex ng-if="ctrl.type == 'switch'">
+        <label class="text-menu">{{ctrl.ctrlName()}}</label>
+        <span flex></span>
+        <md-switch aria-label="{{ctrl.ctrlName()}}" ng-model="ctrl.ctrl.fields.value"
+                   ng-true-value="1" ng-false-value="0" ng-change="ctrl.updateValue()"></md-switch>
+    </div>
 
-<div layout="row" class="coe-ctrl-switch" ng-if="ctrl.type == 'switch'">
-    <label class="text-menu">{{ctrl.name}}</label>
-    <span flex></span>
-    <md-switch aria-label="{{ctrl.name}}" ng-model="ctrl.ctrl.fields.value"
-               ng-true-value="1" ng-false-value="0" ng-change="ctrl.updateValue()"></md-switch>
+    <devctrl-slider2d ng-if="ctrl.type == 'slider2d'" flex control="ctrl"></devctrl-slider2d>
+    <md-menu flex="5" ng-if="ctrl.appConfig.editEnabled">
+        <md-button  ng-click="$mdOpenMenu($event)">
+            <md-icon  md-font-set="material-icons">more_vert</md-icon>
+        </md-button>
+        <md-menu-content>
+            <md-menu-item><md-button ng-click="ctrl.editControl($event)">Edit Control</md-button></md-menu-item>
+            <md-menu-item><md-button ng-click="ctrl.editTemplate($event)">Edit Template</md-button></md-menu-item>
+            <md-menu-item ng-if="ctrl.panelContext">
+                <md-button ng-click="ctrl.editPanelControl($event)">Edit Panel Control</md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
 </div>
-
-<switch-set ng-if="ctrl.type == 'switch-set'" control="ctrl.ctrl"></switch-set>

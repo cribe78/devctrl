@@ -52,6 +52,10 @@ coe-menu li {
     padding: 16px;
 }
 
+.coe-ctrl-slider-input {
+    width: 80px;
+}
+
 .lightPurple {
     background: #8c9eff; }
 .menuBtn {

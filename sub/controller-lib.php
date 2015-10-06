@@ -169,8 +169,11 @@ function getTableData($table, $use_cache = false, $where_cond = "") {
     $rows = array();
     while ($row  = $res->fetch_assoc()) {
         foreach ($fields as $field) {
-            if (is_numeric($row[$field['name']])) {
+            if (is_numeric($row[$field['name']]) && ($field['type'] != 'string' || $field['name'] == 'value')) {
                 $row[$field['name']] = intval($row[$field['name']]);
+            }
+            elseif ($field['type'] == 'object') {
+                $row[$field['name']] = json_decode($row[$field['name']]);
             }
         }
 
@@ -251,12 +254,11 @@ function launchControlDaemon($control) {
 
 
 function paramTypeChar($paramType) {
-    if ($paramType === 'string' || $paramType === 'enum') {
-        return 's';
-    }
-    elseif ($paramType === 'int' || $paramType === 'bool' || $paramType === 'fk') {
+    if ($paramType === 'int' || $paramType === 'bool' || $paramType === 'fk') {
         return 'i';
     }
+
+    return 's';
 }
 
 

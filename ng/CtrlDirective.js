@@ -93,7 +93,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             };
 
             this.editControl = function($event) {
-                DataService.editRecord($event, self.controlId, 'controls');
+                DataService.editRecord($event, self.ctrl.id, 'controls');
             };
 
             this.editTemplate = function($event) {

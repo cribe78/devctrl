@@ -13,19 +13,57 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             }
         });
 
+
+
         this.panels = this.obj.referenced.panels;
 
-        this.openedGroup = "";
+        this.addPanel = function($event) {
+            DataService.editRecord($event, '0', 'panels',
+                {
+                    'room_id' : self.id
+                }
+            );
+        };
 
-        this.groups = [];
+        this.config = DataService.config;
+        var roomConfig = {};
+        if (! angular.isObject(this.config.rooms)) {
+            this.config.rooms = {};
+        }
+        if (! angular.isObject(this.config.rooms[self.id])) {
+            this.config.rooms[this.id] = {
+                groups: {}
+            }
+        }
+
+        roomConfig = this.config.rooms[this.id];
+
         this.getGroups = function() {
+            var deleteGroups = {};
+            angular.forEach(roomConfig.groups, function(group, groupName) {
+                deleteGroups[groupName] = true;
+            });
+
+
             angular.forEach(self.panels, function(panel) {
-                if (self.groups.indexOf(panel.fields.grouping) == -1) {
-                    self.groups.push(panel.fields.grouping);
+                if (! angular.isDefined(roomConfig.groups[panel.fields.grouping])) {
+                    roomConfig.groups[panel.fields.grouping] = {
+                        opened: false
+                    };
+                    deleteGroups[panel.fields.grouping] = false;
+                }
+                else {
+                    deleteGroups[panel.fields.grouping] = false;
                 }
             });
 
-            return self.groups;
+            angular.forEach(deleteGroups, function(group, groupName) {
+                if (group) {
+                    delete roomConfig.groups[groupName];
+                }
+            });
+
+            return roomConfig.groups;
         };
 
         // This function is here to prevent null reference errors
@@ -36,18 +74,9 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
         };
 
         this.toggleGroup = function(group) {
-            if (group == this.openedGroup) {
-                this.openedGroup = "";
-            }
-            else {
-                this.openedGroup = group;
-            }
-        };
+            group.opened = ! group.opened;
 
-        this.isGroupOpen = function(group) {
-            var open = group == this.openedGroup;
-            return open;
-
+            DataService.updateConfig();
         };
     }
 ];

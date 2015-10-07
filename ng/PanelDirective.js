@@ -17,16 +17,20 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
                 $mdDialog.show({
                     targetEvent: $event,
                     locals: {
-                        obj: ''
+                        panelId: this.panelObj.id
                     },
-                    controller: DevCtrl.ControlSelector.Ctrl,
+                    controller: DevCtrl.PanelControlSelector.Ctrl,
                     controllerAs: 'selector',
                     bindToController: true,
-                    templateUrl: 'ng/control-selector.html',
+                    templateUrl: 'ng/panel-control-selector.html',
                     clickOutsideToClose: true,
                     hasBackdrop : false
                 });
             };
+
+            this.editPanel = function($event) {
+                DataService.editRecord($event, this.panelObj.id, this.panelObj.tableName);
+            }
 
         },
         controllerAs: 'panel',

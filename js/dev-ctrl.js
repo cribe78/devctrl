@@ -154,19 +154,57 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             }
         });
 
+
+
         this.panels = this.obj.referenced.panels;
 
-        this.openedGroup = "";
+        this.addPanel = function($event) {
+            DataService.editRecord($event, '0', 'panels',
+                {
+                    'room_id' : self.id
+                }
+            );
+        };
 
-        this.groups = [];
+        this.config = DataService.config;
+        var roomConfig = {};
+        if (! angular.isObject(this.config.rooms)) {
+            this.config.rooms = {};
+        }
+        if (! angular.isObject(this.config.rooms[self.id])) {
+            this.config.rooms[this.id] = {
+                groups: {}
+            }
+        }
+
+        roomConfig = this.config.rooms[this.id];
+
         this.getGroups = function() {
+            var deleteGroups = {};
+            angular.forEach(roomConfig.groups, function(group, groupName) {
+                deleteGroups[groupName] = true;
+            });
+
+
             angular.forEach(self.panels, function(panel) {
-                if (self.groups.indexOf(panel.fields.grouping) == -1) {
-                    self.groups.push(panel.fields.grouping);
+                if (! angular.isDefined(roomConfig.groups[panel.fields.grouping])) {
+                    roomConfig.groups[panel.fields.grouping] = {
+                        opened: false
+                    };
+                    deleteGroups[panel.fields.grouping] = false;
+                }
+                else {
+                    deleteGroups[panel.fields.grouping] = false;
                 }
             });
 
-            return self.groups;
+            angular.forEach(deleteGroups, function(group, groupName) {
+                if (group) {
+                    delete roomConfig.groups[groupName];
+                }
+            });
+
+            return roomConfig.groups;
         };
 
         // This function is here to prevent null reference errors
@@ -177,18 +215,9 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
         };
 
         this.toggleGroup = function(group) {
-            if (group == this.openedGroup) {
-                this.openedGroup = "";
-            }
-            else {
-                this.openedGroup = group;
-            }
-        };
+            group.opened = ! group.opened;
 
-        this.isGroupOpen = function(group) {
-            var open = group == this.openedGroup;
-            return open;
-
+            DataService.updateConfig();
         };
     }
 ];
@@ -215,6 +244,10 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         this.menu = MenuService;
         this.control_endpoints = DataService.getTable('control_endpoints');
         this.config = DataService.config;
+
+        this.updateConfig = function() {
+            DataService.updateConfig();
+        };
 
         this.toggleSidenav = function(menuId) {
             $mdSidenav(menuId).toggle();
@@ -254,8 +287,8 @@ DevCtrl.Menu.Directive = ['MenuService', '$state',
 // ../ng/DataService.js
 DevCtrl.DataService = {};
 
-DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
-    function($http, $mdToast, $timeout, socketFactory, $mdDialog) {
+DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
+    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog) {
         var dataModel = {};
         var schema = {};
         var schemaLoaded = false;
@@ -287,7 +320,19 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
         var pendingUpdates = {};
         var tablePromises = {};
 
-        var config = {};
+        var clientConfig = {
+            editEnabled: true
+        };
+
+        if (typeof($window.localStorage) !== 'undefined') {
+            var localConfig = $window.localStorage.config;
+            if (angular.isString(localConfig)) {
+                clientConfig = JSON.parse(localConfig);
+            }
+            else {
+                $window.localStorage.config = JSON.stringify(clientConfig);
+            }
+        }
         /*
         * data row properties:
         *   id - primary key value
@@ -299,7 +344,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
         var self = {
-            config : config,
+            config : clientConfig,
             messenger: messenger,
             dataModel : dataModel,
             schema : schema,
@@ -605,6 +650,11 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                 }
             },
 
+            updateConfig : function() {
+                if (typeof($window.localStorage) !== 'undefined') {
+                    $window.localStorage.config = JSON.stringify(self.config);
+                }
+            },
 
             updateControlValue : function(control) {
                 if (angular.isDefined(pendingUpdates[control.id])) {
@@ -848,7 +898,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             };
 
             this.editControl = function($event) {
-                DataService.editRecord($event, self.controlId, 'controls');
+                DataService.editRecord($event, self.ctrl.id, 'controls');
             };
 
             this.editTemplate = function($event) {
@@ -1027,6 +1077,118 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
 ];
 
 
+// ../ng/PanelControlSelectorCtrl.js
+
+DevCtrl.PanelControlSelector = {};
+
+DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
+    function($mdDialog, DataService) {
+        var self = this;
+        this.endpointTypes = DataService.getTable("endpoint_types");
+        this.endpoints = DataService.getTable("control_endpoints");
+        this.controls = DataService.getTable("controls");
+        this.control_templates = DataService.getTable("control_templates");
+
+        this.newPanelControl = DataService.getNewRowRef("panel_controls");
+        this.newPanelControl.fields.panel_id = this.panelId;
+
+        this.endpointTypesSelected = [];
+        this.endpointsSelected = [];
+
+        this.getEndpointTypes = function() {
+            return this.endpointTypes.indexed;
+        };
+
+        this.getEndpoints = function() {
+            return this.endpoints.indexed;
+        };
+
+        this.controlList = {};
+        this.getControls = function() {
+            angular.forEach(self.controls.indexed, function(control) {
+                var loadControl = false;
+                var loadAll = true;
+
+                if (angular.isArray(self.endpointsSelected) && self.endpointsSelected.length > 0) {
+                    loadAll = false;
+                    var ctrlEp = control.fields.control_endpoint_id;
+
+                    angular.forEach(self.endpointsSelected, function(endpointId) {
+                        if (endpointId == ctrlEp) {
+                            loadControl = true;
+                        }
+                    })
+
+                }
+                else if (angular.isArray(self.endpointTypesSelected) && self.endpointTypesSelected.length > 0) {
+                    loadAll = false;
+                    var ctrlEpType = control.foreign.control_endpoints.fields.endpoint_type_id;
+
+                    angular.forEach(self.endpointTypesSelected, function(typeId) {
+                           if (ctrlEpType == typeId) {
+                               loadControl = true;
+                           }
+                    });
+                }
+
+                if (loadControl || loadAll) {
+                    self.controlList[control.id] = control;
+                }
+                else {
+                    delete self.controlList[control.id];
+                }
+            });
+
+            return self.controlList;
+        };
+
+        this.endpointList = {};
+        this.getEndpoints = function() {
+            angular.forEach(self.endpoints.indexed, function(endpoint) {
+                var loadEndpoint = false;
+                var loadAll = true;
+                if (angular.isArray(self.endpointTypesSelected) && self.endpointTypesSelected.length > 0) {
+                    loadAll = false;
+                    var epType = endpoint.fields.endpoint_type_id;
+
+                    angular.forEach(self.endpointTypesSelected, function(typeId) {
+                        if (epType == typeId) {
+                            loadEndpoint = true;
+                        }
+                    });
+                }
+
+                if (loadEndpoint || loadAll) {
+                    self.endpointList[endpoint.id] = endpoint;
+                }
+                else {
+                    delete self.endpointList[endpoint.id];
+                }
+            });
+
+            return self.endpointList;
+        }
+
+        this.clearEndpointTypes = function() {
+            self.endpointTypesSelected = undefined;
+        };
+
+        this.clearEndpoints = function() {
+            self.endpointsSelected = undefined;
+        };
+
+        this.addPanelControl = function() {
+            DataService.addRow(self.newPanelControl);
+            $mdDialog.hide();
+        }
+
+        this.cancelAdd = function() {
+            $mdDialog.hide();
+        }
+
+    }
+];
+
 // ../ng/FkSelectDirective.js
 DevCtrl.FkSelect = {};
 
@@ -1121,55 +1283,6 @@ DevCtrl.Table.Resolve = {
         return $stateParams.table;
     }]
 };
-// ../ng/ControlSelectorCtrl.js
-
-DevCtrl.ControlSelector = {};
-
-DevCtrl.ControlSelector.Ctrl = ['DataService',
-    function(DataService) {
-        var self = this;
-        this.endpointTypes = DataService.getTable("endpoint_types");
-        this.endpoints = DataService.getTable("endpoint_types");
-        this.controls = DataService.getTable("controls");
-        this.control_templates = DataService.getTable("control_templates");
-
-        this.getEndpointTypes = function() {
-            return this.endpointTypes.indexed;
-        };
-
-        this.getEndpoints = function() {
-            return this.endpoints.indexed;
-        };
-
-        this.controlList = {};
-        this.getControls = function() {
-            angular.forEach(self.controls.indexed, function(control) {
-                var loadControl = false;
-                var loadAll = true;
-                if (angular.isArray(self.endpointTypesSelected)) {
-                    loadAll = false;
-                    var ctrlEpType = control.foreign.control_endpoints.id;
-
-                    angular.forEach(self.endpointTypesSelected, function(typeId) {
-                           if (ctrlEpType == typeId) {
-                               loadControl = true;
-                           }
-                    });
-                }
-
-                if (loadControl || loadAll) {
-                    self.controlList[control.id] = control;
-                }
-                else {
-                    delete self.controlList[control.id];
-                }
-            });
-
-            return self.controlList;
-        }
-    }
-];
-
 // ../ng/RoomsCtrl.js
 DevCtrl.Rooms = {};
 
@@ -1204,16 +1317,20 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
                 $mdDialog.show({
                     targetEvent: $event,
                     locals: {
-                        obj: ''
+                        panelId: this.panelObj.id
                     },
-                    controller: DevCtrl.ControlSelector.Ctrl,
+                    controller: DevCtrl.PanelControlSelector.Ctrl,
                     controllerAs: 'selector',
                     bindToController: true,
-                    templateUrl: 'ng/control-selector.html',
+                    templateUrl: 'ng/panel-control-selector.html',
                     clickOutsideToClose: true,
                     hasBackdrop : false
                 });
             };
+
+            this.editPanel = function($event) {
+                DataService.editRecord($event, this.panelObj.id, this.panelObj.tableName);
+            }
 
         },
         controllerAs: 'panel',
@@ -1233,7 +1350,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
     .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
-    .controller('ControlSelectorCtrl', DevCtrl.ControlSelector.Ctrl)
+    .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)

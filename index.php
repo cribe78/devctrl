@@ -8,7 +8,7 @@
       lang="EN"
       ng-app="DevCtrlApp">
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular.min.js"></script>
+    <script src="/bower_components/angular/angular.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-aria.min.js"></script>
     <script src="/bower_components/angular-material/angular-material.js"></script>
@@ -52,7 +52,7 @@
                 <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
             </md-button>
             <span flex class="title text-headline">{{main.menu.pageTitle()}}</span>
-            <md-switch ng-model="main.config.editEnabled">Edit</md-switch>
+            <md-switch ng-model="main.config.editEnabled" ng-change="main.updateConfig()">Edit</md-switch>
         </md-toolbar>
         <md-content layout="column" flex layout-margin id="content">
             <ui-view></ui-view>

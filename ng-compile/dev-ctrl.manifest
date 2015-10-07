@@ -11,9 +11,9 @@
 ../ng/RecordCtrl.js
 ../ng/MenuService.js
 ../ng/EndpointCtrl.js
+../ng/PanelControlSelectorCtrl.js
 ../ng/FkSelectDirective.js
 ../ng/TableCtrl.js
-../ng/ControlSelectorCtrl.js
 ../ng/RoomsCtrl.js
 ../ng/PanelDirective.js
 ../ng/DevCtrlApp.js

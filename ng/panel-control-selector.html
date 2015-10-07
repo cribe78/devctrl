@@ -10,40 +10,40 @@
                         {{row.fields.name}}
                     </md-option>
                 </md-select>
+                <span flex></span>
+                <md-button ng-click="selector.clearEndpointTypes()">Clear</md-button>
             </md-list-item>
             <md-list-item class="md-list-item-text">
                 <md-select placeholder="Device"
                            multiple="true"
-                           ng-model="selector.endpoint">
+                           ng-model="selector.endpointsSelected">
                     <md-option ng-value="key" ng-repeat="(key, row) in selector.getEndpoints()">
                         {{row.fields.name}}
                     </md-option>
                 </md-select>
+                <span flex></span>
+                <md-button ng-click="selector.clearEndpoints()">Clear</md-button>
             </md-list-item>
             <md-list-item class="md-list-item-text">
                 <md-select placeholder="Control"
-                           ng-model="selector.control">
+                           ng-model="selector.newPanelControl.fields.control_id">
                     <md-option ng-value="key" ng-repeat="(key, row) in selector.getControls()">
                         {{row.fields.name}}
                     </md-option>
                 </md-select>
             </md-list-item>
             <md-list-item>
+                <md-input-container>
+                    <label>Name</label>
+                    <input  ng-model="selector.newPanelControl.fields.name">
+                </md-input-container>
+            </md-list-item>
+            <md-list-item>
                 <div layout="row">
-                    <md-button ng-if="record.newRow" class="md-primary" ng-click="record.addRow()">Add</md-button>
-                    <md-button ng-if="! record.newRow" class="md-primary" ng-click="record.updateRow()">Update</md-button>
-                    <md-button ng-if="! record.newRow" class="md-primary md-hue-1" ng-click="record.cloneRow()">Clone</md-button>
-                    <md-button ng-if="! record.newRow" class="md-warn" ng-click="record.deleteRow()">Delete</md-button>
-                    <md-button ng-click="record.close()">Cancel</md-button>
+                    <md-button class="md-primary" ng-click="selector.addPanelControl()">Add</md-button>
+                    <md-button ng-click="selector.cancelAdd()">Cancel</md-button>
                 </div>
             </md-list-item>
-            <md-divider></md-divider>
-            <md-subheader>Referenced by</md-subheader>
-            <div ng-repeat="(tableName, references) in record.obj.referenced">
-                <md-list-item ng-repeat="(id, ref) in references">
-                    <span>{{tableName}} - {{id}}</span>
-                </md-list-item>
-            </div>
         </md-list>
 
     </md-dialog-content>

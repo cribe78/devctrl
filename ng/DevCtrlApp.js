@@ -12,7 +12,7 @@ goog.require("DevCtrl.Panel.Directive");
 goog.require("DevCtrl.Slider2d.Directive");
 goog.require("DevCtrl.Table.Ctrl");
 goog.require("DevCtrl.Table.Resolve");
-goog.require("DevCtrl.ControlSelector.Ctrl");
+goog.require("DevCtrl.PanelControlSelector.Ctrl");
 goog.require("DevCtrl.Endpoint.Ctrl");
 goog.require("DevCtrl.Record.Ctrl");
 goog.require("DevCtrl.Room.Ctrl");
@@ -30,7 +30,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
     .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
-    .controller('ControlSelectorCtrl', DevCtrl.ControlSelector.Ctrl)
+    .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)

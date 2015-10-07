@@ -1,4 +1,4 @@
-<div layout="row">
+<div flex layout="row">
     <div class="coe-ctrl" flex layout ng-if="ctrl.type == 'slider'">
         <div flex="10" layout layout-align="center center">
             <span class="text-caption">{{ctrl.ctrlName()}}</span>
@@ -38,7 +38,7 @@
 
     <devctrl-slider2d ng-if="ctrl.type == 'slider2d'" flex control="ctrl"></devctrl-slider2d>
     <md-menu flex="5" ng-if="ctrl.appConfig.editEnabled">
-        <md-button  ng-click="$mdOpenMenu($event)">
+        <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
             <md-icon  md-font-set="material-icons">more_vert</md-icon>
         </md-button>
         <md-menu-content>

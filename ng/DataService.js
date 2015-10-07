@@ -1,7 +1,7 @@
 goog.provide('DevCtrl.DataService.factory');
 
-DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
-    function($http, $mdToast, $timeout, socketFactory, $mdDialog) {
+DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
+    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog) {
         var dataModel = {};
         var schema = {};
         var schemaLoaded = false;
@@ -33,7 +33,19 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
         var pendingUpdates = {};
         var tablePromises = {};
 
-        var config = {};
+        var clientConfig = {
+            editEnabled: true
+        };
+
+        if (typeof($window.localStorage) !== 'undefined') {
+            var localConfig = $window.localStorage.config;
+            if (angular.isString(localConfig)) {
+                clientConfig = JSON.parse(localConfig);
+            }
+            else {
+                $window.localStorage.config = JSON.stringify(clientConfig);
+            }
+        }
         /*
         * data row properties:
         *   id - primary key value
@@ -45,7 +57,7 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
 
 
         var self = {
-            config : config,
+            config : clientConfig,
             messenger: messenger,
             dataModel : dataModel,
             schema : schema,
@@ -351,6 +363,11 @@ DevCtrl.DataService.factory = ['$http', '$mdToast', '$timeout', 'socketFactory',
                 }
             },
 
+            updateConfig : function() {
+                if (typeof($window.localStorage) !== 'undefined') {
+                    $window.localStorage.config = JSON.stringify(self.config);
+                }
+            },
 
             updateControlValue : function(control) {
                 if (angular.isDefined(pendingUpdates[control.id])) {

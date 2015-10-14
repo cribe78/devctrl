@@ -15,10 +15,11 @@
         </div>
     </div>
 
-    <div class="coe-ctrl-select" flex layout="column" ng-if="ctrl.type == 'select'">
+
+    <div class="coe-ctrl-select" layout="column" ng-if="ctrl.type == 'select'">
         <label class="text-menu">{{ctrl.ctrlName()}}</label>
         <md-select placeholder="Select" ng-model="ctrl.ctrl.fields.value" ng-change="ctrl.updateValue()">
-            <md-option ng-value="obj.fields.value" ng-repeat="(key, obj) in ctrl.selectOptions()">
+            <md-option ng-value="obj.fields.value" ng-repeat="obj in ctrl.selectOptions() | toArray | filter: { fields : { enabled : 1 }}">
                 {{obj.fields.name}}
             </md-option>
         </md-select>
@@ -42,10 +43,13 @@
             <md-icon  md-font-set="material-icons">more_vert</md-icon>
         </md-button>
         <md-menu-content>
-            <md-menu-item><md-button ng-click="ctrl.editControl($event)">Edit Control</md-button></md-menu-item>
-            <md-menu-item><md-button ng-click="ctrl.editTemplate($event)">Edit Template</md-button></md-menu-item>
+            <md-menu-item><md-button ng-click="ctrl.editControl($event)">Edit Control...</md-button></md-menu-item>
+            <md-menu-item><md-button ng-click="ctrl.editTemplate($event)">Edit Template...</md-button></md-menu-item>
             <md-menu-item ng-if="ctrl.panelContext">
-                <md-button ng-click="ctrl.editPanelControl($event)">Edit Panel Control</md-button>
+                <md-button ng-click="ctrl.editPanelControl($event)">Edit Panel Control...</md-button>
+            </md-menu-item>
+            <md-menu-item ng-if="ctrl.type == 'select'">
+                <md-button ng-click="ctrl.editOptions()">Edit Select Options...</md-button>
             </md-menu-item>
         </md-menu-content>
     </md-menu>

@@ -38,6 +38,14 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
             }
         };
 
+        this.addEndpoint = function($event) {
+            DataService.editRecord($event, 0, "control_endpoints");
+        };
+
+        this.addEndpointType = function($event) {
+            DataService.editRecord($event, 0, "endpoint_types");
+        };
+
         this.dataModel = DataService.dataModel;
 
         this.title = "DevCtrl";

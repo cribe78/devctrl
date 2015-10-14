@@ -89,6 +89,27 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                     });
             },
 
+            editEnum : function($event, myEnum, enumRefRecord, options) {
+                if (! angular.isObject(options)) {
+                    options = {};
+                }
+
+                $mdDialog.show({
+                    targetEvent: $event,
+                    locals: {
+                        myEnum: myEnum,
+                        enumRefRecord: enumRefRecord,
+                        options: options
+                    },
+                    controller: DevCtrl.EnumEditor.Ctrl,
+                    controllerAs: 'editor',
+                    bindToController: true,
+                    templateUrl: 'ng/enum-editor.html',
+                    clickOutsideToClose: true,
+                    hasBackdrop : false
+                });
+            },
+
             editRecord : function($event, id, tableName, recordDefaults) {
                 var record;
                 if (id !== "0") {
@@ -117,6 +138,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             },
 
             editRecordClose : function() {
+                //TODO: delete unused new record
                 $mdDialog.hide();
             },
 

@@ -12,6 +12,7 @@
 ../ng/MenuService.js
 ../ng/EndpointCtrl.js
 ../ng/PanelControlSelectorCtrl.js
+../ng/EnumEditorCtrl.js
 ../ng/FkSelectDirective.js
 ../ng/TableCtrl.js
 ../ng/RoomsCtrl.js

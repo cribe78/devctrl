@@ -1,7 +1,8 @@
 <md-input-container>
     <label>{{enumSelect.field.label}}</label>
     <md-select placeholder={{enumSelect.field.label}} ng-model="enumSelect.selectModel[enumSelect.field.name]">
-         <md-option ng-value="obj.fields.value" ng-repeat="(key, obj) in enumSelect.options()">
+         <md-option ng-value="obj.fields.value"
+                    ng-repeat="obj in enumSelect.options()| toArray | filter: { fields : { enabled : 1 }}">
              {{obj.fields.name}}
          </md-option>
      </md-select>

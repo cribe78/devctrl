@@ -1,5 +1,7 @@
 <md-subheader>
     {{panel.fields.name}}
+    <md-button class="md-primary"  ng-click="panel.setAllSwitches(1)">All On</md-button>
+    <md-button class="md-warn" ng-click="panel.setAllSwitches(0)">All Off</md-button>
     <md-button ng-if="panel.appConfig.editEnabled"
                ng-click="panel.addControl($event)"
                class="md-primary">
@@ -11,10 +13,6 @@
         Edit Panel
     </md-button>
 </md-subheader>
-<md-list-item>
-    <div flex layout="row">
-        <div flex ng-repeat="pcontrol in panel.pcontrols">
-            <ctrl flex panel-control="pcontrol"></ctrl>
-        </div>
-    </div>
+<md-list-item ng-repeat="pcontrol in panel.pcontrols">
+    <ctrl flex panel-control="pcontrol"></ctrl>
 </md-list-item>

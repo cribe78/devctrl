@@ -72,6 +72,13 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 DataService.updateControlValue(self.ctrl);
             };
 
+            this.editOptions = function($event) {
+                DataService.editEnum($event, null, self.ctrl, {
+                    title: "Edit " + self.name + " options"
+                });
+            };
+
+
             this.selectMenuItem = function(val) {
                 self.ctrl.fields.value = val;
                 self.updateValue();

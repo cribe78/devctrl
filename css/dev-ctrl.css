@@ -56,6 +56,10 @@ coe-menu li {
     width: 80px;
 }
 
+.devctrl-main-card {
+    max-width: 1000px;
+}
+
 .lightPurple {
     background: #8c9eff; }
 .menuBtn {

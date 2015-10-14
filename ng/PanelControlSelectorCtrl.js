@@ -1,6 +1,4 @@
-
 goog.provide("DevCtrl.PanelControlSelector.Ctrl");
-goog.provide("DevCtrl.PanelControlSelector.Resolve");
 
 DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
     function($mdDialog, DataService) {

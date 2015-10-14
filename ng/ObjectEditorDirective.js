@@ -9,7 +9,7 @@ DevCtrl.ObjectEditor.Directive  = [ function() {
         controller: function() {
             var self = this;
 
-            if (! angular.isDefined(this.object) || this.object == null) {
+            if (! angular.isDefined(this.object) || this.object == null || angular.isArray(this.object)) {
                 this.object = {};
             }
 

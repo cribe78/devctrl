@@ -608,6 +608,11 @@ sub execute_command_evid31 {
 		my ($xval, $yval) = split(',',$command{value});
 		$cmd = "8101" . $ascii_command . evid31_hex_number($xval, 4) . evid31_hex_number($yval, 4); 
 	}
+	elsif ($command{control_type} eq 'string') {
+		# These values aren't really strings, more like enums.  But they aren't numeric ranges like
+		# the 4 byte numbers
+		$cmd = "8101" . $ascii_command . evid31_hex_number($command{value}, 2);
+	} 
 	else {
 		$cmd = "8101" . $ascii_command . evid31_hex_number($command{value}, 4);
 	}
@@ -638,8 +643,10 @@ sub execute_command_evid31 {
 		}
 		elsif ($resp_hex =~ /^90:50:0(\w):0(\w):0(\w):0(\w):0(\w):0(\w):0(\w):0(\w)/) {
 			my $xval = hex("$1$2$3$4");
+			$xval = $xval > 32767 ? $xval - 65536 : $xval;
 			my $yval = hex("$5$6$7$8");
-			dwdebug("response value: $xval,$yval");
+			$yval = $yval > 32767 ? $yval - 65536 : $yval;
+			dwdebug("response value: $xval,$yval ($1$2$3$4,$5$6$7$8)");
 			update_control_value( $command{control_id}, "$xval,$yval");
 			return 1;
 		}
@@ -648,6 +655,10 @@ sub execute_command_evid31 {
 			dwdebug("response value: $val");
 			update_control_value( $command{control_id}, $val);
 			return 1;
+		}
+		elsif ($resp_hex =~ /^90:50:(\w\w)/) {
+			my $val = hex($1);
+			update_control_value( $command{control_id}, $val);
 		}
 	}
 	elsif ($resp =~ /\x90[\x41-\x49]/) {

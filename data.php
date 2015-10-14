@@ -20,7 +20,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $table = getTableName($post['tableName']);
 
     if (! $table) {
-        serverError("Error: {$post['table']} is not a valid table name");
+        serverError("Error: {$post['tableName']} is not a valid table name");
     }
 
     $fields = $g_schema[$table]['fields'];

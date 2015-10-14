@@ -7,6 +7,7 @@ goog.require("DevCtrl.Ctrl.Directive");
 goog.require("DevCtrl.Menu.Directive");
 goog.require("DevCtrl.FkSelect.Directive");
 goog.require("DevCtrl.EnumSelect.Directive");
+goog.require("DevCtrl.EnumEditor.Ctrl");
 goog.require("DevCtrl.ObjectEditor.Directive");
 goog.require("DevCtrl.Panel.Directive");
 goog.require("DevCtrl.Slider2d.Directive");
@@ -30,6 +31,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
     .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
+    .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)

@@ -30,6 +30,17 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
 
             this.editPanel = function($event) {
                 DataService.editRecord($event, this.panelObj.id, this.panelObj.tableName);
+            };
+
+            this.setAllSwitches = function(val) {
+                angular.forEach(this.pcontrols, function(pcontrol) {
+                    var control = pcontrol.foreign.controls;
+
+                    if (control.fields.usertype == 'switch') {
+                        control.fields.value = val;
+                        DataService.updateControlValue(control);
+                    }
+                });
             }
 
         },

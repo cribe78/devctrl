@@ -12,7 +12,7 @@ use strict;
 $|++;
 
 my $device_ip = "baryon.dwi.ufl.edu";
-my $device_port = 4002;
+my $device_port = 4003;
 my $command;
 my $debug = 1;
 

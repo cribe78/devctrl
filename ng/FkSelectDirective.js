@@ -5,12 +5,21 @@ DevCtrl.FkSelect.Directive = ['DataService', function(DataService) {
         scope: {
             tableName: '=table',
             field: '=',
-            selectModel: '='
+            selectModel: '=',
+            fkOnChange: '=',
+            addNewOption: '='
         },
         bindToController: true,
         controller: function(DataService) {
+            var self = this;
             this.options = DataService.getTable(this.tableName);
             this.schema = DataService.getSchema(this.tableName);
+
+            this.updateValue = function() {
+                if (angular.isFunction(self.fkOnChange)) {
+                    self.fkOnChange();
+                }
+            }
         },
         controllerAs: 'fkSelect',
         templateUrl: 'ng/fk-select.html'

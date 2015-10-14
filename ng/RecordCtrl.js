@@ -23,7 +23,8 @@ DevCtrl.Record.Ctrl = ['DataService',
         };
 
         this.cloneRow = function() {
-            var newRow = angular.copy(self.obj);
+            var newRow = DataService.getNewRowRef(self.obj.tableName);
+            newRow.fields = self.obj.fields;
 
             DataService.addRow(newRow);
             DataService.editRecordClose();

@@ -121,7 +121,7 @@ DevCtrl.ObjectEditor.Directive  = [ function() {
         controller: function() {
             var self = this;
 
-            if (! angular.isDefined(this.object) || this.object == null) {
+            if (! angular.isDefined(this.object) || this.object == null || angular.isArray(this.object)) {
                 this.object = {};
             }
 
@@ -262,6 +262,14 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
             }
         };
 
+        this.addEndpoint = function($event) {
+            DataService.editRecord($event, 0, "control_endpoints");
+        };
+
+        this.addEndpointType = function($event) {
+            DataService.editRecord($event, 0, "endpoint_types");
+        };
+
         this.dataModel = DataService.dataModel;
 
         this.title = "DevCtrl";
@@ -376,6 +384,27 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                     });
             },
 
+            editEnum : function($event, myEnum, enumRefRecord, options) {
+                if (! angular.isObject(options)) {
+                    options = {};
+                }
+
+                $mdDialog.show({
+                    targetEvent: $event,
+                    locals: {
+                        myEnum: myEnum,
+                        enumRefRecord: enumRefRecord,
+                        options: options
+                    },
+                    controller: DevCtrl.EnumEditor.Ctrl,
+                    controllerAs: 'editor',
+                    bindToController: true,
+                    templateUrl: 'ng/enum-editor.html',
+                    clickOutsideToClose: true,
+                    hasBackdrop : false
+                });
+            },
+
             editRecord : function($event, id, tableName, recordDefaults) {
                 var record;
                 if (id !== "0") {
@@ -404,6 +433,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             },
 
             editRecordClose : function() {
+                //TODO: delete unused new record
                 $mdDialog.hide();
             },
 
@@ -877,6 +907,13 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 DataService.updateControlValue(self.ctrl);
             };
 
+            this.editOptions = function($event) {
+                DataService.editEnum($event, null, self.ctrl, {
+                    title: "Edit " + self.name + " options"
+                });
+            };
+
+
             this.selectMenuItem = function(val) {
                 self.ctrl.fields.value = val;
                 self.updateValue();
@@ -935,7 +972,8 @@ DevCtrl.Record.Ctrl = ['DataService',
         };
 
         this.cloneRow = function() {
-            var newRow = angular.copy(self.obj);
+            var newRow = DataService.getNewRowRef(self.obj.tableName);
+            newRow.fields = self.obj.fields;
 
             DataService.addRow(newRow);
             DataService.editRecordClose();
@@ -1073,12 +1111,15 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
                 }
             );
         };
+
+        this.editEndpoint = function($event) {
+            DataService.editRecord($event, this.endpointId, 'control_endpoints');
+        }
     }
 ];
 
 
 // ../ng/PanelControlSelectorCtrl.js
-
 DevCtrl.PanelControlSelector = {};
 
 DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
@@ -1189,6 +1230,74 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
     }
 ];
 
+// ../ng/EnumEditorCtrl.js
+DevCtrl.EnumEditor = {};
+
+
+DevCtrl.EnumEditor.Ctrl = ['$mdDialog', 'DataService',
+    function($mdDialog, DataService) {
+        var self = this;
+        this.enums = DataService.getTable("enums");
+        this.enumVals = DataService.getTable("enum_vals");
+
+        this.newEnumValue = DataService.getNewRowRef("enum_vals");
+        this.isAddingEnum = false;
+
+        this.title = function() {
+            if (angular.isString(self.options.title)) {
+                return self.options.title;
+            }
+
+            return "Edit " + self.myEnum.fields.name + " values";
+        };
+
+        this.isEnumSelectable = function() {
+            return angular.isObject(self.enumRefRecord);
+        };
+
+
+        this.updateEnumValue = function(enumValue) {
+            DataService.updateRow(enumValue);
+        };
+
+        this.addEnumValue = function() {
+            self.newEnumValue.fields.enum_id = self.myEnum.id;
+            self.newEnumValue.fields.enabled = 1;
+            DataService.addRow(self.newEnumValue);
+            self.newEnumValue = DataService.getNewRowRef("enum_vals");
+        };
+
+        this.deleteEnumValue = function(enumValue) {
+            DataService.deleteRow(enumValue);
+        };
+
+        this.updateEnum = function() {
+            if (self.enumRefRecord.fields.enum_id == 0) {
+                self.isAddingEnum = true;
+            }
+            else {
+                self.myEnum = self.enums.indexed[self.enumRefRecord.fields.enum_id];
+                DataService.updateRow(self.enumRefRecord);
+            }
+        };
+
+        this.addNewEnum = function() {
+            self.newEnum = DataService.getNewRowRef("enums");
+            self.newEnum.fields.name = self.newEnumName;
+            DataService.addRow(self.newEnum);
+            self.newEnumName = '';
+            self.isAddingEnum = false;
+        };
+
+        if (this.isEnumSelectable) {
+            self.myEnum = self.enums.indexed[self.enumRefRecord.fields.enum_id];
+        };
+
+        this.close = function() {
+            $mdDialog.hide();
+        };
+
+    }];
 // ../ng/FkSelectDirective.js
 DevCtrl.FkSelect = {};
 
@@ -1197,12 +1306,21 @@ DevCtrl.FkSelect.Directive = ['DataService', function(DataService) {
         scope: {
             tableName: '=table',
             field: '=',
-            selectModel: '='
+            selectModel: '=',
+            fkOnChange: '=',
+            addNewOption: '='
         },
         bindToController: true,
         controller: function(DataService) {
+            var self = this;
             this.options = DataService.getTable(this.tableName);
             this.schema = DataService.getSchema(this.tableName);
+
+            this.updateValue = function() {
+                if (angular.isFunction(self.fkOnChange)) {
+                    self.fkOnChange();
+                }
+            }
         },
         controllerAs: 'fkSelect',
         templateUrl: 'ng/fk-select.html'
@@ -1330,6 +1448,17 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
 
             this.editPanel = function($event) {
                 DataService.editRecord($event, this.panelObj.id, this.panelObj.tableName);
+            };
+
+            this.setAllSwitches = function(val) {
+                angular.forEach(this.pcontrols, function(pcontrol) {
+                    var control = pcontrol.foreign.controls;
+
+                    if (control.fields.usertype == 'switch') {
+                        control.fields.value = val;
+                        DataService.updateControlValue(control);
+                    }
+                });
             }
 
         },
@@ -1350,6 +1479,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
     .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
+    .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)

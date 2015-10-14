@@ -2,3 +2,7 @@ TODO: update device status and disable controls for disconnected devices
 TODO: Add documentation for databaase tables/table editors
 TODO: fix error display messages
 TODO: group control select values by endpoint
+TODO: move min and max control values to config options
+TODO: add log view
+TODO: add admin directive
+TODO: save settings sets

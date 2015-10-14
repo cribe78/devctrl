@@ -1,5 +1,11 @@
- <md-select placeholder={{fkSelect.field.label}} ng-model="fkSelect.selectModel[fkSelect.field.name]">
+ <md-select placeholder={{fkSelect.field.label}}
+            ng-model="fkSelect.selectModel[fkSelect.field.name]"
+            ng-change="fkSelect.updateValue()">
      <md-option ng-value="key" ng-repeat="(key, row) in fkSelect.options.indexed">
          {{row.fields[fkSelect.schema.fk_name]}}
+     </md-option>
+     <md-option ng-if="fkSelect.addNewOption"
+             ng-value="0">
+         Add New...
      </md-option>
  </md-select>

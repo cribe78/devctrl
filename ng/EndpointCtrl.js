@@ -38,7 +38,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
 
         this.editEndpoint = function($event) {
             DataService.editRecord($event, this.endpointId, 'control_endpoints');
-        }
+        };
     }
 ];
 

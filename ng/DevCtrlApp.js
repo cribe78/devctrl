@@ -3,9 +3,11 @@ goog.require("DevCtrl.MainCtrl");
 goog.require("DevCtrl.stateConfig");
 goog.require("DevCtrl.DataService.factory");
 goog.require("DevCtrl.MenuService.factory");
+goog.require("DevCtrl.AdminOnly.Directive");
 goog.require("DevCtrl.Ctrl.Directive");
 goog.require("DevCtrl.Menu.Directive");
 goog.require("DevCtrl.FkSelect.Directive");
+goog.require("DevCtrl.EndpointStatus.Directive");
 goog.require("DevCtrl.EnumSelect.Directive");
 goog.require("DevCtrl.EnumEditor.Ctrl");
 goog.require("DevCtrl.ObjectEditor.Directive");
@@ -30,6 +32,8 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('enumSelect', DevCtrl.EnumSelect.Directive)
     .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
     .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
+    .directive('devctrlAdminOnly', DevCtrl.AdminOnly.Directive)
+    .directive('devctrlEndpointStatus', DevCtrl.EndpointStatus.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
     .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)

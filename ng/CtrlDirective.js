@@ -56,8 +56,8 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             this.normalizedValue = function() {
                 // Normalize a numeric value to a scale of 0 - 100
                 var rawVal = self.ctrl.fields.value;
-                var max = self.template.fields.max;
-                var min = self.template.fields.min;
+                var max = self.intConfig('max');
+                var min = self.intConfig('min');
 
                 rawVal = rawVal < min ? min : rawVal;
                 rawVal = rawVal > max ? max : rawVal;

@@ -2,6 +2,9 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var net = require('net');
+var util = require('util');
+var merge = require('deepmerge');
+var cp = require('child_process');
 
 //var key = fs.readFileSync('/home/chris/devctrl.dwi.ufl.edu.self.key');
 //var cert = fs.readFileSync('/etc/ssl/certs/devctrl_dwi_ufl_edu_cert.cer');
@@ -39,27 +42,38 @@ var updateServer = net.createServer( function(sock) {
         console.log("update recieved: " + data);
 
         data = data.toString();
-        // If we have more than one object, take only the last
+
+        var updates = {
+            update: {}
+        };
+
+        // If we have more than one object, merge them
         while (data.indexOf("}{") > 0) {
             var idx = data.indexOf("}{") + 1;
+            var objStr = data.substr(0, idx);
+            var updateObj = JSON.parse(objStr);
+
+            if (typeof(updateObj.update) !== 'undefined') {
+                merge(updates, updateObj);
+            }
+
             data = data.substr(idx);
         }
 
-        var ctrl = JSON.parse(data);
-
-        if (typeof (ctrl.control_id) !== 'undefined') {
-            var msg = {
-                update : {
-                    controls : {}
-                }
-            };
-
-            msg.update.controls[ctrl.control_id] = ctrl;
-
-            io.emit('control-data', msg);
-        }
+        io.emit('control-data', updates);
     });
 });
 
 updateServer.listen(2879, '127.0.0.1');
 console.log("TCP server started on port 2879");
+
+var minute = 60 * 1000;
+
+// Run a regular status check on the pcontrol-daemons
+setInterval(function() {
+    console.log("calling pcontrol_check.php");
+    cp.exec("php ../sub/pcontrol_check.php", function(error, stdout, stderr) {
+            var dataObj = JSON.parse(stdout);
+            io.emit('control-data', dataObj);
+    });
+}, minute);

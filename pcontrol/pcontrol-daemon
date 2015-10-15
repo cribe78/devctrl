@@ -29,6 +29,7 @@ my $device_pass    = "DWCONTROL";
 my $target_type    = "switcher-dxp";
 my $device_name    = "";
 my $device_enabled = 0;
+my $device_status  = "indeterminate";
 my $response_terminator = "\r";
 my $debug          = 1;
 my $io_server_port = 2879;
@@ -154,6 +155,7 @@ if ( !$proto ) {
 my $sock = device_connect();
 if ( !$sock ) {
 	dwlog("could not connect to device, exiting");
+	update_endpoint_status("disconnected");
 	exit();
 }
 
@@ -418,12 +420,14 @@ sub execute_command {
 
 	if ( $res == 1 ) {
 		$last_communication = time();
+		update_endpoint_status("online");
 	}
 	elsif ( time() - $last_communication > $alert_thresh ) {
 
 		# It has been more than alert_thresh seconds since
 		# we last successfully communicated with the device.
 		# Close the connection and reconnect.
+		update_endpoint_status("disconnected");
 
 		my $elapsed = time() - $last_communication;
 		dwlog("{$elapsed}s since last device communication.  resetting...");
@@ -1317,19 +1321,29 @@ sub io_server_connect {
 	return $sock;
 }
 
-# Send a control value update to the io server
-#
 
-sub io_send_value_update {
-	my ( $control_id, $value ) = (@_);
-
+sub io_send_endpoint_status_update {
+	my ( $status ) = (@_);
+	
 	my %cval = (
-		control_id          => $control_id + 0,
-		value               => $value,
-		control_endpoint_id => $ce_id + 0
+		update => {
+			control_endpoints => {
+				$ce_id => {
+					control_endpoint_id => $ce_id + 0,
+					status => $status
+				}
+			}
+		}
 	);
+	
+	io_send_message(\%cval);
+}
 
-	my $json = encode_json( \%cval );
+
+sub io_send_message {
+	my ($ref) = (@_);
+	
+	my $json = encode_json( $ref );
 
 	if ( $io_sock && defined( $io_sock->connected ) ) {
 		$io_sock->print($json);
@@ -1341,7 +1355,27 @@ sub io_send_value_update {
 			$io_sock->print($json);
 		}
 	}
+}
 
+# Send a control value update to the io server
+#
+
+sub io_send_value_update {
+	my ( $control_id, $value ) = (@_);
+
+	my %cval = ( 
+		update => {
+			controls => {
+				$control_id => {
+					control_id          => $control_id + 0,
+					value               => $value,
+					control_endpoint_id => $ce_id + 0					
+				}
+			}	
+		}
+	);
+
+	io_send_message(\%cval);
 }
 
 
@@ -1701,5 +1735,27 @@ sub update_command_status {
 	}
 
 	return 1;
+}
+
+sub update_endpoint_status {
+	my ($status) = (@_);
+	
+	state $update_endpoint_status = $dbh->prepare(
+		"update control_endpoints set status = ? where control_endpoint_id = ?"
+	);
+	
+	if ($status eq $device_status) {
+		return;
+	}
+	
+	$device_status = $status;
+	
+	if (! $update_endpoint_status->execute($status, $ce_id)) {
+		dwlog("update endpoint status failed: $DBI::errstr");
+		return;
+	}
+	
+	io_send_endpoint_status_update($status);
+	dwlog("endpoint $ce_id status changed to $status");
 }
 

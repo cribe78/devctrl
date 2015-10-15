@@ -34,10 +34,7 @@ md-list-item .table-header {
     overflow: hidden;
 }
 
-.coe-ctrl-select > md-select {
-    padding: 0px 2px 12px;
-    margin-top: 12px;
-}
+
 
 coe-menu ul {
     list-style: none;
@@ -48,16 +45,52 @@ coe-menu li {
 }
 
 .coe-ctrl {
-    margin: 16px;
-    padding: 16px;
+  /**  margin: 16px;
+    padding: 16px;  **/
 }
 
-.coe-ctrl-slider-input {
-    width: 80px;
+
+
+
+.devctrl-ctrl {
+    min-height: 48px;
+}
+
+.devctrl-ctrl-admin-placeholder {
+    width: 48px;
+}
+.devctrl-ctrl-item {
+    min-height: 48px;
+}
+
+.devctrl-ctrl-label {
+    margin-right: 12px;
+    width: 180px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.devctrl-ctrl-select > md-select {
+    padding: 0px 2px 0px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.devctrl-label-indented {
+    margin-left: 24px;
 }
 
 .devctrl-main-card {
     max-width: 1000px;
+}
+
+.devctrl-main-toolbar {
+    max-width: 1048px;
+}
+
+.devctrl-slider-input {
+    width: 60px;
 }
 
 .lightPurple {

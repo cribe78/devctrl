@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "socket.io messaging for DevCtrl",
   "dependencies": {
+    "deepmerge": "^0.2.10",
     "express": "^4.12.4",
-    "socket.io": "^1.3.5"
+    "socket.io": "^1.3.5",
+    "util": "^0.10.3"
   }
 }

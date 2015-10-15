@@ -276,6 +276,31 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         this.top = true;
     }
 ];
+// ../ng/AdminOnlyDirective.js
+DevCtrl.AdminOnly = {};
+
+/**
+ * The devctrl-admin-only directive can be applied to elements to remove them from the DOM if admin mode
+ * is not enabled
+ * @type {*[]}
+ */
+
+DevCtrl.AdminOnly.Directive  = ['$compile', 'DataService', function($compile, DataService) {
+        return {
+            restrict: 'A',
+            replace: false,
+            terminal: true,
+            priority: 1000,
+            link: function(scope, element, attrs) {
+                element.removeAttr('devctrl-admin-only');
+                element.attr('ng-if', 'dataServiceConfig.editEnabled');
+                scope.dataServiceConfig = DataService.config;
+
+                $compile(element)(scope);
+            }
+        }
+    }
+];
 // ../ng/MenuDirective.js
 DevCtrl.Menu = {};
 
@@ -891,8 +916,8 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             this.normalizedValue = function() {
                 // Normalize a numeric value to a scale of 0 - 100
                 var rawVal = self.ctrl.fields.value;
-                var max = self.template.fields.max;
-                var min = self.template.fields.min;
+                var max = self.intConfig('max');
+                var min = self.intConfig('min');
 
                 rawVal = rawVal < min ? min : rawVal;
                 rawVal = rawVal > max ? max : rawVal;
@@ -1073,6 +1098,64 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
 
         return self;
     }];
+// ../ng/EndpointStatusDirective.js
+DevCtrl.EndpointStatus = {};
+
+DevCtrl.EndpointStatus.Directive  = ['DataService', function(DataService) {
+    return {
+        scope: {
+            endpointId: '='
+        },
+        bindToController: true,
+        controller: function(DataService) {
+            var self = this;
+            this.endpoint = DataService.getRowRef('control_endpoints', this.endpointId);
+
+            this.status = function() {
+                if (! self.endpoint.fields.enabled) {
+                    return "disabled";
+                }
+                else if (self.endpoint.fields.status == '' || self.endpoint.fields.status == null) {
+                    return "unknown";
+                }
+
+                return self.endpoint.fields.status;
+            };
+
+            this.statusIcon = function() {
+                var status = self.status();
+
+                if (status == "online") {
+                    return "sync"
+                }
+                if (status == "disconnected") {
+                    return "sync_problem";
+                }
+                if (status == "disabled") {
+                    return "sync_disabled";
+                }
+
+                return "help";
+            };
+
+            this.statusIconClasses = function() {
+                var status = self.status();
+
+                if (status == "disabled") {
+                    return "md-disabled";
+                }
+
+                if (status == "disconnected") {
+                    return "md-warn";
+                }
+
+                return "md-primary md-hue-2";
+            }
+        },
+        controllerAs: 'endpointStatus',
+        templateUrl: 'ng/endpoint-status.html'
+    }
+}];
 // ../ng/EndpointCtrl.js
 DevCtrl.Endpoint = {};
 
@@ -1114,7 +1197,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
 
         this.editEndpoint = function($event) {
             DataService.editRecord($event, this.endpointId, 'control_endpoints');
-        }
+        };
     }
 ];
 
@@ -1478,6 +1561,8 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('enumSelect', DevCtrl.EnumSelect.Directive)
     .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
     .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
+    .directive('devctrlAdminOnly', DevCtrl.AdminOnly.Directive)
+    .directive('devctrlEndpointStatus', DevCtrl.EndpointStatus.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
     .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)

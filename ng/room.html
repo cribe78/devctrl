@@ -1,10 +1,10 @@
 <div>
-    <md-card>
+    <md-card class="devctrl-main-card">
         <md-card-content>
             <div layout="row">
                 <span class="text-title">{{room.obj.fields.name}}</span>
                 <span flex></span>
-                <md-button ng-if="room.config.editEnabled"
+                <md-button devctrl-admin-only
                            ng-click="room.addPanel($event)"
                            class="md-primary">
                     Add Panel

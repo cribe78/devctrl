@@ -117,6 +117,11 @@ $g_schema = array(
                 'label' => 'Endpoint Type',
             ),
             array(
+                'name' => 'name',
+                'type' => 'string',
+                'label' => 'Control Template Name'
+            ),
+            array(
                 'name' => 'usertype',
                 'type' => 'enum',
                 'label' => 'User Type',
@@ -132,24 +137,9 @@ $g_schema = array(
                 'label' => 'Command',
             ),
             array(
-                'name' => 'config',
-                'type' => 'object',
-                'label' => 'Default Config'
-            ),
-            array(
                 'name' => 'enum_id',
                 'type' => 'fk',
                 'label' => 'Enum',
-            ),
-            array(
-                'name' => 'min',
-                'type' => 'int',
-                'label' => 'Min Value',
-            ),
-            array(
-                'name' => 'max',
-                'type' => 'int',
-                'label' => 'Max Value',
             ),
             array(
                 'name' => 'poll',
@@ -157,9 +147,9 @@ $g_schema = array(
                 'label' => 'Poll?'
             ),
             array(
-                'name' => 'name',
-                'type' => 'string',
-                'label' => 'Control Template Name'
+                'name' => 'config',
+                'type' => 'object',
+                'label' => 'Default Config'
             )
         ),
 

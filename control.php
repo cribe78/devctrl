@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $control['control_id'] = $pc_id;
 
     queueCommand($control);
-    alertControlDaemon($control);
+    alertControlDaemon($control['control_endpoint_id']);
 
     jsonResponse();
 }

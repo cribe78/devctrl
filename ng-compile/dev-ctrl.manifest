@@ -3,6 +3,7 @@
 ../ng/ObjectEditorDirective.js
 ../ng/RoomCtrl.js
 ../ng/MainCtrl.js
+../ng/AdminOnlyDirective.js
 ../ng/MenuDirective.js
 ../ng/DataService.js
 ../ng/controls/Slider2dDirective.js
@@ -10,6 +11,7 @@
 ../ng/CtrlDirective.js
 ../ng/RecordCtrl.js
 ../ng/MenuService.js
+../ng/EndpointStatusDirective.js
 ../ng/EndpointCtrl.js
 ../ng/PanelControlSelectorCtrl.js
 ../ng/EnumEditorCtrl.js

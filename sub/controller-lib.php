@@ -8,13 +8,12 @@ $id_idx = 1;
 $log = array();
 
 
-function alertControlDaemon($control, $token = "POLL") {
+function alertControlDaemon($ce_id, $token = "POLL") {
     // Send a UDP message to a control daemon, alerting it to 
     // check the command queue for new commands
 
     $control_endpoints = getTableData("control_endpoints", true);
 
-    $ce_id = $control['control_endpoint_id'];
     if (! isset($control_endpoints[$ce_id])) {
         serverError("control_endpoint $ce_id not found");
     }
@@ -36,7 +35,7 @@ function alertControlDaemon($control, $token = "POLL") {
         }
         else {
             pclog("process $pid not found, relaunching");
-            launchControlDaemon($control);
+            launchControlDaemon($ce_id);
             return;
         }
     }
@@ -44,7 +43,7 @@ function alertControlDaemon($control, $token = "POLL") {
     $fp = stream_socket_client("udp://127.0.0.1:$port", $errno, $errstr);
     if (! $fp) {
         pclog("{$ce['name']} could not connect to control daemon at port $port)");
-        launchControlDaemon($control);
+        launchControlDaemon($ce_id);
         return;
     }
     stream_set_timeout($fp, 2);
@@ -60,7 +59,7 @@ function alertControlDaemon($control, $token = "POLL") {
     }
     pclog("{$ce['name']} NO ACK received (pid $pid)");
 
-    launchControlDaemon($control);
+    launchControlDaemon($ce_id);
 }
 
 /**
@@ -219,36 +218,38 @@ function jsonResponse($response = "", $response_code = 200) {
     exit();
 }
 
-function launchControlDaemon($control) {
+function launchControlDaemon($ce_id) {
     global $mysqli;
 
     $control_endpoints = getTableData("control_endpoints", true);
-    $ce_id  = $control['control_endpoint_id'];
     $ce = $control_endpoints[$ce_id];
+    $status = "disabled";
+
+    $update_endpoint = $mysqli->prepare(
+        "update control_endpoints set status = ?, daemon_pid = 0, daemon_port = 0 where control_endpoint_id = ? ");
+
+    if (! $update_endpoint) {
+        serverError("$ce_id update_endpoint prepare error: {$mysqli->error}");
+    }
+
+    $update_endpoint->bind_param('si', $status, $ce_id);
 
     $process = exec("ps ax | grep \"pcontrol-daemon --ce=$ce_id\"");
 
     if (preg_match("/^(\d+)\s/", $process, $matches)) {
         exec("kill $matches[1]");
         pclog("pcontrol-daemon process $matches[1] killed");
-
-        $delete_daemon = $mysqli->prepare(
-            "update control_endpoints set daemon_pid = 0, daemon_port = 0 where control_endpoint_id = ? ");
-
-        if (! $delete_daemon) {
-            serverError("$ce_id update_endpoint prepare error: {$mysqli->error}");
-        }
-
-        $delete_daemon->bind_param('i', $ce_id);
-        if (! $delete_daemon->execute()) {
-            serverError("$ce_id update_endpoint execute error: {$delete_daemon->error}");
-        }
     }
 
     if ($ce['enabled']) {
         $exec_str = __DIR__ . "/../pcontrol/pcontrol-daemon --ce=$ce_id";
         pclog("{$ce['name']} launching pcontrol-daemon: $exec_str");
         exec($exec_str);
+        $status = "launched";
+    }
+
+    if (! $update_endpoint->execute()) {
+        serverError("$ce_id update_endpoint execute error: {$update_endpoint->error}");
     }
 }
 
@@ -267,32 +268,7 @@ $insert_log = '';
 function pclog($msg) {
     error_log($msg);
 }
-    
 
-function pingControlDaemons() {
-    global $active_targets;
-    foreach ($active_targets as $tt => $tna) {
-        foreach ($tna as $tn => $tv) {
-            alertControlDaemon($tt, $tn, "ALV?");
-        }
-    }
-}
-
-function setPControl($tt, $tn, $ct, $cn, $value) {
-    if ($tt == 'proj' || 
-        $tt == 'audio-onkyo' ||
-        $tt == 'switcher-dxp' ||
-        $tt == 'scaler' ) {
-        queueCommand($tt, $tn, $ct, $cn, $value);
-        alertControlDaemon($tt, $tn);
-    }
-    elseif ($tt === 'delay') {
-        usleep($value);
-    }
-    else {
-        pclog("setPControl: unhandled tt: $tt");
-    }
-}
 
 function queueCommand($control) {
     global $mysqli;

@@ -1,7 +1,11 @@
-<div class="coe-ctrl" layout>
-    <div flex="10" layout layout-align="center center">
-        <span class="text-caption">{{slider2d.control.config('xName')}}</span>
-    </div>
+<div>
+    <label class="text-menu devctrl-ctrl-label">{{slider2d.control.ctrlName()}}</label>
+</div>
+<div class="coe-ctrl"
+     layout="row"
+     layout-align="space-between center"
+        >
+    <label class="text-caption devctrl-ctrl-label devctrl-label-indented">{{slider2d.control.config('xName')}}</label>
     <md-slider flex
                min="{{slider2d.control.intConfig('xMin')}}"
                max="{{slider2d.control.intConfig('xMax')}}"
@@ -10,17 +14,16 @@
                ng-change="slider2d.updateValue()"
                aria-label="{{slider2d.control.config('xName')}}">
     </md-slider>
-    <div flex="20" layout layout-align="center center">
-        <input class="coe-ctrl-slider-input" type="number"
-               ng-model="slider2d.xValue"
-               ng-model-options="{ getterSetter : true}"
-               ng-change="slider2d.updateValue()">
-    </div>
+    <input class="devctrl-slider-input" type="number"
+           ng-model="slider2d.xValue"
+           ng-model-options="{ getterSetter : true}"
+           ng-change="slider2d.updateValue()">
 </div>
-<div class="coe-ctrl" layout>
-    <div flex="10" layout layout-align="center center">
-        <span class="text-caption">{{slider2d.control.config('yName')}}</span>
-    </div>
+<div class="coe-ctrl"
+     layout="row"
+     layout-align="space-between center"
+        >
+    <label class="text-caption devctrl-ctrl-label devctrl-label-indented">{{slider2d.control.config('yName')}}</label>
     <md-slider flex
                min="{{slider2d.control.intConfig('yMin')}}"
                max="{{slider2d.control.intConfig('yMax')}}"
@@ -29,10 +32,8 @@
                ng-change="slider2d.updateValue()"
                aria-label="{{slider2d.control.config('yName')}}">
     </md-slider>
-    <div flex="20" layout layout-align="center center">
-        <input class="coe-ctrl-slider-input" type="number"
-               ng-model="slider2d.yValue"
-               ng-model-options="{ getterSetter : true}"
-               ng-change="slider2d.updateValue()">
-    </div>
+    <input class="devctrl-slider-input" type="number"
+           ng-model="slider2d.yValue"
+           ng-model-options="{ getterSetter : true}"
+           ng-change="slider2d.updateValue()">
 </div>

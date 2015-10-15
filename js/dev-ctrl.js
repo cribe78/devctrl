@@ -402,7 +402,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
 
                 // Check for foreign key constraints
                 var referencedTable = false;
-                angular.forEach(row.referenced, function(refTable, refs) {
+                angular.forEach(row.referenced, function(refs, refTable) {
                     if (Object.keys(refs).length > 0) {
                         //TODO: cannot delete value due to foreign key constraint
                         referencedTable = refTable;
@@ -484,7 +484,16 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                     errorText = data.error;
                 }
 
-                $mdToast.show($mdToast.simple().content(errorText));
+
+                //$mdToast.show($mdToast.simple().content(errorText));
+                $mdToast.show({
+                    templateUrl: "ng/error-toast.html",
+                    locals: {
+                        message: errorText
+                    },
+                    position: 'top right',
+                    hideDelay: 3000
+                })
             },
 
             getNewRowRef : function(tableName) {

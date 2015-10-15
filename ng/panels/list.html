@@ -11,6 +11,6 @@
         Edit Panel
     </md-button>
 </md-subheader>
-<md-list-item ng-repeat="pcontrol in panel.pcontrols">
+<md-list-item ng-repeat="pcontrol in panel.panelObj.referenced.panel_controls">
     <ctrl flex panel-control="pcontrol"></ctrl>
 </md-list-item>

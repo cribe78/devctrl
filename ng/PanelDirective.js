@@ -9,9 +9,6 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
         controller: function($mdDialog, DataService) {
             var self = this;
             this.fields = this.panelObj.fields;
-            this.pcontrols = this.panelObj.referenced.panel_controls;
-
-            this.appConfig = DataService.config;
 
             this.addControl = function($event) {
                 $mdDialog.show({
@@ -33,7 +30,7 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
             };
 
             this.setAllSwitches = function(val) {
-                angular.forEach(this.pcontrols, function(pcontrol) {
+                angular.forEach(self.panelObj.referenced.panel_controls, function(pcontrol) {
                     var control = pcontrol.foreign.controls;
 
                     if (control.fields.usertype == 'switch') {

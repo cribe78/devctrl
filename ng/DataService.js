@@ -80,6 +80,22 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             deleteRow : function(row) {
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
+                // Check for foreign key constraints
+                var referencedTable = false;
+                angular.forEach(row.referenced, function(refTable, refs) {
+                    if (Object.keys(refs).length > 0) {
+                        //TODO: cannot delete value due to foreign key constraint
+                        referencedTable = refTable;
+                    }
+                });
+
+                if (referencedTable) {
+                    var msg = "Cannot delete " + row.tableName + " record due to foreign key constraint on " + referencedTable;
+
+                    self.errorToast({error: msg});
+                    return;
+                }
+
                 $http.delete(resource)
                     .success(function (data) {
                         self.loadData(data);
@@ -359,14 +375,16 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                         var pk = self.getSchema(table).pk;
 
                         angular.forEach(tableData, function(value, key) {
-                            if (angular.isString(pk)) {
-                                delete dataModel[table].indexed[key];
-                            }
-                            else {
-                                angular.forEach(value, function(val2, key2) {
-                                    delete dataModel[table].indexed[key][key2];
-                                });
-                            }
+                            // Remove references
+                            var record = dataModel[table].indexed[key];
+
+                            angular.forEach(record.foreign, function(referenced, refID) {
+                                if (angular.isDefined(referenced.referenced[table][key])) {
+                                    delete referenced.referenced[table][key];
+                                }
+                            });
+
+                            delete dataModel[table].indexed[key];
                         });
 
                         // Rebuild object list

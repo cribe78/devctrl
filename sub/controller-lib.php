@@ -8,6 +8,93 @@ $id_idx = 1;
 $log = array();
 
 
+function adminAuthCheck() {
+    global $mysqli;
+    global $resp;
+
+    $admin_identifier = '';
+
+    if (isset($_COOKIE['admin_identifier'])) {
+        $admin_identifier = $_COOKIE['admin_identifier'];
+    }
+
+    // Admin authentication
+    if ($admin_identifier) {
+        $select_admin = $mysqli->prepare(
+            "select users.user_id, users.glid, users.groups,
+                admin_sessions.admin_session_id, admin_sessions.expiration
+                from admin_sessions
+                left join users on admin_sessions.user_id = users.user_id
+                where admin_sessions.identifier = ?");
+        if (! $select_admin)
+            errorResponse("prepare select_admin error: {$mysqli->error}");
+
+        pclog(LOG_INFO, "loading admin session $admin_identifier");
+
+        $select_admin->bind_param('s', $admin_identifier);
+        if (! $select_admin->execute())
+            errorResponse("select_admin error: {$mysqli->error}");
+
+        $res = $select_admin->get_result();
+
+        $admin_user = array();
+        if ($row = $res->fetch_assoc()) {
+            $admin_user['glid'] = $row['glid'];
+            $admin_user['groups'] = $row['groups'];
+            $admin_user['user_id'] = $row['user_id'];
+            $admin_user['admin_session_id'] = $row['admin_session_id'];
+            $admin_user['expiration'] = $row['expiration'];
+        }
+        else {
+            adminAuthSetIdAndRedirect();
+        }
+
+        if ($admin_user['user_id'] == null) {
+            /* @var $locusService OAuth\OAuth2\Service\Locus */
+            $locusService = getLocusService();
+            $resp['location'] = (string)$locusService->getAuthorizationUri();
+            errorResponse("Admin login required", 401);
+        }
+
+        if (time() > $admin_user['expiration']) {
+            errorResponse("Admin authorization expired {$admin_user['glid']}", 401);
+        }
+
+        if (! groupsHasAdminAccess($admin_user['groups'])) {
+            errorResponse("Insufficient access for user {$admin_user['glid']}", 401);
+        }
+
+        $new_expiration = time() + 60 * 60; // another hour
+
+        coe_mysqli_prepare_bind_execute(
+            "update admin_sessions set expiration = ? where identifier = ?",
+            'is',
+            array(&$new_expiration, &$admin_identifier));
+
+        setcookie('admin_identifier', $admin_identifier, $new_expiration, "/");
+
+        return true;
+    }
+    else {
+        adminAuthSetIdAndRedirect();
+    }
+}
+
+function adminAuthSetIdAndRedirect() {
+    $admin_identifier = uniqid();
+    $admin_expire = time() + 60 * 60;
+    setcookie('admin_identifier', $admin_identifier, $admin_expire, "/");
+
+    coe_mysqli_prepare_bind_execute(
+        "insert into admin_sessions (identifier, expiration) values (?, ?)",
+        'si',
+        array(&$admin_identifier, &$admin_expire));
+
+    $locusService = getLocusService();
+    $resp['location'] = $locusService->getAuthorizationUri();
+    errorResponse("Admin login required", 401);
+}
+
 function alertControlDaemon($ce_id, $token = "POLL") {
     // Send a UDP message to a control daemon, alerting it to 
     // check the command queue for new commands
@@ -126,6 +213,36 @@ function getID() {
     return $id;
 }
 
+
+function getLocusService() {
+    global $g_oauth_client;
+    global $g_oauth_secret;
+    global $g_base_url;
+
+    static $locusService = false;
+
+    if ($locusService) {
+        return $locusService;
+    }
+
+    //Perform login via locus oauth2
+    $storage = new OAuth\Common\Storage\Session();
+    $credentials = new OAuth\Common\Consumer\Credentials(
+        $g_oauth_client,
+        $g_oauth_secret,
+        $g_base_url . "index.php");
+
+    $serviceFactory = new \OAuth\ServiceFactory();
+    /** @var $locusService Locus */
+    $locusService = $serviceFactory->createService('locus',
+        $credentials,
+        $storage,
+        array('profile', 'openid', 'email'));
+
+    return $locusService;
+}
+
+
 function getPathKeys() {
     $info = $_SERVER['PATH_INFO'];
     $info = preg_replace('/^\//', '', $info);  //strip a leading slash
@@ -191,6 +308,51 @@ function getTableName($input) {
     }
 }
 
+function groupsHasAdminAccess($groupsStr) {
+    return groupsStringHasGroups(
+        $groupsStr,
+        array('DW-FS-ADMIN')
+    );
+}
+
+function groupsHasClientAccess($groupsStr) {
+    return groupsStringHasGroups(
+        $groupsStr,
+        array('CFA-Digital Worlds Institute-Staff Users',
+            'COE-L-ETC')
+    );
+}
+
+
+/**
+ * @param $groupsStr string  A shibboleth UFADGroupsDN string of group names
+ * @param $groupsArray array An array of individual groups. If one or more match the groupsStr, return true
+ *
+ * @return bool Whether the $groupsStr matches a member of the $groupsArray
+ */
+
+function groupsStringHasGroups($groupsStr, $groupsArray) {
+    $groups_long = explode(";", $groupsStr);
+
+    $groups = array();
+
+    foreach($groups_long as $group_long) {
+        $parts = explode(",", $group_long);
+        if (strpos($parts[0], "CN=") === 0) {
+            $groups[] = substr($parts[0], 3);
+        }
+    }
+
+    foreach ($groupsArray as $group) {
+        if (array_search($group, $groups) !== false) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 
 function errorResponse($error, $response_code = 200) {
     global $resp;
@@ -211,6 +373,9 @@ function jsonResponse($response = "", $response_code = 200) {
 
     if ($response_code === 500) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
+    }
+    elseif ($response_code === 401) {
+        header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
     }
 
     header('Content-type: application/json');

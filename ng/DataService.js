@@ -1,7 +1,7 @@
 goog.provide('DevCtrl.DataService.factory');
 
-DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
-    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog) {
+DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog', '$location',
+    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog, $location) {
         var dataModel = {};
         var schema = {};
         var schemaLoaded = false;
@@ -32,6 +32,8 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
         var tablePromises = {};
+
+        var adminAuthorized = false;
 
         var clientConfig = {
             editEnabled: true
@@ -171,9 +173,33 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                     locals: {
                         message: errorText
                     },
+                    controllerAs: "toast",
+                    controller: 'RoomsCtrl',
+                    bindToController: true,
                     position: 'top right',
                     hideDelay: 3000
                 })
+            },
+
+            getAdminAuth : function() {
+                $http.get('admin_auth.php')
+                    .then(function(response) {
+                        if (angular.isDefined(response.data.admin)) {
+                            adminAuthorized = response.data.admin;
+                        }
+                        else {
+                            console.log("admin_auth did not return an admin status");
+                        }
+                    }, function (response) {
+                        if (response.status == '401') {
+                            if (angular.isDefined(response.data.location)) {
+                                window.location = response.data.location;
+                            }
+                            else {
+                                self.errorToast(response.data);
+                            }
+                        }
+                    })
             },
 
             getNewRowRef : function(tableName) {
@@ -318,6 +344,11 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
 
                 return dataModel[table];
             },
+
+            isAdminAuthorized: function() {
+                return adminAuthorized;
+            },
+
 
             loadData : function(data) {
                 if (schemaLoaded) {

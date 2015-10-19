@@ -274,6 +274,14 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
 
         this.title = "DevCtrl";
         this.top = true;
+
+        this.adminEnabled = function() {
+            return DataService.isAdminAuthorized();
+        };
+
+        this.adminLogin = function() {
+            DataService.getAdminAuth();
+        };
     }
 ];
 // ../ng/AdminOnlyDirective.js
@@ -292,9 +300,22 @@ DevCtrl.AdminOnly.Directive  = ['$compile', 'DataService', function($compile, Da
             terminal: true,
             priority: 1000,
             link: function(scope, element, attrs) {
+                var invert = false;
+                if (element.attr('devctrl-admin-only') == 'invert') {
+                    invert = true;
+                }
+
                 element.removeAttr('devctrl-admin-only');
-                element.attr('ng-if', 'dataServiceConfig.editEnabled');
-                scope.dataServiceConfig = DataService.config;
+                element.attr('ng-if', 'adminEnabled()');
+
+                scope.adminEnabled = function() {
+                    var resp = DataService.isAdminAuthorized() && DataService.config.editEnabled;
+                    if (invert) {
+                        resp = !resp;
+                    }
+
+                    return resp;
+                };
 
                 $compile(element)(scope);
             }
@@ -320,8 +341,8 @@ DevCtrl.Menu.Directive = ['MenuService', '$state',
 // ../ng/DataService.js
 DevCtrl.DataService = {};
 
-DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog',
-    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog) {
+DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog', '$location',
+    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog, $location) {
         var dataModel = {};
         var schema = {};
         var schemaLoaded = false;
@@ -352,6 +373,8 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
         var tablePromises = {};
+
+        var adminAuthorized = false;
 
         var clientConfig = {
             editEnabled: true
@@ -491,9 +514,33 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                     locals: {
                         message: errorText
                     },
+                    controllerAs: "toast",
+                    controller: 'RoomsCtrl',
+                    bindToController: true,
                     position: 'top right',
                     hideDelay: 3000
                 })
+            },
+
+            getAdminAuth : function() {
+                $http.get('admin_auth.php')
+                    .then(function(response) {
+                        if (angular.isDefined(response.data.admin)) {
+                            adminAuthorized = response.data.admin;
+                        }
+                        else {
+                            console.log("admin_auth did not return an admin status");
+                        }
+                    }, function (response) {
+                        if (response.status == '401') {
+                            if (angular.isDefined(response.data.location)) {
+                                window.location = response.data.location;
+                            }
+                            else {
+                                self.errorToast(response.data);
+                            }
+                        }
+                    })
             },
 
             getNewRowRef : function(tableName) {
@@ -638,6 +685,11 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
 
                 return dataModel[table];
             },
+
+            isAdminAuthorized: function() {
+                return adminAuthorized;
+            },
+
 
             loadData : function(data) {
                 if (schemaLoaded) {

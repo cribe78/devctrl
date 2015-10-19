@@ -55,7 +55,12 @@
                     <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
                 </md-button>
                 <span flex class="title text-headline">{{main.menu.pageTitle()}}</span>
-                <md-switch ng-model="main.config.editEnabled" ng-change="main.updateConfig()">Edit</md-switch>
+                <md-button ng-if="! main.adminEnabled()" ng-click="main.adminLogin()">Admin</md-button>
+                <md-switch ng-if="main.adminEnabled()"
+                           ng-model="main.config.editEnabled"
+                           ng-change="main.updateConfig()">
+                    Edit
+                </md-switch>
             </div>
         </md-toolbar>
         <md-content layout="column"

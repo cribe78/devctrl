@@ -28,5 +28,9 @@ DevCtrl.Common.Resolve = {
 
     loadControlEndpoints : function(DataService) {
         return DataService.getTablePromise('control_endpoints');
+    },
+
+    loadUserInfo : function(DataService) {
+        return DataService.getAdminAuth();
     }
 };

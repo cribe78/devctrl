@@ -107,6 +107,10 @@ DevCtrl.Common.Resolve = {
 
     loadControlEndpoints : function(DataService) {
         return DataService.getTablePromise('control_endpoints');
+    },
+
+    loadUserInfo : function(DataService) {
+        return DataService.getAdminAuth();
     }
 };
 // ../ng/ObjectEditorDirective.js
@@ -244,6 +248,7 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         this.menu = MenuService;
         this.control_endpoints = DataService.getTable('control_endpoints');
         this.config = DataService.config;
+        this.user = DataService.dataModel.user;
 
         this.updateConfig = function() {
             DataService.updateConfig();
@@ -280,7 +285,11 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         };
 
         this.adminLogin = function() {
-            DataService.getAdminAuth();
+            DataService.getAdminAuth(true);
+        };
+
+        this.revokeAdmin = function() {
+            DataService.revokeAdminAuth();
         };
     }
 ];
@@ -374,7 +383,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var pendingUpdates = {};
         var tablePromises = {};
 
-        var adminAuthorized = false;
+        dataModel.user = { username: null, admin: false };
 
         var clientConfig = {
             editEnabled: true
@@ -522,21 +531,31 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 })
             },
 
-            getAdminAuth : function() {
-                $http.get('admin_auth.php')
+            getAdminAuth : function(doLogin) {
+                var url = "admin_auth.php";
+                if (doLogin) {
+                    var location = $location.path();
+                    url = "admin_auth.php?logon=1&location=" + location;
+                }
+
+                return $http.get(url)
                     .then(function(response) {
-                        if (angular.isDefined(response.data.admin)) {
-                            adminAuthorized = response.data.admin;
+                        if (angular.isDefined(response.data.user)) {
+                            angular.merge(dataModel.user, response.data.user);
                         }
                         else {
                             console.log("admin_auth did not return an admin status");
                         }
                     }, function (response) {
                         if (response.status == '401') {
-                            if (angular.isDefined(response.data.location)) {
+                            if (doLogin && angular.isDefined(response.data.location)) {
                                 window.location = response.data.location;
                             }
                             else {
+                                if (angular.isDefined(response.data.user)) {
+                                    angular.merge(dataModel.user, response.data.user);
+                                }
+
                                 self.errorToast(response.data);
                             }
                         }
@@ -687,7 +706,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             },
 
             isAdminAuthorized: function() {
-                return adminAuthorized;
+                return dataModel.user.admin;
             },
 
 
@@ -782,6 +801,21 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                         });
                     });
                 }
+            },
+
+
+            revokeAdminAuth : function() {
+                $http.get('admin_auth_revoke.php')
+                .then(function(response) {
+                    if (angular.isDefined(response.data.user)) {
+                        angular.merge(dataModel.user, response.data.user);
+                    }
+                    else {
+                        console.log("revoke admin_auth did not return user info");
+                    }
+                }, function (response) {
+                    self.errorToast(response.data);
+                })
             },
 
             updateConfig : function() {

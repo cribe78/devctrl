@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    adminAuthCheck();
     $post = getPostData();
     $table = getTableName($post['tableName']);
 
@@ -63,6 +64,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    adminAuthCheck();
     $keys = getPathKeys();
     $post = getPostData();
 
@@ -105,6 +107,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    adminAuthCheck();
     $keys = getPathKeys();
 
     $table = getTableName($keys[0]);

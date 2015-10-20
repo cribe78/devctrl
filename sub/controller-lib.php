@@ -8,7 +8,7 @@ $id_idx = 1;
 $log = array();
 
 
-function adminAuthCheck() {
+function adminAuthCheck($do_logon = false) {
     global $mysqli;
     global $resp;
 
@@ -17,6 +17,8 @@ function adminAuthCheck() {
     if (isset($_COOKIE['admin_identifier'])) {
         $admin_identifier = $_COOKIE['admin_identifier'];
     }
+
+    $resp['user'] = array('username' => null, 'admin' => false);
 
     // Admin authentication
     if ($admin_identifier) {
@@ -46,22 +48,40 @@ function adminAuthCheck() {
             $admin_user['expiration'] = $row['expiration'];
         }
         else {
-            adminAuthSetIdAndRedirect();
+            if ($do_logon) {
+                adminAuthSetIdAndRedirect();
+            }
+
+            return false;
         }
 
         if ($admin_user['user_id'] == null) {
-            /* @var $locusService OAuth\OAuth2\Service\Locus */
-            $locusService = getLocusService();
-            $resp['location'] = (string)$locusService->getAuthorizationUri();
-            errorResponse("Admin login required", 401);
+            if ($do_logon) {
+                /* @var $locusService OAuth\OAuth2\Service\Locus */
+                $locusService = getLocusService();
+                $resp['location'] = (string)$locusService->getAuthorizationUri();
+                errorResponse("Admin login required", 401);
+            }
+
+            return false;
         }
 
         if (time() > $admin_user['expiration']) {
-            errorResponse("Admin authorization expired {$admin_user['glid']}", 401);
+            if ($do_logon) {
+                errorResponse("Admin authorization expired {$admin_user['glid']}", 401);
+            }
+
+            return false;
         }
 
+        $resp['user']['username'] = $admin_user['glid'];
+
         if (! groupsHasAdminAccess($admin_user['groups'])) {
-            errorResponse("Insufficient access for user {$admin_user['glid']}", 401);
+            if ($do_logon) {
+                errorResponse("Insufficient access for user {$admin_user['glid']}", 401);
+            }
+
+            return false;
         }
 
         $new_expiration = time() + 60 * 60; // another hour
@@ -73,10 +93,15 @@ function adminAuthCheck() {
 
         setcookie('admin_identifier', $admin_identifier, $new_expiration, "/");
 
+        $resp['user']['admin'] = true;
         return true;
     }
     else {
-        adminAuthSetIdAndRedirect();
+        if ($do_logon) {
+            adminAuthSetIdAndRedirect();
+        }
+
+        return false;
     }
 }
 
@@ -91,7 +116,7 @@ function adminAuthSetIdAndRedirect() {
         array(&$admin_identifier, &$admin_expire));
 
     $locusService = getLocusService();
-    $resp['location'] = $locusService->getAuthorizationUri();
+    $resp['location'] = (string)$locusService->getAuthorizationUri();
     errorResponse("Admin login required", 401);
 }
 

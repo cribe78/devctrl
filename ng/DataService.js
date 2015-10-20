@@ -33,7 +33,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var pendingUpdates = {};
         var tablePromises = {};
 
-        var adminAuthorized = false;
+        dataModel.user = { username: null, admin: false };
 
         var clientConfig = {
             editEnabled: true
@@ -181,21 +181,31 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 })
             },
 
-            getAdminAuth : function() {
-                $http.get('admin_auth.php')
+            getAdminAuth : function(doLogin) {
+                var url = "admin_auth.php";
+                if (doLogin) {
+                    var location = $location.path();
+                    url = "admin_auth.php?logon=1&location=" + location;
+                }
+
+                return $http.get(url)
                     .then(function(response) {
-                        if (angular.isDefined(response.data.admin)) {
-                            adminAuthorized = response.data.admin;
+                        if (angular.isDefined(response.data.user)) {
+                            angular.merge(dataModel.user, response.data.user);
                         }
                         else {
                             console.log("admin_auth did not return an admin status");
                         }
                     }, function (response) {
                         if (response.status == '401') {
-                            if (angular.isDefined(response.data.location)) {
+                            if (doLogin && angular.isDefined(response.data.location)) {
                                 window.location = response.data.location;
                             }
                             else {
+                                if (angular.isDefined(response.data.user)) {
+                                    angular.merge(dataModel.user, response.data.user);
+                                }
+
                                 self.errorToast(response.data);
                             }
                         }
@@ -346,7 +356,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             },
 
             isAdminAuthorized: function() {
-                return adminAuthorized;
+                return dataModel.user.admin;
             },
 
 
@@ -441,6 +451,21 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                         });
                     });
                 }
+            },
+
+
+            revokeAdminAuth : function() {
+                $http.get('admin_auth_revoke.php')
+                .then(function(response) {
+                    if (angular.isDefined(response.data.user)) {
+                        angular.merge(dataModel.user, response.data.user);
+                    }
+                    else {
+                        console.log("revoke admin_auth did not return user info");
+                    }
+                }, function (response) {
+                    self.errorToast(response.data);
+                })
             },
 
             updateConfig : function() {

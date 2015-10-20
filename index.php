@@ -55,12 +55,24 @@
                     <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
                 </md-button>
                 <span flex class="title text-headline">{{main.menu.pageTitle()}}</span>
-                <md-button ng-if="! main.adminEnabled()" ng-click="main.adminLogin()">Admin</md-button>
-                <md-switch ng-if="main.adminEnabled()"
-                           ng-model="main.config.editEnabled"
-                           ng-change="main.updateConfig()">
-                    Edit
-                </md-switch>
+                <md-button ng-if="! main.user.admin" ng-click="main.adminLogin()">Admin Login</md-button>
+                <span ng-if="main.user.admin">{{main.user.username}}</span>
+                <md-menu ng-if="main.user.admin">
+                    <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                        <md-icon  md-font-set="material-icons">more_vert</md-icon>
+                    </md-button>
+                    <md-menu-content>
+                        <md-menu-item>
+                            <md-switch ng-model="main.config.editEnabled"
+                                       ng-change="main.updateConfig()">
+                                Edit
+                            </md-switch>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="main.revokeAdmin()">Admin Logout</md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
             </div>
         </md-toolbar>
         <md-content layout="column"

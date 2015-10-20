@@ -160,6 +160,10 @@ if (! empty($_GET['code'])) {
             'is',
             array(&$user_id, &$admin_identifier));
     }
+
+    if (isset($_SESSION['location'])) {
+        header("Location: " . $_SESSION['location']);
+    }
 }
 
 

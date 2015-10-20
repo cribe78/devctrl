@@ -20,6 +20,7 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         this.menu = MenuService;
         this.control_endpoints = DataService.getTable('control_endpoints');
         this.config = DataService.config;
+        this.user = DataService.dataModel.user;
 
         this.updateConfig = function() {
             DataService.updateConfig();
@@ -56,7 +57,11 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         };
 
         this.adminLogin = function() {
-            DataService.getAdminAuth();
+            DataService.getAdminAuth(true);
+        };
+
+        this.revokeAdmin = function() {
+            DataService.revokeAdminAuth();
         };
     }
 ];

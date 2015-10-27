@@ -60,6 +60,11 @@ function adminAuthCheck($do_logon = false) {
                 /* @var $locusService OAuth\OAuth2\Service\Locus */
                 $locusService = getLocusService();
                 $resp['location'] = (string)$locusService->getAuthorizationUri();
+
+                if (! $resp['location']) {
+                    errorResponse("failed to get authorization URI (2)");
+                }
+
                 errorResponse("Admin login required", 401);
             }
 
@@ -106,6 +111,8 @@ function adminAuthCheck($do_logon = false) {
 }
 
 function adminAuthSetIdAndRedirect() {
+    global $resp;
+
     $admin_identifier = uniqid();
     $admin_expire = time() + 60 * 60;
     setcookie('admin_identifier', $admin_identifier, $admin_expire, "/");
@@ -117,6 +124,11 @@ function adminAuthSetIdAndRedirect() {
 
     $locusService = getLocusService();
     $resp['location'] = (string)$locusService->getAuthorizationUri();
+
+    if (! $resp['location']) {
+        errorResponse("failed to get authorization URI");
+    }
+
     errorResponse("Admin login required", 401);
 }
 
@@ -611,7 +623,7 @@ function syncControls() {
                 // Lookup if a control is already defined for this ce/ct pair
                 if (! (isset($c_lut[$cei]) && isset($c_lut[$cei][$cti]))) {
                     $ei = $ct_row['enum_id'];
-                    $name = $ce_row['name'] . " : " . $ct_row['name'];
+                    $name = '';
                     if (! $insert_stmt->execute()) {
                         serverError("insert control error: {$mysqli->error}");
                     }

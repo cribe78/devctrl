@@ -34,6 +34,11 @@ DevCtrl.EnumEditor.Ctrl = ['$mdDialog', 'DataService',
             self.newEnumValue = DataService.getNewRowRef("enum_vals");
         };
 
+        this.newEnumCallback = function(enumObj) {
+            self.enumRefRecord.fields.enum_id = enumObj.id;
+            self.updateEnum();
+        };
+
         this.deleteEnumValue = function(enumValue) {
             DataService.deleteRow(enumValue);
         };
@@ -51,7 +56,7 @@ DevCtrl.EnumEditor.Ctrl = ['$mdDialog', 'DataService',
         this.addNewEnum = function() {
             self.newEnum = DataService.getNewRowRef("enums");
             self.newEnum.fields.name = self.newEnumName;
-            DataService.addRow(self.newEnum);
+            DataService.addRow(self.newEnum, self.newEnumCallback);
             self.newEnumName = '';
             self.isAddingEnum = false;
         };

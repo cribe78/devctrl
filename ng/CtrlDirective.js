@@ -22,8 +22,11 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 if (this.panelContext) {
                     return this.panelControl.fields.name;
                 }
-                else {
+                else if (this.ctrl.fields.name != '') {
                     return this.ctrl.fields.name;
+                }
+                else {
+                    return this.ctrl.foreign.control_templates.fields.name;
                 }
             };
 

@@ -17,6 +17,14 @@
         </div>
     </div>
 
+    <div ng-if="ctrl.type == 'readonly'"
+            class="devctrl-ctrl"
+            flex
+            layout="row"
+            layout-align="space-between center">
+        <label class="text-menu devctrl-ctrl-label">{{ctrl.ctrlName()}}</label>
+        <span>{{ctrl.ctrl.fields.value}}</span>
+    </div>
 
     <div ng-if="ctrl.type == 'select'"
          class="devctrl-ctrl devctrl-ctrl-select"

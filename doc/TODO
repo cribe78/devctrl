@@ -2,6 +2,7 @@ TODO: update device status and disable controls for disconnected devices
 TODO: Add documentation for databaase tables/table editors
 TODO: fix error display messages
 TODO: add log view
-TODO: server admin role restrictions
 TODO: save settings sets
+TODO: roll back data model changes on error
+
 

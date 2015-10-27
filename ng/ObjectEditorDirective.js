@@ -20,6 +20,8 @@ DevCtrl.ObjectEditor.Directive  = [ function() {
 
                 this.newKey = undefined;
                 this.newVal = undefined;
+
+                angular.element('#oe-new-key').focus();
             }
         },
         controllerAs: 'obj',

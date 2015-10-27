@@ -4,8 +4,6 @@ use OAuth\OAuth2\Service\Locus;
 
 session_start();
 
-
-
 $logged_in = 0;
 $client_access = 0;
 $admin_access = 0;
@@ -176,6 +174,7 @@ if (! ($logged_in || $public)) {
     }
     else {
         $url = $locusService->getAuthorizationUri();
+        $_SESSION['location'] = $_SERVER['REQUEST_URI'];
         header('Location: ' . $url);
         exit();
     }

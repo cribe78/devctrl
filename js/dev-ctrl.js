@@ -136,6 +136,8 @@ DevCtrl.ObjectEditor.Directive  = [ function() {
 
                 this.newKey = undefined;
                 this.newVal = undefined;
+
+                angular.element('#oe-new-key').focus();
             }
         },
         controllerAs: 'obj',
@@ -413,20 +415,31 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             messenger: messenger,
             dataModel : dataModel,
             schema : schema,
-            addRow : function(row) {
+            addRow : function(row, callback) {
                 $http.post("data.php", row)
-                    .success(function(data) {
-                        self.loadData(data);
+                    .then(
+                        function(response) {
+                            var newId = Object.keys(response.data.add[row.tableName])[0];
+                            console.log("new record " + newId + "added to " + row.tableName);
 
-                        angular.forEach(row, function(value, key) {
-                            if (key != 'table') {
-                                row[key] = null;
+                            self.loadData(response.data);
+
+                            var record = dataModel[row.tableName].indexed[newId];
+
+                            angular.forEach(row, function(value, key) {
+                                if (key != 'table') {
+                                    row[key] = null;
+                                }
+                            });
+
+                            if (angular.isFunction(callback)) {
+                                callback(record);
                             }
-                        });
-                    })
-                    .error(function (data) {
-                        self.errorToast(data);
-                    })
+                        },
+                        function (response) {
+                            self.errorToast(response.data);
+                        }
+                )
             },
 
             deleteRow : function(row) {
@@ -995,8 +1008,11 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 if (this.panelContext) {
                     return this.panelControl.fields.name;
                 }
-                else {
+                else if (this.ctrl.fields.name != '') {
                     return this.ctrl.fields.name;
+                }
+                else {
+                    return this.ctrl.foreign.control_templates.fields.name;
                 }
             };
 
@@ -1463,6 +1479,11 @@ DevCtrl.EnumEditor.Ctrl = ['$mdDialog', 'DataService',
             self.newEnumValue = DataService.getNewRowRef("enum_vals");
         };
 
+        this.newEnumCallback = function(enumObj) {
+            self.enumRefRecord.fields.enum_id = enumObj.id;
+            self.updateEnum();
+        };
+
         this.deleteEnumValue = function(enumValue) {
             DataService.deleteRow(enumValue);
         };
@@ -1480,7 +1501,7 @@ DevCtrl.EnumEditor.Ctrl = ['$mdDialog', 'DataService',
         this.addNewEnum = function() {
             self.newEnum = DataService.getNewRowRef("enums");
             self.newEnum.fields.name = self.newEnumName;
-            DataService.addRow(self.newEnum);
+            DataService.addRow(self.newEnum, self.newEnumCallback);
             self.newEnumName = '';
             self.isAddingEnum = false;
         };

@@ -28,10 +28,12 @@
             <md-list-item layout="row" ng-repeat="(id, enumValObj) in editor.myEnum.referenced['enum_vals']">
                     <md-input-container flex>
                         <input  ng-model="enumValObj.fields.name"
+                                ng-model-options="{debounce: 400}"
                                 ng-change="editor.updateEnumValue(enumValObj)">
                     </md-input-container>
                     <md-input-container flex>
                         <input  ng-model="enumValObj.fields.value"
+                                ng-model-options="{debounce: 400}"
                                 ng-change="editor.updateEnumValue(enumValObj)">
                     </md-input-container>
                     <md-switch ng-model="enumValObj.fields.enabled"

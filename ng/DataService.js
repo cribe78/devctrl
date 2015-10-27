@@ -63,20 +63,31 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             messenger: messenger,
             dataModel : dataModel,
             schema : schema,
-            addRow : function(row) {
+            addRow : function(row, callback) {
                 $http.post("data.php", row)
-                    .success(function(data) {
-                        self.loadData(data);
+                    .then(
+                        function(response) {
+                            var newId = Object.keys(response.data.add[row.tableName])[0];
+                            console.log("new record " + newId + "added to " + row.tableName);
 
-                        angular.forEach(row, function(value, key) {
-                            if (key != 'table') {
-                                row[key] = null;
+                            self.loadData(response.data);
+
+                            var record = dataModel[row.tableName].indexed[newId];
+
+                            angular.forEach(row, function(value, key) {
+                                if (key != 'table') {
+                                    row[key] = null;
+                                }
+                            });
+
+                            if (angular.isFunction(callback)) {
+                                callback(record);
                             }
-                        });
-                    })
-                    .error(function (data) {
-                        self.errorToast(data);
-                    })
+                        },
+                        function (response) {
+                            self.errorToast(response.data);
+                        }
+                )
             },
 
             deleteRow : function(row) {

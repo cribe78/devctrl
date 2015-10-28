@@ -98,6 +98,20 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 return ret;
             };
 
+            this.selectValueName = function() {
+                var opts = self.selectOptions();
+                var value = self.ctrl.fields.value;
+
+                var ret = '';
+                angular.forEach(opts, function(optObj) {
+                        if (optObj.fields.value == value) {
+                            ret = optObj.fields.name;
+                        }
+                });
+
+                return ret;
+            };
+
             this.editPanelControl = function($event) {
                 DataService.editRecord($event, self.panelControl.id, 'panel_controls');
             };

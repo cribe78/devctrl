@@ -29,6 +29,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $values = array();
     $types = '';
     $qs = array();
+    $log_values = '';
     foreach ($fields as $field) {
         if (isset($post['fields'][$field['name']])) {
             if ($field['type'] == 'object') {
@@ -37,6 +38,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $values[$field['name']] = &$post['fields'][$field['name']];
             $qs[] = '?';
+
+            $log_values .= "{$field['name']} = {$post['fields'][$field['name']]}, ";
 
             $types .= paramTypeChar($field['type']);
         }
@@ -54,6 +57,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $row = getTableData($table, false, "where $pk = $id");
 
     $resp['add'] = array($table => $row);
+
+    logDataChange($table, $id, "added ($log_values)");
 
     // Special cases where more actions are needed
     if ($table == 'control_endpoints' || $table == 'control_templates') {
@@ -79,6 +84,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     $values = array();
     $types = '';
+    $description = '';
     foreach ($schema['fields'] as $field) {
         if (isset($post[$field['name']])) {
             if ($field['type'] == 'object') {
@@ -87,6 +93,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
             $values[] = &$post[$field['name']];
             $terms[] = "{$field['name']} = ?";
+
+            $description .= "{$field['name']} = {$post[$field['name']]}, ";
 
             $types .= paramTypeChar($field['type']);
         }
@@ -100,6 +108,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         . " where $pk = ?";
 
     coe_mysqli_prepare_bind_execute($update_query, $types, $values);
+
+    logDataChange($table, $id, "updated ($description)");
 
     $row = getTableData($table, false, "where $pk = $id");
 
@@ -120,6 +130,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     coe_mysqli_prepare_bind_execute($delete_sql, 'i', array(&$id));
 
     pclog("record $id deleted from $table");
+    logDataChange($table, $id, "deleted");
 
     $objs = array( $table => array( $id => ''));
 

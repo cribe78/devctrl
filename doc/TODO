@@ -1,8 +1,10 @@
-TODO: update device status and disable controls for disconnected devices
+TODO: disable controls for disconnected devices
 TODO: Add documentation for databaase tables/table editors
-TODO: fix error display messages
 TODO: add log view
 TODO: save settings sets
 TODO: roll back data model changes on error
+TODO: hyperlink control type
+TODO: auth on node messenger
+TODO: split control types into separate files
 
 

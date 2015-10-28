@@ -2,9 +2,10 @@ var express = require('express');
 var app = express();
 var fs = require('fs');
 var net = require('net');
-var util = require('util');
 var merge = require('deepmerge');
 var cp = require('child_process');
+Tail = require('tail').Tail;
+
 
 //var key = fs.readFileSync('/home/chris/devctrl.dwi.ufl.edu.self.key');
 //var cert = fs.readFileSync('/etc/ssl/certs/devctrl_dwi_ufl_edu_cert.cer');
@@ -73,7 +74,20 @@ var minute = 60 * 1000;
 setInterval(function() {
     console.log("calling pcontrol_check.php");
     cp.exec("php ../sub/pcontrol_check.php", function(error, stdout, stderr) {
-            var dataObj = JSON.parse(stdout);
-            io.emit('control-data', dataObj);
+        var dataObj = {};
+        try {
+            dataObj = JSON.parse(stdout);
+        } catch (e) {}
+
+        io.emit('control-data', dataObj);
     });
 }, minute);
+
+
+// Send out log updates
+try {
+    var tail = new Tail("/var/log/devctrl/devctrl.log");
+    tail.on("line", function (data) {
+        io.emit('log-data', data);
+    });
+} catch(e) {}

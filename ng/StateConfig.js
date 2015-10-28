@@ -58,6 +58,16 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
                     title : 'Data Tables'
                 }
             })
+            .state('config.log', {
+                url: '/log',
+                templateUrl: 'ng/log.html',
+                controller: 'LogCtrl',
+                controllerAs: 'log',
+                resolve: DevCtrl.Log.Resolve,
+                data: {
+                    title : "Log Viewer"
+                }
+            })
             .state('config.data.table', {
                 url: '/:name',
                 templateUrl: 'ng/tableeditor.html',

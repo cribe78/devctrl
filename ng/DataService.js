@@ -2,7 +2,13 @@ goog.provide('DevCtrl.DataService.factory');
 
 DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog', '$location',
     function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog, $location) {
-        var dataModel = {};
+        var dataModel = {
+            user : {
+                username: null,
+                admin: false
+            },
+            applog : []
+        };
         var schema = {};
         var schemaLoaded = false;
 
@@ -32,8 +38,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
         var tablePromises = {};
-
-        dataModel.user = { username: null, admin: false };
 
         var clientConfig = {
             editEnabled: true
@@ -219,6 +223,17 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
 
                                 self.errorToast(response.data);
                             }
+                        }
+                    })
+            },
+
+            // Get the application log entries
+            getLog : function() {
+                return $http.get("log.php")
+                    .then(function(response) {
+                        if (angular.isDefined(response.data.applog)) {
+                            dataModel.applog.length = 0;
+                            angular.merge(dataModel.applog, response.data.applog);
                         }
                     })
             },
@@ -525,6 +540,10 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         messenger.on('control-data', function(data) {
             self.loadData(data);
             //console.log("socket control data received");
+        });
+
+        messenger.on('log-data', function(data) {
+            self.dataModel.applog.push(data);
         });
 
 

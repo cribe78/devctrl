@@ -10,6 +10,7 @@
 ../ng/EnumSelectDirective.js
 ../ng/CtrlDirective.js
 ../ng/RecordCtrl.js
+../ng/LogCtrl.js
 ../ng/MenuService.js
 ../ng/EndpointStatusDirective.js
 ../ng/EndpointCtrl.js

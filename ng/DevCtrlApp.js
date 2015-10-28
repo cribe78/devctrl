@@ -10,6 +10,7 @@ goog.require("DevCtrl.FkSelect.Directive");
 goog.require("DevCtrl.EndpointStatus.Directive");
 goog.require("DevCtrl.EnumSelect.Directive");
 goog.require("DevCtrl.EnumEditor.Ctrl");
+goog.require("DevCtrl.Log.Ctrl");
 goog.require("DevCtrl.ObjectEditor.Directive");
 goog.require("DevCtrl.Panel.Directive");
 goog.require("DevCtrl.Slider2d.Directive");
@@ -38,6 +39,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
+    .controller('LogCtrl', DevCtrl.Log.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)
     .controller('RoomCtrl', DevCtrl.Room.Ctrl)

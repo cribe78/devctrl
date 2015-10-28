@@ -455,6 +455,17 @@ function launchControlDaemon($ce_id) {
     }
 }
 
+function logDataChange($table, $pk, $action) {
+    global $USESSION;
+    static $log_opened = false;
+
+    if (! $log_opened) {
+        openlog("devctrl", LOG_PID, LOG_LOCAL4);
+    }
+
+    syslog(LOG_INFO, $table . "[$pk] $action by {$USESSION['name']}");
+}
+
 
 function paramTypeChar($paramType) {
     if ($paramType === 'int' || $paramType === 'bool' || $paramType === 'fk') {

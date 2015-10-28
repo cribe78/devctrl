@@ -25,13 +25,15 @@
                              field="field"
                              select-model="record.obj.fields">
                 </enum-select>
-                <md-checkbox ng-if="field.type == 'bool'"
-                             class="md-primary"
-                             ng-true-value="1"
-                             ng-false-value="0"
-                             ng-model="record.obj.fields[field.name]">
-                    {{field.label}}
-                </md-checkbox>
+                <md-input-container ng-if="field.type == 'bool'">
+                    <md-checkbox
+                                 class="md-primary"
+                                 ng-true-value="1"
+                                 ng-false-value="0"
+                                 ng-model="record.obj.fields[field.name]">
+                        {{field.label}}
+                    </md-checkbox>
+                </md-input-container>
                 <devctrl-object-editor ng-if="field.type == 'object'"
                                        object="record.obj.fields[field.name]">
                 </devctrl-object-editor>

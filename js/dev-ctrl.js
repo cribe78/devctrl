@@ -60,6 +60,16 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
                     title : 'Data Tables'
                 }
             })
+            .state('config.log', {
+                url: '/log',
+                templateUrl: 'ng/log.html',
+                controller: 'LogCtrl',
+                controllerAs: 'log',
+                resolve: DevCtrl.Log.Resolve,
+                data: {
+                    title : "Log Viewer"
+                }
+            })
             .state('config.data.table', {
                 url: '/:name',
                 templateUrl: 'ng/tableeditor.html',
@@ -354,7 +364,13 @@ DevCtrl.DataService = {};
 
 DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog', '$location',
     function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog, $location) {
-        var dataModel = {};
+        var dataModel = {
+            user : {
+                username: null,
+                admin: false
+            },
+            applog : []
+        };
         var schema = {};
         var schemaLoaded = false;
 
@@ -384,8 +400,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
         var tablePromises = {};
-
-        dataModel.user = { username: null, admin: false };
 
         var clientConfig = {
             editEnabled: true
@@ -571,6 +585,17 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
 
                                 self.errorToast(response.data);
                             }
+                        }
+                    })
+            },
+
+            // Get the application log entries
+            getLog : function() {
+                return $http.get("log.php")
+                    .then(function(response) {
+                        if (angular.isDefined(response.data.applog)) {
+                            dataModel.applog.length = 0;
+                            angular.merge(dataModel.applog, response.data.applog);
                         }
                     })
             },
@@ -879,6 +904,10 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             //console.log("socket control data received");
         });
 
+        messenger.on('log-data', function(data) {
+            self.dataModel.applog.push(data);
+        });
+
 
         return self;
     }
@@ -1084,6 +1113,20 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 return ret;
             };
 
+            this.selectValueName = function() {
+                var opts = self.selectOptions();
+                var value = self.ctrl.fields.value;
+
+                var ret = '';
+                angular.forEach(opts, function(optObj) {
+                        if (optObj.fields.value == value) {
+                            ret = optObj.fields.name;
+                        }
+                });
+
+                return ret;
+            };
+
             this.editPanelControl = function($event) {
                 DataService.editRecord($event, self.panelControl.id, 'panel_controls');
             };
@@ -1139,6 +1182,20 @@ DevCtrl.Record.Ctrl = ['DataService',
     }
 ];
 
+// ../ng/LogCtrl.js
+DevCtrl.Log = {};
+
+DevCtrl.Log.Ctrl = ['DataService',
+    function(DataService) {
+        this.applog = DataService.dataModel.applog;
+    }
+];
+
+DevCtrl.Log.Resolve = {
+    loadLog: ['DataService', function(DataService) {
+        return DataService.getLog();
+    }]
+};
 // ../ng/MenuService.js
 DevCtrl.MenuService = {};
 
@@ -1698,6 +1755,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
+    .controller('LogCtrl', DevCtrl.Log.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)
     .controller('RoomCtrl', DevCtrl.Room.Ctrl)

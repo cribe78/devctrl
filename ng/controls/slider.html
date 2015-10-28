@@ -1,0 +1,16 @@
+<div class="devctrl-ctrl"
+      flex
+      layout="row"
+      layout-align="space-between center">
+    <label flex="initial" class="text-menu devctrl-ctrl-label">{{ctrl.ctrlName()}}</label>
+    <md-slider flex
+               min="{{ctrl.intConfig('min')}}"
+               max="{{ctrl.intConfig('max')}}"
+               ng-model="ctrl.ctrl.fields.value"
+               ng-change="ctrl.updateValue()"
+               aria-label="{{ctrl.name}}">
+    </md-slider>
+    <div layout layout-align="center center">
+        <input class="devctrl-slider-input" type="number" ng-model="ctrl.ctrl.fields.value" ng-change="ctrl.updateValue()">
+    </div>
+</div>

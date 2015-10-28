@@ -1,0 +1,14 @@
+<div class="devctrl-ctrl devctrl-ctrl-select"
+     flex
+     layout="row"
+     layout-align="space-between center"
+        >
+    <label class="text-menu devctrl-ctrl-label">{{ctrl.ctrlName()}}</label>
+    <md-select placeholder="Select"
+               ng-model="ctrl.ctrl.fields.value"
+               ng-change="ctrl.updateValue()">
+        <md-option ng-value="obj.fields.value" ng-repeat="obj in ctrl.selectOptions() | toArray | filter: { fields : { enabled : 1 }}">
+            {{obj.fields.name}}
+        </md-option>
+    </md-select>
+</div>

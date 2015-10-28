@@ -49,6 +49,6 @@ DevCtrl.Slider2d.Directive  = ['DataService', function(DataService) {
             };
         },
         controllerAs: 'slider2d',
-        templateUrl: 'ng/controls/slider2d.html'
+        templateUrl: 'ng/controls/slider2d-directive.html'
     }
 }];

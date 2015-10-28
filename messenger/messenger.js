@@ -49,17 +49,18 @@ var updateServer = net.createServer( function(sock) {
         };
 
         // If we have more than one object, merge them
+        var updateObj;
         while (data.indexOf("}{") > 0) {
             var idx = data.indexOf("}{") + 1;
             var objStr = data.substr(0, idx);
-            var updateObj = JSON.parse(objStr);
-
-            if (typeof(updateObj.update) !== 'undefined') {
-                merge(updates, updateObj);
-            }
+            updateObj = JSON.parse(objStr);
+            updates = merge(updates, updateObj);
 
             data = data.substr(idx);
         }
+
+        updateObj = JSON.parse(data);
+        updates = merge(updates, updateObj);
 
         io.emit('control-data', updates);
     });
@@ -71,7 +72,7 @@ console.log("TCP server started on port 2879");
 var minute = 60 * 1000;
 
 // Run a regular status check on the pcontrol-daemons
-setInterval(function() {
+var pcontrolCheck = function() {
     console.log("calling pcontrol_check.php");
     cp.exec("php ../sub/pcontrol_check.php", function(error, stdout, stderr) {
         var dataObj = {};
@@ -81,7 +82,10 @@ setInterval(function() {
 
         io.emit('control-data', dataObj);
     });
-}, minute);
+};
+
+pcontrolCheck();
+setInterval(pcontrolCheck, minute);
 
 
 // Send out log updates

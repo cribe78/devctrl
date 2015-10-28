@@ -280,11 +280,11 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         };
 
         this.addEndpoint = function($event) {
-            DataService.editRecord($event, 0, "control_endpoints");
+            DataService.editRecord($event, '0', "control_endpoints");
         };
 
         this.addEndpointType = function($event) {
-            DataService.editRecord($event, 0, "endpoint_types");
+            DataService.editRecord($event, '0', "endpoint_types");
         };
 
         this.dataModel = DataService.dataModel;
@@ -1034,7 +1034,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             }
 
             this.ctrlName = function() {
-                if (this.panelContext) {
+                if (this.panelContext && this.panelControl.fields.name !== '') {
                     return this.panelControl.fields.name;
                 }
                 else if (this.ctrl.fields.name != '') {
@@ -1086,7 +1086,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             };
 
 
-            this.updateValue = function() {
+            this.updateValue = function(val) {
                 DataService.updateControlValue(self.ctrl);
             };
 
@@ -1095,6 +1095,13 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                     title: "Edit " + self.name + " options"
                 });
             };
+
+            this.editTemplateOptions = function($event) {
+                DataService.editEnum($event, null, self.template, {
+                    title: "Edit " + self.ctrlName() + " options"
+                });
+            };
+
 
 
             this.selectMenuItem = function(val) {
@@ -1108,6 +1115,9 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 var ret = {};
                 if (eid > 0) {
                     ret = self.enums.indexed[eid].referenced.enum_vals;
+                }
+                else if (self.template.fields.enum_id > 0) {
+                    ret = self.template.foreign.enums.referenced.enum_vals;
                 }
 
                 return ret;
@@ -1172,8 +1182,12 @@ DevCtrl.Record.Ctrl = ['DataService',
             var newRow = DataService.getNewRowRef(self.obj.tableName);
             newRow.fields = self.obj.fields;
 
-            DataService.addRow(newRow);
-            DataService.editRecordClose();
+            DataService.addRow(newRow, function(newRec) {
+                self.obj = newRec;
+                if (angular.isDefined(self.obj.fields.name)) {
+                    self.obj.fields.name = "";
+                }
+            });
         };
 
         this.close = function() {
@@ -1404,6 +1418,17 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
 
         this.endpointTypesSelected = [];
         this.endpointsSelected = [];
+        this.endpointsSelected = '0';
+
+        this.getControlName = function(row) {
+            var ret = row.fields.name;
+
+            if (row.fields.name == '') {
+                ret = row.foreign.control_templates.fields.name;
+            }
+
+            return ret;
+        };
 
         this.getEndpointTypes = function() {
             return this.endpointTypes.indexed;
@@ -1415,6 +1440,7 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
 
         this.controlList = {};
         this.getControls = function() {
+
             angular.forEach(self.controls.indexed, function(control) {
                 var loadControl = false;
                 var loadAll = true;
@@ -1430,16 +1456,23 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
                     })
 
                 }
+                else if (self.endpointSelected !== '0') {
+                    loadAll = false;
+                    if (self.endpointSelected == control.foreign.control_endpoint_id.id) {
+                        loadControl = true;
+                    }
+                }
                 else if (angular.isArray(self.endpointTypesSelected) && self.endpointTypesSelected.length > 0) {
                     loadAll = false;
                     var ctrlEpType = control.foreign.control_endpoints.fields.endpoint_type_id;
 
                     angular.forEach(self.endpointTypesSelected, function(typeId) {
-                           if (ctrlEpType == typeId) {
-                               loadControl = true;
-                           }
+                        if (ctrlEpType == typeId) {
+                            loadControl = true;
+                        }
                     });
                 }
+
 
                 if (loadControl || loadAll) {
                     self.controlList[control.id] = control;

@@ -13,6 +13,17 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
 
         this.endpointTypesSelected = [];
         this.endpointsSelected = [];
+        this.endpointsSelected = '0';
+
+        this.getControlName = function(row) {
+            var ret = row.fields.name;
+
+            if (row.fields.name == '') {
+                ret = row.foreign.control_templates.fields.name;
+            }
+
+            return ret;
+        };
 
         this.getEndpointTypes = function() {
             return this.endpointTypes.indexed;
@@ -24,6 +35,7 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
 
         this.controlList = {};
         this.getControls = function() {
+
             angular.forEach(self.controls.indexed, function(control) {
                 var loadControl = false;
                 var loadAll = true;
@@ -39,16 +51,23 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
                     })
 
                 }
+                else if (self.endpointSelected !== '0') {
+                    loadAll = false;
+                    if (self.endpointSelected == control.foreign.control_endpoint_id.id) {
+                        loadControl = true;
+                    }
+                }
                 else if (angular.isArray(self.endpointTypesSelected) && self.endpointTypesSelected.length > 0) {
                     loadAll = false;
                     var ctrlEpType = control.foreign.control_endpoints.fields.endpoint_type_id;
 
                     angular.forEach(self.endpointTypesSelected, function(typeId) {
-                           if (ctrlEpType == typeId) {
-                               loadControl = true;
-                           }
+                        if (ctrlEpType == typeId) {
+                            loadControl = true;
+                        }
                     });
                 }
+
 
                 if (loadControl || loadAll) {
                     self.controlList[control.id] = control;

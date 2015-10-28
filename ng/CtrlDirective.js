@@ -19,7 +19,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             }
 
             this.ctrlName = function() {
-                if (this.panelContext) {
+                if (this.panelContext && this.panelControl.fields.name !== '') {
                     return this.panelControl.fields.name;
                 }
                 else if (this.ctrl.fields.name != '') {
@@ -71,7 +71,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
             };
 
 
-            this.updateValue = function() {
+            this.updateValue = function(val) {
                 DataService.updateControlValue(self.ctrl);
             };
 
@@ -80,6 +80,13 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                     title: "Edit " + self.name + " options"
                 });
             };
+
+            this.editTemplateOptions = function($event) {
+                DataService.editEnum($event, null, self.template, {
+                    title: "Edit " + self.ctrlName() + " options"
+                });
+            };
+
 
 
             this.selectMenuItem = function(val) {
@@ -93,6 +100,9 @@ DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
                 var ret = {};
                 if (eid > 0) {
                     ret = self.enums.indexed[eid].referenced.enum_vals;
+                }
+                else if (self.template.fields.enum_id > 0) {
+                    ret = self.template.foreign.enums.referenced.enum_vals;
                 }
 
                 return ret;

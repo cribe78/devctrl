@@ -26,8 +26,12 @@ DevCtrl.Record.Ctrl = ['DataService',
             var newRow = DataService.getNewRowRef(self.obj.tableName);
             newRow.fields = self.obj.fields;
 
-            DataService.addRow(newRow);
-            DataService.editRecordClose();
+            DataService.addRow(newRow, function(newRec) {
+                self.obj = newRec;
+                if (angular.isDefined(self.obj.fields.name)) {
+                    self.obj.fields.name = "";
+                }
+            });
         };
 
         this.close = function() {

@@ -1,5 +1,8 @@
 <md-dialog>
-    <md-toolbar layout-align="center center">{{record.schema.label}} - {{record.obj.id}}</md-toolbar>
+    <md-toolbar layout-align="center center">
+        <span ng-if="record.obj.id > 0">{{record.schema.label}}[{{record.obj.id}}]</span>
+        <span ng-if="record.obj.id == 0">New {{record.schema.label}} Record</span>
+    </md-toolbar>
     <md-dialog-content>
 
         <md-list>

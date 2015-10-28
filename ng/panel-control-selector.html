@@ -15,8 +15,7 @@
             </md-list-item>
             <md-list-item class="md-list-item-text">
                 <md-select placeholder="Device"
-                           multiple="true"
-                           ng-model="selector.endpointsSelected">
+                           ng-model="selector.endpointSelected">
                     <md-option ng-value="key" ng-repeat="(key, row) in selector.getEndpoints()">
                         {{row.fields.name}}
                     </md-option>
@@ -28,7 +27,7 @@
                 <md-select placeholder="Control"
                            ng-model="selector.newPanelControl.fields.control_id">
                     <md-option ng-value="key" ng-repeat="(key, row) in selector.getControls()">
-                        {{row.fields.name}}
+                        {{selector.getControlName(row)}}
                     </md-option>
                 </md-select>
             </md-list-item>

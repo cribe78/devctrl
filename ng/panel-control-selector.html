@@ -3,28 +3,26 @@
     <md-dialog-content>
         <md-list>
             <md-list-item class="md-list-item-text">
-                <md-select placeholder="Device Type"
+                <md-select flex placeholder="Device Type"
                            multiple="true"
                            ng-model="selector.endpointTypesSelected">
                     <md-option ng-value="key" ng-repeat="(key, row) in selector.getEndpointTypes()">
                         {{row.fields.name}}
                     </md-option>
                 </md-select>
-                <span flex></span>
                 <md-button ng-click="selector.clearEndpointTypes()">Clear</md-button>
             </md-list-item>
             <md-list-item class="md-list-item-text">
-                <md-select placeholder="Device"
+                <md-select flex placeholder="Device"
                            ng-model="selector.endpointSelected">
                     <md-option ng-value="key" ng-repeat="(key, row) in selector.getEndpoints()">
                         {{row.fields.name}}
                     </md-option>
                 </md-select>
-                <span flex></span>
                 <md-button ng-click="selector.clearEndpoints()">Clear</md-button>
             </md-list-item>
             <md-list-item class="md-list-item-text">
-                <md-select placeholder="Control"
+                <md-select flex placeholder="Control"
                            ng-model="selector.newPanelControl.fields.control_id">
                     <md-option ng-value="key" ng-repeat="(key, row) in selector.getControls()">
                         {{selector.getControlName(row)}}

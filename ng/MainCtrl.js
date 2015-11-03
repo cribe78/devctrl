@@ -51,17 +51,5 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
 
         this.title = "DevCtrl";
         this.top = true;
-
-        this.adminEnabled = function() {
-            return DataService.isAdminAuthorized();
-        };
-
-        this.adminLogin = function() {
-            DataService.getAdminAuth(true);
-        };
-
-        this.revokeAdmin = function() {
-            DataService.revokeAdminAuth();
-        };
     }
 ];

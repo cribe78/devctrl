@@ -6,6 +6,14 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
 
 
         var self = {
+            go : function(state) {
+                if (angular.isString(state)) {
+                    $state.go(state);
+                }
+                else {
+                    $state.go(state.name, state.params);
+                }
+            },
             pageTitle : function() {
                 return $state.current.title || $state.params.name;
             },

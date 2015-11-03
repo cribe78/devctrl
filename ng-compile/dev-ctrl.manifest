@@ -3,6 +3,7 @@
 ../ng/ObjectEditorDirective.js
 ../ng/RoomCtrl.js
 ../ng/MainCtrl.js
+../ng/ToolbarDirective.js
 ../ng/AdminOnlyDirective.js
 ../ng/MenuDirective.js
 ../ng/DataService.js

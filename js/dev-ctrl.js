@@ -291,20 +291,55 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
 
         this.title = "DevCtrl";
         this.top = true;
-
-        this.adminEnabled = function() {
-            return DataService.isAdminAuthorized();
-        };
-
-        this.adminLogin = function() {
-            DataService.getAdminAuth(true);
-        };
-
-        this.revokeAdmin = function() {
-            DataService.revokeAdminAuth();
-        };
     }
 ];
+// ../ng/ToolbarDirective.js
+DevCtrl.Toolbar = {};
+
+DevCtrl.Toolbar.Directive  = ['$mdMedia', '$state', 'MenuService', 'DataService', function($mdMedia, $state, MenuService, DataService) {
+    return {
+        scope: true,
+        bindToController : {
+            title: '='
+        },
+        controller: function($state, MenuService, DataService) {
+            var self = this;
+            this.menu = MenuService;
+            this.user = DataService.dataModel.user;
+            this.config = DataService.config;
+            this.$mdMedia = $mdMedia;
+
+            this.pageTitle = function() {
+                if (angular.isDefined(self.title)) {
+                    return self.title;
+                }
+
+                return $state.current.title || $state.params.name;
+            };
+
+            this.adminLogin = function() {
+                DataService.getAdminAuth(true);
+            };
+
+
+            this.revokeAdmin = function() {
+                DataService.revokeAdminAuth();
+            };
+
+            this.toggleSidenav = function(menuId) {
+                $mdSidenav(menuId).toggle();
+            };
+
+            this.updateConfig = function() {
+                DataService.updateConfig();
+            };
+
+        },
+        transclude: true,
+        controllerAs: 'toolbar',
+        templateUrl: 'ng/toolbar.html'
+    }
+}];
 // ../ng/AdminOnlyDirective.js
 DevCtrl.AdminOnly = {};
 
@@ -1219,6 +1254,14 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
 
 
         var self = {
+            go : function(state) {
+                if (angular.isString(state)) {
+                    $state.go(state);
+                }
+                else {
+                    $state.go(state.name, state.params);
+                }
+            },
             pageTitle : function() {
                 return $state.current.title || $state.params.name;
             },
@@ -1784,6 +1827,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
     .directive('devctrlAdminOnly', DevCtrl.AdminOnly.Directive)
     .directive('devctrlEndpointStatus', DevCtrl.EndpointStatus.Directive)
+    .directive('devctrlToolbar', DevCtrl.Toolbar.Directive)
     .controller('MainCtrl', DevCtrl.MainCtrl)
     .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)

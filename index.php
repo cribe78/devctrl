@@ -44,43 +44,7 @@
         </md-content>
     </md-sidenav>
     <div layout="column" flex>
-        <md-toolbar layout="row" layout-align="start center">
-            <div flex layout="row"
-                 layout-align="center center"
-                 class="devctrl-main-toolbar">
-                <md-button ng-if="main.menu.isFirstLevel()" ng-click="main.toggleSidenav('left')" hide-gt-md class="md-icon-button">
-                    <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
-                </md-button>
-                <md-button ng-if="! main.menu.isFirstLevel()" ng-click="main.go(main.menu.parentState())">
-                    <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
-                </md-button>
-                <span flex class="title text-headline">{{main.menu.pageTitle()}}</span>
-                <md-button ng-if="! main.user.admin" ng-click="main.adminLogin()">Admin Login</md-button>
-                <span ng-if="main.user.admin">{{main.user.username}}</span>
-                <md-menu ng-if="main.user.admin">
-                    <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
-                        <md-icon  md-font-set="material-icons">more_vert</md-icon>
-                    </md-button>
-                    <md-menu-content>
-                        <md-menu-item>
-                            <md-switch ng-model="main.config.editEnabled"
-                                       ng-change="main.updateConfig()">
-                                Edit
-                            </md-switch>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-button ng-click="main.revokeAdmin()">Admin Logout</md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
-            </div>
-        </md-toolbar>
-        <md-content layout="column"
-                    flex
-                    layout-margin
-                    id="content">
-            <ui-view></ui-view>
-        </md-content>
+        <ui-view></ui-view>
     </div>
 </body>
 </html>

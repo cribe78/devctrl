@@ -1,4 +1,5 @@
-<md-card flex="initial" class="devctrl-main-card">
+<devctrl-toolbar>
+
     <md-toolbar>
         <div class="md-toolbar-tools">
             <md-button devctrl-admin-only ng-click="endpoint.addTemplate($event)">Add Control Template</md-button>
@@ -7,13 +8,14 @@
             <devctrl-endpoint-status endpoint-id="endpoint.obj.id"></devctrl-endpoint-status>
         </div>
     </md-toolbar>
-    <md-card-content>
-        <md-list>
-            <md-list-item ng-repeat-start="(key, control) in endpoint.controls">
-                <ctrl flex control-id="key"></ctrl>
-            </md-list-item>
-            <md-divider ng-repeat-end></md-divider>
-        </md-list>
-    </md-card-content>
-</md-card>
+
+    <md-list>
+        <md-list-item ng-repeat-start="(key, control) in endpoint.controls">
+            <ctrl flex control-id="key"></ctrl>
+        </md-list-item>
+        <md-divider ng-repeat-end></md-divider>
+    </md-list>
+
+
+</devctrl-toolbar>
 

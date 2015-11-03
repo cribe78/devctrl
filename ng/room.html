@@ -1,32 +1,33 @@
-<div>
-    <md-card class="devctrl-main-card">
-        <md-card-content>
-            <div layout="row">
-                <span class="text-title">{{room.obj.fields.name}}</span>
-                <span flex></span>
-                <md-button devctrl-admin-only
-                           ng-click="room.addPanel($event)"
-                           class="md-primary">
-                    Add Panel
-                </md-button>
-            </div>
+<devctrl-toolbar>
+    <div flex layout="row">
+        <span class="text-title">{{room.obj.fields.name}}</span>
+        <span flex></span>
+        <md-button devctrl-admin-only
+                   ng-click="room.addPanel($event)"
+                   class="md-primary">
+            Add Panel
+        </md-button>
+    </div>
 
-            <md-list>
-                <div ng-repeat="(groupName, group) in room.getGroups()">
-                    <md-divider></md-divider>
-                    <md-list-item flex layout="row" ng-click="room.toggleGroup(group)">
-                        {{groupName}}
-                        <span flex></span>
-                        <span class="toggle-icon" ng-class="{ toggled : group.opened }">
-                            <md-icon md-font-set="material-icons" >expand_more</md-icon>
-                        </span>
-                    </md-list-item>
-                    <devctrl-panel ng-repeat="rpanel in room.panels | toArray | filter: { fields : { grouping : groupName }} | orderBy : fields.panel_index"
-                                   panel-obj="rpanel"
-                                   ng-show="group.opened">
-                    </devctrl-panel>
-                </div>
-            </md-list>
-        </md-card-content>
-    </md-card>
-</div>
+    <md-list flex>
+        <div ng-repeat="(groupName, group) in room.getGroups()">
+            <md-divider></md-divider>
+            <md-list-item flex layout="row" ng-click="room.toggleGroup(group)">
+                {{groupName}}
+                <span flex></span>
+                <span class="toggle-icon" ng-class="{ toggled : group.opened }">
+                    <md-icon md-font-set="material-icons" >expand_more</md-icon>
+                </span>
+            </md-list-item>
+            <devctrl-panel ng-repeat="rpanel in room.panels | toArray | filter: { fields : { grouping : groupName }} | orderBy : fields.panel_index"
+                           panel-obj="rpanel"
+                           ng-show="group.opened">
+            </devctrl-panel>
+        </div>
+    </md-list>
+</devctrl-toolbar>
+
+
+
+
+

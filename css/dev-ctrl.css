@@ -85,6 +85,17 @@ coe-menu li {
     max-width: 1000px;
 }
 
+.devctrl-main-content {
+
+}
+
+.devctrl-main-content-container {
+    /**
+    height: 100%;
+    width: 100%;
+    position: absolute; **/
+}
+
 .devctrl-main-toolbar {
     max-width: 1048px;
 }

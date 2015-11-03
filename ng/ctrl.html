@@ -2,6 +2,7 @@
     <ng-include flex src="'ng/controls/' + ctrl.type + '.html'"></ng-include>
 
     <div class="devctrl-ctrl-admin-placeholder"
+         ng-if="! ctrl.menu.narrowMode()"
          flex="none">
         <md-menu devctrl-admin-only>
             <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">

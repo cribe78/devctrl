@@ -4,12 +4,9 @@
          layout-align="center center"
          class="devctrl-main-toolbar">
         <md-button ng-click="toolbar.menu.toggleSidenav('left')"
-                   ng-hide="toolbar.menu.isSidenavOpen()"
+                   ng-hide="toolbar.menu.hideSidenavButton()"
                    class="dc-toolbar-sidenav-button md-icon-button">
             <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
-        </md-button>
-        <md-button ng-if="false" ng-click="menu.go(toolbar.menu.parentState())">
-            <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
         </md-button>
         <span flex class="title text-headline">{{toolbar.pageTitle()}}</span>
         <md-button ng-if="! main.user.admin" ng-click="toolbar.adminLogin()">Admin Login</md-button>

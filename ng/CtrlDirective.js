@@ -1,13 +1,15 @@
 goog.provide('DevCtrl.Ctrl.Directive');
 
-DevCtrl.Ctrl.Directive  = ['DataService', function(DataService) {
+DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, MenuService) {
     return {
         scope: {
             panelControl: '=',
             controlId: '='
         },
         bindToController: true,
-        controller: function(DataService) {
+        controller: function(DataService, MenuService) {
+            this.menu = MenuService;
+
             this.panelContext = angular.isDefined(this.panelControl);
             if (this.panelContext) {
                 this.ctrl = this.panelControl.foreign.controls;

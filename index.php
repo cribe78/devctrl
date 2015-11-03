@@ -28,7 +28,8 @@
     <title>DWI DevCtrl</title>
 </head>
 <body layout="row" ng-controller="MainCtrl as main">
-    <div ng-show="main.menu.isSidenavOpen()"
+    <div ng-if="! main.menu.narrowMode()"
+         ng-show="main.menu.isSidenavOpen()"
          class="dc-sidenav md-sidenav-left md-whiteframe-z2 "
          layout="column">
         <div layout="row" layout-align="left center">
@@ -41,9 +42,23 @@
             <coe-menu items="main.menu.items"></coe-menu>
         </md-content>
     </div>
+    <md-sidenav ng-if="main.menu.narrowMode()"
+         class="md-sidenav-left md-whiteframe-z2 "
+         layout="column"
+         md-component-id="left">
+        <div layout="row" layout-align="left center">
+            <md-button ng-click="main.menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
+                <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
+            </md-button>
+            <span flex class="text-display-1 md-primary md-hue-1">DWI DevCtrl</span>
+        </div>
+        <md-content flex role="navigation">
+            <coe-menu items="main.menu.items"></coe-menu>
+        </md-content>
+    </md-sidenav>
     <div layout="column" flex>
         <devctrl-toolbar></devctrl-toolbar>
-        <md-content ng-if="main.$mdMedia('max-width: 1000px')"
+        <md-content ng-if="main.menu.narrowMode()"
                     layout="column"
                     flex
                     layout-margin
@@ -51,13 +66,13 @@
                     class="devctrl-main-content">
             <ui-view></ui-view>
         </md-content>
-        <md-content ng-if="main.$mdMedia('min-width: 1000px')"
+        <md-content ng-if="! main.menu.narrowMode()"
                     layout="column"
                     layout-align="start center"
                     flex
                     layout-margin
                     id="content"
-                    class="devctrl-main-content-wide">
+                    ng-style="main.menu.backgroundImageStyle()">
             <md-card class="devctrl-main-card">
                 <md-card-content>
                     <ui-view></ui-view>

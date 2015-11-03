@@ -47,6 +47,9 @@ coe-menu li {
     width: 95%;
 }
 
+.dc-main-background {
+    background-image: url("/images/reve1.jpg");
+}
 
 .dc-sidenav {
     width: 240px;
@@ -101,6 +104,7 @@ coe-menu li {
 
 .devctrl-main-card {
     width: 1000px;
+    background-color: #ffffff;
 }
 
 .devctrl-main-content-wide {

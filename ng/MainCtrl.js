@@ -1,7 +1,7 @@
 goog.provide("DevCtrl.MainCtrl");
 
-DevCtrl.MainCtrl = ['$state', '$mdSidenav', '$mdMedia', 'DataService', 'MenuService',
-    function($state, $mdSidenav, $mdMedia, DataService, MenuService) {
+DevCtrl.MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
+    function($state, $mdMedia, DataService, MenuService) {
         this.msg = "Hello World!";
         this.tiles = [
             {

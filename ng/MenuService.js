@@ -1,12 +1,16 @@
 goog.provide('DevCtrl.MenuService.factory');
 
-DevCtrl.MenuService.factory = ['$state', 'DataService',
-    function ($state, DataService) {
+DevCtrl.MenuService.factory = ['$state', '$mdSidenav', '$mdMedia', 'DataService',
+    function ($state, $mdSidenav, $mdMedia, DataService) {
         var items = {};
 
         var sideNavState = false;
 
         var self = {
+            backgroundImageStyle : function() {
+                var img = "url(/images/backgrounds/" + $state.current.name + "/" + $state.params.name + ".jpg)";
+                return { 'background-image' : img };
+            },
             go : function(state) {
                 if (angular.isString(state)) {
                     $state.go(state);
@@ -91,12 +95,28 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
                 return self.items;
             },
 
+
+            hideSidenavButton : function() {
+                if (self.narrowMode()) {
+                    return false;
+                }
+                return sideNavState;
+            },
+
             isSidenavOpen: function() {
                 return sideNavState;
             },
 
             toggleSidenav: function(position) {
                 sideNavState = ! sideNavState;
+
+                if (self.narrowMode()) {
+                    $mdSidenav(position).toggle();
+                }
+            },
+
+            narrowMode : function() {
+                return $mdMedia('max-width: 1000px');
             }
         };
 

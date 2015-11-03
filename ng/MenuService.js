@@ -4,6 +4,7 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
     function ($state, DataService) {
         var items = {};
 
+        var sideNavState = false;
 
         var self = {
             go : function(state) {
@@ -88,6 +89,14 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
                 });
 
                 return self.items;
+            },
+
+            isSidenavOpen: function() {
+                return sideNavState;
+            },
+
+            toggleSidenav: function(position) {
+                sideNavState = ! sideNavState;
             }
         };
 

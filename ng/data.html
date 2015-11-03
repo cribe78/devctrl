@@ -1,6 +1,4 @@
 <div layout="column" ng-if="main.$state.is('config.data')">
-    <md-card>
-        <md-card-content>
             <md-list>
                 <md-list-item ng-repeat-start="(name, schema) in main.schema" ng-click="main.go({ name: 'config.data.table', params : { name : name }})">
                     {{schema.label}}
@@ -9,7 +7,5 @@
                 </md-list-item>
                 <md-divider ng-repeat-end></md-divider>
             </md-list>
-        </md-card-content>
-    </md-card>
 </div>
 <ui-view></ui-view>

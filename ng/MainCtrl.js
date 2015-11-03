@@ -1,7 +1,7 @@
 goog.provide("DevCtrl.MainCtrl");
 
-DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
-    function($state, $mdSidenav, DataService, MenuService) {
+DevCtrl.MainCtrl = ['$state', '$mdSidenav', '$mdMedia', 'DataService', 'MenuService',
+    function($state, $mdSidenav, $mdMedia, DataService, MenuService) {
         this.msg = "Hello World!";
         this.tiles = [
             {
@@ -18,6 +18,7 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         this.$state = $state;
         this.schema = DataService.schema;
         this.menu = MenuService;
+        this.$mdMedia = $mdMedia;
         this.control_endpoints = DataService.getTable('control_endpoints');
         this.config = DataService.config;
         this.user = DataService.dataModel.user;
@@ -26,9 +27,6 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
             DataService.updateConfig();
         };
 
-        this.toggleSidenav = function(menuId) {
-            $mdSidenav(menuId).toggle();
-        };
 
         this.go = function(state) {
             if (angular.isString(state)) {

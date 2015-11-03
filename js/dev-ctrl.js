@@ -240,8 +240,8 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
 
 // ../ng/MainCtrl.js
 
-DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
-    function($state, $mdSidenav, DataService, MenuService) {
+DevCtrl.MainCtrl = ['$state', '$mdSidenav', '$mdMedia', 'DataService', 'MenuService',
+    function($state, $mdSidenav, $mdMedia, DataService, MenuService) {
         this.msg = "Hello World!";
         this.tiles = [
             {
@@ -258,6 +258,7 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
         this.$state = $state;
         this.schema = DataService.schema;
         this.menu = MenuService;
+        this.$mdMedia = $mdMedia;
         this.control_endpoints = DataService.getTable('control_endpoints');
         this.config = DataService.config;
         this.user = DataService.dataModel.user;
@@ -266,9 +267,6 @@ DevCtrl.MainCtrl = ['$state', '$mdSidenav', 'DataService', 'MenuService',
             DataService.updateConfig();
         };
 
-        this.toggleSidenav = function(menuId) {
-            $mdSidenav(menuId).toggle();
-        };
 
         this.go = function(state) {
             if (angular.isString(state)) {
@@ -326,16 +324,11 @@ DevCtrl.Toolbar.Directive  = ['$mdMedia', '$state', 'MenuService', 'DataService'
                 DataService.revokeAdminAuth();
             };
 
-            this.toggleSidenav = function(menuId) {
-                $mdSidenav(menuId).toggle();
-            };
-
             this.updateConfig = function() {
                 DataService.updateConfig();
             };
 
         },
-        transclude: true,
         controllerAs: 'toolbar',
         templateUrl: 'ng/toolbar.html'
     }
@@ -1252,6 +1245,7 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
     function ($state, DataService) {
         var items = {};
 
+        var sideNavState = false;
 
         var self = {
             go : function(state) {
@@ -1336,6 +1330,14 @@ DevCtrl.MenuService.factory = ['$state', 'DataService',
                 });
 
                 return self.items;
+            },
+
+            isSidenavOpen: function() {
+                return sideNavState;
+            },
+
+            toggleSidenav: function(position) {
+                sideNavState = ! sideNavState;
             }
         };
 

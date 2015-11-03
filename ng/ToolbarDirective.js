@@ -30,16 +30,11 @@ DevCtrl.Toolbar.Directive  = ['$mdMedia', '$state', 'MenuService', 'DataService'
                 DataService.revokeAdminAuth();
             };
 
-            this.toggleSidenav = function(menuId) {
-                $mdSidenav(menuId).toggle();
-            };
-
             this.updateConfig = function() {
                 DataService.updateConfig();
             };
 
         },
-        transclude: true,
         controllerAs: 'toolbar',
         templateUrl: 'ng/toolbar.html'
     }

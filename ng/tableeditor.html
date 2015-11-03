@@ -1,49 +1,43 @@
-<div>
-    <md-card>
-        <md-card-content>
-            <span class="text-title">{{table.schema.label}}</span>
+<span class="text-title">{{table.schema.label}}</span>
 
-            <md-list>
-                <md-list-item layout="row">
-                    <div flex="5">
-                        ID
-                    </div>
-                    <div ng-repeat="field in table.schema.fields" flex class="table-header" ng-click="table.setSortColumn(field)">
-                        {{field.label}}
-                    </div>
-                    <div flex="5"></div>
-                </md-list-item>
-                <md-divider></md-divider>
-                <md-list-item ng-repeat-start="row in table.data.listed | orderBy: table.sortColumn : table.sortReversed"
-                              layout="row">
-                    <div flex="5">
-                        <span>{{row.id}}</span>
-                    </div>
-                    <div class="md-list-item-text"
-                         ng-repeat="field in table.schema.fields"
-                         ng-switch="field.type"
-                         flex>
-                        <p ng-switch-when="fk">{{table.fkDisplayVal(field, row)}}</p>
-                        <div ng-switch-when="bool">
-                            <md-checkbox class="md-primary"
-                                         ng-true-value="1"
-                                         ng-false-value="0"
-                                         ng-model="row.fields[field.name]"
-                                         ng-change="table.updateRow($event, row)"></md-checkbox>
-                        </div>
-                        <p ng-switch-default>{{row.fields[field.name]}}</p>
+<md-list>
+    <md-list-item layout="row">
+        <div flex="5">
+            ID
+        </div>
+        <div ng-repeat="field in table.schema.fields" flex class="table-header" ng-click="table.setSortColumn(field)">
+            {{field.label}}
+        </div>
+        <div flex="5"></div>
+    </md-list-item>
+    <md-divider></md-divider>
+    <md-list-item ng-repeat-start="row in table.data.listed | orderBy: table.sortColumn : table.sortReversed"
+                  layout="row">
+        <div flex="5">
+            <span>{{row.id}}</span>
+        </div>
+        <div class="md-list-item-text"
+             ng-repeat="field in table.schema.fields"
+             ng-switch="field.type"
+             flex>
+            <p ng-switch-when="fk">{{table.fkDisplayVal(field, row)}}</p>
+            <div ng-switch-when="bool">
+                <md-checkbox class="md-primary"
+                             ng-true-value="1"
+                             ng-false-value="0"
+                             ng-model="row.fields[field.name]"
+                             ng-change="table.updateRow($event, row)"></md-checkbox>
+            </div>
+            <p ng-switch-default>{{row.fields[field.name]}}</p>
 
-                    </div>
-                    <div flex="5">
-                        <md-button  ng-click="table.openRecord($event, row.id)">
-                            <md-icon  md-font-set="material-icons">edit</md-icon>
-                        </md-button>
-                    </div>
-                </md-list-item>
-                <md-divider ng-repeat-end></md-divider>
-            </md-list>
+        </div>
+        <div flex="5">
+            <md-button  ng-click="table.openRecord($event, row.id)">
+                <md-icon  md-font-set="material-icons">edit</md-icon>
+            </md-button>
+        </div>
+    </md-list-item>
+    <md-divider ng-repeat-end></md-divider>
+</md-list>
 
-            <md-button ng-click="table.addRow()">Add</md-button>
-        </md-card-content>
-    </md-card>
-</div>
+<md-button ng-click="table.addRow()">Add</md-button>

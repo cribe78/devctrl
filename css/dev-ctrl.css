@@ -34,6 +34,9 @@ md-list-item .table-header {
     overflow: hidden;
 }
 
+.level1div {
+
+}
 
 
 coe-menu ul {
@@ -44,12 +47,27 @@ coe-menu li {
     width: 95%;
 }
 
-.coe-ctrl {
-  /**  margin: 16px;
-    padding: 16px;  **/
+
+.dc-sidenav {
+    width: 240px;
 }
 
+.dc-sidenav.ng-hide-add, .dc-sidenav.ng-hide-remove {
+    transition: all 0.6s ease-in-out;
+}
 
+.dc-sidenav.ng-hide-add-active, .dc-sidenav.ng-hide-remove-active {
+    transition: all 0.6s ease-in-out;
+}
+
+.dc-sidenav.ng-hide {
+    margin-left: -240px;
+}
+
+.dc-toolbar-sidenav-button.ng-hide {
+    display: block!important;
+    visibility: hidden;
+}
 
 
 .devctrl-ctrl {
@@ -82,14 +100,16 @@ coe-menu li {
 }
 
 .devctrl-main-card {
-    max-width: 1000px;
+    width: 1000px;
 }
 
-.devctrl-main-content {
+.devctrl-main-content-wide {
 
 }
 
 .devctrl-main-content-container {
+    height: 100%;
+    overflow: hidden;
     /**
     height: 100%;
     width: 100%;
@@ -97,7 +117,6 @@ coe-menu li {
 }
 
 .devctrl-main-toolbar {
-    max-width: 1048px;
 }
 
 .devctrl-slider-input {

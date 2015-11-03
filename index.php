@@ -9,8 +9,8 @@
       ng-app="DevCtrlApp">
 <head>
     <script src="/bower_components/angular/angular.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-animate.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/<?=$ng_ver?>/angular-aria.min.js"></script>
+    <script src="/bower_components/angular-animate/angular-animate.min.js"></script>
+    <script src="/bower_components/angular-aria/angular-aria.min.js"></script>
     <script src="/bower_components/angular-material/angular-material.js"></script>
     <script src="/js/socket.io.js"></script>
     <script src="/js/socket.js"></script>
@@ -28,23 +28,42 @@
     <title>DWI DevCtrl</title>
 </head>
 <body layout="row" ng-controller="MainCtrl as main">
-    <md-sidenav layout="column"
-                class="md-sidenav-left md-whiteframe-z2"
-                md-component-id="left"
-                md-is-locked-open="$mdMedia('gt-md')">
+    <div ng-show="main.menu.isSidenavOpen()"
+         class="dc-sidenav md-sidenav-left md-whiteframe-z2 "
+         layout="column">
         <div layout="row" layout-align="left center">
-            <md-button ng-click="main.toggleSidenav('left')" hide-gt-md class="md-icon-button">
+            <md-button ng-click="main.menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
                 <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
             </md-button>
-            <md-icon show-gt-md md-font-set="material-icons">settings</md-icon>
             <span flex class="text-display-1 md-primary md-hue-1">DWI DevCtrl</span>
         </div>
         <md-content flex role="navigation">
             <coe-menu items="main.menu.items"></coe-menu>
         </md-content>
-    </md-sidenav>
+    </div>
     <div layout="column" flex>
-        <ui-view></ui-view>
+        <devctrl-toolbar></devctrl-toolbar>
+        <md-content ng-if="main.$mdMedia('max-width: 1000px')"
+                    layout="column"
+                    flex
+                    layout-margin
+                    id="content"
+                    class="devctrl-main-content">
+            <ui-view></ui-view>
+        </md-content>
+        <md-content ng-if="main.$mdMedia('min-width: 1000px')"
+                    layout="column"
+                    layout-align="start center"
+                    flex
+                    layout-margin
+                    id="content"
+                    class="devctrl-main-content-wide">
+            <md-card class="devctrl-main-card">
+                <md-card-content>
+                    <ui-view></ui-view>
+                </md-card-content>
+            </md-card>
+        </md-content>
     </div>
 </body>
 </html>

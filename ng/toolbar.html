@@ -1,53 +1,34 @@
-<div flex layout="column" layout-align="start" class="devctrl-main-content-container">
-    <md-toolbar layout="row" layout-align="start center">
-        <div flex layout="row"
-             layout-align="center center"
-             class="devctrl-main-toolbar">
-            <md-button ng-if="toolbar.menu.isFirstLevel()" ng-click="toolbar.toggleSidenav('left')" hide-gt-md class="md-icon-button">
-                <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
-            </md-button>
-            <md-button ng-if="! toolbar.menu.isFirstLevel()" ng-click="menu.go(toolbar.menu.parentState())">
-                <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
-            </md-button>
-            <span flex class="title text-headline">{{toolbar.pageTitle()}}</span>
-            <md-button ng-if="! main.user.admin" ng-click="toolbar.adminLogin()">Admin Login</md-button>
-            <span ng-if="toolbar.user.admin">{{toolbar.user.username}}</span>
-            <md-menu ng-if="toolbar.user.admin">
-                <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
-                    <md-icon  md-font-set="material-icons">more_vert</md-icon>
-                </md-button>
-                <md-menu-content>
-                    <md-menu-item>
-                        <md-switch ng-model="toolbar.config.editEnabled"
-                                   ng-change="toolbar.updateConfig()">
-                            Edit
-                        </md-switch>
-                    </md-menu-item>
-                    <md-menu-item>
-                        <md-button ng-click="toolbar.revokeAdmin()">Admin Logout</md-button>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
-        </div>
-    </md-toolbar>
-    <md-content ng-if="toolbar.$mdMedia('max-width: 1000px')"
-                layout="column"
-                flex
-                layout-margin
-                id="content"
-                ng-transclude
-                class="devctrl-main-content">
-    </md-content>
-    <md-content ng-if="toolbar.$mdMedia('min-width: 1000px')"
-                layout="column"
-                flex
-                layout-margin
-                id="content"
-                class="devctrl-main-content">
-        <md-card class="devctrl-main-card">
-            <md-card-content ng-transclude>
 
-            </md-card-content>
-        </md-card>
-    </md-content>
-</div>
+<md-toolbar layout="row" layout-align="start center">
+    <div flex layout="row"
+         layout-align="center center"
+         class="devctrl-main-toolbar">
+        <md-button ng-click="toolbar.menu.toggleSidenav('left')"
+                   ng-hide="toolbar.menu.isSidenavOpen()"
+                   class="dc-toolbar-sidenav-button md-icon-button">
+            <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
+        </md-button>
+        <md-button ng-if="false" ng-click="menu.go(toolbar.menu.parentState())">
+            <md-icon aria-label="Back" md-font-set="material-icons">chevron_left</md-icon>
+        </md-button>
+        <span flex class="title text-headline">{{toolbar.pageTitle()}}</span>
+        <md-button ng-if="! main.user.admin" ng-click="toolbar.adminLogin()">Admin Login</md-button>
+        <span ng-if="toolbar.user.admin">{{toolbar.user.username}}</span>
+        <md-menu ng-if="toolbar.user.admin">
+            <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                <md-icon  md-font-set="material-icons">more_vert</md-icon>
+            </md-button>
+            <md-menu-content>
+                <md-menu-item>
+                    <md-switch ng-model="toolbar.config.editEnabled"
+                               ng-change="toolbar.updateConfig()">
+                        Edit
+                    </md-switch>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="toolbar.revokeAdmin()">Admin Logout</md-button>
+                </md-menu-item>
+            </md-menu-content>
+        </md-menu>
+    </div>
+</md-toolbar>

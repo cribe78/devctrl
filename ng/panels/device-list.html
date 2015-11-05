@@ -1,0 +1,16 @@
+<md-subheader>
+    {{panel.fields.name}}
+    <md-button devctrl-admin-only
+               ng-click="panel.editPanel($event)"
+               class="md-primary md-hue-1">
+        Edit Panel
+    </md-button>
+</md-subheader>
+<md-list-item ng-repeat="(id, endpoint) in panel.getRoomEndpoints(panel.panelObj.fields.grouping)"
+                ng-click="panel.menu.go({ name: 'endpoints.endpoint', params : { id : id }})"
+                flex
+                layout="row">
+    <span>{{endpoint.fields.name}}</span>
+    <span flex></span>
+    <md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon>
+</md-list-item>

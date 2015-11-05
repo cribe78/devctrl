@@ -54,7 +54,13 @@
             <md-subheader>Referenced by</md-subheader>
             <div ng-repeat="(tableName, references) in record.obj.referenced">
                 <md-list-item ng-repeat="(id, ref) in references">
-                    <span>{{tableName}} - {{id}}</span>
+                    <md-button ng-click="record.editOtherRow(ref)">{{tableName}}[{{id}}]</md-button>
+                </md-list-item>
+            </div>
+            <md-subheader>References</md-subheader>
+            <div ng-repeat="(tableName, ref) in record.obj.foreign">
+                <md-list-item>
+                    <md-button ng-click="record.editOtherRow(ref)">{{tableName}}[{{ref.id}}]</md-button>
                 </md-list-item>
             </div>
         </md-list>

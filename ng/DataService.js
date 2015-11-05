@@ -5,7 +5,8 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var dataModel = {
             user : {
                 username: null,
-                admin: false
+                admin: false,
+                client_id : 0
             },
             applog : []
         };

@@ -1,10 +1,4 @@
-<div flex layout="row" devctrl-admin-only>
-    <md-button
-               ng-click="room.addPanel($event)"
-               class="md-primary">
-        Add Panel
-    </md-button>
-</div>
+
 <md-tabs md-selected="room.selectedGroup" md-dynamic-height>
     <md-tab ng-repeat="(groupName,group) in room.getGroups()"
             label="{{groupName}}">
@@ -16,7 +10,28 @@
         </md-list>
 
     </md-tab>
+    <md-tab label="Devices">
+        <md-list>
+            <md-list-item ng-repeat-start="(id, endpoint) in room.getRoomEndpoints()"
+                          ng-click="room.menu.go({ name: 'endpoints.endpoint', params : { id : id }})"
+                          flex
+                          layout="row">
+                <span>{{endpoint.fields.name}}</span>
+                <span flex></span>
+                <md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon>
+            </md-list-item>
+            <md-divider ng-repeat-end></md-divider>
+        </md-list>
+    </md-tab>
 </md-tabs>
+<div flex layout="row" devctrl-admin-only>
+    <span flex></span>
+    <md-button
+            ng-click="room.addPanel($event)"
+            class="md-primary">
+        Add Panel
+    </md-button>
+</div>
 
 
 

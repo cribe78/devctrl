@@ -9,21 +9,37 @@
             <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
         </md-button>
         <span flex class="title text-headline">{{toolbar.pageTitle()}}</span>
-        <md-button ng-if="! main.user.admin" ng-click="toolbar.adminLogin()">Admin Login</md-button>
-        <span ng-if="toolbar.user.admin">{{toolbar.user.username}}</span>
-        <md-menu ng-if="toolbar.user.admin">
+        <div layout="column">
+            <div>{{toolbar.client().fields.name}}</div>
+            <span>{{toolbar.user.username}}</span>
+        </div>
+
+
+        <md-menu>
             <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
                 <md-icon  md-font-set="material-icons">more_vert</md-icon>
             </md-button>
             <md-menu-content>
-                <md-menu-item>
+                <md-menu-item ng-if="! toolbar.user.admin">
+                    <md-button ng-click="toolbar.adminLogin()">
+                        Admin Login
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item ng-if="toolbar.user.admin">
                     <md-switch ng-model="toolbar.config.editEnabled"
                                ng-change="toolbar.updateConfig()">
                         Edit
                     </md-switch>
                 </md-menu-item>
-                <md-menu-item>
-                    <md-button ng-click="toolbar.revokeAdmin()">Admin Logout</md-button>
+                <md-menu-item ng-if="toolbar.user.admin">
+                    <md-button ng-click="toolbar.revokeAdmin()">
+                        Admin Logout
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item ng-if="toolbar.user.admin">
+                    <md-button ng-click="toolbar.editClient($event)">
+                        Edit Client
+                    </md-button>
                 </md-menu-item>
             </md-menu-content>
         </md-menu>

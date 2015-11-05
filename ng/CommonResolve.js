@@ -1,6 +1,9 @@
 goog.provide('DevCtrl.Common.Resolve');
 
 DevCtrl.Common.Resolve = {
+    loadClients: function(DataService) {
+        return DataService.getTablePromise('clients');
+    },
     // Load all controls.  Do something smarter with this if it starts slowing us down
     loadControls: function(DataService) {
         return DataService.getTablePromise('controls');

@@ -1,14 +1,15 @@
 goog.provide('DevCtrl.Panel.Directive');
 
-DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, DataService) {
+DevCtrl.Panel.Directive  = ['$mdDialog', 'MenuService', 'DataService', function($mdDialog, MenuService, DataService) {
     return {
         scope: true,
         bindToController : {
             panelObj: '='
         },
-        controller: function($mdDialog, DataService) {
+        controller: function($mdDialog, MenuService, DataService) {
             var self = this;
             this.fields = this.panelObj.fields;
+            this.menu = MenuService;
 
             this.addControl = function($event) {
                 $mdDialog.show({
@@ -38,7 +39,28 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
                         DataService.updateControlValue(control);
                     }
                 });
-            }
+            };
+
+            this.getRoomEndpoints = function(grouping) {
+                var roomEndpoints = {};
+                var ignoreGrouping = ! angular.isDefined(grouping);
+                var room = self.panelObj.foreign.rooms;
+                var panels = room.referenced.panels;
+
+                angular.forEach(panels, function(panel, panelId) {
+                    if (ignoreGrouping || panel.fields.grouping == grouping) {
+                        var panelControls = panel.referenced.panel_controls;
+                        angular.forEach(panelControls, function(panelControl, panelControlId) {
+                            var endpoint = panelControl.foreign.controls.foreign.control_endpoints;
+                            if (! angular.isDefined(roomEndpoints[endpoint.id])) {
+                                roomEndpoints[endpoint.id] = endpoint;
+                            }
+                        });
+                    }
+                });
+
+                return roomEndpoints;
+            };
 
         },
         controllerAs: 'panel',

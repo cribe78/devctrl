@@ -90,6 +90,9 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
 DevCtrl.Common = {};
 
 DevCtrl.Common.Resolve = {
+    loadClients: function(DataService) {
+        return DataService.getTablePromise('clients');
+    },
     // Load all controls.  Do something smarter with this if it starts slowing us down
     loadControls: function(DataService) {
         return DataService.getTablePromise('controls');
@@ -157,9 +160,10 @@ DevCtrl.ObjectEditor.Directive  = [ function() {
 // ../ng/RoomCtrl.js
 DevCtrl.Room = {};
 
-DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
-    function($stateParams, DataService) {
+DevCtrl.Room.Ctrl = ['$stateParams', 'DataService', 'MenuService',
+    function($stateParams, DataService, MenuService) {
         var self = this;
+        this.menu = MenuService;
         this.roomName = $stateParams.name;
         this.rooms = DataService.getTable('rooms');  // These tables are pre-resolved by the ui-router
 
@@ -221,6 +225,27 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             });
 
             return roomConfig.groups;
+        };
+
+        this.getRoomEndpoints = function(grouping) {
+            var roomEndpoints = {};
+            var ignoreGrouping = ! angular.isDefined(grouping);
+            var room = self.obj;
+            var panels = room.referenced.panels;
+
+            angular.forEach(panels, function(panel, panelId) {
+                if (ignoreGrouping || panel.fields.grouping == grouping) {
+                    var panelControls = panel.referenced.panel_controls;
+                    angular.forEach(panelControls, function(panelControl, panelControlId) {
+                        var endpoint = panelControl.foreign.controls.foreign.control_endpoints;
+                        if (! angular.isDefined(roomEndpoints[endpoint.id])) {
+                            roomEndpoints[endpoint.id] = endpoint;
+                        }
+                    });
+                }
+            });
+
+            return roomEndpoints;
         };
 
         // This function is here to prevent null reference errors
@@ -307,6 +332,11 @@ DevCtrl.Toolbar.Directive  = ['$mdMedia', '$state', 'MenuService', 'DataService'
             this.config = DataService.config;
             this.$mdMedia = $mdMedia;
 
+            this.client = function() {
+                return DataService.getRowRef("clients", self.user.client_id);
+            };
+
+
             this.pageTitle = function() {
                 if (angular.isDefined(self.title)) {
                     return self.title;
@@ -317,6 +347,10 @@ DevCtrl.Toolbar.Directive  = ['$mdMedia', '$state', 'MenuService', 'DataService'
 
             this.adminLogin = function() {
                 DataService.getAdminAuth(true);
+            };
+
+            this.editClient = function($event) {
+                DataService.editRecord($event, self.user.client_id, "clients");
             };
 
 
@@ -395,7 +429,8 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
         var dataModel = {
             user : {
                 username: null,
-                admin: false
+                admin: false,
+                client_id : 0
             },
             applog : []
         };
@@ -1190,22 +1225,29 @@ DevCtrl.Record.Ctrl = ['DataService',
     function(DataService) {
         this.newRow = this.obj.id === '0';
         this.schema = DataService.getSchema(this.obj.tableName);
+        this.editStack = [];
 
         var self = this;
 
         this.addRow = function() {
             DataService.addRow(self.obj);
-            DataService.editRecordClose();
+            self.close(true);
         };
 
         this.deleteRow = function() {
             DataService.deleteRow(self.obj);
-            DataService.editRecordClose();
+            self.close(true);
+        };
+
+        this.editOtherRow = function(row) {
+            self.editStack.push(self.obj);
+            self.obj = row;
+            self.schema = DataService.getSchema(row.tableName);
         };
 
         this.updateRow = function() {
             DataService.updateRow(self.obj);
-            DataService.editRecordClose();
+            self.close(true);
         };
 
         this.cloneRow = function() {
@@ -1220,8 +1262,14 @@ DevCtrl.Record.Ctrl = ['DataService',
             });
         };
 
-        this.close = function() {
-            DataService.editRecordClose();
+        this.close = function(popStack) {
+            if (popStack && self.editStack.length > 0) {
+                self.obj = self.editStack.pop();
+                self.schema = DataService.getSchema(self.obj.tableName);
+            }
+            else {
+                DataService.editRecordClose();
+            }
         }
     }
 ];
@@ -1247,12 +1295,24 @@ DevCtrl.MenuService.factory = ['$state', '$mdSidenav', '$mdMedia', 'DataService'
     function ($state, $mdSidenav, $mdMedia, DataService) {
         var items = {};
 
-        var sideNavState = false;
+        var menuConfig = {
+            sidenavOpen : false
+        };
+
+        if (angular.isObject(DataService.config.menu)) {
+            menuConfig = DataService.config.menu;
+        }
+        else {
+            DataService.config.menu = menuConfig;
+        }
 
         var self = {
             backgroundImageStyle : function() {
-                var img = "url(/images/backgrounds/" + $state.current.name + "/" + $state.params.name + ".jpg)";
-                return { 'background-image' : img };
+                if (angular.isDefined($state.current.name) && angular.isDefined($state.params.name)) {
+                    var img = "url(/images/backgrounds/" + $state.current.name + "/" + $state.params.name + ".jpg)";
+                    return {'background-image': img};
+                }
+                return {};
             },
             go : function(state) {
                 if (angular.isString(state)) {
@@ -1343,15 +1403,20 @@ DevCtrl.MenuService.factory = ['$state', '$mdSidenav', '$mdMedia', 'DataService'
                 if (self.narrowMode()) {
                     return false;
                 }
-                return sideNavState;
+                return menuConfig.sidenavOpen;
             },
 
             isSidenavOpen: function() {
-                return sideNavState;
+                return menuConfig.sidenavOpen;
             },
 
             toggleSidenav: function(position) {
-                sideNavState = ! sideNavState;
+                if (! angular.isDefined(menuConfig.sidenavOpen)) {
+                    menuConfig.sidenavOpen = false;
+                }
+
+                menuConfig.sidenavOpen = ! menuConfig.sidenavOpen;
+                DataService.updateConfig();
 
                 if (self.narrowMode()) {
                     $mdSidenav(position).toggle();
@@ -1792,15 +1857,16 @@ DevCtrl.Rooms.Ctrl = ['DataService',
 // ../ng/PanelDirective.js
 DevCtrl.Panel = {};
 
-DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, DataService) {
+DevCtrl.Panel.Directive  = ['$mdDialog', 'MenuService', 'DataService', function($mdDialog, MenuService, DataService) {
     return {
         scope: true,
         bindToController : {
             panelObj: '='
         },
-        controller: function($mdDialog, DataService) {
+        controller: function($mdDialog, MenuService, DataService) {
             var self = this;
             this.fields = this.panelObj.fields;
+            this.menu = MenuService;
 
             this.addControl = function($event) {
                 $mdDialog.show({
@@ -1830,7 +1896,28 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'DataService', function($mdDialog, Data
                         DataService.updateControlValue(control);
                     }
                 });
-            }
+            };
+
+            this.getRoomEndpoints = function(grouping) {
+                var roomEndpoints = {};
+                var ignoreGrouping = ! angular.isDefined(grouping);
+                var room = self.panelObj.foreign.rooms;
+                var panels = room.referenced.panels;
+
+                angular.forEach(panels, function(panel, panelId) {
+                    if (ignoreGrouping || panel.fields.grouping == grouping) {
+                        var panelControls = panel.referenced.panel_controls;
+                        angular.forEach(panelControls, function(panelControl, panelControlId) {
+                            var endpoint = panelControl.foreign.controls.foreign.control_endpoints;
+                            if (! angular.isDefined(roomEndpoints[endpoint.id])) {
+                                roomEndpoints[endpoint.id] = endpoint;
+                            }
+                        });
+                    }
+                });
+
+                return roomEndpoints;
+            };
 
         },
         controllerAs: 'panel',

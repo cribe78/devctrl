@@ -11,6 +11,7 @@ $log = array();
 function adminAuthCheck($do_logon = false) {
     global $mysqli;
     global $resp;
+    global $USESSION;
 
     $admin_identifier = '';
 
@@ -18,7 +19,10 @@ function adminAuthCheck($do_logon = false) {
         $admin_identifier = $_COOKIE['admin_identifier'];
     }
 
-    $resp['user'] = array('username' => null, 'admin' => false);
+    $resp['user'] = array(
+        'username' => null,
+        'admin' => false,
+        'client_id' => $USESSION['client_id']);
 
     // Admin authentication
     if ($admin_identifier) {

@@ -52,7 +52,7 @@ coe-menu li {
 }
 
 .dc-sidenav {
-    width: 240px;
+    width: 250px;
 }
 
 .dc-sidenav.ng-hide-add, .dc-sidenav.ng-hide-remove {
@@ -64,7 +64,7 @@ coe-menu li {
 }
 
 .dc-sidenav.ng-hide {
-    margin-left: -240px;
+    margin-left: -250px;
 }
 
 .dc-toolbar-sidenav-button.ng-hide {

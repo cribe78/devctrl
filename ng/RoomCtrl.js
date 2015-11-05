@@ -1,8 +1,9 @@
 goog.provide("DevCtrl.Room.Ctrl");
 
-DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
-    function($stateParams, DataService) {
+DevCtrl.Room.Ctrl = ['$stateParams', 'DataService', 'MenuService',
+    function($stateParams, DataService, MenuService) {
         var self = this;
+        this.menu = MenuService;
         this.roomName = $stateParams.name;
         this.rooms = DataService.getTable('rooms');  // These tables are pre-resolved by the ui-router
 
@@ -64,6 +65,27 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService',
             });
 
             return roomConfig.groups;
+        };
+
+        this.getRoomEndpoints = function(grouping) {
+            var roomEndpoints = {};
+            var ignoreGrouping = ! angular.isDefined(grouping);
+            var room = self.obj;
+            var panels = room.referenced.panels;
+
+            angular.forEach(panels, function(panel, panelId) {
+                if (ignoreGrouping || panel.fields.grouping == grouping) {
+                    var panelControls = panel.referenced.panel_controls;
+                    angular.forEach(panelControls, function(panelControl, panelControlId) {
+                        var endpoint = panelControl.foreign.controls.foreign.control_endpoints;
+                        if (! angular.isDefined(roomEndpoints[endpoint.id])) {
+                            roomEndpoints[endpoint.id] = endpoint;
+                        }
+                    });
+                }
+            });
+
+            return roomEndpoints;
         };
 
         // This function is here to prevent null reference errors

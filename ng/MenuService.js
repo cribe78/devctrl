@@ -4,12 +4,24 @@ DevCtrl.MenuService.factory = ['$state', '$mdSidenav', '$mdMedia', 'DataService'
     function ($state, $mdSidenav, $mdMedia, DataService) {
         var items = {};
 
-        var sideNavState = false;
+        var menuConfig = {
+            sidenavOpen : false
+        };
+
+        if (angular.isObject(DataService.config.menu)) {
+            menuConfig = DataService.config.menu;
+        }
+        else {
+            DataService.config.menu = menuConfig;
+        }
 
         var self = {
             backgroundImageStyle : function() {
-                var img = "url(/images/backgrounds/" + $state.current.name + "/" + $state.params.name + ".jpg)";
-                return { 'background-image' : img };
+                if (angular.isDefined($state.current.name) && angular.isDefined($state.params.name)) {
+                    var img = "url(/images/backgrounds/" + $state.current.name + "/" + $state.params.name + ".jpg)";
+                    return {'background-image': img};
+                }
+                return {};
             },
             go : function(state) {
                 if (angular.isString(state)) {
@@ -100,15 +112,20 @@ DevCtrl.MenuService.factory = ['$state', '$mdSidenav', '$mdMedia', 'DataService'
                 if (self.narrowMode()) {
                     return false;
                 }
-                return sideNavState;
+                return menuConfig.sidenavOpen;
             },
 
             isSidenavOpen: function() {
-                return sideNavState;
+                return menuConfig.sidenavOpen;
             },
 
             toggleSidenav: function(position) {
-                sideNavState = ! sideNavState;
+                if (! angular.isDefined(menuConfig.sidenavOpen)) {
+                    menuConfig.sidenavOpen = false;
+                }
+
+                menuConfig.sidenavOpen = ! menuConfig.sidenavOpen;
+                DataService.updateConfig();
 
                 if (self.narrowMode()) {
                     $mdSidenav(position).toggle();

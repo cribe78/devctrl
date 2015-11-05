@@ -7,6 +7,28 @@
  */
 
 $g_schema = array(
+    'clients' => array(
+        'pk' => 'client_id',
+        'fk_name' => 'name',
+        'label' => 'Clients',
+        'fields' => array(
+            array(
+                'name' => 'identifier',
+                'type' => 'string',
+                'label' => 'Identifier'
+            ),
+            array(
+                'name' => 'name',
+                'type' => 'string',
+                'label' => 'Name'
+            ),
+            array(
+                'name' => 'time_added',
+                'type' => 'string',
+                'label' => 'Time Added'
+            )
+        )
+    ),
     'controls' => array(
         'pk' => 'control_id',
         'fk_name' => 'name',

@@ -30,7 +30,7 @@ if ($identifier != 'nouser') {
     if (! $select_user)
         errorResponse("prepare select_user error: {$mysqli->error}");
 
-    pclog(LOG_INFO, "loading session $identifier");
+    error_log("loading session $identifier");
 
     $select_user->bind_param('s', $identifier);
     if (! $select_user->execute())
@@ -75,6 +75,8 @@ else {
 
     $USESSION['client_id'] = $mysqli->insert_id;
     $USESSION['identifier'] = $identifier;
+
+    error_log("client {$USESSION['client_id']} added, identifier=$identifier");
 }
 
 setcookie('identifier', $identifier, $client_expiration, "/");

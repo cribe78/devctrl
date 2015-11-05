@@ -13,6 +13,11 @@ DevCtrl.Toolbar.Directive  = ['$mdMedia', '$state', 'MenuService', 'DataService'
             this.config = DataService.config;
             this.$mdMedia = $mdMedia;
 
+            this.client = function() {
+                return DataService.getRowRef("clients", self.user.client_id);
+            };
+
+
             this.pageTitle = function() {
                 if (angular.isDefined(self.title)) {
                     return self.title;
@@ -23,6 +28,10 @@ DevCtrl.Toolbar.Directive  = ['$mdMedia', '$state', 'MenuService', 'DataService'
 
             this.adminLogin = function() {
                 DataService.getAdminAuth(true);
+            };
+
+            this.editClient = function($event) {
+                DataService.editRecord($event, self.user.client_id, "clients");
             };
 
 

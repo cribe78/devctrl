@@ -28,11 +28,13 @@
             <md-list-item layout="row" ng-repeat="(id, enumValObj) in editor.myEnum.referenced['enum_vals']">
                     <md-input-container flex>
                         <input  ng-model="enumValObj.fields.name"
+                                aria-label="Name"
                                 ng-model-options="{debounce: 400}"
                                 ng-change="editor.updateEnumValue(enumValObj)">
                     </md-input-container>
                     <md-input-container flex>
                         <input  ng-model="enumValObj.fields.value"
+                                aria-label="Value"
                                 ng-model-options="{debounce: 400}"
                                 ng-change="editor.updateEnumValue(enumValObj)">
                     </md-input-container>

@@ -22,22 +22,18 @@ $|++;
 my $device_ip = "10.5.162.232";
 my $device_port = 28844;
 my $controller_ip = "controller.dwi.ufl.edu";
-my $controller_user = "admin";
-my $controller_pass = "DWCONTROL";
+my $controller_identifier = "identifier";
+my $control_id = 0;
 my $debug = 1;
 my $daemon = 1;
-my $target_num = 2;
 my $dxp_dest = 6;
 
 my %options = ("sw4-ip=s" => \$device_ip,
             "sw4-port=i" => \$device_port,
-            "tn=i" => \$target_num,
-            "password=s" => \$controller_pass,
-            "user=s" => \$controller_user,
-            "controller=i" => \$controller_ip,
+            "controller=s" => \$controller_ip,
             "debug" => \$debug,
             "daemon!" => \$daemon,
-            "dxp-dest=s" => \$dxp_dest);
+            "control=i" => \$control_id);
 
 my %input_map;
 for (my $i = 1; $i <= 4; $i++ ) {
@@ -174,14 +170,9 @@ sub select_dxp_source {
     my ($source) = (@_);
     
     my $ua = LWP::UserAgent->new;
-    $ua->credentials("controller.dwi.ufl.edu:80", "PICT Controller", "admin", "DWCONTROL");
-
-    my $resp = $ua->post("http://controller.dwi.ufl.edu/commands.json", 
+    $ua->cookie_jar({ file => "$ENV{HOME}/.cookies.txt" });
+    my $resp = $ua->post("https://$controller_ip/control.php/$control_id", 
                                     {
-                                            tt => "switcher-dxp",
-                                            tn => $target_num,
-                                            ct => "select",
-                                            cn => "Out". $dxp_dest . "Vid",
                                             value => $source
                                     });
 

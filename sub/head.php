@@ -15,6 +15,7 @@ if (! isset($ctx)) {
 }
 
 require("controller-lib.php");
+checkpoint("start");
 require(__DIR__ . "/auth.php");
 
 

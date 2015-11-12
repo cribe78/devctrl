@@ -4,17 +4,23 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService', 'MenuService',
     function($stateParams, DataService, MenuService) {
         var self = this;
         this.menu = MenuService;
-        this.roomName = $stateParams.name;
         this.rooms = DataService.getTable('rooms');  // These tables are pre-resolved by the ui-router
 
-        angular.forEach(this.rooms.listed, function(value) {
-            if (value.fields['name'] == self.roomName) {
-                self.obj = value;
-                self.id = value.id;
-            }
-        });
+        if (angular.isDefined(this.rooms.indexed[$stateParams.id])) {
+            this.obj = this.rooms.indexed[$stateParams.id];
+            this.id = $stateParams.id;
+            $stateParams.name = this.obj.fields.name;
+        }
+        else {
+            angular.forEach(this.rooms.listed, function (value) {
+                if (value.fields['name'] == $stateParams.name) {
+                    self.obj = value;
+                    self.id = value.id;
+                }
+            });
+        }
 
-
+        this.menu.toolbarSelectTable("rooms", "rooms.room", self.id);
 
         this.panels = this.obj.referenced.panels;
 

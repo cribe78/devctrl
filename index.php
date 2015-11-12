@@ -30,15 +30,15 @@
 <body layout="row" ng-controller="MainCtrl as main">
     <div ng-if="! main.menu.narrowMode()"
          ng-show="main.menu.isSidenavOpen()"
-         class="dc-sidenav md-sidenav-left md-whiteframe-z2 "
+         class="dc-sidenav md-sidenav-left md-whiteframe-z2"
          layout="column">
-        <div layout="row" layout-align="left center">
+        <md-toolbar layout="row"  layout-align="start center" class="md-accent">
             <md-button ng-click="main.menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
                 <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
             </md-button>
-            <span flex class="text-display-1 md-primary md-hue-1">DWI DevCtrl</span>
-        </div>
-        <md-content flex role="navigation">
+            <span flex class="text-display-1 md-accent md-hue-1">DWI DevCtrl</span>
+        </md-toolbar>
+        <md-content flex role="navigation" class="md-accent md-hue-1">
             <coe-menu items="main.menu.items"></coe-menu>
         </md-content>
     </div>
@@ -46,13 +46,13 @@
          class="md-sidenav-left md-whiteframe-z2 "
          layout="column"
          md-component-id="left">
-        <div layout="row" layout-align="left center">
+        <md-toolbar layout="row"  layout-align="start center" class="md-accent">
             <md-button ng-click="main.menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
                 <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
             </md-button>
-            <span flex class="text-display-1 md-primary md-hue-1">DWI DevCtrl</span>
-        </div>
-        <md-content flex role="navigation">
+            <span flex class="text-display-1 md-accent md-hue-1">DWI DevCtrl</span>
+        </md-toolbar>
+        <md-content flex role="navigation" class="md-accent md-hue-1">
             <coe-menu items="main.menu.items"></coe-menu>
         </md-content>
     </md-sidenav>

@@ -35,7 +35,7 @@ function adminAuthCheck($do_logon = false) {
         if (! $select_admin)
             errorResponse("prepare select_admin error: {$mysqli->error}");
 
-        pclog(LOG_INFO, "loading admin session $admin_identifier");
+        error_log("loading admin session $admin_identifier");
 
         $select_admin->bind_param('s', $admin_identifier);
         if (! $select_admin->execute())
@@ -158,11 +158,11 @@ function alertControlDaemon($ce_id, $token = "POLL") {
     if ( $port == 0 ) {
         $ps = exec("ps $pid");
         if (preg_match("/pcontrol-daemon --ce=$/", $ps)) {
-            pclog("{$ce['name']} daemon still starting... maybe next time");
+            error_log("{$ce['name']} daemon still starting... maybe next time");
             return;
         }
         else {
-            pclog("process $pid not found, relaunching");
+            error_log("process $pid not found, relaunching");
             launchControlDaemon($ce_id);
             return;
         }
@@ -170,26 +170,38 @@ function alertControlDaemon($ce_id, $token = "POLL") {
 
     $fp = stream_socket_client("udp://127.0.0.1:$port", $errno, $errstr);
     if (! $fp) {
-        pclog("{$ce['name']} could not connect to control daemon at port $port)");
+        error_log("{$ce['name']} could not connect to control daemon at port $port)");
         launchControlDaemon($ce_id);
         return;
     }
     stream_set_timeout($fp, 2);
 
     fwrite($fp, $token);
-    //pclog("$token sent to control daemon");
+    //error_log("$token sent to control daemon");
     $pollresp = fread($fp, 3);
 
     if ($pollresp == "ACK") {
         fclose($fp);
-        //pclog("ACK received from control daemon");
+        //error_log("ACK received from control daemon");
         return;
     }
-    pclog("{$ce['name']} NO ACK received (pid $pid)");
+    error_log("{$ce['name']} NO ACK received (pid $pid)");
 
     launchControlDaemon($ce_id);
 }
 
+$checkpoints = array();
+
+function checkpoint($msg) {
+    global $checkpoints;
+    static $starttime = 0;
+
+    if (! $starttime) $starttime = microtime(true);
+
+    $elapsed = microtime(true) - $starttime;
+    $elapsed = floor($elapsed * 1000);
+    $checkpoints[] = "{$elapsed}ms : $msg";
+}
 /**
  * @param $sql string the sql statement to execute
  * @param $types string type identifier characters for bind
@@ -230,21 +242,6 @@ function devctrl_include_templates() {
         }
     }
 }
-
-
-function getCmdIdx() {
-    global $mysqli;
-    $add_idx = $mysqli->prepare(
-        "insert into cmd_idxs () values ()");
-
-    if (! $add_idx->execute()) {
-        dwlog("insert cmd_idx error: $add_idx->error");
-        return 0;
-    }
-
-    return $mysqli->insert_id;
-}
-
 
 function getID() {
     global $id_idx;
@@ -398,7 +395,7 @@ function groupsStringHasGroups($groupsStr, $groupsArray) {
 function errorResponse($error, $response_code = 200) {
     global $resp;
     $resp['error'] = $error;
-    pclog($error);
+    error_log($error);
 
     jsonResponse($resp, $response_code);
 }
@@ -444,12 +441,12 @@ function launchControlDaemon($ce_id) {
 
     if (preg_match("/^(\d+)\s/", $process, $matches)) {
         exec("kill $matches[1]");
-        pclog("pcontrol-daemon process $matches[1] killed");
+        error_log("pcontrol-daemon process $matches[1] killed");
     }
 
     if ($ce['enabled']) {
         $exec_str = __DIR__ . "/../pcontrol/pcontrol-daemon --ce=$ce_id";
-        pclog("{$ce['name']} launching pcontrol-daemon: $exec_str");
+        error_log("{$ce['name']} launching pcontrol-daemon: $exec_str");
         exec($exec_str);
         $status = "launched";
     }
@@ -482,11 +479,6 @@ function paramTypeChar($paramType) {
 
 $insert_log = '';
 
-function pclog($msg) {
-    error_log($msg);
-}
-
-
 function queueCommand($control) {
     global $mysqli;
 
@@ -501,7 +493,7 @@ function queueCommand($control) {
     }
 
     
-    pclog("command queued: {$control['control_id']} : {$control['value']}");
+    error_log("command queued: {$control['control_id']} : {$control['value']}");
 }
 
 function queueSlaveCommands($tt, $tn, $ct, $cn, $value) {
@@ -517,14 +509,14 @@ function queueSlaveCommands($tt, $tn, $ct, $cn, $value) {
             and m.command_name = ?");
 
     if (! $fetch_slaves) {
-        pclog("prepare fetch_slaves error: {$mysqli->error}");
+        error_log("prepare fetch_slaves error: {$mysqli->error}");
         jsonResponse();
     }
 
     $fetch_slaves->bind_param('sis', $tt, $tn, $cn);
 
     if (! $fetch_slaves->execute()) {
-        pclog("execute fetch_slaves error: {$mysqli->error}");
+        error_log("execute fetch_slaves error: {$mysqli->error}");
         jsonResponse();
     }
 

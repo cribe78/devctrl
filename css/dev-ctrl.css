@@ -47,12 +47,8 @@ coe-menu li {
     width: 95%;
 }
 
-.dc-main-background {
-    background-image: url("/images/reve1.jpg");
-}
-
 .dc-sidenav {
-    width: 250px;
+    width: 270px;
 }
 
 .dc-sidenav.ng-hide-add, .dc-sidenav.ng-hide-remove {
@@ -64,7 +60,7 @@ coe-menu li {
 }
 
 .dc-sidenav.ng-hide {
-    margin-left: -250px;
+    margin-left: -270px;
 }
 
 .dc-toolbar-sidenav-button.ng-hide {

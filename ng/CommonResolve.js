@@ -1,6 +1,15 @@
 goog.provide('DevCtrl.Common.Resolve');
 
 DevCtrl.Common.Resolve = {
+    resetToolbar : function(MenuService) {
+        MenuService.toolbarSelect.enable = false;
+    },
+
+    loadSchema : function(DataService) {
+        console.log("loadSchema called");
+        return DataService.getSchemaPromise();
+    },
+
     loadClients: function(DataService) {
         return DataService.getTablePromise('clients');
     },

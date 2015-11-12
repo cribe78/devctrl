@@ -15,7 +15,39 @@ DevCtrl.MenuService.factory = ['$state', '$mdSidenav', '$mdMedia', 'DataService'
             DataService.config.menu = menuConfig;
         }
 
+        var toolbarSelect = { enabled : false };
+
         var self = {
+            toolbarSelect : toolbarSelect,
+
+            toolbarSelectTable : function(tableName, destState, selectedId) {
+                var table = DataService.getTable(tableName);
+                toolbarSelect.options = table.listed.map(function(row) {
+                    var option = {
+                        value : row.id,
+                        name : row.fields.name
+                    };
+
+                    return option;
+                });
+
+                toolbarSelect.tableName = tableName;
+                toolbarSelect.destState = destState;
+                toolbarSelect.selected = selectedId;
+                toolbarSelect.enabled = true;
+            },
+
+            toolbarSelectUpdate : function() {
+                var row = DataService.getRowRef(toolbarSelect.tableName, toolbarSelect.selected);
+                self.go({
+                    name : toolbarSelect.destState,
+                    params : {
+                        id : toolbarSelect.selected,
+                        name : row.fields.name
+                    }
+                });
+            },
+
             backgroundImageStyle : function() {
                 if (angular.isDefined($state.current.name) && angular.isDefined($state.params.name)) {
                     var img = "url(/images/backgrounds/" + $state.current.name + "/" + $state.params.name + ".jpg)";

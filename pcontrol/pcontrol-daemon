@@ -1160,19 +1160,6 @@ sub get_commands {
 	return $res;
 }
 
-# Get a cmd_idx for updating a command_queue record.
-# We don't really care about precisely synchronizing this between processes.
-
-sub get_cmd_idx {
-	state $add_idx = $dbh->prepare("insert into cmd_idxs () values ()");
-
-	if ( !$add_idx->execute() ) {
-		dwlog("insert cmd_idx error: $DBI::errstr");
-		return 0;
-	}
-
-	return $add_idx->{mysql_insertid};
-}
 
 sub get_poll_commands {
 	state $select_commands = $dbh->prepare(
@@ -1529,8 +1516,6 @@ sub run {
 
 			dwlog("commands processed");
 
-			set_max_idx();
-
 			if ( server_poll() ) {
 				$poll_server = 1;
 			}
@@ -1566,8 +1551,6 @@ sub run {
 					$poll_server = 1;
 					next MAIN_LOOP;
 				}
-
-				set_max_idx();
 			}
 
 			$poll_target_last = time();
@@ -1641,18 +1624,6 @@ sub server_start {
 	return $server_sock;
 }
 
-sub set_max_idx {
-	state $update_max_idx = $dbh->prepare(
-		"update cmd_idx_max set cmd_idx_max = ?
-            where ? > cmd_idx_max"
-	);
-
-	my $idx = get_cmd_idx();
-
-	if ( !$update_max_idx->execute( $idx, $idx ) ) {
-		dwlog("update max idx error: $DBI::errstr");
-	}
-}
 
 # Read a line from a non-blocking telnet connection.
 
@@ -1702,7 +1673,7 @@ sub update_control_value {
 	my ( $cid, $value ) = (@_);
 
 	state $update_command = $dbh->prepare(
-		"update controls set value = ?, cmd_idx = ?  where control_id = ?");
+		"update controls set value = ? where control_id = ?");
 
 	my %control = %{$controls{$cid}};
 	
@@ -1711,8 +1682,7 @@ sub update_control_value {
 	}
 	
 	if ($control{type} ne 'rtlevel') {
-		my $idx = get_cmd_idx();
-		if ( !$update_command->execute( $value, $idx, $cid ) ) {
+		if ( !$update_command->execute( $value, $cid ) ) {
 			dwlog("update command value failed: $DBI::errstr");
 			return 0;
 		}

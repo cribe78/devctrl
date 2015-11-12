@@ -90,6 +90,15 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
 DevCtrl.Common = {};
 
 DevCtrl.Common.Resolve = {
+    resetToolbar : function(MenuService) {
+        MenuService.toolbarSelect.enable = false;
+    },
+
+    loadSchema : function(DataService) {
+        console.log("loadSchema called");
+        return DataService.getSchemaPromise();
+    },
+
     loadClients: function(DataService) {
         return DataService.getTablePromise('clients');
     },
@@ -164,17 +173,23 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService', 'MenuService',
     function($stateParams, DataService, MenuService) {
         var self = this;
         this.menu = MenuService;
-        this.roomName = $stateParams.name;
         this.rooms = DataService.getTable('rooms');  // These tables are pre-resolved by the ui-router
 
-        angular.forEach(this.rooms.listed, function(value) {
-            if (value.fields['name'] == self.roomName) {
-                self.obj = value;
-                self.id = value.id;
-            }
-        });
+        if (angular.isDefined(this.rooms.indexed[$stateParams.id])) {
+            this.obj = this.rooms.indexed[$stateParams.id];
+            this.id = $stateParams.id;
+            $stateParams.name = this.obj.fields.name;
+        }
+        else {
+            angular.forEach(this.rooms.listed, function (value) {
+                if (value.fields['name'] == $stateParams.name) {
+                    self.obj = value;
+                    self.id = value.id;
+                }
+            });
+        }
 
-
+        this.menu.toolbarSelectTable("rooms", "rooms.room", self.id);
 
         this.panels = this.obj.referenced.panels;
 
@@ -692,25 +707,19 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
 
                 var table = this.getTableRef(tableName);
 
-                if (angular.isString(schema[tableName].pk)) {
-                    // Single key
-                    if (! angular.isDefined(table.indexed[key])) {
-                        table.indexed[key] = {
-                            fields : {},
-                            foreign: {},
-                            id: key,
-                            loaded: false,
-                            referenced: {},
-                            tableName: tableName
-                        };
-                        table.listed.push(table.indexed[key]);
-                    }
+                if (! angular.isDefined(table.indexed[key])) {
+                    table.indexed[key] = {
+                        fields : {},
+                        foreign: {},
+                        id: key,
+                        loaded: false,
+                        referenced: {},
+                        tableName: tableName
+                    };
+                    table.listed.push(table.indexed[key]);
+                }
 
-                    return table.indexed[key];
-                }
-                else {
-                    console.error("multi column keys not supported, table %s", tableName);
-                }
+                return table.indexed[key];
             },
 
 
@@ -751,6 +760,12 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 return schema[table];
             },
 
+            getSchemaPromise : function() {
+                if (! schemaLoaded) {
+                    return schemaPromise;
+                }
+            },
+
             getTable : function(table) {
                 //console.log("DataService.getTable(" + table + ")");
                 if (! angular.isDefined(dataModel[table])) {
@@ -775,13 +790,25 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 }
 
                 if (angular.isDefined(table)) {
-                    return $http.get('data.php?table=' + table)
-                        .success(function (data) {
-                            self.loadData(data);
-                        })
-                        .error(function (data) {
-                            self.errorToast(data);
-                        });
+                    tablePromises[table] = $http.get('data.php?table=' + table)
+                        .then(
+                            function (response) {
+                                self.loadData(response.data);
+
+                                if (schemaLoaded) {
+                                    return dataModel[table];
+                                }
+                                return schemaPromise.then(
+                                    function() {
+                                        return dataModel[table];
+                                    }
+                                );
+                            },
+                            function (response) {
+                                self.errorToast(response.data);
+                            }
+                        );
+                    return tablePromises[table];
                 }
                 else {
                     console.error("error: attempt to fetch undefined table!");
@@ -821,6 +848,8 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                         //console.log("loading deffered data");
                         self.loadDataKernel(data);
                     });
+
+                    return schemaPromise;
                 }
             },
 
@@ -1306,7 +1335,39 @@ DevCtrl.MenuService.factory = ['$state', '$mdSidenav', '$mdMedia', 'DataService'
             DataService.config.menu = menuConfig;
         }
 
+        var toolbarSelect = { enabled : false };
+
         var self = {
+            toolbarSelect : toolbarSelect,
+
+            toolbarSelectTable : function(tableName, destState, selectedId) {
+                var table = DataService.getTable(tableName);
+                toolbarSelect.options = table.listed.map(function(row) {
+                    var option = {
+                        value : row.id,
+                        name : row.fields.name
+                    };
+
+                    return option;
+                });
+
+                toolbarSelect.tableName = tableName;
+                toolbarSelect.destState = destState;
+                toolbarSelect.selected = selectedId;
+                toolbarSelect.enabled = true;
+            },
+
+            toolbarSelectUpdate : function() {
+                var row = DataService.getRowRef(toolbarSelect.tableName, toolbarSelect.selected);
+                self.go({
+                    name : toolbarSelect.destState,
+                    params : {
+                        id : toolbarSelect.selected,
+                        name : row.fields.name
+                    }
+                });
+            },
+
             backgroundImageStyle : function() {
                 if (angular.isDefined($state.current.name) && angular.isDefined($state.params.name)) {
                     var img = "url(/images/backgrounds/" + $state.current.name + "/" + $state.params.name + ".jpg)";
@@ -1491,8 +1552,8 @@ DevCtrl.EndpointStatus.Directive  = ['DataService', function(DataService) {
 // ../ng/EndpointCtrl.js
 DevCtrl.Endpoint = {};
 
-DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
-    function($stateParams, DataService) {
+DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
+    function($stateParams, DataService, MenuService) {
         var self = this;
         this.endpointId = $stateParams.id;
         this.endpoints = DataService.getTable('control_endpoints');
@@ -1503,6 +1564,8 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
 
         // This function is here to prevent null reference errors
         this.controls = this.obj.referenced['controls'];
+
+        MenuService.toolbarSelectTable("control_endpoints", "endpoints.endpoint", self.id);
 
         this.togglePanel = function(panel) {
             if (! angular.isDefined(panel.opened)) {

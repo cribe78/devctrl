@@ -1,6 +1,7 @@
 <?php
 $ctx = "json";
 require("sub/head.php");
+checkpoint("post head");
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $table = getTableName($_GET['table']);
@@ -11,8 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $rows = getTableData($table);
 
+    checkpoint("data fetched");
     $resp['add'] = array ( $table => $rows);
-
+    $resp['checkpoints'] = $checkpoints;
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -129,7 +131,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
     coe_mysqli_prepare_bind_execute($delete_sql, 'i', array(&$id));
 
-    pclog("record $id deleted from $table");
+    error_log("record $id deleted from $table");
     logDataChange($table, $id, "deleted");
 
     $objs = array( $table => array( $id => ''));

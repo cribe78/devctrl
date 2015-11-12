@@ -2,12 +2,23 @@
 <md-toolbar layout="row" layout-align="start center">
     <div flex layout="row"
          layout-align="center center"
-         class="devctrl-main-toolbar">
+         class="devctrl-main-toolbar devctrl-ctrl-select">
         <md-button ng-click="toolbar.menu.toggleSidenav('left')"
                    ng-hide="toolbar.menu.hideSidenavButton()"
                    class="dc-toolbar-sidenav-button md-icon-button">
             <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
         </md-button>
+        <md-select ng-if="toolbar.menu.toolbarSelect.enabled"
+                    aria-label="Select Page"
+                   placeholder="{{toolbar.pageTitle()}}"
+                   ng-model="toolbar.menu.toolbarSelect.selected"
+                   ng-change="toolbar.menu.toolbarSelectUpdate()">
+            <md-option class="text-headline"
+                        ng-value="option.value"
+                       ng-repeat="option in toolbar.menu.toolbarSelect.options">
+                {{option.name}}
+            </md-option>
+        </md-select>
         <span flex class="title text-headline">{{toolbar.pageTitle()}}</span>
         <div layout="column">
             <div>{{toolbar.client().fields.name}}</div>

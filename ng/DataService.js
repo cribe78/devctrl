@@ -268,25 +268,19 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
 
                 var table = this.getTableRef(tableName);
 
-                if (angular.isString(schema[tableName].pk)) {
-                    // Single key
-                    if (! angular.isDefined(table.indexed[key])) {
-                        table.indexed[key] = {
-                            fields : {},
-                            foreign: {},
-                            id: key,
-                            loaded: false,
-                            referenced: {},
-                            tableName: tableName
-                        };
-                        table.listed.push(table.indexed[key]);
-                    }
+                if (! angular.isDefined(table.indexed[key])) {
+                    table.indexed[key] = {
+                        fields : {},
+                        foreign: {},
+                        id: key,
+                        loaded: false,
+                        referenced: {},
+                        tableName: tableName
+                    };
+                    table.listed.push(table.indexed[key]);
+                }
 
-                    return table.indexed[key];
-                }
-                else {
-                    console.error("multi column keys not supported, table %s", tableName);
-                }
+                return table.indexed[key];
             },
 
 
@@ -327,6 +321,12 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 return schema[table];
             },
 
+            getSchemaPromise : function() {
+                if (! schemaLoaded) {
+                    return schemaPromise;
+                }
+            },
+
             getTable : function(table) {
                 //console.log("DataService.getTable(" + table + ")");
                 if (! angular.isDefined(dataModel[table])) {
@@ -351,13 +351,25 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 }
 
                 if (angular.isDefined(table)) {
-                    return $http.get('data.php?table=' + table)
-                        .success(function (data) {
-                            self.loadData(data);
-                        })
-                        .error(function (data) {
-                            self.errorToast(data);
-                        });
+                    tablePromises[table] = $http.get('data.php?table=' + table)
+                        .then(
+                            function (response) {
+                                self.loadData(response.data);
+
+                                if (schemaLoaded) {
+                                    return dataModel[table];
+                                }
+                                return schemaPromise.then(
+                                    function() {
+                                        return dataModel[table];
+                                    }
+                                );
+                            },
+                            function (response) {
+                                self.errorToast(response.data);
+                            }
+                        );
+                    return tablePromises[table];
                 }
                 else {
                     console.error("error: attempt to fetch undefined table!");
@@ -397,6 +409,8 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                         //console.log("loading deffered data");
                         self.loadDataKernel(data);
                     });
+
+                    return schemaPromise;
                 }
             },
 

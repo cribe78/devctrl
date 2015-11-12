@@ -1,7 +1,7 @@
 goog.provide("DevCtrl.Endpoint.Ctrl");
 
-DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
-    function($stateParams, DataService) {
+DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
+    function($stateParams, DataService, MenuService) {
         var self = this;
         this.endpointId = $stateParams.id;
         this.endpoints = DataService.getTable('control_endpoints');
@@ -12,6 +12,8 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService',
 
         // This function is here to prevent null reference errors
         this.controls = this.obj.referenced['controls'];
+
+        MenuService.toolbarSelectTable("control_endpoints", "endpoints.endpoint", self.id);
 
         this.togglePanel = function(panel) {
             if (! angular.isDefined(panel.opened)) {

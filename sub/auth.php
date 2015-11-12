@@ -54,8 +54,13 @@ if ($identifier != 'nouser') {
             $client_access = 1;
         }
     }
+    else {
+        $identifier = 'nouser';
+        error_log("unrecognized identifier");
+    }
 }
-else {
+
+if ($identifier == 'nouser') {
     $insert_client = $mysqli->prepare(
         "insert into clients (identifier, name) value (?, ?)"
     );

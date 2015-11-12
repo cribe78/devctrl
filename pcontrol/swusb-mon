@@ -9,6 +9,7 @@ use English;
 use Getopt::Long;
 use IO::Socket::INET;
 use LWP::UserAgent;
+use HTTP::Cookies;
 use POSIX;
 use Scalar::Util qw( looks_like_number );
 use Sys::Syslog;
@@ -22,7 +23,7 @@ $|++;
 my $device_ip = "10.5.162.232";
 my $device_port = 28844;
 my $controller_ip = "controller.dwi.ufl.edu";
-my $controller_identifier = "identifier";
+my $client_identifier = "identifier";
 my $control_id = 0;
 my $debug = 1;
 my $daemon = 1;
@@ -31,6 +32,7 @@ my $dxp_dest = 6;
 my %options = ("sw4-ip=s" => \$device_ip,
             "sw4-port=i" => \$device_port,
             "controller=s" => \$controller_ip,
+            "identifier=s" => \$client_identifier,
             "debug" => \$debug,
             "daemon!" => \$daemon,
             "control=i" => \$control_id);
@@ -84,6 +86,13 @@ $SIG{PIPE} = sub {
     dwlog("recieved SIGPIPE, doing something?");
     $conn_closed = 1;
 };
+
+my $cookie_jar = HTTP::Cookies->new( file => "$ENV{HOME}/.cookies.txt");
+
+if ($client_identifier ne "identifier") {
+	$cookie_jar->set_cookie(1, "identifier", $client_identifier, "/", $controller_ip, "443", 0, 0, 3600 * 24 *365, 0);
+	$cookie_jar->save();
+}
 
 run();
 
@@ -170,11 +179,8 @@ sub select_dxp_source {
     my ($source) = (@_);
     
     my $ua = LWP::UserAgent->new;
-    $ua->cookie_jar({ file => "$ENV{HOME}/.cookies.txt" });
-    my $resp = $ua->post("https://$controller_ip/control.php/$control_id", 
-                                    {
-                                            value => $source
-                                    });
+    $ua->cookie_jar($cookie_jar);
+    my $resp = $ua->put("https://$controller_ip/control.php/$control_id", Content => "{'value':$source}");
 
     my $json = $resp->decoded_content();
     dwlog("source $source selected");

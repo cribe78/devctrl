@@ -243,14 +243,6 @@ function devctrl_include_templates() {
     }
 }
 
-function getID() {
-    global $id_idx;
-    $id = "id$id_idx";
-    $id_idx++;
-
-    return $id;
-}
-
 
 function getLocusService() {
     global $g_oauth_client;
@@ -291,6 +283,8 @@ function getPathKeys() {
 
 function getPostData() {
     $postdata = file_get_contents("php://input");
+
+    error_log("post data: $postdata");
     $post = json_decode($postdata, true);
 
     return $post;

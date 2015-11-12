@@ -6,9 +6,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $path_key = getPathKeys();
     $post_data = getPostData();
 
-    $pc_id = $path_key[0];
-    $control = $post_data;
-    $control['control_id'] = $pc_id;
+    $pc_id = sanitizeId($path_key[0]);
+
+    $controls = getTableData("controls", true, "where control_id = $pc_id");
+
+    $control = $controls[$pc_id];
+    $control['value'] = $post_data['value'];
 
     queueCommand($control);
     alertControlDaemon($control['control_endpoint_id']);

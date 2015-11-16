@@ -13,7 +13,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
         // This function is here to prevent null reference errors
         this.controls = this.obj.referenced['controls'];
 
-        MenuService.toolbarSelectTable("control_endpoints", "endpoints.endpoint", self.id);
+        MenuService.toolbarSelectTable("control_endpoints", "endpoints.endpoint", self.obj.id);
 
         this.togglePanel = function(panel) {
             if (! angular.isDefined(panel.opened)) {

@@ -11,8 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $controls = getTableData("controls", true, "where control_id = $pc_id");
 
     $control = $controls[$pc_id];
+    $prev_value = $control['value'];
     $control['value'] = $post_data['value'];
 
+    logControlChange($pc_id, $control['value'], $prev_value);
     queueCommand($control);
     alertControlDaemon($control['control_endpoint_id']);
 

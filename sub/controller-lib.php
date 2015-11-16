@@ -284,7 +284,7 @@ function getPathKeys() {
 function getPostData() {
     $postdata = file_get_contents("php://input");
 
-    error_log("post data: $postdata");
+    //error_log("post data: $postdata");
     $post = json_decode($postdata, true);
 
     return $post;
@@ -448,6 +448,28 @@ function launchControlDaemon($ce_id) {
     if (! $update_endpoint->execute()) {
         serverError("$ce_id update_endpoint execute error: {$update_endpoint->error}");
     }
+}
+
+function logControlChange($control_id, $new_value, $previous_value) {
+    global $USESSION;
+    static $m = false;
+
+
+    if (! $m) {
+        $m = new MongoClient();
+    }
+
+    $db = $m->devctrl;
+    $control_log = $db->control_log;
+
+    $logdoc = array(
+        "control_id" => $control_id,
+        "new_value" => $new_value,
+        "old_value" => $previous_value,
+        "client" => $USESSION['client_id']
+    );
+
+    $control_log->insert($logdoc);
 }
 
 function logDataChange($table, $pk, $action) {

@@ -12,7 +12,11 @@ This README would normally document whatever steps are necessary to get your app
 
 * Summary of set up
 
-Devctrl consists of several components
+Devctrl consists of several components:
+ 
+* PHP application
+* MySQL database 
+
 * Configuration
 * Dependencies
 * Database configuration

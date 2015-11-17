@@ -8,14 +8,16 @@ This README would normally document whatever steps are necessary to get your app
 * Version
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### How do I get set up? ###
-
-* Summary of set up
+### Application Structure ###
 
 Devctrl consists of several components:
  
 * PHP application
 * MySQL database 
+* MongoDB database
+* Node.js messenger server
+* Perl pcontrol-daemon 
+* Angular.js frontend 
 
 * Configuration
 * Dependencies

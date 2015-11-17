@@ -4,24 +4,44 @@ var fs = require('fs');
 var net = require('net');
 var merge = require('deepmerge');
 var cp = require('child_process');
+var MongoClient = require('mongodb').MongoClient;
 Tail = require('tail').Tail;
-
-
-//var key = fs.readFileSync('/home/chris/devctrl.dwi.ufl.edu.self.key');
-//var cert = fs.readFileSync('/etc/ssl/certs/devctrl_dwi_ufl_edu_cert.cer');
 
 var http = require('http').Server(app);
 
-//var https = require('https').createServer({
-//    key: key,
-//    cert: cert
-//}, app);
-
 var io = require('socket.io')(http);
+
+var mongodb = false;
+MongoClient.connect("mongodb://localhost:27017/devctrl", function(err, db) {
+    console.log("mongodb connected");
+    mongodb = db;
+});
+
 
 app.get('/', function(req, res) {
     res.send('<h1>Hello World</h1>');
 });
+
+var msgr = {};
+msgr.getData = function(request, fn) {
+    console.log("data requested from " + request.table);
+    var col = mongodb.collection(request.table);
+
+    var table = {};
+    var tArr = col.find(request.params)
+        .forEach(
+            function(doc) {
+                table[doc._id] = doc;
+            },
+            function() {
+                var data = {
+                    add : {}
+                };
+                data.add[request.table] = table;
+                fn(data);
+            }
+        );
+};
 
 io.on('connection', function(socket) {
     console.log('a user connected');
@@ -29,6 +49,8 @@ io.on('connection', function(socket) {
     socket.on('status-update', function(data) {
         console.log(data.message);
     });
+
+    socket.on('get-data', msgr.getData);
 });
 
 http.listen(2878, function() {
@@ -40,7 +62,7 @@ var updateServer = net.createServer( function(sock) {
     console.log("daemon client connected on port " + sock.remotePort);
 
     sock.on('data', function(data) {
-        console.log("update recieved: " + data);
+        //console.log("update recieved: " + data);
 
         data = data.toString();
 

@@ -5,7 +5,10 @@
     <md-dialog-content>
         <md-list>
             <md-list-item ng-repeat="log in ctrlLog.logs">
-                {{log.fields.ts}}
+                {{log.foreign.clients.fields.name}} set to {{log.fields.new_value}} from {{log.fields.old_value}}  at {{log.fields.ts}}
+            </md-list-item>
+            <md-list-item>
+                <md-button ng-click="ctrlLog.close()">OK</md-button>
             </md-list-item>
         </md-list>
     </md-dialog-content>

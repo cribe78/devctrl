@@ -1,7 +1,7 @@
 goog.provide('DevCtrl.DataService.factory');
 
-DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog', '$location',
-    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog, $location) {
+DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
+    function($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
         var dataModel = {
             user : {
                 username: null,
@@ -93,6 +93,10 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                             self.errorToast(response.data);
                         }
                 )
+            },
+
+            dialogClose : function() {
+                $mdDialog.hide();
             },
 
             deleteRow : function(row) {
@@ -237,6 +241,23 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                             angular.merge(dataModel.applog, response.data.applog);
                         }
                     })
+            },
+
+            getMData : function(table, params) {
+                var reqData = {
+                    table : table,
+                    query : params
+                };
+
+                self.getMProm =  $q( function(resolve, reject) {
+                    messenger.emit('get-data', reqData, function(data) {
+                        console.log("data received:" + data);
+                        self.loadData(data);
+                        resolve(true);
+                    });
+                });
+
+                return self.getMProm;
             },
 
             getNewRowRef : function(tableName) {
@@ -506,18 +527,26 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             },
 
             showControlLog : function($event, ctrl) {
-                $mdDialog.show({
-                    targetEvent: $event,
-                    locals: {
-                        ctrl: ctrl
-                    },
-                    controller: DevCtrl.CtrlLog.Ctrl,
-                    controllerAs: 'ctrlLog',
-                    bindToController: true,
-                    templateUrl: 'ng/ctrl-log.html',
-                    clickOutsideToClose: true,
-                    hasBackdrop : false
-                });
+                var qParams = {
+                    'control_id' : ctrl.id
+                };
+
+                self.getMData('control_log', qParams).then( function() {
+                    $mdDialog.show({
+                        targetEvent: $event,
+                        locals: {
+                            ctrl: ctrl
+                        },
+                        controller: DevCtrl.CtrlLog.Ctrl,
+                        controllerAs: 'ctrlLog',
+                        bindToController: true,
+                        templateUrl: 'ng/ctrl-log.html',
+                        clickOutsideToClose: true,
+                        hasBackdrop : false,
+                    });
+                })
+
+
             },
 
             updateConfig : function() {

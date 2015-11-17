@@ -14,10 +14,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $prev_value = $control['value'];
     $control['value'] = $post_data['value'];
 
-    logControlChange($pc_id, $control['value'], $prev_value);
+    $update = array( 'add' => array( 'control_log' => array()));
+    $changeRecord = logControlChange($pc_id, $control['value'], $prev_value);
+    $update['add']['control_log'][$changeRecord['_id']] = $changeRecord;
+
     queueCommand($control);
     alertControlDaemon($control['control_endpoint_id']);
 
+    publishDataUpdate($update);
     jsonResponse();
 }
 

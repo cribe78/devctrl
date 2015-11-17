@@ -10,6 +10,8 @@ $g_oauth_secret = 'devctrl';
 $g_title = 'unknown';
 $g_log_file = '/var/log/devctrl/devctrl.log';
 $g_base_url = 'https://devctrl.dwi.ufl.edu/';
+$g_messenger_host = "127.0.0.1";
+$g_messenger_port = 2879;
 
 if (file_exists(__DIR__ . "/config.local.php")) {
     include(__DIR__ . "/config.local.php");

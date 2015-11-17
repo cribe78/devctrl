@@ -124,6 +124,11 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 return ret;
             };
 
+            this.showLog = function($event) {
+                DataService.showControlLog($event, self.ctrl);
+            };
+
+
             this.editPanelControl = function($event) {
                 DataService.editRecord($event, self.panelControl.id, 'panel_controls');
             };

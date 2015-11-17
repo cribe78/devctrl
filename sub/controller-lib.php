@@ -272,6 +272,17 @@ function getLocusService() {
     return $locusService;
 }
 
+function getMongoDb() {
+    static $m = false;
+
+    if (! $m) {
+        $m = new MongoClient();
+    }
+
+    $db = $m->devctrl;
+
+    return $db;
+}
 
 function getPathKeys() {
     $info = $_SERVER['PATH_INFO'];
@@ -294,6 +305,11 @@ function getTableData($table, $use_cache = false, $where_cond = "") {
     global $mysqli;
     global $g_schema;
     $table = getTableName($table);
+
+    if (getTableType($table) == 'mongo') {
+        return getTableDataMongo($table, $where_cond);
+    }
+
 
     if (! $table) {
         serverError("Error: {$_GET['table']} is not a valid table name");
@@ -332,12 +348,41 @@ function getTableData($table, $use_cache = false, $where_cond = "") {
     return $rows;
 }
 
+function getTableDataMongo($collection, $query) {
+    $db = getMongoDb();
+
+    if ($query == "") {
+        $query = array();
+    }
+
+    $cursor = $db->$collection->find($query);
+
+    $rows = array();
+
+    foreach ($cursor as $doc) {
+        $rows[strval($doc["_id"])] = $doc;
+    }
+
+    return $rows;
+}
+
+
 function getTableName($input) {
     global $g_schema;
 
     if (isset($g_schema[$input])) {
         return $input;
     }
+}
+
+function getTableType($name) {
+    global $g_schema;
+
+    if (isset($g_schema[$name]['db'])) {
+        return $g_schema[$name]['db'];
+    }
+
+    return 'mysql';
 }
 
 function groupsHasAdminAccess($groupsStr) {
@@ -452,24 +497,21 @@ function launchControlDaemon($ce_id) {
 
 function logControlChange($control_id, $new_value, $previous_value) {
     global $USESSION;
-    static $m = false;
 
-
-    if (! $m) {
-        $m = new MongoClient();
-    }
-
-    $db = $m->devctrl;
+    $db = getMongoDb();
     $control_log = $db->control_log;
 
     $logdoc = array(
         "control_id" => $control_id,
         "new_value" => $new_value,
         "old_value" => $previous_value,
-        "client" => $USESSION['client_id']
+        "client_id" => $USESSION['client_id'],
+        "ts" => new MongoDate()
     );
 
     $control_log->insert($logdoc);
+
+    return $logdoc;
 }
 
 function logDataChange($table, $pk, $action) {
@@ -492,6 +534,24 @@ function paramTypeChar($paramType) {
     return 's';
 }
 
+
+function publishDataUpdate($update) {
+    global $g_messenger_host;
+    global $g_messenger_port;
+
+    $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+
+    $result = socket_connect($socket, $g_messenger_host, $g_messenger_port);
+    if (! $result) {
+        error_log("failed to connect to messenger server");
+        return;
+    }
+
+    $message = json_encode($update);
+
+    socket_write($socket, $message, strlen($message));
+    socket_close($socket);
+}
 
 $insert_log = '';
 

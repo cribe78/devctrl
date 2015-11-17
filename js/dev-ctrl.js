@@ -331,6 +331,16 @@ DevCtrl.MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
         this.top = true;
     }
 ];
+// ../ng/CtrlLogCtrl.js
+DevCtrl.CtrlLog = {};
+
+DevCtrl.CtrlLog.Ctrl = ['DataService',
+    function(DataService) {
+        var self = this;
+
+        this.logs = this.ctrl.referenced.control_log;
+    }
+];
 // ../ng/ToolbarDirective.js
 DevCtrl.Toolbar = {};
 
@@ -854,48 +864,44 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             },
 
             loadDataKernel : function(data) {
+                // Treat update as a synonym for add
                 if (angular.isDefined(data.update)) {
-                    angular.forEach(data.update, function(tableData, tableName) {
-                        angular.forEach(tableData, function(value, key) {
-                            var row = self.getRowRef(tableName, key);
-                            angular.merge(row.fields, value);
-                        });
-                    });
+                    if (angular.isDefined(data.add)) {
+                        angular.merge(data.add, data.update);
+                    }
+                    else {
+                        data.add = data.update;
+                    }
                 }
 
                 if (angular.isDefined(data.add)) {
+
                     angular.forEach(data.add, function(tableData, tableName) {
                         var tschema = self.getSchema(tableName);
                         var pk = tschema['pk'];
                         var fks = tschema['foreign_keys'];
 
                         angular.forEach(tableData, function(value, key) {
-                            // Test if this is indexed on one or 2 columns
-                            if (angular.isString(pk)) {
-                                var row = self.getRowRef(tableName, key);
-                                angular.merge(row.fields, value);
-                                row.loaded = true;
+                            var row = self.getRowRef(tableName, key);
+                            angular.merge(row.fields, value);
+                            row.loaded = true;
 
-                                // Set up foreign key object references
-                                angular.forEach(fks, function(fkTable, fkField) {
-                                    if (row.fields[fkField] !== null) {
-                                        var fkRow = self.getRowRef(fkTable, row.fields[fkField]);
-                                        if (!angular.isDefined(fkRow.referenced[tableName])) {
-                                            fkRow.referenced[tableName] = {};
-                                        }
-                                        fkRow.referenced[tableName][row.id] = row;
-                                        row.foreign[fkTable] = fkRow;
-                                        row.foreign[fkField] = fkRow;
+                            // Set up foreign key object references
+                            angular.forEach(fks, function(fkTable, fkField) {
+                                if (angular.isDefined(row.fields[fkField]) && row.fields[fkField] !== null) {
+                                    var fkRow = self.getRowRef(fkTable, row.fields[fkField]);
+                                    if (!angular.isDefined(fkRow.referenced[tableName])) {
+                                        fkRow.referenced[tableName] = {};
                                     }
-                                    else {
-                                        row.foreign[fkTable] = null;
-                                        row.foreign[fkField] = null;
-                                    }
-                                });
-                            }
-                            else {
-                                console.error("Error loading %s, multi-keyed records not supported", tableName);
-                            }
+                                    fkRow.referenced[tableName][row.id] = row;
+                                    row.foreign[fkTable] = fkRow;
+                                    row.foreign[fkField] = fkRow;
+                                }
+                                else {
+                                    row.foreign[fkTable] = null;
+                                    row.foreign[fkField] = null;
+                                }
+                            });
                         });
                     })
                 }
@@ -946,6 +952,21 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 }, function (response) {
                     self.errorToast(response.data);
                 })
+            },
+
+            showControlLog : function($event, ctrl) {
+                $mdDialog.show({
+                    targetEvent: $event,
+                    locals: {
+                        ctrl: ctrl
+                    },
+                    controller: DevCtrl.CtrlLog.Ctrl,
+                    controllerAs: 'ctrlLog',
+                    bindToController: true,
+                    templateUrl: 'ng/ctrl-log.html',
+                    clickOutsideToClose: true,
+                    hasBackdrop : false
+                });
             },
 
             updateConfig : function() {
@@ -1230,6 +1251,11 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
 
                 return ret;
             };
+
+            this.showLog = function($event) {
+                DataService.showControlLog($event, self.ctrl);
+            };
+
 
             this.editPanelControl = function($event) {
                 DataService.editRecord($event, self.panelControl.id, 'panel_controls');
@@ -2007,6 +2033,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('LogCtrl', DevCtrl.Log.Ctrl)
+    .controller('CtrlLog', DevCtrl.CtrlLog.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)
     .controller('RoomCtrl', DevCtrl.Room.Ctrl)

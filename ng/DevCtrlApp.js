@@ -18,6 +18,7 @@ goog.require("DevCtrl.Toolbar.Directive");
 goog.require("DevCtrl.Table.Ctrl");
 goog.require("DevCtrl.Table.Resolve");
 goog.require("DevCtrl.PanelControlSelector.Ctrl");
+goog.require("DevCtrl.CtrlLog.Ctrl");
 goog.require("DevCtrl.Endpoint.Ctrl");
 goog.require("DevCtrl.Record.Ctrl");
 goog.require("DevCtrl.Room.Ctrl");
@@ -42,6 +43,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
     .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
     .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
     .controller('LogCtrl', DevCtrl.Log.Ctrl)
+    .controller('CtrlLog', DevCtrl.CtrlLog.Ctrl)
     .controller('TableCtrl', DevCtrl.Table.Ctrl)
     .controller('RecordCtrl', DevCtrl.Record.Ctrl)
     .controller('RoomCtrl', DevCtrl.Room.Ctrl)

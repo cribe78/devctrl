@@ -124,6 +124,42 @@ $g_schema = array(
             )
         ),
     ),
+    'control_log' => array(
+        'db' => 'mongo',
+        'pk' => '_id',
+        'label' => 'Control Log',
+        'foreign_keys' => array(
+            'control_id' => 'controls',
+            'client_id' => 'clients'
+        ),
+        'fields' => array(
+            array(
+                'name' => 'control_id',
+                'type' => 'fk',
+                'label' => 'Control'
+            ),
+            array(
+                'name' => 'client_id',
+                'type' => 'fk',
+                'label' => 'Client'
+            ),
+            array(
+                'name' => 'new_value',
+                'type' => 'string',
+                'label' => 'New Value'
+            ),
+            array(
+                'name' => 'old_value',
+                'type' => 'string',
+                'label' => 'Old Value'
+            ),
+            array(
+                'name' => 'ts',
+                'type' => 'ts',
+                'label' => 'Timestamp'
+            )
+        )
+    ),
     'control_templates' => array(
         'pk' => 'control_template_id',
         'fk_name' => 'command',

@@ -68,6 +68,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resp['add']['controls'] = getTableData('controls');
     }
 
+    $update = array( 'add' => $resp['add']);
+    publishDataUpdate($update);
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
@@ -116,6 +118,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $row = getTableData($table, false, "where $pk = $id");
 
     $resp['add'] = array($table => $row);
+    $update = array( 'add' => $resp['add']);
+    publishDataUpdate($update);
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
@@ -137,6 +141,8 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $objs = array( $table => array( $id => ''));
 
     $resp['delete'] = $objs;
+    $update  = array('delete' => $objs);
+    publishDataUpdate($update);
     jsonResponse($resp);
 }
 

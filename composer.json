@@ -4,11 +4,18 @@
 "minimum-stability": "stable",
 "license": "proprietary",
 "authors": [
-{            "name": "Chris Ribe",
-"email": "chrisribe@ufl.edu"
+{
+    "name": "Chris Ribe",
+    "email": "chrisribe@ufl.edu"
 }
 ],
+"repositories" : [
+    {
+        "type": "vcs",
+        "url": "git@bitbucket.org:ufcoe/phpoauthlib.git"
+    }
+],
 "require" : {
-        "lusitanian/oauth": "v0.6.0"
+        "ufcoe/oauth": "dev-master"
     }
 }

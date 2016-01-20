@@ -430,6 +430,22 @@ function groupsStringHasGroups($groupsStr, $groupsArray) {
 }
 
 
+function groupsStripOUDC($groupsStr) {
+    $groups_long = explode(";", $groupsStr);
+
+    $groups = array();
+
+    foreach($groups_long as $group_long) {
+        $parts = explode(",", $group_long);
+        if (strpos($parts[0], "CN=") === 0) {
+            $groups[] = $parts[0];
+        }
+    }
+
+    $res = implode(";", $groups);
+    return $res;
+}
+
 
 function errorResponse($error, $response_code = 200) {
     global $resp;

@@ -1,18 +1,12 @@
 [
     {
-        "name": "lusitanian/oauth",
-        "version": "v0.6.0",
-        "version_normalized": "0.6.0.0",
+        "name": "ufcoe/oauth",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
-            "url": "https://github.com/Lusitanian/PHPoAuthLib.git",
-            "reference": "74a5a62457568176d9c1af41a900dd3389b70414"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/74a5a62457568176d9c1af41a900dd3389b70414",
-            "reference": "74a5a62457568176d9c1af41a900dd3389b70414",
-            "shasum": ""
+            "url": "git@bitbucket.org:ufcoe/phpoauthlib.git",
+            "reference": "5edb36f084294387c10a8ae0a9f8799cc1dd030b"
         },
         "require": {
             "php": ">=5.3.0"
@@ -28,21 +22,15 @@
             "predis/predis": "Allows using the Redis storage backend.",
             "symfony/http-foundation": "Allows using the Symfony Session storage backend."
         },
-        "time": "2015-09-24 00:18:45",
+        "time": "2015-12-04 18:27:31",
         "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "0.1-dev"
-            }
-        },
-        "installation-source": "dist",
+        "installation-source": "source",
         "autoload": {
             "psr-0": {
                 "OAuth": "src",
                 "OAuth\\Unit": "tests"
             }
         },
-        "notification-url": "https://packagist.org/downloads/",
         "license": [
             "MIT"
         ],
@@ -52,17 +40,21 @@
                 "email": "david@daviddesberg.com"
             },
             {
+                "name": "Pieter Hordijk",
+                "email": "info@pieterhordijk.com"
+            },
+            {
                 "name": "Elliot Chance",
                 "email": "elliotchance@gmail.com"
             },
             {
-                "name": "Pieter Hordijk",
-                "email": "info@pieterhordijk.com"
+                "name": "Chris Ribe",
+                "email": "chrisribe@ufl.edu"
             }
         ],
         "description": "PHP 5.3+ oAuth 1/2 Library",
         "keywords": [
-            "Authentication",
+            "authentication",
             "authorization",
             "oauth",
             "security"

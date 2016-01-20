@@ -162,7 +162,10 @@ sub run {
         if ($msg) {
             dwdebug("msg read: $msg");
 
-            if ($msg =~ /Chn(\d)/) {
+            if ($msg =~ /InACT/) {
+                # This is a response to an information request, don't act on it
+            }
+            elsif ($msg =~ /Chn(\d)/) {
                 select_dxp_source($input_map{$1});
             }
             else {

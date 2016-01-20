@@ -111,7 +111,7 @@ if (! empty($_GET['code'])) {
     }
 
     $glid = $result['preferred_username'];
-    $groups = $result['groups'];
+    $groups = groupsStripOUDC($result['groups']);
     $select_user->bind_param('s', $glid);
 
     if (! $select_user->execute()) {

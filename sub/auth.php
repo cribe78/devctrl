@@ -1,6 +1,5 @@
 <?php
-include(__DIR__ . "/../vendor/autoload.php");
-use OAuth\OAuth2\Service\Locus;
+require(__DIR__ . "/../vendor/autoload.php");
 
 session_start();
 

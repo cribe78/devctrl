@@ -1,7 +1,7 @@
 goog.provide('DevCtrl.DataService.factory');
 
-DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
-    function($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
+DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog', '$location',
+    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog, $location) {
         var dataModel = {
             user : {
                 username: null,
@@ -34,8 +34,8 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 self.errorToast(data);
             });
 
-
-        var ioSocket = io('https://devctrl.dwi.ufl.edu/');
+        //TODO: make this configurable
+        var ioSocket = io('http://raspberrypi.local/');
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
         var tablePromises = {};
@@ -93,10 +93,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                             self.errorToast(response.data);
                         }
                 )
-            },
-
-            dialogClose : function() {
-                $mdDialog.hide();
             },
 
             deleteRow : function(row) {
@@ -241,23 +237,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                             angular.merge(dataModel.applog, response.data.applog);
                         }
                     })
-            },
-
-            getMData : function(table, params) {
-                var reqData = {
-                    table : table,
-                    query : params
-                };
-
-                self.getMProm =  $q( function(resolve, reject) {
-                    messenger.emit('get-data', reqData, function(data) {
-                        console.log("data received:" + data);
-                        self.loadData(data);
-                        resolve(true);
-                    });
-                });
-
-                return self.getMProm;
             },
 
             getNewRowRef : function(tableName) {
@@ -436,44 +415,48 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             },
 
             loadDataKernel : function(data) {
-                // Treat update as a synonym for add
                 if (angular.isDefined(data.update)) {
-                    if (angular.isDefined(data.add)) {
-                        angular.merge(data.add, data.update);
-                    }
-                    else {
-                        data.add = data.update;
-                    }
+                    angular.forEach(data.update, function(tableData, tableName) {
+                        angular.forEach(tableData, function(value, key) {
+                            var row = self.getRowRef(tableName, key);
+                            angular.merge(row.fields, value);
+                        });
+                    });
                 }
 
                 if (angular.isDefined(data.add)) {
-
                     angular.forEach(data.add, function(tableData, tableName) {
                         var tschema = self.getSchema(tableName);
                         var pk = tschema['pk'];
                         var fks = tschema['foreign_keys'];
 
                         angular.forEach(tableData, function(value, key) {
-                            var row = self.getRowRef(tableName, key);
-                            angular.merge(row.fields, value);
-                            row.loaded = true;
+                            // Test if this is indexed on one or 2 columns
+                            if (angular.isString(pk)) {
+                                var row = self.getRowRef(tableName, key);
+                                angular.merge(row.fields, value);
+                                row.loaded = true;
 
-                            // Set up foreign key object references
-                            angular.forEach(fks, function(fkTable, fkField) {
-                                if (angular.isDefined(row.fields[fkField]) && row.fields[fkField] !== null) {
-                                    var fkRow = self.getRowRef(fkTable, row.fields[fkField]);
-                                    if (!angular.isDefined(fkRow.referenced[tableName])) {
-                                        fkRow.referenced[tableName] = {};
+                                // Set up foreign key object references
+                                angular.forEach(fks, function(fkTable, fkField) {
+                                    if (row.fields[fkField] !== null) {
+                                        var fkRow = self.getRowRef(fkTable, row.fields[fkField]);
+                                        if (!angular.isDefined(fkRow.referenced[tableName])) {
+                                            fkRow.referenced[tableName] = {};
+                                        }
+                                        fkRow.referenced[tableName][row.id] = row;
+                                        row.foreign[fkTable] = fkRow;
+                                        row.foreign[fkField] = fkRow;
                                     }
-                                    fkRow.referenced[tableName][row.id] = row;
-                                    row.foreign[fkTable] = fkRow;
-                                    row.foreign[fkField] = fkRow;
-                                }
-                                else {
-                                    row.foreign[fkTable] = null;
-                                    row.foreign[fkField] = null;
-                                }
-                            });
+                                    else {
+                                        row.foreign[fkTable] = null;
+                                        row.foreign[fkField] = null;
+                                    }
+                                });
+                            }
+                            else {
+                                console.error("Error loading %s, multi-keyed records not supported", tableName);
+                            }
                         });
                     })
                 }
@@ -524,29 +507,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 }, function (response) {
                     self.errorToast(response.data);
                 })
-            },
-
-            showControlLog : function($event, ctrl) {
-                var qParams = {
-                    'control_id' : ctrl.id
-                };
-
-                self.getMData('control_log', qParams).then( function() {
-                    $mdDialog.show({
-                        targetEvent: $event,
-                        locals: {
-                            ctrl: ctrl
-                        },
-                        controller: DevCtrl.CtrlLog.Ctrl,
-                        controllerAs: 'ctrlLog',
-                        bindToController: true,
-                        templateUrl: 'ng/ctrl-log.html',
-                        clickOutsideToClose: true,
-                        hasBackdrop : false,
-                    });
-                })
-
-
             },
 
             updateConfig : function() {

@@ -8,5 +8,6 @@ TODO: auth on node messenger
 TODO: intermittent blank page title issue
 TODO: reorder device controls
 TODO: store selected tab in local storage
+TODO: initialize database with required enums and enum_values
 
 

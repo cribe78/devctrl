@@ -52,6 +52,9 @@ if ($identifier != 'nouser') {
         if (groupsHasClientAccess($USESSION['groups'])) {
             $client_access = 1;
         }
+        else {
+            error_log("no client access for {$USESSION['groups']}");
+        }
     }
     else {
         $identifier = 'nouser';
@@ -144,9 +147,9 @@ if (! empty($_GET['code'])) {
 
     // Update client record
     coe_mysqli_prepare_bind_execute(
-        "update clients set added_user_id = ?",
-        'i',
-        array(&$user_id)
+        "update clients set added_user_id = ? where identifier = ?",
+        'is',
+        array(&$user_id, &$identifier)
     );
 
     $logged_in = 1;

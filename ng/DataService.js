@@ -35,7 +35,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             });
 
         //TODO: make this configurable
-        var ioSocket = io('http://raspberrypi.local/');
+        var ioSocket = io($location.protocol() + "://" + $location.host());
         var messenger = socketFactory({ ioSocket: ioSocket});
         var pendingUpdates = {};
         var tablePromises = {};

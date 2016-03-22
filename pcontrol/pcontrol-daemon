@@ -37,6 +37,7 @@ my $poll_server    = 1;
 my $target_poll_freq = 20;    # how often to poll the device status, in s
 my $listen_port      = 0;
 my $daemon           = 1;
+my $shutdown         = 0;
 
 GetOptions(
 	"ce=i"             => \$ce_id,
@@ -104,7 +105,7 @@ dwlog("$program_name $$ successfully daemonized");
 # Print a log message before exiting on SIGTERM
 $SIG{TERM} = sub {
 	dwlog("received SIGTERM.  exiting");
-	exit();
+	$shutdown = 1;
 };
 
 my $dbh;
@@ -183,6 +184,32 @@ sub bin_to_ascii_hex {
 	}
 	
 	return $hex_resp;
+}
+
+
+sub check_device_enabled() {
+	state $select_enabled = $dbh->prepare(
+		"select enabled from control_endpoints where control_endpoint_id = ?"
+	);
+
+	if ( !$select_enabled ) {
+		dwlog("prepare select_enabled error: $DBI::errstr");
+		exit(-1);
+	}
+
+	if ( !$select_enabled->execute($ce_id) ) {
+		dwlog("select poll commands error: $DBI::errstr");
+		return 0;
+	}
+
+	my $row = $select_enabled->fetchrow_hashref();
+	
+	if (! $row) { 
+		dwlog("check_device_enabled: control_endpoint_id $ce_id record not found!");
+		return 0;
+	}
+	
+	return $row->{enabled};
 }
 
 # cleanup_commands
@@ -389,6 +416,12 @@ sub evid31_hex_number {
 
 sub execute_command {
 	my $res = 0;
+	
+	if ($shutdown) {
+		pcontrol_shutdown();
+	}
+	
+	
 	if (! $last_communication) {
 		$last_communication = time();
 	}
@@ -1469,6 +1502,27 @@ sub parse_xap {
 	return \%ret;
 }
 
+# clean up and shut down
+sub pcontrol_shutdown() {
+	dwlog("shutting down");
+	
+	my $insert_daemon = $dbh->prepare(
+		"update control_endpoints set daemon_port = ? 
+            where control_endpoint_id = ?"
+	);
+
+	if ( !$insert_daemon ) {
+		dwlog("error preparing insert_daemon: $DBI::errstr");
+	}
+
+	$insert_daemon->execute("0", $ce_id );
+
+	close(FILE);
+	$poll_sock->close();
+
+	exit();
+}
+
 # poll_usleep
 # if we need to sleep while waiting for input, make sure we
 # are polling the udp server!
@@ -1483,6 +1537,8 @@ sub poll_usleep {
 		if ( server_poll() ) {
 			$poll_server = 1;
 		}
+		
+		usleep(10000);
 		$elapsed_usecs = 1000000 * ( time() - $starttime );
 	}
 
@@ -1512,6 +1568,10 @@ sub run {
 				if ( $status eq "EXECUTED" ) {
 					cleanup_commands( $commands{$id} );
 				}
+				
+				if ($shutdown) {
+					pcontrol_shutdown();
+				}
 			}
 
 			dwlog("commands processed");
@@ -1529,6 +1589,10 @@ sub run {
 		}
 
 		if ( time() - $poll_target_last > $target_poll_freq ) {
+			if (! check_device_enabled()) {
+				dwlog("device has been disabled, exiting");
+				pcontrol_shutdown();
+			}
 			dwlog("poll device");
 			$cmd_ref  = get_poll_commands();
 			%commands = %$cmd_ref;
@@ -1542,6 +1606,10 @@ sub run {
 				if ( $status eq "EXECUTED" ) {
 					cleanup_commands( $commands{$id} );
 					$poll_target_last = time();
+				}
+
+				if ($shutdown) {
+					pcontrol_shutdown();
 				}
 
 				# Break out of this if there are more client
@@ -1559,6 +1627,10 @@ sub run {
 }
 
 sub server_poll {
+	if ($shutdown) {
+		pcontrol_shutdown();
+	}
+	
 	my $ret_val = 0;
 	my $data    = "";
 
@@ -1623,6 +1695,8 @@ sub server_start {
 
 	return $server_sock;
 }
+
+
 
 
 # Read a line from a non-blocking telnet connection.

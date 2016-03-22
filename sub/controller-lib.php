@@ -396,7 +396,8 @@ function groupsHasClientAccess($groupsStr) {
     return groupsStringHasGroups(
         $groupsStr,
         array('CFA-Digital Worlds Institute-Staff Users',
-            'COE-L-ETC')
+            'COE-L-ETC',
+            'DW-WS-ADMINS')
     );
 }
 

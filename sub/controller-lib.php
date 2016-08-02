@@ -388,7 +388,7 @@ function getTableType($name) {
 function groupsHasAdminAccess($groupsStr) {
     return groupsStringHasGroups(
         $groupsStr,
-        array('DW-FS-ADMIN')
+        array('DW-FS-ADMIN', 'DW-WS-ADMINS')
     );
 }
 

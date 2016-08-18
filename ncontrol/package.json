@@ -1,0 +1,9 @@
+{
+  "name": "devctrl-ncontrol",
+  "version": "0.0.1",
+  "description": "Node based reimplementation of pcontrol daemon",
+  "dependencies": {
+    "express": "^4.12",
+    "socket.io": "^1.4"
+  }
+}

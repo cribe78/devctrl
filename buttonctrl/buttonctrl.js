@@ -1,4 +1,4 @@
-var gpio = require('rpi-gpio');
+//var gpio = require('rpi-gpio');
 var socket = require('socket.io-client')('https://devctrl.dwi.ufl.edu/');
 var SerialPort = require('serialport');
 
@@ -48,25 +48,30 @@ function setPinOn(channel) {
         for (var ch in valueMap) {
             if (valueMap.hasOwnProperty(ch)) {
                 if (ch == channel) {
-                    gpio.write(pinMap[valueMap[ch]], onVal);
+                    //gpio.write(pinMap[valueMap[ch]], onVal);
                 }
                 else {
-                    gpio.write(pinMap[valueMap[ch]], offVal);
+                    //gpio.write(pinMap[valueMap[ch]], offVal);
                 }
             }
         }
     }
 
     if (serialOut) {
-        if (valueMap.hasOwnProperty(channel)) {
-            var outCh = valueMap[channel];
-            var outVal = 65 + (1 << outCh);
-            var outChar = String.fromCharCode(outVal);
-            port.write(outChar);
-            console.log("serial out write: " + outChar);
+        if (port.isOpen()) {
+            if (valueMap.hasOwnProperty(channel)) {
+                var outCh = valueMap[channel];
+                var outVal = 65 + (1 << outCh);
+                var outChar = String.fromCharCode(outVal);
+                port.write(outChar);
+                console.log("serial out write: " + outChar);
+            }
+            else {
+                port.write('A'); // All LEDs off
+            }
         }
         else {
-            port.write('A'); // All LEDs off
+            port.open();
         }
     }
 }

@@ -14,7 +14,7 @@ var Bridge = (function () {
         this.initIo();
     };
     return Bridge;
-}());
+})();
 var bridge = Bridge.bootstrap();
 module.exports = bridge;
 //# sourceMappingURL=bridge.js.map

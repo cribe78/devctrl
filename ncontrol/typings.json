@@ -1,9 +1,9 @@
 {
   "dependencies": {
     "body-parser": "registry:npm/body-parser#1.15.2+20160815132839",
-    "express": "registry:npm/express#4.14.0+20160815112707"
   },
   "globalDependencies": {
-    "node": "registry:env/node#4.0.0+20160813135048"
+    "node": "registry:env/node#4.0.0+20160813135048",
+    "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654"
   }
 }

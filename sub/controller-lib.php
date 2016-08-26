@@ -273,13 +273,14 @@ function getLocusService() {
 }
 
 function getMongoDb() {
+    global $g_mongodb;
     static $m = false;
 
     if (! $m) {
         $m = new MongoClient();
     }
 
-    $db = $m->devctrl;
+    $db = $m->$g_mongodb;
 
     return $db;
 }

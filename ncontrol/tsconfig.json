@@ -9,6 +9,6 @@
   ],
   "files": [
     "typings/index.d.ts",
-    "bridge.ts"
+    "ncontrol.ts"
   ]
 }

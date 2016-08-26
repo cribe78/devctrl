@@ -1,0 +1,3 @@
+module.exports = {
+    "testString" : "pass"
+};

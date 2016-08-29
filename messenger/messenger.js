@@ -71,7 +71,7 @@ io.on('connection', function(socket) {
     socket.on('get-data', msgr.getData);
 });
 
-http.listen(config.ioPort, function() {c
+http.listen(config.ioPort, function() {
     console.log('listening on *:' + config.ioPort);
 });
 

@@ -53,7 +53,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
 //state change debugging
     .run (['$rootScope', function($rootScope) {
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-            console.log('$stateChangeStart to ' + toState.to + '- fired when the transition begins. toState,toParams : \n', toState, toParams);
+            //console.log('$stateChangeStart to ' + toState.to + '- fired when the transition begins. toState,toParams : \n', toState, toParams);
         });
 
         $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {
@@ -62,11 +62,11 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
         });
 
         $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-            console.log('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
+            //console.log('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
         });
 
         $rootScope.$on('$viewContentLoaded', function (event) {
-            console.log('$viewContentLoaded - fired after dom rendered', event);
+            //console.log('$viewContentLoaded - fired after dom rendered', event);
         });
 
         $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {

@@ -453,8 +453,8 @@ DevCtrl.Menu.Directive = ['MenuService', '$state',
 // ../ng/DataService.js
 DevCtrl.DataService = {};
 
-DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'socketFactory', '$mdDialog', '$location',
-    function($window, $http, $mdToast, $timeout, socketFactory, $mdDialog, $location) {
+DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
+    function($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
         var dataModel = {
             user : {
                 username: null,
@@ -692,6 +692,25 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                     })
             },
 
+            // Get MongoDB data from the IO messenger
+            getMData : function(table, params) {
+                var reqData = {
+                    table : table,
+                    query : params
+                };
+
+                self.getMProm =  $q( function(resolve, reject) {
+                    messenger.emit('get-data', reqData, function(data) {
+                        console.log("data received:" + data);
+                        self.loadData(data);
+                        resolve(true);
+                    });
+                });
+
+                return self.getMProm;
+            },
+
+
             getNewRowRef : function(tableName) {
                 var newRow = {
                     id : '0',
@@ -804,6 +823,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                 }
 
                 if (angular.isDefined(table)) {
+                    /**
                     tablePromises[table] = $http.get('data.php?table=' + table)
                         .then(
                             function (response) {
@@ -822,6 +842,26 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
                                 self.errorToast(response.data);
                             }
                         );
+                    return tablePromises[table];
+                     **/
+                    tablePromises[table] = self.getMData(table, {})
+                        .then(
+                            function() {
+                                if (schemaLoaded) {
+                                    return dataModel[table];
+                                }
+
+                                return schemaPromise.then(
+                                    function() {
+                                        return dataModel[table];
+                                    }
+                                )
+                            },
+                            function () {
+                                self.errorToast("getMData " + table + " problem");
+                            }
+                        );
+
                     return tablePromises[table];
                 }
                 else {
@@ -868,48 +908,43 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', 'sock
             },
 
             loadDataKernel : function(data) {
+                // Treat update as a synonym for add
                 if (angular.isDefined(data.update)) {
-                    angular.forEach(data.update, function(tableData, tableName) {
-                        angular.forEach(tableData, function(value, key) {
-                            var row = self.getRowRef(tableName, key);
-                            angular.merge(row.fields, value);
-                        });
-                    });
+                    if (angular.isDefined(data.add)) {
+                        angular.merge(data.add, data.update);
+                    }
+                    else {
+                        data.add = data.update;
+                    }
                 }
 
                 if (angular.isDefined(data.add)) {
+
                     angular.forEach(data.add, function(tableData, tableName) {
                         var tschema = self.getSchema(tableName);
-                        var pk = tschema['pk'];
                         var fks = tschema['foreign_keys'];
 
                         angular.forEach(tableData, function(value, key) {
-                            // Test if this is indexed on one or 2 columns
-                            if (angular.isString(pk)) {
-                                var row = self.getRowRef(tableName, key);
-                                angular.merge(row.fields, value);
-                                row.loaded = true;
+                            var row = self.getRowRef(tableName, key);
+                            angular.merge(row.fields, value);
+                            row.loaded = true;
 
-                                // Set up foreign key object references
-                                angular.forEach(fks, function(fkTable, fkField) {
-                                    if (row.fields[fkField] !== null) {
-                                        var fkRow = self.getRowRef(fkTable, row.fields[fkField]);
-                                        if (!angular.isDefined(fkRow.referenced[tableName])) {
-                                            fkRow.referenced[tableName] = {};
-                                        }
-                                        fkRow.referenced[tableName][row.id] = row;
-                                        row.foreign[fkTable] = fkRow;
-                                        row.foreign[fkField] = fkRow;
+                            // Set up foreign key object references
+                            angular.forEach(fks, function(fkTable, fkField) {
+                                if (angular.isDefined(row.fields[fkField]) && row.fields[fkField] !== null) {
+                                    var fkRow = self.getRowRef(fkTable, row.fields[fkField]);
+                                    if (!angular.isDefined(fkRow.referenced[tableName])) {
+                                        fkRow.referenced[tableName] = {};
                                     }
-                                    else {
-                                        row.foreign[fkTable] = null;
-                                        row.foreign[fkField] = null;
-                                    }
-                                });
-                            }
-                            else {
-                                console.error("Error loading %s, multi-keyed records not supported", tableName);
-                            }
+                                    fkRow.referenced[tableName][row.id] = row;
+                                    row.foreign[fkTable] = fkRow;
+                                    row.foreign[fkField] = fkRow;
+                                }
+                                else {
+                                    row.foreign[fkTable] = null;
+                                    row.foreign[fkField] = null;
+                                }
+                            });
                         });
                     })
                 }
@@ -2036,7 +2071,7 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
 //state change debugging
     .run (['$rootScope', function($rootScope) {
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-            console.log('$stateChangeStart to ' + toState.to + '- fired when the transition begins. toState,toParams : \n', toState, toParams);
+            //console.log('$stateChangeStart to ' + toState.to + '- fired when the transition begins. toState,toParams : \n', toState, toParams);
         });
 
         $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {
@@ -2045,11 +2080,11 @@ DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.s
         });
 
         $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-            console.log('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
+            //console.log('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
         });
 
         $rootScope.$on('$viewContentLoaded', function (event) {
-            console.log('$viewContentLoaded - fired after dom rendered', event);
+            //console.log('$viewContentLoaded - fired after dom rendered', event);
         });
 
         $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {

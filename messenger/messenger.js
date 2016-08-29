@@ -11,8 +11,26 @@ var http = require('http').Server(app);
 
 var io = require('socket.io')(http);
 
+var config = {
+    "mongoHost" : "localhost",
+    "mongoPort" : 27017,
+    "mongoDB" : "devctrl",
+    "ioPort" : 2878,
+    "updatePort" : 2879
+};
+
+var localConfig = require("./config.local.js");
+
+for (var opt in localConfig) {
+    config[opt] = localConfig[opt];
+}
+
+
 var mongodb = false;
-MongoClient.connect("mongodb://localhost:27017/devctrl", function(err, db) {
+var mongoConnStr = "mongodb://" + config.mongoHost + ":" + config.mongoPort
+                    + "/" + config.mongoDB;
+
+MongoClient.connect( mongoConnStr, function(err, db) {
     console.log("mongodb connected");
     mongodb = db;
 });
@@ -53,13 +71,13 @@ io.on('connection', function(socket) {
     socket.on('get-data', msgr.getData);
 });
 
-http.listen(2878, function() {
-    console.log('listening on *:2878');
+http.listen(config.ioPort, function() {c
+    console.log('listening on *:' + config.ioPort);
 });
 
 
 var updateServer = net.createServer( function(sock) {
-    console.log("daemon client connected on port " + sock.remotePort);
+    console.log("daemon client connected from " + sock.remoteAddress + sock.remotePort);
 
     sock.on('data', function(data) {
         //console.log("update recieved: " + data);
@@ -88,7 +106,7 @@ var updateServer = net.createServer( function(sock) {
     });
 });
 
-updateServer.listen(2879, '127.0.0.1');
+updateServer.listen(config.updatePort, '127.0.0.1');
 console.log("TCP server started on port 2879");
 
 var minute = 60 * 1000;

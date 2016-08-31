@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     $pc_id = sanitizeId($path_key[0]);
 
-    $controls = getTableData("controls", true, "where control_id = $pc_id");
+    $controls = getTableData("controls", true, array("_id" => $pc_id));
 
     $control = $controls[$pc_id];
     $prev_value = $control['value'];

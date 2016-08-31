@@ -54,8 +54,10 @@ foreach ($g_schema as $tname => $tstruct) {
     $cursor = $tmongo->find(array());
 
     foreach ($cursor as $record) {
-        $mysql_id = $record[$tstruct['pk']];
-        $key_map[$tname][$mysql_id] = $record['_id'];
+        if ($tstruct['pk'] !== '_id') {
+            $mysql_id = $record[$tstruct['pk']];
+            $key_map[$tname][$mysql_id] = $record['_id'];
+        }
     }
 
     echo "$tname keymap built\n";
@@ -64,32 +66,37 @@ foreach ($g_schema as $tname => $tstruct) {
 
 //Then update keys
 foreach ($g_schema as $tname => $tstruct) {
-    if (isset($tstruct['foreign_keys'])) {
-        echo "update keys for $tname... ";
-        $tmongo = $db->$tname;
-        $update_count = 0;
 
-        foreach ($key_map[$tname] as $id => $mongo_id) {
-            $record = $tmongo->findOne(array("_id" => $mongo_id));
+    echo "update keys for $tname... ";
+    $tmongo = $db->$tname;
+    $update_count = 0;
 
+    foreach ($key_map[$tname] as $id => $mongo_id) {
+        $record = $tmongo->findOne(array("_id" => $mongo_id));
+
+        if (isset($tstruct['foreign_keys'])) {
             foreach ($tstruct['foreign_keys'] as $field => $fktable) {
                 $mysql_id = $record[$field];
 
                 if ($mysql_id) {
-                    if (! is_numeric($mysql_id)) {
+                    if (!is_numeric($mysql_id)) {
                         echo "this is odd...";
                     }
                     $_id = $key_map[$fktable][$mysql_id];
                     $record[$field] = $_id;
                 }
             }
-
-            $tmongo->update(array('_id' => $mongo_id), $record);
-
-            $update_count++;
         }
 
-        echo "$update_count records updated\n";
+        $record[$tstruct['pk']] = $record['_id'];
+
+
+        $tmongo->update(array('_id' => $mongo_id), $record);
+
+        $update_count++;
     }
+
+    echo "$update_count records updated\n";
+
 }
 

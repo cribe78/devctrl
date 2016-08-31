@@ -498,8 +498,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
 
                 if (angular.isDefined(data.delete)) {
                     angular.forEach(data.delete, function(tableData, table) {
-                        var pk = self.getSchema(table).pk;
-
                         angular.forEach(tableData, function(value, key) {
                             // Remove references
                             var record = dataModel[table].indexed[key];
@@ -516,14 +514,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                         // Rebuild object list
                         dataModel[table].listed.length = 0;
                         angular.forEach(dataModel[table].indexed, function(value, key) {
-                            if (angular.isString(pk)) {
-                                dataModel[table].listed.push(value);
-                            }
-                            else {
-                                angular.forEach(value, function(row) {
-                                    dataModel[table].listed.push(row);
-                                });
-                            }
+                            dataModel[table].listed.push(value);
                         });
                     });
                 }

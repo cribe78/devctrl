@@ -9,9 +9,11 @@ $log = array();
 
 
 function adminAuthCheck($do_logon = false) {
-    global $mysqli;
+    //global $mysqli;
     global $resp;
     global $USESSION;
+
+    $db = getMongoDb();
 
     $admin_identifier = '';
 
@@ -26,6 +28,7 @@ function adminAuthCheck($do_logon = false) {
 
     // Admin authentication
     if ($admin_identifier) {
+        /**
         $select_admin = $mysqli->prepare(
             "select users.user_id, users.glid, users.groups,
                 admin_sessions.admin_session_id, admin_sessions.expiration
@@ -42,22 +45,20 @@ function adminAuthCheck($do_logon = false) {
             errorResponse("select_admin error: {$mysqli->error}");
 
         $res = $select_admin->get_result();
+        **/
 
-        $admin_user = array();
-        if ($row = $res->fetch_assoc()) {
-            $admin_user['glid'] = $row['glid'];
-            $admin_user['groups'] = $row['groups'];
-            $admin_user['user_id'] = $row['user_id'];
-            $admin_user['admin_session_id'] = $row['admin_session_id'];
-            $admin_user['expiration'] = $row['expiration'];
-        }
-        else {
+        $admin_session = $db->admin_sessions->findOne(array("identifier" => $admin_identifier));
+
+        if (! $admin_session) {
             if ($do_logon) {
                 adminAuthSetIdAndRedirect();
             }
 
             return false;
         }
+
+
+        $admin_user = $db->users->findOne(array("_id" => $admin_session['user_id']));
 
         if ($admin_user['user_id'] == null) {
             if ($do_logon) {
@@ -95,10 +96,18 @@ function adminAuthCheck($do_logon = false) {
 
         $new_expiration = time() + 60 * 60; // another hour
 
+
+        $db->admin_sessions->update(
+            array("_id" => $admin_identifier),
+            array( '$set' => array("expiration" => $new_expiration))
+        );
+        /**
         coe_mysqli_prepare_bind_execute(
             "update admin_sessions set expiration = ? where identifier = ?",
             'is',
             array(&$new_expiration, &$admin_identifier));
+
+         * */
 
         setcookie('admin_identifier', $admin_identifier, $new_expiration, "/");
 
@@ -116,15 +125,23 @@ function adminAuthCheck($do_logon = false) {
 
 function adminAuthSetIdAndRedirect() {
     global $resp;
+    $db = getMongoDb();
 
     $admin_identifier = uniqid();
     $admin_expire = time() + 60 * 60;
     setcookie('admin_identifier', $admin_identifier, $admin_expire, "/");
 
+    /**
     coe_mysqli_prepare_bind_execute(
         "insert into admin_sessions (identifier, expiration) values (?, ?)",
         'si',
         array(&$admin_identifier, &$admin_expire));
+     * */
+
+    $db->admin_sessions->insert(array(
+        "identifier" => $admin_identifier,
+        "expiration" => $admin_expire
+    ));
 
     $locusService = getLocusService();
     $resp['location'] = (string)$locusService->getAuthorizationUri();
@@ -208,6 +225,7 @@ function checkpoint($msg) {
  * @param $params array array of references to bind values
  * @param null $conn
  */
+/**
 function coe_mysqli_prepare_bind_execute($sql, $types, $params, $conn = null) {
     global $mysqli;
 
@@ -231,6 +249,7 @@ function coe_mysqli_prepare_bind_execute($sql, $types, $params, $conn = null) {
         serverError("prepare_bind_execute execute error: {$stmt->error}");
     }
 }
+ * */
 
 function devctrl_include_templates() {
     $dir = new RecursiveDirectoryIterator(dirname(__FILE__) . "/../ng/");
@@ -303,50 +322,10 @@ function getPostData() {
 }
 
 function getTableData($table, $use_cache = false, $where_cond = "") {
-    global $mysqli;
+    //global $mysqli;
     global $g_schema;
     $table = getTableName($table);
-
-    if (getTableType($table) == 'mongo') {
-        return getTableDataMongo($table, $where_cond);
-    }
-
-
-    if (! $table) {
-        serverError("Error: {$_GET['table']} is not a valid table name");
-    }
-
-    static $cache = array();
-
-    if ($use_cache && isset($cache[$table])) {
-        return $cache[$table];
-    }
-
-    $res = $mysqli->query("select * from $table $where_cond");
-
-    if (! $res) {
-        serverError("select $table error: {$mysqli->error}");
-    }
-
-    $pk = $g_schema[$table]['pk'];
-    $fields = $g_schema[$table]['fields'];
-
-    $rows = array();
-    while ($row  = $res->fetch_assoc()) {
-        foreach ($fields as $field) {
-            if (is_numeric($row[$field['name']]) && ($field['type'] != 'string' || $field['name'] == 'value')) {
-                $row[$field['name']] = intval($row[$field['name']]);
-            }
-            elseif ($field['type'] == 'object') {
-                $row[$field['name']] = json_decode($row[$field['name']]);
-            }
-        }
-
-        $rows[$row[$pk]] = $row;
-    }
-
-    $cache[$table] = $rows;
-    return $rows;
+    return getTableDataMongo($table, $where_cond);
 }
 
 function getTableDataMongo($collection, $query) {
@@ -383,7 +362,7 @@ function getTableType($name) {
         return $g_schema[$name]['db'];
     }
 
-    return 'mysql';
+    return 'mongo';
 }
 
 function groupsHasAdminAccess($groupsStr) {
@@ -474,17 +453,20 @@ function jsonResponse($response = "", $response_code = 200) {
     }
 
     header('Content-type: application/json');
+
+    $response = stringifyMongoIds($response);
     echo(json_encode($response));
     exit();
 }
 
 function launchControlDaemon($ce_id) {
-    global $mysqli;
+    $db = getMongoDb();
 
     $control_endpoints = getTableData("control_endpoints", true);
     $ce = $control_endpoints[$ce_id];
     $status = "disabled";
 
+    /**
     $update_endpoint = $mysqli->prepare(
         "update control_endpoints set status = ?, daemon_pid = 0, daemon_port = 0 where control_endpoint_id = ? ");
 
@@ -493,6 +475,7 @@ function launchControlDaemon($ce_id) {
     }
 
     $update_endpoint->bind_param('si', $status, $ce_id);
+    */
 
     $process = exec("ps ax | grep \"pcontrol-daemon --ce=$ce_id\"");
 
@@ -508,9 +491,22 @@ function launchControlDaemon($ce_id) {
         $status = "launched";
     }
 
+    $db->control_endpoints->update(
+        array("_id" => $ce_id),
+        array( '$set' =>
+            array(
+                "status" => $status,
+                "daemon_pid" => 0,
+                "daemon_port" => 0
+            )
+        )
+    );
+
+    /**
     if (! $update_endpoint->execute()) {
         serverError("$ce_id update_endpoint execute error: {$update_endpoint->error}");
     }
+     * */
 }
 
 function logControlChange($control_id, $new_value, $previous_value) {
@@ -574,6 +570,7 @@ function publishDataUpdate($update) {
 $insert_log = '';
 
 function queueCommand($control) {
+    /**
     global $mysqli;
 
     $queue_command = $mysqli->prepare(
@@ -588,87 +585,31 @@ function queueCommand($control) {
 
     
     error_log("command queued: {$control['control_id']} : {$control['value']}");
+     * */
 }
 
-function queueSlaveCommands($tt, $tn, $ct, $cn, $value) {
-    global $mysqli;
-
-    $fetch_slaves = $mysqli->prepare(
-        "select s.target_type, s.target_num, s.command_type, s.command_name, s.value
-            from slave_commands s
-            inner join master_commands m
-            on m.master_command_id = s.master_command_id
-            where m.target_type = ?
-            and m.target_num = ?
-            and m.command_name = ?");
-
-    if (! $fetch_slaves) {
-        error_log("prepare fetch_slaves error: {$mysqli->error}");
-        jsonResponse();
-    }
-
-    $fetch_slaves->bind_param('sis', $tt, $tn, $cn);
-
-    if (! $fetch_slaves->execute()) {
-        error_log("execute fetch_slaves error: {$mysqli->error}");
-        jsonResponse();
-    }
-
-    $fetch_slaves->bind_result($stt, $stn, $sct, $scn, $svalue);
-    $fetch_slaves->store_result();
-
-    while ($fetch_slaves->fetch()) {
-        $ett = $stt == NULL ? $tt : $stt;
-        $etn = $stn == NULL ? $tn : $stn;
-        $ect = $sct == NULL ? $ct : $sct;
-        $ecn = $scn == NULL ? $cn : $scn;
-        $evalue = $svalue == NULL ? $value : $svalue;
-
-        queueCommand($ett, $etn, $ect, $ecn, $evalue);
-    }
-}
-
-
-
-/*
- * Given the name of a table and an array containing a row of data,
- * construct a value representing the primary key
- */
-function rowPrimaryKey($table, $row) {
-    global $g_schema;
-
-    if (! isset($g_schema[$table]['pk'])) {
-        serverError("rowPrimaryKey: No primary key set for $table");
-    }
-
-    $pk = $g_schema[$table]['pk'];
-
-    if (is_string($pk)) {
-        return $row[$pk];
-    }
-    elseif (is_array($pk)) {
-        $pks = array();
-        foreach ($pk as $column) {
-            $pks[] = $row[$column];
-        }
-
-        $pk_str = implode(".", $pks);
-
-        return $pk_str;
-    }
-    else {
-        serverError("rowPrimaryKey: Primary key type not identified for $table");
-    }
-}
 
 function sanitizeId($id) {
-    return strval(intval($id));
+    return $id;  //strval(intval($id));
 }
 
 function serverError($message) {
     errorResponse($message, 500);
 }
 
+
+function stringifyMongoIds($arr) {
+    foreach ($arr as $key => $val) {
+        if (is_object($val) && get_class($val) == 'MongoId') {
+            $arr[$key] = strval($val);
+        }
+        if (is_array($val)) {
+            $arr[$key] = stringifyMongoIds($val);
+        }
+    }
+
+    return $arr;
+}
 
 function syncControls() {
     global $mysqli;

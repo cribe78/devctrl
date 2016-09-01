@@ -65,7 +65,7 @@ $g_schema = array(
         'fk_name' => 'name',
         'label' => 'Controls',
         'foreign_keys' => array(
-            'control_endpoint_id' => 'control_endpoints',
+            'control_endpoint_id' => 'endpoints',
             'control_template_id' => 'control_templates',
             'enum_id' => 'enums'
         ),
@@ -102,13 +102,10 @@ $g_schema = array(
             )
         )
     ),
-    'control_endpoints' => array(
+    'endpoints' => array(
         'pk' => 'control_endpoint_id',
         'fk_name' => 'name',
         'label' => 'Control Endpoints',
-        'foreign_keys' => array(
-            'endpoint_type_id' => 'endpoint_types'
-        ),
         'fields' => array(
             array(
                 'name' => 'name',
@@ -116,8 +113,8 @@ $g_schema = array(
                 'label' => 'Endpoint Name'
             ),
             array(
-                'name' => 'endpoint_type_id',
-                'type' => 'fk',
+                'name' => 'type',
+                'type' => 'string',
                 'label' => 'Endpoint Type',
             ),
             array(

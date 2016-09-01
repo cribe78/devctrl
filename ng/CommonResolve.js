@@ -39,7 +39,7 @@ DevCtrl.Common.Resolve = {
     },
 
     loadControlEndpoints : function(DataService) {
-        return DataService.getTablePromise('control_endpoints');
+        return DataService.getTablePromise('endpoints');
     },
 
     loadUserInfo : function(DataService) {

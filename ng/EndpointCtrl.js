@@ -4,7 +4,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
     function($stateParams, DataService, MenuService) {
         var self = this;
         this.endpointId = $stateParams.id;
-        this.endpoints = DataService.getTable('control_endpoints');
+        this.endpoints = DataService.getTable('endpoints');
         this.obj = this.endpoints.indexed[this.endpointId];
 
         // The toolbar title uses this
@@ -13,7 +13,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
         // This function is here to prevent null reference errors
         this.controls = this.obj.referenced['controls'];
 
-        MenuService.toolbarSelectTable("control_endpoints", "endpoints.endpoint", self.obj.id);
+        MenuService.toolbarSelectTable("endpoints", "endpoints.endpoint", self.obj.id);
 
         this.togglePanel = function(panel) {
             if (! angular.isDefined(panel.opened)) {
@@ -39,7 +39,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
         };
 
         this.editEndpoint = function($event) {
-            DataService.editRecord($event, this.endpointId, 'control_endpoints');
+            DataService.editRecord($event, this.endpointId, 'endpoints');
         };
     }
 ];

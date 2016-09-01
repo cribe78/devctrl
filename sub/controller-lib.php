@@ -57,10 +57,12 @@ function adminAuthCheck($do_logon = false) {
             return false;
         }
 
+        $admin_user = array('_id' => null);
+        if (isset($admin_session['user_id'])) {
+            $admin_user = $db->users->findOne(array("_id" => $admin_session['user_id']));
+        }
 
-        $admin_user = $db->users->findOne(array("_id" => $admin_session['user_id']));
-
-        if ($admin_user['user_id'] == null) {
+        if ($admin_user['_id'] == null) {
             if ($do_logon) {
                 /* @var $locusService OAuth\OAuth2\Service\Locus */
                 $locusService = getLocusService();
@@ -158,13 +160,13 @@ function alertControlDaemon($ce_id, $token = "POLL") {
     // Send a UDP message to a control daemon, alerting it to 
     // check the command queue for new commands
 
-    $control_endpoints = getTableData("control_endpoints", true);
+    $endpoints = getTableData("endpoints", true);
 
-    if (! isset($control_endpoints[$ce_id])) {
-        serverError("control_endpoint $ce_id not found");
+    if (! isset($endpoints[$ce_id])) {
+        serverError("endpoint $ce_id not found");
     }
 
-    $ce = $control_endpoints[$ce_id];
+    $ce = $endpoints[$ce_id];
 
     if (! $ce['enabled']) {
         return;
@@ -504,8 +506,8 @@ function jsonResponse($response = "", $response_code = 200) {
 function launchControlDaemon($ce_id) {
     $db = getMongoDb();
 
-    $control_endpoints = getTableData("control_endpoints", true);
-    $ce = $control_endpoints[$ce_id];
+    $endpoints = getTableData("endpoints", true);
+    $ce = $endpoints[$ce_id];
     $status = "disabled";
 
     /**
@@ -533,7 +535,7 @@ function launchControlDaemon($ce_id) {
         $status = "launched";
     }
 
-    $db->control_endpoints->update(
+    $db->endpoints->update(
         array("_id" => $ce_id),
         array( '$set' =>
             array(
@@ -655,9 +657,10 @@ function stringifyMongoIds($arr) {
 }
 
 function syncControls() {
-    global $mysqli;
+    //global $mysqli;
+    $db = getMongoDb();
 
-    $control_endpoints = getTableData('control_endpoints');
+    $endpoints = getTableData('endpoints');
     $control_templates = getTableData('control_templates');
 
     $controls = getTableData('controls');
@@ -691,26 +694,24 @@ function syncControls() {
     }
 
 
-    // Prepare insert statement
-    $insert_stmt = $mysqli->prepare("insert into controls
-        (control_template_id, control_endpoint_id, enum_id, name)
-        values (?, ?, ?, ?)");
-
-    $ei = '';
-    $name = '';
-    $insert_stmt->bind_param('iiis', $cti, $cei, $ei, $name);
 
     // Check that all combinations of endpoint and template exist
-    foreach ($control_endpoints as $cei => $ce_row) {
+    foreach ($endpoints as $cei => $ce_row) {
         $eti = $ce_row['endpoint_type_id'];
         if (isset($ct_lut[$eti])) {
             foreach ($ct_lut[$eti] as $cti => $ct_row) {
                 // Lookup if a control is already defined for this ce/ct pair
                 if (! (isset($c_lut[$cei]) && isset($c_lut[$cei][$cti]))) {
-                    $ei = $ct_row['enum_id'];
-                    $name = '';
-                    if (! $insert_stmt->execute()) {
-                        serverError("insert control error: {$mysqli->error}");
+                    $control = array(
+                        '_id' => strval(new MongoId()),
+                        'control_template_id' => $cti,
+                        'control_endpoint_id' => $cei,
+                        'enum_id' => $ct_row['enum_id'],
+                        'name' => ''
+                    );
+
+                    if (! $db->controls->insert($control)) {
+                        serverError("insert control error");
                     }
                 }
             }

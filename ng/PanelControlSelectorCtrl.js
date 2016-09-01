@@ -4,7 +4,7 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
     function($mdDialog, DataService) {
         var self = this;
         this.endpointTypes = DataService.getTable("endpoint_types");
-        this.endpoints = DataService.getTable("control_endpoints");
+        this.endpoints = DataService.getTable("endpoints");
         this.controls = DataService.getTable("controls");
         this.control_templates = DataService.getTable("control_templates");
 
@@ -59,7 +59,7 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
                 }
                 else if (angular.isArray(self.endpointTypesSelected) && self.endpointTypesSelected.length > 0) {
                     loadAll = false;
-                    var ctrlEpType = control.foreign.control_endpoints.fields.endpoint_type_id;
+                    var ctrlEpType = control.foreign.endpoints.fields.endpoint_type_id;
 
                     angular.forEach(self.endpointTypesSelected, function(typeId) {
                         if (ctrlEpType == typeId) {

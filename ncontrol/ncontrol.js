@@ -20,12 +20,12 @@ var NControl = (function () {
     };
     NControl.prototype.getEndpointConfig = function (config) {
         var reqData = {
-            table: "control_endpoints",
+            table: "endpoints",
             params: { _id: config.endpointId }
         };
         this.io.emit('get-data', reqData, function (data) {
             console.log("endpoint data recieved");
-            var epData = data.add.control_endpoints[config.endpointId];
+            var epData = data.add.endpoints[config.endpointId];
             console.log("ep type: " + epData.type);
         });
     };

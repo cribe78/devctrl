@@ -16,7 +16,7 @@ if (mysqli_connect_errno($mysqli)) {
 $ctx = "json";
 require("controller-lib.php");
 
-$endpoints = getTableData('control_endpoints');
+$endpoints = getTableData('endpoints');
 
 foreach ($endpoints as $ce_id => $endpoint) {
     alertControlDaemon($ce_id, 'ALV?');
@@ -25,11 +25,11 @@ foreach ($endpoints as $ce_id => $endpoint) {
 sleep(5);
 
 // Get updated endpoints
-$endpoints = getTableData('control_endpoints');
+$endpoints = getTableData('endpoints');
 
 $resp = array( 'add' =>
     array(
-        'control_endpoints' => $endpoints
+        'endpoints' => $endpoints
     )
 );
 

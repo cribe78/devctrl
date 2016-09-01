@@ -8,7 +8,7 @@ DevCtrl.EndpointStatus.Directive  = ['DataService', function(DataService) {
         bindToController: true,
         controller: function(DataService) {
             var self = this;
-            this.endpoint = DataService.getRowRef('control_endpoints', this.endpointId);
+            this.endpoint = DataService.getRowRef('endpoints', this.endpointId);
 
             this.status = function() {
                 if (! self.endpoint.fields.enabled) {

@@ -38,7 +38,7 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
                 controller: 'EndpointCtrl',
                 controllerAs: 'endpoint',
                 data : {
-                    listByName : 'control_endpoints',
+                    listByName : 'endpoints',
                     title : false
                 }
             })

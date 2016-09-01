@@ -51,7 +51,7 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'MenuService', 'DataService', function(
                     if (ignoreGrouping || panel.fields.grouping == grouping) {
                         var panelControls = panel.referenced.panel_controls;
                         angular.forEach(panelControls, function(panelControl, panelControlId) {
-                            var endpoint = panelControl.foreign.controls.foreign.control_endpoints;
+                            var endpoint = panelControl.foreign.controls.foreign.endpoints;
                             if (! angular.isDefined(roomEndpoints[endpoint.id])) {
                                 roomEndpoints[endpoint.id] = endpoint;
                             }

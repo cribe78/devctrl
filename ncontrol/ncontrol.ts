@@ -34,13 +34,13 @@ class NControl {
 
     getEndpointConfig(config: any) {
         let reqData = {
-            table: "control_endpoints",
+            table: "endpoints",
             params: { _id: config.endpointId }
         };
 
         this.io.emit('get-data', reqData, function(data) {
             console.log("endpoint data recieved");
-            let epData: EndpointData = data.add.control_endpoints[config.endpointId];
+            let epData: EndpointData = data.add.endpoints[config.endpointId];
             console.log("ep type: " + epData.type);
         });
     }

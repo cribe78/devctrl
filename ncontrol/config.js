@@ -3,7 +3,7 @@ var fs = require('fs');
 var config = {
   "wsUrl" : "https://devctrl.dwi.ufl.edu/",
   "testString" : "default",
-  "endpointId" : "57c5d82af88baca41c8b4868"
+  "endpointId" : "57c86719f88bac4f748b486d"
 };
 
 var customConfig = {};

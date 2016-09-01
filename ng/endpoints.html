@@ -6,7 +6,7 @@
                 </div>
             </md-toolbar>
             <md-list>
-                <md-list-item ng-repeat-start="(id, device) in main.control_endpoints.indexed" ng-click="main.go({ name: 'endpoints.endpoint', params : { name : device.fields.name, id : id }})">
+                <md-list-item ng-repeat-start="(id, device) in main.endpoints.indexed" ng-click="main.go({ name: 'endpoints.endpoint', params : { name : device.fields.name, id : id }})">
                     {{device.fields.name}}
                     <span flex></span>
                     <devctrl-endpoint-status endpoint-id="id"></devctrl-endpoint-status>

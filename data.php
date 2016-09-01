@@ -79,7 +79,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     logDataChange($table, $id, "added ($log_values)");
 
     // Special cases where more actions are needed
-    if ($table == 'control_endpoints' || $table == 'control_templates') {
+    if ($table == 'endpoints' || $table == 'control_templates') {
         syncControls();
         $resp['add']['controls'] = getTableData('controls');
     }
@@ -133,7 +133,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
      * */
 
-
+    unset($post['_id']);  // MongoDB doesn't support updating the primary key
     $db->$table->update(array("_id" => $id), array( '$set' => $post));
 
     logDataChange($table, $id, "updated");

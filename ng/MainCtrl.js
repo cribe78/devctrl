@@ -19,7 +19,7 @@ DevCtrl.MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
         this.schema = DataService.schema;
         this.menu = MenuService;
         this.$mdMedia = $mdMedia;
-        this.control_endpoints = DataService.getTable('control_endpoints');
+        this.endpoints = DataService.getTable('endpoints');
         this.config = DataService.config;
         this.user = DataService.dataModel.user;
 
@@ -38,7 +38,7 @@ DevCtrl.MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
         };
 
         this.addEndpoint = function($event) {
-            DataService.editRecord($event, '0', "control_endpoints");
+            DataService.editRecord($event, '0', "endpoints");
         };
 
         this.addEndpointType = function($event) {

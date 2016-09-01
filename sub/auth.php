@@ -228,7 +228,7 @@ if (! empty($_GET['code'])) {
         //    array(&$user_id, &$admin_identifier));
 
         $db->admin_sessions->update(
-            array('admin_identifier' => $admin_identifier),
+            array('identifier' => $admin_identifier),
             array( '$set' => array('user_id' => $user['_id']))
         );
     }

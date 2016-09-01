@@ -40,7 +40,7 @@ DevCtrl.stateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvid
                 controller: 'EndpointCtrl',
                 controllerAs: 'endpoint',
                 data : {
-                    listByName : 'control_endpoints',
+                    listByName : 'endpoints',
                     title : false
                 }
             })
@@ -128,7 +128,7 @@ DevCtrl.Common.Resolve = {
     },
 
     loadControlEndpoints : function(DataService) {
-        return DataService.getTablePromise('control_endpoints');
+        return DataService.getTablePromise('endpoints');
     },
 
     loadUserInfo : function(DataService) {
@@ -252,7 +252,7 @@ DevCtrl.Room.Ctrl = ['$stateParams', 'DataService', 'MenuService',
                 if (ignoreGrouping || panel.fields.grouping == grouping) {
                     var panelControls = panel.referenced.panel_controls;
                     angular.forEach(panelControls, function(panelControl, panelControlId) {
-                        var endpoint = panelControl.foreign.controls.foreign.control_endpoints;
+                        var endpoint = panelControl.foreign.controls.foreign.endpoints;
                         if (! angular.isDefined(roomEndpoints[endpoint.id])) {
                             roomEndpoints[endpoint.id] = endpoint;
                         }
@@ -299,7 +299,7 @@ DevCtrl.MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
         this.schema = DataService.schema;
         this.menu = MenuService;
         this.$mdMedia = $mdMedia;
-        this.control_endpoints = DataService.getTable('control_endpoints');
+        this.endpoints = DataService.getTable('endpoints');
         this.config = DataService.config;
         this.user = DataService.dataModel.user;
 
@@ -318,7 +318,7 @@ DevCtrl.MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
         };
 
         this.addEndpoint = function($event) {
-            DataService.editRecord($event, '0', "control_endpoints");
+            DataService.editRecord($event, '0', "endpoints");
         };
 
         this.addEndpointType = function($event) {
@@ -1574,7 +1574,7 @@ DevCtrl.EndpointStatus.Directive  = ['DataService', function(DataService) {
         bindToController: true,
         controller: function(DataService) {
             var self = this;
-            this.endpoint = DataService.getRowRef('control_endpoints', this.endpointId);
+            this.endpoint = DataService.getRowRef('endpoints', this.endpointId);
 
             this.status = function() {
                 if (! self.endpoint.fields.enabled) {
@@ -1628,7 +1628,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
     function($stateParams, DataService, MenuService) {
         var self = this;
         this.endpointId = $stateParams.id;
-        this.endpoints = DataService.getTable('control_endpoints');
+        this.endpoints = DataService.getTable('endpoints');
         this.obj = this.endpoints.indexed[this.endpointId];
 
         // The toolbar title uses this
@@ -1637,7 +1637,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
         // This function is here to prevent null reference errors
         this.controls = this.obj.referenced['controls'];
 
-        MenuService.toolbarSelectTable("control_endpoints", "endpoints.endpoint", self.obj.id);
+        MenuService.toolbarSelectTable("endpoints", "endpoints.endpoint", self.obj.id);
 
         this.togglePanel = function(panel) {
             if (! angular.isDefined(panel.opened)) {
@@ -1663,7 +1663,7 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
         };
 
         this.editEndpoint = function($event) {
-            DataService.editRecord($event, this.endpointId, 'control_endpoints');
+            DataService.editRecord($event, this.endpointId, 'endpoints');
         };
     }
 ];
@@ -1676,7 +1676,7 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
     function($mdDialog, DataService) {
         var self = this;
         this.endpointTypes = DataService.getTable("endpoint_types");
-        this.endpoints = DataService.getTable("control_endpoints");
+        this.endpoints = DataService.getTable("endpoints");
         this.controls = DataService.getTable("controls");
         this.control_templates = DataService.getTable("control_templates");
 
@@ -1731,7 +1731,7 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
                 }
                 else if (angular.isArray(self.endpointTypesSelected) && self.endpointTypesSelected.length > 0) {
                     loadAll = false;
-                    var ctrlEpType = control.foreign.control_endpoints.fields.endpoint_type_id;
+                    var ctrlEpType = control.foreign.endpoints.fields.endpoint_type_id;
 
                     angular.forEach(self.endpointTypesSelected, function(typeId) {
                         if (ctrlEpType == typeId) {
@@ -2043,7 +2043,7 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'MenuService', 'DataService', function(
                     if (ignoreGrouping || panel.fields.grouping == grouping) {
                         var panelControls = panel.referenced.panel_controls;
                         angular.forEach(panelControls, function(panelControl, panelControlId) {
-                            var endpoint = panelControl.foreign.controls.foreign.control_endpoints;
+                            var endpoint = panelControl.foreign.controls.foreign.endpoints;
                             if (! angular.isDefined(roomEndpoints[endpoint.id])) {
                                 roomEndpoints[endpoint.id] = endpoint;
                             }

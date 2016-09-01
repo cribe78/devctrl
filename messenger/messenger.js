@@ -65,6 +65,7 @@ msgr.getData = function(request, fn) {
         );
 };
 
+
 io.on('connection', function(socket) {
     var socketId = socket.id;
     var clientIp = socket.request.connection.remoteAddress;
@@ -84,7 +85,7 @@ http.listen(config.ioPort, function() {
 
 
 var updateServer = net.createServer( function(sock) {
-    console.log("daemon client connected from " + sock.remoteAddress + sock.remotePort);
+    console.log("daemon client connected from " + sock.remoteAddress + ":" + sock.remotePort);
 
     sock.on('data', function(data) {
         //console.log("update recieved: " + data);

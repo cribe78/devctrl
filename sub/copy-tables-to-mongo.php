@@ -20,9 +20,9 @@ $key_map = array();
 
 // First copy records
 foreach ($g_schema as $tname => $tstruct) {
-    if ( getTableType($tname) !== 'mongo') {
+    if ( ! (isset($tstruct['db']) && $tstruct['db'] == 'mongo')) {
         echo "cloning data from $tname... ";
-        $tdata = getTableData($tname);
+        $tdata = getTableDataMysql($tname);
         $tmongo = $db->$tname;
 
         if ($tmongo->count()) {
@@ -31,19 +31,18 @@ foreach ($g_schema as $tname => $tstruct) {
             $tmongo->$db->$tname;
         }
 
-
-
-
         $clone_count = 0;
 
         foreach ($tdata as $id => $record) {
             $clone_count++;
+            $record['_id'] = strval(new MongoId());
             $tmongo->insert($record);
         }
 
         echo "$clone_count records copied\n";
     }
 }
+
 
 
 // Build key map
@@ -88,9 +87,7 @@ foreach ($g_schema as $tname => $tstruct) {
             }
         }
 
-        $record[$tstruct['pk']] = $record['_id'];
-
-
+        unset($record[$tstruct['pk']]);
         $tmongo->update(array('_id' => $mongo_id), $record);
 
         $update_count++;

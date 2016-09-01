@@ -67,6 +67,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
      * */
 
     $doc = $post['fields'];
+    $doc['_id'] = strval(new MongoId());
     $db->$table->insert($doc);
 
     $id = $doc['_id'];

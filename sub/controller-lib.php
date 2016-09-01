@@ -139,6 +139,7 @@ function adminAuthSetIdAndRedirect() {
      * */
 
     $db->admin_sessions->insert(array(
+        "_id" => strval(new MongoId()),
         "identifier" => $admin_identifier,
         "expiration" => $admin_expire
     ));
@@ -326,6 +327,47 @@ function getTableData($table, $use_cache = false, $where_cond = "") {
     global $g_schema;
     $table = getTableName($table);
     return getTableDataMongo($table, $where_cond);
+}
+
+function getTableDataMysql($table, $use_cache = false, $where_cond = "") {
+    global $mysqli;
+    global $g_schema;
+
+    if (! $table) {
+        serverError("Error: {$_GET['table']} is not a valid table name");
+    }
+
+    static $cache = array();
+
+    if ($use_cache && isset($cache[$table])) {
+        return $cache[$table];
+    }
+
+    $res = $mysqli->query("select * from $table $where_cond");
+
+    if (! $res) {
+        serverError("select $table error: {$mysqli->error}");
+    }
+
+    $pk = $g_schema[$table]['pk'];
+    $fields = $g_schema[$table]['fields'];
+
+    $rows = array();
+    while ($row  = $res->fetch_assoc()) {
+        foreach ($fields as $field) {
+            if (is_numeric($row[$field['name']]) && ($field['type'] != 'string' || $field['name'] == 'value')) {
+                $row[$field['name']] = intval($row[$field['name']]);
+            }
+            elseif ($field['type'] == 'object') {
+                $row[$field['name']] = json_decode($row[$field['name']]);
+            }
+        }
+
+        $rows[$row[$pk]] = $row;
+    }
+
+    $cache[$table] = $rows;
+    return $rows;
 }
 
 function getTableDataMongo($collection, $query) {
@@ -516,6 +558,7 @@ function logControlChange($control_id, $new_value, $previous_value) {
     $control_log = $db->control_log;
 
     $logdoc = array(
+        "_id" => strval(new MongoId()),
         "control_id" => $control_id,
         "new_value" => $new_value,
         "old_value" => $previous_value,

@@ -548,6 +548,10 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 )
             },
 
+            dialogClose : function() {
+                $mdDialog.hide();
+            },
+
             deleteRow : function(row) {
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
@@ -986,6 +990,29 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 }, function (response) {
                     self.errorToast(response.data);
                 })
+            },
+
+            showControlLog : function($event, ctrl) {
+                var qParams = {
+                    'control_id' : ctrl.id
+                };
+
+                self.getMData('control_log', qParams).then( function() {
+                    $mdDialog.show({
+                        targetEvent: $event,
+                        locals: {
+                            ctrl: ctrl
+                        },
+                        controller: DevCtrl.CtrlLog.Ctrl,
+                        controllerAs: 'ctrlLog',
+                        bindToController: true,
+                        templateUrl: 'ng/ctrl-log.html',
+                        clickOutsideToClose: true,
+                        hasBackdrop : false,
+                    });
+                })
+
+
             },
 
             updateConfig : function() {

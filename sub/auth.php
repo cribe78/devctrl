@@ -102,6 +102,7 @@ if ($identifier == 'nouser') {
 
     $identifier = uniqid();
     $client = array(
+        "_id" => strval(new MongoId()),
         "identifier" => $identifier,
         "name" => $_SERVER['REMOTE_ADDR'],
         "added_user_id" => '',
@@ -167,6 +168,7 @@ if (! empty($_GET['code'])) {
     }
     else {
         $user = array(
+            '_id' => strval(new MongoId()),
             'glid' => $glid,
             'groups' => $groups
         );

@@ -4,7 +4,8 @@ var fs = require('fs');
 var net = require('net');
 var merge = require('deepmerge');
 var cp = require('child_process');
-var MongoClient = require('mongodb').MongoClient;
+var mongo = require('mongodb');
+
 Tail = require('tail').Tail;
 
 var http = require('http').Server(app);
@@ -30,7 +31,7 @@ var mongodb = false;
 var mongoConnStr = "mongodb://" + config.mongoHost + ":" + config.mongoPort
                     + "/" + config.mongoDB;
 
-MongoClient.connect( mongoConnStr, function(err, db) {
+mongo.MongoClient.connect( mongoConnStr, function(err, db) {
     console.log("mongodb connected");
     mongodb = db;
 });
@@ -44,6 +45,9 @@ var msgr = {};
 msgr.getData = function(request, fn) {
     console.log("data requested from " + request.table);
     var col = mongodb.collection(request.table);
+
+    //console.log("id type" + typeof params._id);
+    //if (typeof params._id == 'MongoId')
 
     var table = {};
     var tArr = col.find(request.params)
@@ -62,7 +66,10 @@ msgr.getData = function(request, fn) {
 };
 
 io.on('connection', function(socket) {
-    console.log('a user connected');
+    var socketId = socket.id;
+    var clientIp = socket.request.connection.remoteAddress;
+
+    console.log('a user connected from ' + clientIp);
 
     socket.on('status-update', function(data) {
         console.log(data.message);

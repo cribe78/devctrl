@@ -2,10 +2,31 @@
  * Created by chris on 8/17/16.
  */
 
-export default class Endpoint {
+export enum EndpointStatus {
+    Online,
+    Disabled,
+    Offline,
+    Unknown
+}
+
+
+export interface EndpointData {
+    _id: string;
     type: string;
-    id: number;
-    status: string;
-    foo: any = 4;
+    status: EndpointStatus;
+    name: string;
+}
+
+
+export class Endpoint {
+    _id: string;
+    type: string;
+
+    constructor(data: EndpointData) {
+        this.type = data.type;
+        this._id = data._id
+    }
+
+
 
 }

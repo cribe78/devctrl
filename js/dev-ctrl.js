@@ -696,7 +696,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             getMData : function(table, params) {
                 var reqData = {
                     table : table,
-                    query : params
+                    params : params
                 };
 
                 self.getMProm =  $q( function(resolve, reject) {

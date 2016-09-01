@@ -36,7 +36,7 @@
             <md-button ng-click="main.menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
                 <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
             </md-button>
-            <span flex class="text-display-1 md-accent md-hue-1">DWI DevCtrl</span>
+            <span flex class="text-display-1 md-accent md-hue-1"><?=$g_title?></span>
         </md-toolbar>
         <md-content flex role="navigation" class="md-accent md-hue-1">
             <coe-menu items="main.menu.items"></coe-menu>

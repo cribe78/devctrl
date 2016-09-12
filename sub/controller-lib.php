@@ -78,7 +78,7 @@ function adminAuthCheck($do_logon = false) {
             return false;
         }
 
-        if (time() > $admin_user['expiration']) {
+        if (time() > $admin_session['expiration']) {
             if ($do_logon) {
                 errorResponse("Admin authorization expired {$admin_user['glid']}", 401);
             }

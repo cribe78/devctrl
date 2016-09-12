@@ -24,25 +24,6 @@ error_log("identifier: $identifier, query string: {$_SERVER['QUERY_STRING']}");
 
 // Client authentication
 if ($identifier != 'nouser') {
-
-    /**
-    $select_user = $mysqli->prepare(
-        "select users.user_id, users.glid, users.groups,
-                clients.client_id, clients.name
-                from clients
-                left join users on clients.added_user_id = users.user_id
-                where clients.identifier = ?");
-    if (! $select_user)
-        errorResponse("prepare select_user error: {$mysqli->error}");
-
-
-
-    $select_user->bind_param('s', $identifier);
-    if (! $select_user->execute())
-        errorResponse("select_user error: {$mysqli->error}");
-
-    $res = $select_user->get_result();
-    */
     //error_log("loading session $identifier");
     $client = $db->clients->findOne(array("identifier" => $identifier));
 
@@ -81,25 +62,6 @@ if ($identifier != 'nouser') {
 }
 
 if ($identifier == 'nouser') {
-    /**
-    $insert_client = $mysqli->prepare(
-        "insert into clients (identifier, name) value (?, ?)"
-    );
-
-    if (! $insert_client) {
-        errorResponse("prepare insert_client error: {$mysqli->error}");
-    }
-
-    $insert_client->bind_param('ss', $identifier, $client_name);
-
-    $client_name = $_SERVER['REMOTE_ADDR'];
-
-
-    if (! $insert_client->execute()) {
-        errorResponse("insert_client error: {$insert_client->error}");
-    }
-    */
-
     $identifier = uniqid();
     $client = array(
         "_id" => strval(new MongoId()),
@@ -134,25 +96,8 @@ if (! empty($_GET['code'])) {
     if (!$result) {
         errorResponse("Unauthorized", 401);
     }
+
     //Do something with userinfo
-    /**
-    $select_user = $mysqli->prepare(
-        "select user_id, glid, groups from users where glid = ?"
-    );
-
-    if (! $select_user) {
-        errorResponse("prepare select_user error: {$mysqli->error}");
-    }
-
-    $select_user->bind_param('s', $glid);
-
-    if (! $select_user->execute()) {
-        errorResponse("select_user error {$select_user->error}");
-    }
-
-    $res = $select_user->get_result();
-    **/
-
     $glid = $result['preferred_username'];
     $groups = groupsStripOUDC($result['groups']);
 
@@ -176,36 +121,6 @@ if (! empty($_GET['code'])) {
         $db->users->insert($user);
     }
     // Create/update user record
-   //$user_id = false;
-    //if ($row = $res->fetch_assoc()) {
-    //    $user_id = $row['user_id'];
-    //}
-
-    /**
-    if ($user_id) {
-    //    coe_mysqli_prepare_bind_execute(
-            "update users set glid = ?, groups = ? where user_id = ?",
-            'ssi',
-            array( &$glid, &$groups, &$user_id)
-        );
-    }
-    else {
-        coe_mysqli_prepare_bind_execute(
-            "insert into users (glid, groups) values (?, ?)",
-            'ss',
-            array( &$glid, &$groups)
-        );
-
-        $user_id = $mysqli->insert_id;
-    }
-     * */
-
-    // Update client record
-    //coe_mysqli_prepare_bind_execute(
-    //    "update clients set added_user_id = ? where identifier = ?",
-    //    'is',
-    //    array(&$user_id, &$identifier)
-    //);
 
     $db->clients->update(
         array('identifier' => $identifier),
@@ -221,11 +136,6 @@ if (! empty($_GET['code'])) {
     // Set the user id for an admin session
     if (isset($_COOKIE['admin_identifier'])) {
         $admin_identifier = $_COOKIE['admin_identifier'];
-
-        //coe_mysqli_prepare_bind_execute(
-        //    "update admin_sessions set user_id= ? where identifier = ?",
-        //    'is',
-        //    array(&$user_id, &$admin_identifier));
 
         $db->admin_sessions->update(
             array('identifier' => $admin_identifier),

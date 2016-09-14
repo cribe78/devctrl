@@ -5,4 +5,8 @@ function __export(m) {
 __export(require("./Command"));
 __export(require("./Control"));
 __export(require("./Endpoint"));
+__export(require("./EndpointType"));
+__export(require("./DCDataModel"));
+__export(require("./DCDataSet"));
+__export(require("./DCSerializable"));
 //# sourceMappingURL=Shared.js.map

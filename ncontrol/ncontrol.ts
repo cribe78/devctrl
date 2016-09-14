@@ -1,48 +1,82 @@
 "use strict";
 
 import * as io from "socket.io-client";
-import {Endpoint, EndpointData} from "../shared/Shared";
+import {
+    Endpoint,
+    EndpointType,
+    DCDataModel
+} from "../shared/Shared";
+
 import { EndpointCommunicator } from "./EndpointCommunicator";
+
+
+interface NControlConfig {
+    wsUrl: string;
+    testString : string;
+    endpointId : string;
+}
+
 
 class NControl {
     io: SocketIOClient.Socket;
+    endpoint: Endpoint;
+    dataModel: DCDataModel;
+    config: NControlConfig;
 
     static bootstrap() {
         return new NControl();
     }
 
     constructor() {
+        this.dataModel = new DCDataModel();
     }
 
     run(config: any) {
         let self = this;
+        this.config = <NControlConfig>config;
         this.io = io.connect(config.wsUrl);
 
         this.io.on('connect', function() {
             console.log("websocket client connected");
 
-            self.getEndpointConfig(config);
-
             //Get endpoint data
-            EndpointCommunicator.listCommunicators();
+            self.getEndpointConfig();
 
+            EndpointCommunicator.listCommunicators();
         });
 
         console.log("testString is " + config.testString );
     }
 
 
-    getEndpointConfig(config: any) {
-        let reqData = {
-            table: "endpoints",
-            params: { _id: config.endpointId }
-        };
+    getEndpointConfig() {
+        let self = this;
+        self.endpoint = self.dataModel.getItem<Endpoint>(self.config.endpointId, Endpoint.tableStr);
+
+        let reqData = self.endpoint.itemRequestData();
 
         this.io.emit('get-data', reqData, function(data) {
-            console.log("endpoint data recieved");
-            let epData: EndpointData = data.add.endpoints[config.endpointId];
-            console.log("ep type: " + epData.type);
+            console.log("endpoint data received");
+            self.dataModel.loadData(data);
+
+            self.getEndpointTypeConfig();
         });
+    }
+
+    getEndpointTypeConfig() {
+        let self = this;
+
+        if (! self.endpoint.dataLoaded) {
+            console.log("endpoint data is missing");
+            return;
+        }
+
+        let epTypeRequestData = self.endpoint.type.itemRequestData();
+
+        this.io.emit('get-data', epTypeRequestData, function(eptData) {
+            console.log("endpoint type data received");
+            self.dataModel.loadData(eptData);
+        })
     }
 }
 

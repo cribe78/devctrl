@@ -41,7 +41,18 @@ var NControl = (function () {
         this.io.emit('get-data', epTypeRequestData, function (eptData) {
             console.log("endpoint type data received");
             self.dataModel.loadData(eptData);
+            self.launchCommunicator();
         });
+    };
+    NControl.prototype.launchCommunicator = function () {
+        if (!this.endpoint.type.dataLoaded) {
+            console.log("endpointType data is missing");
+        }
+        var commClass = this.endpoint.type.communicatorClass;
+        var requirePath = "./Communicators/" + commClass;
+        this.communicator = require(requirePath);
+        this.communicator.setConfig({ endpoint: this.endpoint });
+        this.communicator.connect();
     };
     return NControl;
 }());

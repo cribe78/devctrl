@@ -40,6 +40,8 @@ var Endpoint = (function (_super) {
         this.endpoint_type_id = data.endpoint_type_id;
         this.status = data.status;
         this.name = data.name;
+        this.ip = data.ip;
+        this.port = data.port;
         this.dataLoaded = true;
     };
     Endpoint.prototype.getDataObject = function () {
@@ -47,7 +49,9 @@ var Endpoint = (function (_super) {
             _id: this._id,
             endpoint_type_id: this.endpoint_type_id,
             status: this.status,
-            name: this.name
+            name: this.name,
+            ip: this.ip,
+            port: this.port
         };
     };
     Endpoint.tableStr = "endpoints";

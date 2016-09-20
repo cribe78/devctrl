@@ -36,6 +36,8 @@ var DCDataModel = (function () {
     /**
      *  For data model objects that hold references to other data model objects,
      *  initialize those references
+     *
+     *  TODO: set up "referenced" array
      */
     DCDataModel.prototype.indexForeignKeys = function (objects, fks) {
         for (var _i = 0, fks_1 = fks; _i < fks_1.length; _i++) {
@@ -43,13 +45,15 @@ var DCDataModel = (function () {
             var fkObjs = this[fkDef.fkTable];
             for (var id in objects) {
                 var obj = objects[id];
-                var fkId = obj[fkDef.fkIdProp]; // The the foreign key id value
-                if (!fkObjs[fkId]) {
-                    // Create a new object if necessary
-                    fkObjs[fkId] = new fkDef.type(fkId);
+                if (obj[fkDef.fkIdProp]) {
+                    var fkId = obj[fkDef.fkIdProp]; // The the foreign key id value
+                    if (!fkObjs[fkId]) {
+                        // Create a new object if necessary
+                        fkObjs[fkId] = new fkDef.type(fkId);
+                    }
+                    // Set reference to "foreign" object
+                    obj[fkDef.fkObjProp] = fkObjs[fkId];
                 }
-                // Set reference to "foreign" object
-                obj[fkDef.fkObjProp] = fkObjs[fkId];
             }
         }
     };

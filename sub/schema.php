@@ -105,6 +105,9 @@ $g_schema = array(
     'endpoints' => array(
         'pk' => 'control_endpoint_id',
         'fk_name' => 'name',
+        'foreign_keys' => array(
+            'endpoint_type_id' => 'endpoint_types',
+        ),
         'label' => 'Control Endpoints',
         'fields' => array(
             array(
@@ -113,8 +116,8 @@ $g_schema = array(
                 'label' => 'Endpoint Name'
             ),
             array(
-                'name' => 'type',
-                'type' => 'string',
+                'name' => 'endpoint_type_id',
+                'type' => 'fk',
                 'label' => 'Endpoint Type',
             ),
             array(
@@ -249,6 +252,11 @@ $g_schema = array(
                 'name' => 'name',
                 'type' => 'string',
                 'label' => 'Name'
+            ),
+            array(
+                'name' => 'communicatorClass',
+                'type' => 'string',
+                'label' => 'Communicator Class'
             )
         )
     ),

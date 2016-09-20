@@ -1,14 +1,26 @@
-import { Endpoint } from "../shared/Shared";
-import * as communicators from "./Communicators/Communicators";
+import {
+    Endpoint,
+    ControlTemplate,
+    IndexedDataSet
+} from "../shared/Shared";
+
+
+export interface IEndpointCommunicatorConfig {
+    endpoint: Endpoint
+}
+
 
 export class EndpointCommunicator {
+    templatesByCtid: IndexedDataSet<ControlTemplate> = {};
+    config: IEndpointCommunicatorConfig;
 
-    constructor(public endpoint: Endpoint) {
-
+    constructor() {
     }
-    static initSubtype(endpoint: Endpoint) {
 
+    connect() {};
 
+    setConfig(config: IEndpointCommunicatorConfig) {
+        this.config = config;
     }
 
     static listCommunicators() {

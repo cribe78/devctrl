@@ -22,6 +22,7 @@ export abstract class DCSerializable {
     dataLoaded: boolean;
     table : string;
     foreignKeys: IDCForeignKeyDef[];
+    referenced: { [index: string]  : DCSerializable };
 
     constructor(public _id: string) {
         this.dataLoaded = false;

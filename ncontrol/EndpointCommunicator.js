@@ -1,9 +1,12 @@
 "use strict";
 var EndpointCommunicator = (function () {
-    function EndpointCommunicator(endpoint) {
-        this.endpoint = endpoint;
+    function EndpointCommunicator() {
+        this.templatesByCtid = {};
     }
-    EndpointCommunicator.initSubtype = function (endpoint) {
+    EndpointCommunicator.prototype.connect = function () { };
+    ;
+    EndpointCommunicator.prototype.setConfig = function (config) {
+        this.config = config;
     };
     EndpointCommunicator.listCommunicators = function () {
         //for (let comm in communicators ) {

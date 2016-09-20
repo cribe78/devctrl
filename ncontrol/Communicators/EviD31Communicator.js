@@ -5,12 +5,16 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var TCPCommunicator_1 = require("./TCPCommunicator");
-var ExtronDXPCommunicator = (function (_super) {
-    __extends(ExtronDXPCommunicator, _super);
-    function ExtronDXPCommunicator() {
+var EviD31Communicator = (function (_super) {
+    __extends(EviD31Communicator, _super);
+    function EviD31Communicator() {
         _super.call(this);
     }
-    return ExtronDXPCommunicator;
+    EviD31Communicator.prototype.connect = function () {
+        console.log("connecting to EviD31");
+    };
+    return EviD31Communicator;
 }(TCPCommunicator_1.TCPCommunicator));
-exports.ExtronDXPCommunicator = ExtronDXPCommunicator;
-//# sourceMappingURL=ExtronDXPCommunicator.js.map
+var communicator = new EviD31Communicator();
+module.exports = communicator;
+//# sourceMappingURL=EviD31Communicator.js.map

@@ -7,7 +7,7 @@
 
 <md-list>
     <md-list-item layout="row">
-        <div flex="5">
+        <div flex="20">
             ID
         </div>
         <div ng-repeat="field in table.schema.fields" flex class="table-header" ng-click="table.setSortColumn(field)">
@@ -18,7 +18,7 @@
     <md-divider></md-divider>
     <md-list-item ng-repeat-start="row in table.data.listed | orderBy: table.sortColumn : table.sortReversed"
                   layout="row">
-        <div flex="5">
+        <div flex="20" class="devctrl-id-text">
             <span>{{row.id}}</span>
         </div>
         <div class="md-list-item-text"

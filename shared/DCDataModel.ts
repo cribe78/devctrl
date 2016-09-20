@@ -18,7 +18,7 @@ import {
 } from "./Shared";
 
 
-interface IndexedDataSet<T> {
+export interface IndexedDataSet<T> {
     [index: string] : T;
 }
 
@@ -60,6 +60,8 @@ export class DCDataModel {
     /**
      *  For data model objects that hold references to other data model objects,
      *  initialize those references
+     *
+     *  TODO: set up "referenced" array
      */
     indexForeignKeys(objects: IndexedDataSet<DCSerializable>, fks: IDCForeignKeyDef[]) {
         for (let fkDef of fks) {
@@ -67,15 +69,17 @@ export class DCDataModel {
 
             for (let id in objects) {
                 let obj = objects[id];
-                let fkId =  obj[fkDef.fkIdProp];  // The the foreign key id value
-                if (! fkObjs[fkId]) {
-                    // Create a new object if necessary
-                    fkObjs[fkId] = new fkDef.type(fkId);
 
+                if (obj[fkDef.fkIdProp]) {
+                    let fkId = obj[fkDef.fkIdProp];  // The the foreign key id value
+                    if (!fkObjs[fkId]) {
+                        // Create a new object if necessary
+                        fkObjs[fkId] = new fkDef.type(fkId);
+                    }
+
+                    // Set reference to "foreign" object
+                    obj[fkDef.fkObjProp] = fkObjs[fkId];
                 }
-
-                // Set reference to "foreign" object
-                obj[fkDef.fkObjProp] = fkObjs[fkId];
             }
 
         }

@@ -1,4 +1,4 @@
-.menuBtn {
+    .menuBtn {
     background-color: transparent;
     border: none;
     height: 38px;
@@ -92,6 +92,10 @@ coe-menu li {
     padding: 0px 2px 0px;
     margin-top: 12px;
     margin-bottom: 12px;
+}
+
+.devctrl-id-text {
+    font-size: 10px;
 }
 
 .devctrl-label-indented {

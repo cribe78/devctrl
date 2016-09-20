@@ -3,7 +3,7 @@
 import * as io from "socket.io-client";
 import {
     Endpoint,
-    EndpointType,
+    ControlTemplate,
     DCDataModel
 } from "../shared/Shared";
 
@@ -22,6 +22,7 @@ class NControl {
     endpoint: Endpoint;
     dataModel: DCDataModel;
     config: NControlConfig;
+    communicator: EndpointCommunicator;
 
     static bootstrap() {
         return new NControl();
@@ -76,7 +77,26 @@ class NControl {
         this.io.emit('get-data', epTypeRequestData, function(eptData) {
             console.log("endpoint type data received");
             self.dataModel.loadData(eptData);
+
+            self.launchCommunicator();
         })
+    }
+
+    launchCommunicator() {
+        if (! this.endpoint.type.dataLoaded) {
+            console.log("endpointType data is missing");
+        }
+
+        let commClass =  this.endpoint.type.communicatorClass;
+        let requirePath = "./Communicators/" + commClass;
+
+        this.communicator = require(requirePath);
+
+        this.communicator.setConfig({ endpoint: this.endpoint});
+
+
+
+        this.communicator.connect();
     }
 }
 

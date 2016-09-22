@@ -16,7 +16,7 @@ var TCPCommand = (function () {
         return this.cmdStr + "?";
     };
     TCPCommand.prototype.getControlTemplates = function () {
-        var ctid = this.endpoint_id + "." + this.cmdStr;
+        var ctid = this.endpoint_id + "-" + this.cmdStr;
         var templateData = {
             _id: ctid,
             ctid: ctid,
@@ -28,6 +28,7 @@ var TCPCommand = (function () {
             config: {}
         };
         var templates = [new Shared_1.ControlTemplate(ctid, templateData)];
+        this.ctidList = [ctid];
         return templates;
     };
     TCPCommand.prototype.matchesDeviceString = function (devStr) {

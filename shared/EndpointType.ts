@@ -1,6 +1,6 @@
-import {DCSerializable, DevCtrlSerializableData} from "./DCSerializable";
+import {DCSerializable, DCSerializableData} from "./DCSerializable";
 
-export interface EndpointTypeData extends DevCtrlSerializableData {
+export interface EndpointTypeData extends DCSerializableData {
     name: string;
     communicatorClass: string;
 }
@@ -15,16 +15,14 @@ export class EndpointType extends DCSerializable {
         super(_id);
         this.table = EndpointType.tableStr;
 
+        this.requiredProperties = [
+            'communicatorClass',
+            'name'
+        ];
+
         if (data) {
             this.loadData(data);
         }
-    }
-
-    loadData(data: EndpointTypeData) {
-        this.communicatorClass = data.communicatorClass;
-        this.name = data.name;
-
-        this.dataLoaded = true;
     }
 
     getDataObject() : EndpointTypeData {

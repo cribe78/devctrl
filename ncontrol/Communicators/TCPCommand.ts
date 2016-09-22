@@ -25,6 +25,7 @@ export class TCPCommand {
     usertype: string;
     control_type: string;
     templateConfig: ITCPTemplateConfig;
+    ctidList: string[];
 
     constructor(config: ITCPCommandConfig) {
         this.cmdStr = config.cmdStr;
@@ -44,7 +45,7 @@ export class TCPCommand {
     }
 
     getControlTemplates() : ControlTemplate[] {
-        let ctid = this.endpoint_id + "." + this.cmdStr;
+        let ctid = this.endpoint_id + "-" + this.cmdStr;
         let templateData : ControlTemplateData = {
             _id: ctid,
             ctid: ctid,
@@ -56,6 +57,7 @@ export class TCPCommand {
             config: {}
         };
         let templates = [ new ControlTemplate(ctid, templateData)];
+        this.ctidList = [ctid];
 
         return templates;
     }

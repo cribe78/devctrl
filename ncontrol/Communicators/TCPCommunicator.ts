@@ -5,7 +5,10 @@ import {
     IndexedDataSet
 } from "../../shared/Shared";
 import * as net from "net";
+import {ControlTemplate} from "../../shared/ControlTemplate";
 
+import * as debugMod from "debug";
+let debug = debugMod("comms");
 
 
 export class TCPCommunicator extends EndpointCommunicator {
@@ -14,11 +17,16 @@ export class TCPCommunicator extends EndpointCommunicator {
     socket: net.Socket;
     connected: boolean = false;
     commands: IndexedDataSet<TCPCommand> = {};
+    controlTemplates: IndexedDataSet<ControlTemplate> = {};
+    lineTerminator = /\r\n/;
+    socketEncoding = 'utf8';
 
 
     constructor() {
         super();
     }
+
+
 
     connect() {
         let self = this;
@@ -31,21 +39,50 @@ export class TCPCommunicator extends EndpointCommunicator {
             host: this.config.endpoint.ip
         };
         this.socket = net.connect(connectOpts, function() {
-            console.log("connected to " + connectOpts.host + ":" + connectOpts.port);
+            debug("connected to " + connectOpts.host + ":" + connectOpts.port);
             self.connected = true;
         });
 
-        this.socket.on('data', this.onData);
-        this.socket.on('end', this.onEnd);
+        this.socket.on('data', function(data) {
+            self.onData(data);
+        });
+        this.socket.on('end', function() {
+            self.onEnd();
+        });
+
+        setTimeout(function() {
+            self.poll();
+        }, 10000);
+    }
+
+    getControlTemplates() : IndexedDataSet<ControlTemplate> {
+        return this.controlTemplates;
     }
 
     onData(data: any) {
-        console.log("data received: " + data);
+        let strData = String(data);
+        let lines = strData.split(this.lineTerminator);
+
+        for(let line of lines) {
+            debug("data received: " + line);
+        }
+
     }
 
     onEnd() {
-        console.log("device disconnected " + this.host);
+        debug("device disconnected " + this.host);
         this.connected = false;
+
+        this.connect();
+    }
+
+    poll() {
+        debug("polling device");
+
+        for (let cmdStr in this.commands) {
+            let cmd = this.commands[cmdStr];
+
+        }
     }
 
 }

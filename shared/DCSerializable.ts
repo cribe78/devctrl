@@ -6,7 +6,13 @@
 
 
 
-export interface DevCtrlSerializableData {
+export interface IDCDataRequest {
+    table: string;
+    params: any;
+}
+
+
+export interface DCSerializableData {
     _id: string
 }
 
@@ -23,23 +29,37 @@ export abstract class DCSerializable {
     table : string;
     foreignKeys: IDCForeignKeyDef[];
     referenced: { [index: string]  : DCSerializable };
+    requiredProperties: string[] = [];
+    optionalProperties: string[] = [];
 
     constructor(public _id: string) {
         this.dataLoaded = false;
         this.foreignKeys = [];
     };
 
-    itemRequestData() {
-        let reqData = {
+    itemRequestData(): IDCDataRequest {
+        return {
             table: this.table,
             params: {_id: this._id}
         };
-
-        return reqData;
     }
 
+    loadData(data: DCSerializableData) {
+        for (let prop of this.requiredProperties) {
+            if (typeof data[prop] == 'undefined') {
+                throw new Error("Invalid data object, " + prop + " must be defined");
+            }
+
+            this[prop] = data[prop];
+        }
+
+        for (let prop of this.optionalProperties) {
+            this[prop] = data[prop];
+        }
+
+        this.dataLoaded = true;
+    };
 
 
-    abstract loadData(data: DevCtrlSerializableData);
-    abstract getDataObject() : DevCtrlSerializableData;
+    abstract getDataObject() : DCSerializableData;
 }

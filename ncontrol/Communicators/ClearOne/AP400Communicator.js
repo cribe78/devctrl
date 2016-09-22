@@ -6,15 +6,16 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var TCPCommunicator_1 = require("../TCPCommunicator");
 var AP400Controls_1 = require("./AP400Controls");
+var debugMod = require("debug");
+var debug = debugMod("comms");
 var AP400Communicator = (function (_super) {
     __extends(AP400Communicator, _super);
     function AP400Communicator() {
         _super.call(this);
         this.device = "#30";
-        this.buildTemplateList();
     }
     AP400Communicator.prototype.connect = function () {
-        console.log("connecting to AP 400");
+        debug("connecting to AP 400");
         _super.prototype.connect.call(this);
     };
     /**
@@ -23,7 +24,18 @@ var AP400Communicator = (function (_super) {
      */
     AP400Communicator.prototype.parseLine = function (line) {
     };
-    AP400Communicator.prototype.buildTemplateList = function () {
+    AP400Communicator.prototype.getControlTemplates = function () {
+        this.buildCommandList();
+        for (var cmd in this.commands) {
+            var templateList = this.commands[cmd].getControlTemplates();
+            for (var _i = 0, templateList_1 = templateList; _i < templateList_1.length; _i++) {
+                var tpl = templateList_1[_i];
+                this.controlTemplates[tpl._id] = tpl;
+            }
+        }
+        return this.controlTemplates;
+    };
+    AP400Communicator.prototype.buildCommandList = function () {
         // First build a command list
         for (var cmdIdx in AP400Controls_1.commands) {
             var cmdDef = AP400Controls_1.commands[cmdIdx];

@@ -5,24 +5,25 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DCSerializable_1 = require("./DCSerializable");
+var Endpoint_1 = require("./Endpoint");
 var ControlTemplate = (function (_super) {
     __extends(ControlTemplate, _super);
     function ControlTemplate(_id, data) {
         _super.call(this, _id);
+        this.table = ControlTemplate.tableStr;
+        this.requiredProperties = [
+            'endpoint_id',
+            'ctid',
+            'name',
+            'usertype',
+            'control_type',
+            'poll',
+            'config'
+        ];
         if (data) {
             this.loadData(data);
         }
     }
-    ControlTemplate.prototype.loadData = function (data) {
-        this.endpoint_id = data.endpoint_id;
-        this.ctid = data.ctid;
-        this.name = data.name;
-        this.usertype = data.usertype;
-        this.control_type = data.control_type;
-        this.poll = data.poll;
-        this.config = data.config;
-        this.dataLoaded = true;
-    };
     ControlTemplate.prototype.getDataObject = function () {
         return {
             _id: this._id,
@@ -35,6 +36,15 @@ var ControlTemplate = (function (_super) {
             config: this.config
         };
     };
+    ControlTemplate.tableStr = "control_templates";
+    ControlTemplate.foreignKeys = [
+        {
+            type: Endpoint_1.Endpoint,
+            fkObjProp: "endpoint",
+            fkIdProp: "endpoint_id",
+            fkTable: Endpoint_1.Endpoint.tableStr
+        }
+    ];
     return ControlTemplate;
 }(DCSerializable_1.DCSerializable));
 exports.ControlTemplate = ControlTemplate;

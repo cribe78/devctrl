@@ -7,17 +7,33 @@
 var DCSerializable = (function () {
     function DCSerializable(_id) {
         this._id = _id;
+        this.requiredProperties = [];
+        this.optionalProperties = [];
         this.dataLoaded = false;
         this.foreignKeys = [];
     }
     ;
     DCSerializable.prototype.itemRequestData = function () {
-        var reqData = {
+        return {
             table: this.table,
             params: { _id: this._id }
         };
-        return reqData;
     };
+    DCSerializable.prototype.loadData = function (data) {
+        for (var _i = 0, _a = this.requiredProperties; _i < _a.length; _i++) {
+            var prop = _a[_i];
+            if (typeof data[prop] == 'undefined') {
+                throw new Error("Invalid data object, " + prop + " must be defined");
+            }
+            this[prop] = data[prop];
+        }
+        for (var _b = 0, _c = this.optionalProperties; _b < _c.length; _b++) {
+            var prop = _c[_b];
+            this[prop] = data[prop];
+        }
+        this.dataLoaded = true;
+    };
+    ;
     return DCSerializable;
 }());
 exports.DCSerializable = DCSerializable;

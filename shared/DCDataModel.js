@@ -11,16 +11,27 @@ var DCDataModel = (function () {
         this.endpoints = {};
         this.endpoint_types = {};
         this.controls = {};
+        this.control_templates = {};
         this.types = {
             endpoints: Shared_1.Endpoint,
             endpoint_type: Shared_1.EndpointType,
-            controls: Shared_1.Control
+            controls: Shared_1.Control,
+            control_templates: Shared_1.ControlTemplate
         };
+        this.debug = console.log;
     }
     ;
     DCDataModel.prototype.loadData = function (data) {
         if (data.add) {
             var add = data.add;
+            var addTables = [];
+            for (var t in add) {
+                addTables.push(t);
+            }
+            var tableStr = addTables.join(", ");
+            this.debug("loadData from " + tableStr);
+            // There is some boilerplate here that is necessary to allow typescript
+            // to perform its type checking magic.
             if (add.endpoint_types) {
                 this.loadTableData(add.endpoint_types, this.endpoint_types, Shared_1.EndpointType);
             }
@@ -28,9 +39,21 @@ var DCDataModel = (function () {
                 this.loadTableData(add.endpoints, this.endpoints, Shared_1.Endpoint);
             }
             if (add.controls) {
-                this.loadTableData(data.add.endpoints, this.endpoints, Shared_1.Endpoint);
+                this.loadTableData(add.controls, this.controls, Shared_1.Control);
             }
-            this.indexForeignKeys(this.endpoints, Shared_1.Endpoint.foreignKeys);
+            if (add.control_templates) {
+                this.loadTableData(add.control_templates, this.control_templates, Shared_1.ControlTemplate);
+            }
+            // Call indexForeignKeys if relevant tables have been updated
+            if (add.endpoints || add.endpoint_types) {
+                this.indexForeignKeys(this.endpoints, Shared_1.Endpoint.foreignKeys);
+            }
+            if (add.controls || add.control_templates) {
+                this.indexForeignKeys(this.controls, Shared_1.Control.foreignKeys);
+            }
+            if (add.control_templates || add.endpoints) {
+                this.indexForeignKeys(this.control_templates, Shared_1.ControlTemplate.foreignKeys);
+            }
         }
     };
     /**

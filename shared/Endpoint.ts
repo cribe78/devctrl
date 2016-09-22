@@ -2,7 +2,7 @@
  * Created by chris on 8/17/16.
  */
 
-import {DCSerializable, DevCtrlSerializableData} from "./DCSerializable";
+import {DCSerializable, DCSerializableData} from "./DCSerializable";
 import {EndpointType} from "./EndpointType";
 
 export enum EndpointStatus {
@@ -13,7 +13,7 @@ export enum EndpointStatus {
 }
 
 
-export interface EndpointData extends DevCtrlSerializableData {
+export interface EndpointData extends DCSerializableData {
     endpoint_type_id: string;
     status: EndpointStatus;
     name: string;
@@ -45,6 +45,14 @@ export class Endpoint extends DCSerializable {
         super(_id);
         this.table = Endpoint.tableStr;
 
+        this.requiredProperties = [
+            'endpoint_type_id',
+            'status',
+            'name',
+            'ip',
+            'port'
+        ];
+
         if (data) {
             this.loadData(data);
         }
@@ -57,16 +65,6 @@ export class Endpoint extends DCSerializable {
     set type(newType: EndpointType) {
         this.endpoint_type_id = newType._id;
         this._type = newType;
-    }
-
-    loadData(data: EndpointData) {
-        this.endpoint_type_id = data.endpoint_type_id;
-        this.status = data.status;
-        this.name = data.name;
-        this.ip = data.ip;
-        this.port = data.port;
-
-        this.dataLoaded = true;
     }
 
     getDataObject() : EndpointData {

@@ -12,6 +12,7 @@ export interface IEndpointCommunicatorConfig {
 
 export class EndpointCommunicator {
     templatesByCtid: IndexedDataSet<ControlTemplate> = {};
+    templates: IndexedDataSet<ControlTemplate> = {};
     config: IEndpointCommunicatorConfig;
 
     constructor() {
@@ -22,6 +23,19 @@ export class EndpointCommunicator {
     setConfig(config: IEndpointCommunicatorConfig) {
         this.config = config;
     }
+
+    getControlTemplates() : IndexedDataSet<ControlTemplate> {
+        return {};
+    }
+
+    setTemplates(templates: IndexedDataSet<ControlTemplate>) {
+        this.templates = templates;
+
+        for (let id in templates) {
+            this.templatesByCtid[templates[id].ctid] = templates[id];
+        }
+    }
+
 
     static listCommunicators() {
         //for (let comm in communicators ) {

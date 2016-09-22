@@ -1,8 +1,12 @@
 import { TCPCommunicator } from "../TCPCommunicator";
-import { Endpoint } from "../../../shared/Shared";
+import { ControlTemplate } from "../../../shared/Shared";
 import { commands } from "./AP400Controls";
 import {TCPCommand, ITCPTemplateConfig} from "../TCPCommand";
 import {IClearOneCommandConfig, ClearOneCommand} from "./ClearOneCommand";
+import {IndexedDataSet} from "../../../shared/DCDataModel";
+
+import * as debugMod from "debug";
+let debug = debugMod("comms");
 
 
 export interface IAP400CommandConfig {
@@ -21,11 +25,10 @@ class AP400Communicator extends TCPCommunicator {
 
     constructor() {
         super();
-        this.buildTemplateList();
     }
 
     connect() {
-        console.log("connecting to AP 400");
+        debug("connecting to AP 400");
         super.connect();
     }
 
@@ -37,8 +40,21 @@ class AP400Communicator extends TCPCommunicator {
 
     }
 
+    getControlTemplates() : IndexedDataSet<ControlTemplate> {
+        this.buildCommandList();
 
-    buildTemplateList() {
+        for (let cmd in this.commands) {
+            let templateList = this.commands[cmd].getControlTemplates();
+
+            for (let tpl of templateList) {
+                this.controlTemplates[tpl._id] = tpl;
+            }
+        }
+
+        return this.controlTemplates;
+    }
+
+    buildCommandList() {
         // First build a command list
         for (let cmdIdx in commands) {
             let cmdDef = commands[cmdIdx];

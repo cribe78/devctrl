@@ -14,6 +14,7 @@ var AP400GateCommand = (function (_super) {
     AP400GateCommand.prototype.getControlTemplates = function () {
         var templates = [];
         var micChannels = [1, 2, 3, 4];
+        this.ctidList = [];
         for (var _i = 0, micChannels_1 = micChannels; _i < micChannels_1.length; _i++) {
             var m = micChannels_1[_i];
             var ctid = this.endpoint_id + "." + this.cmdStr + m;
@@ -28,6 +29,7 @@ var AP400GateCommand = (function (_super) {
                 config: {}
             };
             templates.push(new ControlTemplate_1.ControlTemplate(ctid, templateData));
+            this.ctidList.push(ctid);
         }
         return templates;
     };

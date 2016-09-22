@@ -1,9 +1,12 @@
 {
   "dependencies": {
     "body-parser": "registry:npm/body-parser#1.15.2+20160815132839",
+    "debug": "registry:npm/debug#2.0.0+20160723033700",
+    "mongodb": "registry:npm/mongodb#2.1.0+20160721204323"
   },
   "globalDependencies": {
     "node": "registry:env/node#4.0.0+20160813135048",
+    "socket.io": "registry:dt/socket.io#1.4.4+20160909205835",
     "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654"
   }
 }

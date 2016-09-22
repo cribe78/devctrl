@@ -10,15 +10,14 @@ var EndpointType = (function (_super) {
     function EndpointType(_id, data) {
         _super.call(this, _id);
         this.table = EndpointType.tableStr;
+        this.requiredProperties = [
+            'communicatorClass',
+            'name'
+        ];
         if (data) {
             this.loadData(data);
         }
     }
-    EndpointType.prototype.loadData = function (data) {
-        this.communicatorClass = data.communicatorClass;
-        this.name = data.name;
-        this.dataLoaded = true;
-    };
     EndpointType.prototype.getDataObject = function () {
         return {
             _id: this._id,

@@ -12,8 +12,10 @@ import {
     EndpointTypeData,
     Control,
     ControlData,
+    ControlTemplate,
+    ControlTemplateData,
     DCSerializable,
-    DevCtrlSerializableData,
+    DCSerializableData,
     IDCForeignKeyDef
 } from "./Shared";
 
@@ -26,19 +28,35 @@ export class DCDataModel {
     endpoints : IndexedDataSet<Endpoint> = {};
     endpoint_types : IndexedDataSet<EndpointType> = {};
     controls : IndexedDataSet<Control> = {};
+    control_templates: IndexedDataSet<ControlTemplate> = {};
+    debug: (message: any, ...args: any[]) => void;
 
     types = {
         endpoints : Endpoint,
         endpoint_type : EndpointType,
-        controls : Control
+        controls : Control,
+        control_templates: ControlTemplate
     };
 
 
-    constructor() {};
+    constructor() {
+        this.debug = console.log;
+    };
 
     loadData(data: any) {
         if (data.add) {
             let add = data.add;
+
+            let addTables = [];
+            for (let t in add) {
+                addTables.push(t);
+            }
+
+            let tableStr = addTables.join(", ");
+            this.debug("loadData from " + tableStr);
+
+            // There is some boilerplate here that is necessary to allow typescript
+            // to perform its type checking magic.
 
             if (add.endpoint_types) {
                 this.loadTableData<EndpointType,EndpointTypeData>(
@@ -49,11 +67,25 @@ export class DCDataModel {
                     add.endpoints, this.endpoints, Endpoint);
             }
             if (add.controls) {
-                this.loadTableData<Endpoint,EndpointData>(
-                    data.add.endpoints, this.endpoints, Endpoint);
+                this.loadTableData<Control,ControlData>(
+                    add.controls, this.controls, Control);
             }
 
-            this.indexForeignKeys(this.endpoints, Endpoint.foreignKeys);
+            if (add.control_templates) {
+                this.loadTableData<ControlTemplate, ControlTemplateData>(
+                    add.control_templates, this.control_templates, ControlTemplate);
+            }
+
+            // Call indexForeignKeys if relevant tables have been updated
+            if (add.endpoints || add.endpoint_types) {
+                this.indexForeignKeys(this.endpoints, Endpoint.foreignKeys);
+            }
+            if (add.controls || add.control_templates) {
+                this.indexForeignKeys(this.controls, Control.foreignKeys);
+            }
+            if (add.control_templates || add.endpoints) {
+                this.indexForeignKeys(this.control_templates, ControlTemplate.foreignKeys);
+            }
         }
     }
 
@@ -86,7 +118,7 @@ export class DCDataModel {
     }
 
 
-    loadTableData<Type extends DCSerializable, TypeData extends DevCtrlSerializableData>
+    loadTableData<Type extends DCSerializable, TypeData extends DCSerializableData>
         (newData: IndexedDataSet<TypeData>,
          modelData: IndexedDataSet<Type>,
          ctor: { new(id: string, data: any): Type })

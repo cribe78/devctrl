@@ -8,6 +8,8 @@ export class AP400GateCommand extends ClearOneCommand {
         let templates : ControlTemplate[] = [];
         let micChannels = [1,2,3,4];
 
+        this.ctidList = [];
+
         for (let m of micChannels) {
             let ctid = this.endpoint_id + "." + this.cmdStr + m;
             let templateData : ControlTemplateData = {
@@ -22,6 +24,7 @@ export class AP400GateCommand extends ClearOneCommand {
             };
 
             templates.push(new ControlTemplate(ctid, templateData));
+            this.ctidList.push(ctid);
         }
 
         return templates;

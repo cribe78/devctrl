@@ -21,6 +21,13 @@ var Endpoint = (function (_super) {
     function Endpoint(_id, data) {
         _super.call(this, _id);
         this.table = Endpoint.tableStr;
+        this.requiredProperties = [
+            'endpoint_type_id',
+            'status',
+            'name',
+            'ip',
+            'port'
+        ];
         if (data) {
             this.loadData(data);
         }
@@ -36,14 +43,6 @@ var Endpoint = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Endpoint.prototype.loadData = function (data) {
-        this.endpoint_type_id = data.endpoint_type_id;
-        this.status = data.status;
-        this.name = data.name;
-        this.ip = data.ip;
-        this.port = data.port;
-        this.dataLoaded = true;
-    };
     Endpoint.prototype.getDataObject = function () {
         return {
             _id: this._id,

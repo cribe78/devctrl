@@ -1,7 +1,9 @@
 import { EndpointType } from "./EndpointType";
-import {DevCtrlSerializableData, DCSerializable} from "./DCSerializable";
+import {DCSerializableData, DCSerializable} from "./DCSerializable";
+import {Endpoint} from "./Endpoint";
+import {IndexedDataSet} from "./DCDataModel";
 
-export interface ControlTemplateData extends DevCtrlSerializableData {
+export interface ControlTemplateData extends DCSerializableData {
     endpoint_id: string;
     ctid: string;
     name: string;
@@ -14,6 +16,7 @@ export interface ControlTemplateData extends DevCtrlSerializableData {
 
 export class ControlTemplate extends DCSerializable {
     endpoint_id: string;
+    endpoint: Endpoint;
     ctid: string;
     name: string;
     usertype: string;
@@ -21,26 +24,37 @@ export class ControlTemplate extends DCSerializable {
     poll: number;
     config: any;
 
+    static tableStr = "control_templates";
+    table: string;
+
+    static foreignKeys = [
+        {
+            type: Endpoint,
+            fkObjProp: "endpoint",
+            fkIdProp: "endpoint_id",
+            fkTable: Endpoint.tableStr
+        }
+    ];
 
     constructor(_id: string, data?: ControlTemplateData) {
         super(_id);
+        this.table = ControlTemplate.tableStr;
+        this.requiredProperties = [
+            'endpoint_id',
+            'ctid',
+            'name',
+            'usertype',
+            'control_type',
+            'poll',
+            'config'
+        ];
+
 
         if (data) {
             this.loadData(data);
         }
     }
 
-    loadData(data: ControlTemplateData) {
-        this.endpoint_id = data.endpoint_id;
-        this.ctid = data.ctid;
-        this.name = data.name;
-        this.usertype = data.usertype;
-        this.control_type = data.control_type;
-        this.poll = data.poll;
-        this.config = data.config;
-
-        this.dataLoaded = true;
-    }
 
     getDataObject() : ControlTemplateData {
         return {

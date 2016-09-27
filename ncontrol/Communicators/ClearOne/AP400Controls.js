@@ -32,7 +32,7 @@ exports.commands = [
         cmdStr: "GATE",
         ctor: AP400GateCommand_1.AP400GateCommand,
         control_type: "boolean",
-        usertype: "checkbox",
+        usertype: "switch",
         readonly: true
     },
     //   {
@@ -53,7 +53,7 @@ exports.commands = [
         ioList: exports.chWchannels,
         ctor: ClearOneCommand_1.ClearOneCommand,
         control_type: "range",
-        usertype: "meter",
+        usertype: "level",
         readonly: true
     }
 ];

@@ -1,7 +1,8 @@
 import {
-    ControlTemplate,
-    ControlTemplateData
+    Control,
+    ControlData
 } from "../../shared/Shared";
+import {ControlUpdate, ControlUpdateData} from "../../shared/ControlUpdate";
 
 export interface ITCPCommandConfig {
     cmdStr: string;
@@ -36,17 +37,18 @@ export class TCPCommand {
         this.templateConfig = config.templateConfig;
     }
 
-    deviceUpdateString(value: any) {
-        return `${ this.cmdStr } ${ value }`;
-    }
 
     deviceQueryString() {
         return `${ this.cmdStr }?`;
     }
 
-    getControlTemplates() : ControlTemplate[] {
+    deviceUpdateString(control: Control, update: ControlUpdateData) {
+        return `${ this.cmdStr } ${ update.value }`;
+    }
+
+    getControlTemplates() : Control[] {
         let ctid = this.endpoint_id + "-" + this.cmdStr;
-        let templateData : ControlTemplateData = {
+        let templateData : ControlData = {
             _id: ctid,
             ctid: ctid,
             endpoint_id: this.endpoint_id,
@@ -54,9 +56,10 @@ export class TCPCommand {
             name: this.name,
             control_type: this.control_type,
             poll: 0,
-            config: {}
+            config: this.templateConfig,
+            value: 0
         };
-        let templates = [ new ControlTemplate(ctid, templateData)];
+        let templates = [ new Control(ctid, templateData)];
         this.ctidList = [ctid];
 
         return templates;
@@ -64,6 +67,10 @@ export class TCPCommand {
 
     matchesDeviceString(devStr: string) : boolean {
         return false;
+    }
+
+    parseControlValue(control: Control, line: string) : any {
+        return line;
     }
 
 }

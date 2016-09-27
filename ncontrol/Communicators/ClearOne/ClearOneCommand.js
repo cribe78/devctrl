@@ -25,16 +25,23 @@ var ClearOneCommand = (function (_super) {
     ClearOneCommand.prototype.matchesDeviceString = function (devStr) {
         var matchStr = this.deviceQueryString();
         var matchLen = matchStr.length;
-        return devStr.substring(matchLen) == matchStr;
+        return devStr.substring(0, matchLen) == matchStr;
     };
     ClearOneCommand.prototype.deviceQueryString = function () {
         return this.device + " " + this.cmdStr;
     };
-    ClearOneCommand.prototype.deviceUpdateString = function (value) {
-        return this.cmdStr + " " + value + " " + this.updateTerminator;
+    ClearOneCommand.prototype.deviceUpdateString = function (control, update) {
+        return this.device + " " + this.cmdStr + " " + update.value + " " + this.updateTerminator;
     };
-    ClearOneCommand.prototype.deviceStringToValue = function (devStr) {
-        return 10;
+    ClearOneCommand.prototype.parseControlValue = function (control, line) {
+        var qStr = this.deviceQueryString();
+        var val = line.slice(qStr.length);
+        // String a trailing " A", indicating an absolute level
+        if (val.substring(val.length - 2) == " A") {
+            val = val.substring(0, val.length - 2);
+        }
+        var ret = parseInt(val);
+        return ret;
     };
     return ClearOneCommand;
 }(TCPCommand_1.TCPCommand));

@@ -1,8 +1,8 @@
 "use strict";
 var EndpointCommunicator = (function () {
     function EndpointCommunicator() {
-        this.templatesByCtid = {};
-        this.templates = {};
+        this.controlsByCtid = {};
+        this.controls = {};
     }
     EndpointCommunicator.prototype.connect = function () { };
     ;
@@ -12,10 +12,12 @@ var EndpointCommunicator = (function () {
     EndpointCommunicator.prototype.getControlTemplates = function () {
         return {};
     };
-    EndpointCommunicator.prototype.setTemplates = function (templates) {
-        this.templates = templates;
-        for (var id in templates) {
-            this.templatesByCtid[templates[id].ctid] = templates[id];
+    EndpointCommunicator.prototype.handleControlUpdateRequest = function (request) {
+    };
+    EndpointCommunicator.prototype.setTemplates = function (controls) {
+        this.controls = controls;
+        for (var id in controls) {
+            this.controlsByCtid[controls[id].ctid] = controls[id];
         }
     };
     EndpointCommunicator.listCommunicators = function () {

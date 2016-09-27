@@ -1,11 +1,11 @@
 import { TCPCommunicator } from "../TCPCommunicator";
-import { ControlTemplate } from "../../../shared/Shared";
 import { commands } from "./AP400Controls";
 import {TCPCommand, ITCPTemplateConfig} from "../TCPCommand";
 import {IClearOneCommandConfig, ClearOneCommand} from "./ClearOneCommand";
 import {IndexedDataSet} from "../../../shared/DCDataModel";
 
 import * as debugMod from "debug";
+import {Control} from "../../../shared/Control";
 let debug = debugMod("comms");
 
 
@@ -32,26 +32,31 @@ class AP400Communicator extends TCPCommunicator {
         super.connect();
     }
 
-    /**
-     * Parse an output line from the device
-     * @param line
-     */
-    parseLine(line: string) {
 
+    preprocessLine(line: string) : string {
+        // Strip a leading prompt
+        let start = "AP 400> ";
+        if (line.substring(0, start.length) == start) {
+            return line.slice(start.length);
+        }
+
+        return line;
     }
 
-    getControlTemplates() : IndexedDataSet<ControlTemplate> {
+    getControlTemplates() : IndexedDataSet<Control> {
         this.buildCommandList();
 
         for (let cmd in this.commands) {
             let templateList = this.commands[cmd].getControlTemplates();
 
             for (let tpl of templateList) {
-                this.controlTemplates[tpl._id] = tpl;
+                this.controls[tpl._id] = tpl;
+                this.controlsByCtid[tpl.ctid] = tpl;
+                this.commandsByTemplate[tpl.ctid] = this.commands[cmd];
             }
         }
 
-        return this.controlTemplates;
+        return this.controlsByCtid;
     }
 
     buildCommandList() {
@@ -66,7 +71,7 @@ class AP400Communicator extends TCPCommunicator {
                 channel: '',
                 channelName: '',
                 device: this.device,
-                templateConfig: cmdDef.templateConfig
+                templateConfig: cmdDef.templateConfig || {}
             };
 
             if (cmdDef.updateTerminator) {

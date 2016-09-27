@@ -3,13 +3,14 @@
 import * as io from "socket.io-client";
 import {
     Endpoint,
-    ControlTemplate,
     DCDataModel
 } from "../shared/Shared";
 
 import { EndpointCommunicator } from "./EndpointCommunicator";
 import {IDCDataRequest} from "../shared/DCSerializable";
-import * as debugMod from "debug"; // see https://www.npmjs.com/package/debug
+import * as debugMod from "debug";
+import {Control} from "../shared/Control";
+import {ControlUpdateData} from "../shared/ControlUpdate"; // see https://www.npmjs.com/package/debug
 
 let debug = debugMod('ncontrol');
 
@@ -27,7 +28,7 @@ class NControl {
     dataModel: DCDataModel;
     config: NControlConfig;
     communicator: EndpointCommunicator;
-    syncControlTemplatesPassNumber: number = 0;
+    syncControlsPassNumber: number = 0;
 
     static bootstrap() {
         return new NControl();
@@ -52,13 +53,22 @@ class NControl {
             EndpointCommunicator.listCommunicators();
         });
 
+        this.io.on('control-data', function(data) {
+            self.dataModel.loadData(data);
+        });
+
+        this.io.on('control-updates', function(data) {
+            debug("control-updates: " + data);
+            self.handleControlUpdates(data);
+        });
+
         debug("testString is " + config.testString );
     }
 
 
-    getControlTemplates() {
+    getControls() {
         let reqData = {
-            table: ControlTemplate.tableStr,
+            table: Control.tableStr,
             params: {
                 endpoint_id: this.endpoint._id
             }
@@ -95,6 +105,22 @@ class NControl {
         });
     }
 
+    private updateData(reqData: any, then: () => void ) {
+        var self = this;
+        this.io.emit('update-data', reqData, function(data) {
+            if ( data.error ) {
+                debug("update-data error: " + data.error);
+            }
+            else {
+                self.dataModel.loadData(data);
+            }
+
+            then.call(self);  // If the callback doesn't belong to this class, this could get weird
+        });
+    }
+
+
+
     getEndpointConfig() {
         let self = this;
         self.endpoint = self.dataModel.getItem<Endpoint>(self.config.endpointId, Endpoint.tableStr);
@@ -110,10 +136,30 @@ class NControl {
             return;
         }
 
-        this.getData(this.endpoint.type.itemRequestData(), this.getControlTemplates);
+        this.getData(this.endpoint.type.itemRequestData(), this.getControls);
+    }
+
+    guid() : string {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
+    }
+
+    handleControlUpdates(data: ControlUpdateData[]) {
+        for (let update of data) {
+            if (this.dataModel.controls[update.control_id]) {
+                let control = this.dataModel.controls[update.control_id];
+
+                if (control.endpoint_id && control.endpoint_id == this.endpoint._id) {
+                    this.communicator.handleControlUpdateRequest(update);
+                }
+            }
+        }
     }
 
     launchCommunicator() {
+        let self = this;
         if (! this.endpoint.type.dataLoaded) {
             debug("endpointType data is missing");
         }
@@ -123,53 +169,72 @@ class NControl {
 
         this.communicator = require(requirePath);
 
-        this.communicator.setConfig({ endpoint: this.endpoint});
+        this.communicator.setConfig({
+            endpoint: this.endpoint,
+            controlUpdateCallback: function(control, value) {
+                self.pushControlUpdate(control, value);
+            }
+        });
 
-        this.syncControlTemplates();
+        this.syncControls();
 
         this.communicator.connect();
     }
 
-    syncControlTemplates() {
-        this.syncControlTemplatesPassNumber++;
+    pushControlUpdate(control: Control, value: any) {
+        let update : ControlUpdateData = {
+            _id : this.guid(),
+            control_id: control._id,
+            value: value,
+            type: "device",
+            status: "observed",
+            source: this.endpoint._id
+        };
 
-        if (this.syncControlTemplatesPassNumber > 2) {
+        this.io.emit('control-updates', [update]);
+    }
+
+    syncControls() {
+        this.syncControlsPassNumber++;
+
+        if (this.syncControlsPassNumber > 2) {
             throw new Error("failed to sync control templates");
         }
 
         // Get ControlTemplates from communicator
         let controlTemplates = this.communicator.getControlTemplates();
 
-        let newTemplates = [];
+        let newControls = [];
         let ctByCtid = {};
 
 
-        for (let id in this.dataModel.control_templates) {
-            let ct = this.dataModel.control_templates[id];
+        for (let id in this.dataModel.controls) {
+            let ct = this.dataModel.controls[id];
             ctByCtid[ct.ctid] = ct;
         }
 
         // Match communicator control templates to server control templates by ctid
         for (let ctid in controlTemplates) {
             if (! ctByCtid[ctid]) {
-                newTemplates.push(controlTemplates[ctid]);
+                newControls.push(controlTemplates[ctid].getDataObject());
             }
         }
 
-        // newTemplates is an array of templates to create
+        // newControls is an array of templates to create
         // Create new ControlTemplates on server
-        if (newTemplates.length > 0) {
+        if (newControls.length > 0) {
             debug("adding new controls");
-            this.addData({ control_templates: newTemplates}, this.syncControlTemplates);
+            this.addData({ controls: newControls}, this.syncControls);
 
             return;
         }
 
-        debug("controlTemplates successfully synced!");
+        debug("controls successfully synced!");
 
         // Pass completed ControlTemplate set to communicator
-        this.communicator.setTemplates(this.dataModel.control_templates);
+        this.communicator.setTemplates(this.dataModel.controls);
     }
+
 }
 
 let ncontrol = NControl.bootstrap();

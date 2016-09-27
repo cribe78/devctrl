@@ -121,6 +121,7 @@ function adminAuthCheck($do_logon = false) {
             adminAuthSetIdAndRedirect();
         }
 
+        errorResponse("Admin login required", 401);
         return false;
     }
 }

@@ -5,7 +5,7 @@ import * as ioMod from "socket.io";
 import * as http from "http";
 import * as debugMod from "debug";
 import * as mongo from "mongodb";
-import {IDCDataRequest} from "../shared/DCSerializable";
+import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
 import {DCDataModel} from "../shared/DCDataModel";
 
 let debug = debugMod("messenger");
@@ -17,6 +17,8 @@ let io :SocketIO.Server = ioMod(app);
 function handler(req: any, res: any) {
     res.writeHead(200);
     res.end("Hello World");
+
+    //TODO: add REST API for data functions
 }
 
 
@@ -59,10 +61,9 @@ class Messenger {
                         // Sanitize data by creating objects and serializing them
                         try {
                             let data = request[table][idx];
+                            data._id = (new mongo.ObjectID()).toString();
                             let obj = new Messenger.dataModel.types[table](data._id, data);
                             let doc = obj.getDataObject();
-                            delete doc._id;
-
                             addDocs.push(doc);
                         }
                         catch (e) {
@@ -98,9 +99,9 @@ class Messenger {
                     // Sanitize data by creating an object and serializing it
                     try {
                         let data = request[table];
+                        data._id = (new mongo.ObjectID()).toString();
                         let obj = new Messenger.dataModel.types[table](data._id, data);
                         doc = obj.getDataObject();
-                        delete doc._id;
                     }
                     catch (e) {
                         let errmsg = "invalid data received: " + e.message;
@@ -130,6 +131,11 @@ class Messenger {
         }
     }
 
+
+    static broadcastControlValues(request: any, fn: any) {
+        io.emit('control-updates', request);
+    }
+
     static getData(request: IDCDataRequest, fn: any) {
 
         debug("data requested from " + request.table);
@@ -150,13 +156,49 @@ class Messenger {
 
     static ioConnection(socket: SocketIO.Socket) {
         let clientIp = socket.request.connection.remoteAddress;
+        if (socket.request.headers['x-forwarded-for']) {
+            clientIp = socket.request.headers['x-forwarded-for'];
+        }
 
         debug('a user connected from ' + clientIp);
         socket.on('get-data', Messenger.getData);
         socket.on('add-data', Messenger.addData);
+        socket.on('update-data', Messenger.updateData);
+        socket.on('control-updates', Messenger.broadcastControlValues);
     }
 
+    static updateData(request: IDCDataUpdate, fn: any) {
+        let col = Messenger.mongodb.collection(request.table);
 
+        if (request.set._id) {
+            delete request.set._id;
+        }
+
+        col.updateOne({ _id : request._id }, { '$set' : request.set },
+            function(err, r) {
+                if (err) {
+                    mongoDebug(`update { request.table } error: { err.message }`);
+                    fn({error: err.message});
+
+                    return;
+                }
+
+                // Get the updated object and broadcast the changes.
+                let table = {};
+                col.find({_id: request._id}).forEach(
+                    function (doc) {
+                        table[doc._id] = doc;
+                    },
+                    function () {
+                        let data = {add: {}};
+                        data.add[request.table] = table;
+                        io.emit('control-data', data);
+                        fn(data);
+                    }
+                );
+            }
+        );
+    }
 }
 
 module.exports = new Messenger();

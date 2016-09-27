@@ -5,6 +5,8 @@
     "mongodb": "registry:npm/mongodb#2.1.0+20160721204323"
   },
   "globalDependencies": {
+    "core-js": "registry:dt/core-js#0.0.0+20160914114559",
+    "jasmine": "registry:dt/jasmine#2.2.0+20160621224255",
     "node": "registry:env/node#4.0.0+20160813135048",
     "socket.io": "registry:dt/socket.io#1.4.4+20160909205835",
     "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654"

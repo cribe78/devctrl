@@ -1,18 +1,20 @@
 import {
     Endpoint,
-    ControlTemplate,
     IndexedDataSet
 } from "../shared/Shared";
+import {Control} from "../shared/Control";
+import {ControlUpdateData} from "../shared/ControlUpdate";
 
 
 export interface IEndpointCommunicatorConfig {
     endpoint: Endpoint
+    controlUpdateCallback: (control: Control, value: any) => void;
 }
 
 
 export class EndpointCommunicator {
-    templatesByCtid: IndexedDataSet<ControlTemplate> = {};
-    templates: IndexedDataSet<ControlTemplate> = {};
+    controlsByCtid: IndexedDataSet<Control> = {};
+    controls: IndexedDataSet<Control> = {};
     config: IEndpointCommunicatorConfig;
 
     constructor() {
@@ -24,15 +26,19 @@ export class EndpointCommunicator {
         this.config = config;
     }
 
-    getControlTemplates() : IndexedDataSet<ControlTemplate> {
+    getControlTemplates() : IndexedDataSet<Control> {
         return {};
     }
 
-    setTemplates(templates: IndexedDataSet<ControlTemplate>) {
-        this.templates = templates;
+    handleControlUpdateRequest(request: ControlUpdateData) {
 
-        for (let id in templates) {
-            this.templatesByCtid[templates[id].ctid] = templates[id];
+    }
+
+    setTemplates(controls: IndexedDataSet<Control>) {
+        this.controls = controls;
+
+        for (let id in controls) {
+            this.controlsByCtid[controls[id].ctid] = controls[id];
         }
     }
 

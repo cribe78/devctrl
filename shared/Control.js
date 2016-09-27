@@ -10,58 +10,46 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DCSerializable_1 = require("./DCSerializable");
-var ControlTemplate_1 = require("./ControlTemplate");
+var Endpoint_1 = require("./Endpoint");
 var Control = (function (_super) {
     __extends(Control, _super);
     function Control(_id, data) {
         _super.call(this, _id);
         this.table = Control.tableStr;
-        this.requiredProperties = ['control_template_id', 'name', 'usertype', 'value', 'config'];
+        this.requiredProperties = [
+            'endpoint_id',
+            'ctid',
+            'name',
+            'usertype',
+            'control_type',
+            'poll',
+            'config',
+            'value'
+        ];
         if (data) {
             this.loadData(data);
         }
     }
-    Object.defineProperty(Control.prototype, "control_template", {
-        get: function () {
-            return this._control_template;
-        },
-        set: function (template) {
-            this.control_template_id = template._id;
-            this._control_template = template;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Control.prototype, "usertype", {
-        get: function () {
-            if (this._usertype) {
-                return this._usertype;
-            }
-            return this.control_template.usertype;
-        },
-        set: function (newType) {
-            this._usertype = newType;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Control.prototype.getDataObject = function () {
         return {
             _id: this._id,
-            control_template_id: this.control_template_id,
+            endpoint_id: this.endpoint_id,
+            ctid: this.ctid,
             name: this.name,
-            usertype: this._usertype,
-            value: this.value,
-            config: this.config
+            usertype: this.usertype,
+            control_type: this.control_type,
+            poll: this.poll,
+            config: this.config,
+            value: this.value
         };
     };
     Control.tableStr = "controls";
     Control.foreignKeys = [
         {
-            type: ControlTemplate_1.ControlTemplate,
-            fkObjProp: "control_template",
-            fkIdProp: "control_template_id",
-            fkTable: ControlTemplate_1.ControlTemplate.tableStr
+            type: Endpoint_1.Endpoint,
+            fkObjProp: "endpoint",
+            fkIdProp: "endpoint_id",
+            fkTable: Endpoint_1.Endpoint.tableStr
         }
     ];
     return Control;

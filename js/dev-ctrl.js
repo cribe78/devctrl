@@ -107,10 +107,6 @@ DevCtrl.Common.Resolve = {
         return DataService.getTablePromise('controls');
     },
 
-    loadControlTemplates: function(DataService) {
-        return DataService.getTablePromise('control_templates');
-    },
-
     loadRooms : function(DataService) {
         return DataService.getTablePromise('rooms');
     },
@@ -891,8 +887,32 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 return dataModel[table];
             },
 
+            guid : function() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                    return v.toString(16);
+                });
+            },
+
             isAdminAuthorized: function() {
                 return dataModel.user.admin;
+            },
+
+
+            /*
+             * loadControlUpdates is process separately from loadData, as loadControlUpdates is
+             * much more limited in the scope of changes to the data model
+             */
+            loadControlUpdates : function(updates) {
+                var i;
+                for (i = 0; i < updates.length; i++) {
+                    var update = updates[i];
+
+                    if (update.status == "observed" || update.status == "executed") {
+                        var control = self.getRowRef("controls", update.control_id);
+                        control.value = update.value;
+                    }
+                }
             },
 
 
@@ -1027,6 +1047,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 }
 
                 pendingUpdates[control.id] = $timeout(function(control, self) {
+                    /**
                     var resource = "control.php/" + control.id;
                     pendingDebounce = false;
 
@@ -1037,6 +1058,21 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                         .error(function (data) {
                             self.errorToast(data);
                         })
+                     **/
+
+                    var cuid = self.guid();
+                    var updates = [
+                        {
+                            _id: cuid,
+                            control_id: control.id,
+                            value: control.fields.value,
+                            type: "user",
+                            status: "requested",
+                            source: self.dataModel.client_id
+                        }
+                    ];
+
+                    messenger.emit('control-updates', updates);
                 }, 200, true, control, self);
             },
 
@@ -1045,6 +1081,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             // unless cancelled
 
             updateRow : function(row) {
+                /**
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
                 $http.put(resource, row.fields)
@@ -1054,6 +1091,18 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                     .error(function (data) {
                         self.errorToast(data);
                     });
+                 **/
+
+                var reqData = {
+                    table: row.tableName,
+                    _id : row.id,
+                    "set" : row.fields
+                };
+
+                messenger.emit('update-data', reqData, function(data) {
+                    console.log("data updated:" + data);
+                    self.loadData(data);
+                });
             }
         };
 
@@ -1061,6 +1110,10 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
         messenger.on('control-data', function(data) {
             self.loadData(data);
             //console.log("socket control data received");
+        });
+
+        messenger.on('control-updates', function(data) {
+            self.loadControlUpdates(data);
         });
 
         messenger.on('log-data', function(data) {
@@ -1198,23 +1251,15 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 if (this.panelContext && this.panelControl.fields.name !== '') {
                     return this.panelControl.fields.name;
                 }
-                else if (this.ctrl.fields.name != '') {
-                    return this.ctrl.fields.name;
-                }
                 else {
-                    return this.ctrl.foreign.control_templates.fields.name;
+                    return this.ctrl.fields.name;
                 }
             };
 
-            this.template = this.ctrl.foreign['control_templates'];
 
             this.config = function(key) {
                 if (angular.isObject(this.ctrl.fields.config) && angular.isDefined(this.ctrl.fields.config[key])) {
                     return this.ctrl.fields.config[key];
-                }
-
-                if (angular.isObject(this.template.fields.config) && angular.isDefined(this.template.fields.config[key])) {
-                    return this.template.fields.config[key];
                 }
             };
 
@@ -1225,7 +1270,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
             };
 
             this.appConfig = DataService.config;
-            this.type = this.template.fields.usertype;
+            this.type = this.ctrl.fields.usertype;
 
             this.enums = DataService.getTable('enums');
             this.enumVals = DataService.getTable('enum_vals');
@@ -1257,12 +1302,6 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 });
             };
 
-            this.editTemplateOptions = function($event) {
-                DataService.editEnum($event, null, self.template, {
-                    title: "Edit " + self.ctrlName() + " options"
-                });
-            };
-
 
 
             this.selectMenuItem = function(val) {
@@ -1276,9 +1315,6 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 var ret = {};
                 if (eid > 0) {
                     ret = self.enums.indexed[eid].referenced.enum_vals;
-                }
-                else if (self.template.fields.enum_id > 0) {
-                    ret = self.template.foreign.enums.referenced.enum_vals;
                 }
 
                 return ret;
@@ -1311,9 +1347,6 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 DataService.editRecord($event, self.ctrl.id, 'controls');
             };
 
-            this.editTemplate = function($event) {
-                DataService.editRecord($event, self.template.id, 'control_templates');
-            };
         },
         controllerAs: 'ctrl',
         templateUrl: 'ng/ctrl.html'
@@ -1654,8 +1687,8 @@ DevCtrl.Endpoint.Ctrl = ['$stateParams', 'DataService', 'MenuService',
 
         };
 
-        this.addTemplate = function($event) {
-            DataService.editRecord($event, '0', 'control_templates',
+        this.addControl = function($event) {
+            DataService.editRecord($event, '0', 'controls',
                 {
                     'endpoint_type_id' : self.obj.fields.endpoint_type_id
                 }
@@ -1678,7 +1711,6 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
         this.endpointTypes = DataService.getTable("endpoint_types");
         this.endpoints = DataService.getTable("endpoints");
         this.controls = DataService.getTable("controls");
-        this.control_templates = DataService.getTable("control_templates");
 
         this.newPanelControl = DataService.getNewRowRef("panel_controls");
         this.newPanelControl.fields.panel_id = this.panelId;
@@ -1689,10 +1721,6 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
 
         this.getControlName = function(row) {
             var ret = row.fields.name;
-
-            if (row.fields.name == '') {
-                ret = row.foreign.control_templates.fields.name;
-            }
 
             return ret;
         };
@@ -2026,7 +2054,7 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'MenuService', 'DataService', function(
                 angular.forEach(self.panelObj.referenced.panel_controls, function(pcontrol) {
                     var control = pcontrol.foreign.controls;
 
-                    if (control.foreign.control_templates.fields.usertype == 'switch') {
+                    if (control.fields.usertype == 'switch') {
                         control.fields.value = val;
                         DataService.updateControlValue(control);
                     }

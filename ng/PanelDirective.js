@@ -34,7 +34,7 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'MenuService', 'DataService', function(
                 angular.forEach(self.panelObj.referenced.panel_controls, function(pcontrol) {
                     var control = pcontrol.foreign.controls;
 
-                    if (control.foreign.control_templates.fields.usertype == 'switch') {
+                    if (control.fields.usertype == 'switch') {
                         control.fields.value = val;
                         DataService.updateControlValue(control);
                     }

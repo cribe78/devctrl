@@ -438,8 +438,32 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 return dataModel[table];
             },
 
+            guid : function() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                    return v.toString(16);
+                });
+            },
+
             isAdminAuthorized: function() {
                 return dataModel.user.admin;
+            },
+
+
+            /*
+             * loadControlUpdates is process separately from loadData, as loadControlUpdates is
+             * much more limited in the scope of changes to the data model
+             */
+            loadControlUpdates : function(updates) {
+                var i;
+                for (i = 0; i < updates.length; i++) {
+                    var update = updates[i];
+
+                    if (update.status == "observed" || update.status == "executed") {
+                        var control = self.getRowRef("controls", update.control_id);
+                        control.value = update.value;
+                    }
+                }
             },
 
 
@@ -574,6 +598,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 }
 
                 pendingUpdates[control.id] = $timeout(function(control, self) {
+                    /**
                     var resource = "control.php/" + control.id;
                     pendingDebounce = false;
 
@@ -584,6 +609,21 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                         .error(function (data) {
                             self.errorToast(data);
                         })
+                     **/
+
+                    var cuid = self.guid();
+                    var updates = [
+                        {
+                            _id: cuid,
+                            control_id: control.id,
+                            value: control.fields.value,
+                            type: "user",
+                            status: "requested",
+                            source: self.dataModel.client_id
+                        }
+                    ];
+
+                    messenger.emit('control-updates', updates);
                 }, 200, true, control, self);
             },
 
@@ -592,6 +632,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             // unless cancelled
 
             updateRow : function(row) {
+                /**
                 var resource = "data.php/" + row.tableName + "/" + row.id;
 
                 $http.put(resource, row.fields)
@@ -601,6 +642,18 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                     .error(function (data) {
                         self.errorToast(data);
                     });
+                 **/
+
+                var reqData = {
+                    table: row.tableName,
+                    _id : row.id,
+                    "set" : row.fields
+                };
+
+                messenger.emit('update-data', reqData, function(data) {
+                    console.log("data updated:" + data);
+                    self.loadData(data);
+                });
             }
         };
 
@@ -608,6 +661,10 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
         messenger.on('control-data', function(data) {
             self.loadData(data);
             //console.log("socket control data received");
+        });
+
+        messenger.on('control-updates', function(data) {
+            self.loadControlUpdates(data);
         });
 
         messenger.on('log-data', function(data) {

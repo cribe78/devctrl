@@ -18,10 +18,6 @@ DevCtrl.Common.Resolve = {
         return DataService.getTablePromise('controls');
     },
 
-    loadControlTemplates: function(DataService) {
-        return DataService.getTablePromise('control_templates');
-    },
-
     loadRooms : function(DataService) {
         return DataService.getTablePromise('rooms');
     },

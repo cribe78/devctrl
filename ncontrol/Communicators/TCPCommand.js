@@ -9,11 +9,11 @@ var TCPCommand = (function () {
         this.control_type = config.control_type;
         this.templateConfig = config.templateConfig;
     }
-    TCPCommand.prototype.deviceUpdateString = function (value) {
-        return this.cmdStr + " " + value;
-    };
     TCPCommand.prototype.deviceQueryString = function () {
         return this.cmdStr + "?";
+    };
+    TCPCommand.prototype.deviceUpdateString = function (control, update) {
+        return this.cmdStr + " " + update.value;
     };
     TCPCommand.prototype.getControlTemplates = function () {
         var ctid = this.endpoint_id + "-" + this.cmdStr;
@@ -25,14 +25,18 @@ var TCPCommand = (function () {
             name: this.name,
             control_type: this.control_type,
             poll: 0,
-            config: {}
+            config: this.templateConfig,
+            value: 0
         };
-        var templates = [new Shared_1.ControlTemplate(ctid, templateData)];
+        var templates = [new Shared_1.Control(ctid, templateData)];
         this.ctidList = [ctid];
         return templates;
     };
     TCPCommand.prototype.matchesDeviceString = function (devStr) {
         return false;
+    };
+    TCPCommand.prototype.parseControlValue = function (control, line) {
+        return line;
     };
     return TCPCommand;
 }());

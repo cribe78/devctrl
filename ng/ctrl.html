@@ -14,13 +14,6 @@
                         Control
                     </md-button>
                 </md-menu-item>
-                <md-menu-item>
-                    <md-button label="Template"
-                            ng-click="ctrl.editTemplate($event)">
-                        <md-icon md-font-set="material-icons">create</md-icon>
-                        Template
-                    </md-button>
-                </md-menu-item>
                 <md-menu-item ng-if="ctrl.panelContext">
                     <md-button ng-click="ctrl.editPanelControl($event)">
                         Edit Panel Control
@@ -31,13 +24,6 @@
                                ng-click="ctrl.editOptions()">
                         <md-icon md-font-set="material-icons">create</md-icon>
                         Control Options
-                    </md-button>
-                </md-menu-item>
-                <md-menu-item ng-if="ctrl.type == 'select' || ctrl.type == 'select-readonly'">
-                    <md-button aria-label="Template Options"
-                               ng-click="ctrl.editTemplateOptions()">
-                        <md-icon md-font-set="material-icons">create</md-icon>
-                        Template Options
                     </md-button>
                 </md-menu-item>
                 <md-menu-item>

@@ -12,8 +12,6 @@ import {
     EndpointTypeData,
     Control,
     ControlData,
-    ControlTemplate,
-    ControlTemplateData,
     DCSerializable,
     DCSerializableData,
     IDCForeignKeyDef
@@ -28,14 +26,12 @@ export class DCDataModel {
     endpoints : IndexedDataSet<Endpoint> = {};
     endpoint_types : IndexedDataSet<EndpointType> = {};
     controls : IndexedDataSet<Control> = {};
-    control_templates: IndexedDataSet<ControlTemplate> = {};
     debug: (message: any, ...args: any[]) => void;
 
     types = {
         endpoints : Endpoint,
         endpoint_type : EndpointType,
         controls : Control,
-        control_templates: ControlTemplate
     };
 
 
@@ -71,10 +67,6 @@ export class DCDataModel {
                     add.controls, this.controls, Control);
             }
 
-            if (add.control_templates) {
-                this.loadTableData<ControlTemplate, ControlTemplateData>(
-                    add.control_templates, this.control_templates, ControlTemplate);
-            }
 
             // Call indexForeignKeys if relevant tables have been updated
             if (add.endpoints || add.endpoint_types) {
@@ -83,9 +75,7 @@ export class DCDataModel {
             if (add.controls || add.control_templates) {
                 this.indexForeignKeys(this.controls, Control.foreignKeys);
             }
-            if (add.control_templates || add.endpoints) {
-                this.indexForeignKeys(this.control_templates, ControlTemplate.foreignKeys);
-            }
+
         }
     }
 

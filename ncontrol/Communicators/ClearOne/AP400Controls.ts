@@ -37,7 +37,7 @@ export let commands : IAP400CommandConfig[] = [
         cmdStr: "GATE",
         ctor: AP400GateCommand,
         control_type: "boolean",
-        usertype: "checkbox",
+        usertype: "switch",
         readonly: true
     },
  //   {
@@ -58,7 +58,7 @@ export let commands : IAP400CommandConfig[] = [
         ioList: chWchannels,
         ctor: ClearOneCommand,
         control_type: "range",
-        usertype: "meter",
+        usertype: "level",
         readonly: true
     }
 ];

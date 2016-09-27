@@ -11,6 +11,11 @@ export interface IDCDataRequest {
     params: any;
 }
 
+export interface IDCDataUpdate {
+    table: string,
+    _id: string,
+    "set": any
+}
 
 export interface DCSerializableData {
     _id: string

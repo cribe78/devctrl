@@ -1,18 +1,18 @@
 import {ClearOneCommand, IClearOneCommandConfig} from "./ClearOneCommand";
-import {ControlTemplate, ControlTemplateData} from "../../../shared/ControlTemplate";
+import {Control, ControlData} from "../../../shared/Control";
 
 export class AP400GateCommand extends ClearOneCommand {
 
 
-    getControlTemplates() : ControlTemplate[] {
-        let templates : ControlTemplate[] = [];
+    getControlTemplates() : Control[] {
+        let templates : Control[] = [];
         let micChannels = [1,2,3,4];
 
         this.ctidList = [];
 
         for (let m of micChannels) {
-            let ctid = this.endpoint_id + "." + this.cmdStr + m;
-            let templateData : ControlTemplateData = {
+            let ctid = this.endpoint_id + "-" + this.cmdStr + m;
+            let templateData : ControlData = {
                 _id: ctid,
                 ctid: ctid,
                 endpoint_id: this.endpoint_id,
@@ -20,10 +20,11 @@ export class AP400GateCommand extends ClearOneCommand {
                 usertype: this.usertype,
                 control_type: this.control_type,
                 poll: 0,
-                config: {}
+                config: {},
+                value: 0
             };
 
-            templates.push(new ControlTemplate(ctid, templateData));
+            templates.push(new Control(ctid, templateData));
             this.ctidList.push(ctid);
         }
 

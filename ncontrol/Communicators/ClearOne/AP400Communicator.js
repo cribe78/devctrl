@@ -18,11 +18,13 @@ var AP400Communicator = (function (_super) {
         debug("connecting to AP 400");
         _super.prototype.connect.call(this);
     };
-    /**
-     * Parse an output line from the device
-     * @param line
-     */
-    AP400Communicator.prototype.parseLine = function (line) {
+    AP400Communicator.prototype.preprocessLine = function (line) {
+        // Strip a leading prompt
+        var start = "AP 400> ";
+        if (line.substring(0, start.length) == start) {
+            return line.slice(start.length);
+        }
+        return line;
     };
     AP400Communicator.prototype.getControlTemplates = function () {
         this.buildCommandList();
@@ -30,10 +32,12 @@ var AP400Communicator = (function (_super) {
             var templateList = this.commands[cmd].getControlTemplates();
             for (var _i = 0, templateList_1 = templateList; _i < templateList_1.length; _i++) {
                 var tpl = templateList_1[_i];
-                this.controlTemplates[tpl._id] = tpl;
+                this.controls[tpl._id] = tpl;
+                this.controlsByCtid[tpl.ctid] = tpl;
+                this.commandsByTemplate[tpl.ctid] = this.commands[cmd];
             }
         }
-        return this.controlTemplates;
+        return this.controlsByCtid;
     };
     AP400Communicator.prototype.buildCommandList = function () {
         // First build a command list
@@ -47,7 +51,7 @@ var AP400Communicator = (function (_super) {
                 channel: '',
                 channelName: '',
                 device: this.device,
-                templateConfig: cmdDef.templateConfig
+                templateConfig: cmdDef.templateConfig || {}
             };
             if (cmdDef.updateTerminator) {
                 cmdConfig.updateTerminator = cmdDef.updateTerminator;

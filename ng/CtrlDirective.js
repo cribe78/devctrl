@@ -24,23 +24,15 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 if (this.panelContext && this.panelControl.fields.name !== '') {
                     return this.panelControl.fields.name;
                 }
-                else if (this.ctrl.fields.name != '') {
-                    return this.ctrl.fields.name;
-                }
                 else {
-                    return this.ctrl.foreign.control_templates.fields.name;
+                    return this.ctrl.fields.name;
                 }
             };
 
-            this.template = this.ctrl.foreign['control_templates'];
 
             this.config = function(key) {
                 if (angular.isObject(this.ctrl.fields.config) && angular.isDefined(this.ctrl.fields.config[key])) {
                     return this.ctrl.fields.config[key];
-                }
-
-                if (angular.isObject(this.template.fields.config) && angular.isDefined(this.template.fields.config[key])) {
-                    return this.template.fields.config[key];
                 }
             };
 
@@ -51,7 +43,7 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
             };
 
             this.appConfig = DataService.config;
-            this.type = this.template.fields.usertype;
+            this.type = this.ctrl.fields.usertype;
 
             this.enums = DataService.getTable('enums');
             this.enumVals = DataService.getTable('enum_vals');
@@ -83,12 +75,6 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 });
             };
 
-            this.editTemplateOptions = function($event) {
-                DataService.editEnum($event, null, self.template, {
-                    title: "Edit " + self.ctrlName() + " options"
-                });
-            };
-
 
 
             this.selectMenuItem = function(val) {
@@ -102,9 +88,6 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 var ret = {};
                 if (eid > 0) {
                     ret = self.enums.indexed[eid].referenced.enum_vals;
-                }
-                else if (self.template.fields.enum_id > 0) {
-                    ret = self.template.foreign.enums.referenced.enum_vals;
                 }
 
                 return ret;
@@ -137,9 +120,6 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
                 DataService.editRecord($event, self.ctrl.id, 'controls');
             };
 
-            this.editTemplate = function($event) {
-                DataService.editRecord($event, self.template.id, 'control_templates');
-            };
         },
         controllerAs: 'ctrl',
         templateUrl: 'ng/ctrl.html'

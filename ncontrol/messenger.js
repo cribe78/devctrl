@@ -12,6 +12,7 @@ var io = ioMod(app);
 function handler(req, res) {
     res.writeHead(200);
     res.end("Hello World");
+    //TODO: add REST API for data functions
 }
 var Messenger = (function () {
     function Messenger() {
@@ -41,9 +42,9 @@ var Messenger = (function () {
                         // Sanitize data by creating objects and serializing them
                         try {
                             var data = request[table][idx];
+                            data._id = (new mongo.ObjectID()).toString();
                             var obj = new Messenger.dataModel.types[table](data._id, data);
                             var doc = obj.getDataObject();
-                            delete doc._id;
                             addDocs_1.push(doc);
                         }
                         catch (e) {
@@ -74,9 +75,9 @@ var Messenger = (function () {
                     // Sanitize data by creating an object and serializing it
                     try {
                         var data = request[table];
+                        data._id = (new mongo.ObjectID()).toString();
                         var obj = new Messenger.dataModel.types[table](data._id, data);
                         doc = obj.getDataObject();
-                        delete doc._id;
                     }
                     catch (e) {
                         var errmsg = "invalid data received: " + e.message;
@@ -105,6 +106,9 @@ var Messenger = (function () {
             if (state_1 === "break") break;
         }
     };
+    Messenger.broadcastControlValues = function (request, fn) {
+        io.emit('control-updates', request);
+    };
     Messenger.getData = function (request, fn) {
         debug("data requested from " + request.table);
         var col = Messenger.mongodb.collection(request.table);
@@ -119,9 +123,37 @@ var Messenger = (function () {
     };
     Messenger.ioConnection = function (socket) {
         var clientIp = socket.request.connection.remoteAddress;
+        if (socket.request.headers['x-forwarded-for']) {
+            clientIp = socket.request.headers['x-forwarded-for'];
+        }
         debug('a user connected from ' + clientIp);
         socket.on('get-data', Messenger.getData);
         socket.on('add-data', Messenger.addData);
+        socket.on('update-data', Messenger.updateData);
+        socket.on('control-updates', Messenger.broadcastControlValues);
+    };
+    Messenger.updateData = function (request, fn) {
+        var col = Messenger.mongodb.collection(request.table);
+        if (request.set._id) {
+            delete request.set._id;
+        }
+        col.updateOne({ _id: request._id }, { '$set': request.set }, function (err, r) {
+            if (err) {
+                mongoDebug("update { request.table } error: { err.message }");
+                fn({ error: err.message });
+                return;
+            }
+            // Get the updated object and broadcast the changes.
+            var table = {};
+            col.find({ _id: request._id }).forEach(function (doc) {
+                table[doc._id] = doc;
+            }, function () {
+                var data = { add: {} };
+                data.add[request.table] = table;
+                io.emit('control-data', data);
+                fn(data);
+            });
+        });
     };
     return Messenger;
 }());

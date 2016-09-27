@@ -60,48 +60,6 @@ $g_schema = array(
             )
         )
     ),
-    'controls' => array(
-        'pk' => 'control_id',
-        'fk_name' => 'name',
-        'label' => 'Controls',
-        'foreign_keys' => array(
-            'control_endpoint_id' => 'endpoints',
-            'control_template_id' => 'control_templates',
-            'enum_id' => 'enums'
-        ),
-        'fields' => array(
-            array(
-                'name' => 'control_endpoint_id',
-                'type' => 'fk',
-                'label' => 'Control Endpoint'
-            ),
-            array(
-                'name' => 'control_template_id',
-                'type' => 'fk',
-                'label' => 'Control Template'
-            ),
-            array(
-                'name' => 'value',
-                'type' => 'string',
-                'label' => 'Value',
-            ),
-            array(
-                'name' => 'enum_id',
-                'type' => 'fk',
-                'label' => 'Enum',
-            ),
-            array(
-                'name' => 'name',
-                'type' => 'string',
-                'label' => 'Control Name'
-            ),
-            array(
-                'name' => 'config',
-                'type' => 'object',
-                'label' => 'Config'
-            )
-        )
-    ),
     'endpoints' => array(
         'pk' => 'control_endpoint_id',
         'fk_name' => 'name',
@@ -191,24 +149,29 @@ $g_schema = array(
             )
         )
     ),
-    'control_templates' => array(
-        'pk' => 'control_template_id',
+    'controls' => array(
+        'pk' => '_id',
         'fk_name' => 'command',
-        'label' => 'Control Templates',
+        'label' => 'Controls',
         'foreign_keys'=> array(
             'enum_id' => 'enums',
-            'endpoint_type_id' => 'endpoint_types'
+            'endpoint_id' => 'endpoints'
         ),
         'fields' => array(
             array(
-                'name' => 'endpoint_type_id',
+                'name' => 'endpoint_id',
                 'type' => 'fk',
-                'label' => 'Endpoint Type',
+                'label' => 'Endpoint',
+            ),
+            array(
+                'name' => 'ctid',
+                'type' => 'string',
+                'label' => 'CTID',
             ),
             array(
                 'name' => 'name',
                 'type' => 'string',
-                'label' => 'Control Template Name'
+                'label' => 'Name'
             ),
             array(
                 'name' => 'usertype',
@@ -219,11 +182,6 @@ $g_schema = array(
                 'name' => 'control_type',
                 'type' => 'enum',
                 'label' => 'Control Type',
-            ),
-            array(
-                'name' => 'command',
-                'type' => 'string',
-                'label' => 'Command',
             ),
             array(
                 'name' => 'enum_id',
@@ -239,6 +197,11 @@ $g_schema = array(
                 'name' => 'config',
                 'type' => 'object',
                 'label' => 'Default Config'
+            ),
+            array(
+                'name' => 'value',
+                'type' => 'string',
+                'label' => 'Value'
             )
         ),
 

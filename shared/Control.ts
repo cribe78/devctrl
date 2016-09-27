@@ -5,79 +5,76 @@
  */
 
 import {DCSerializableData, DCSerializable} from "./DCSerializable";
-import {ControlTemplate} from "./ControlTemplate";
+import {Endpoint} from "./Endpoint";
 
 export interface ControlData extends DCSerializableData{
-    control_template_id: string;
+    endpoint_id: string;
+    ctid: string;
     name: string;
     usertype: string;
-    value: any;
+    control_type: string;
+    poll: number;
     config: any;
+    value: any;
 }
 
 
 export class Control extends DCSerializable {
-    control_template_id: string;
-    private _control_template: ControlTemplate;
-    private _usertype: string;
-    value: any;
+    endpoint_id: string;
+    endpoint: Endpoint;
+    ctid: string;
     name: string;
+    usertype: string;
+    control_type: string;
+    poll: number;
     config: any;
+    value: any;
 
     static tableStr = "controls";
     table: string;
 
     static foreignKeys = [
         {
-            type: ControlTemplate,
-            fkObjProp: "control_template",
-            fkIdProp: "control_template_id",
-            fkTable: ControlTemplate.tableStr
+            type: Endpoint,
+            fkObjProp: "endpoint",
+            fkIdProp: "endpoint_id",
+            fkTable: Endpoint.tableStr
         }
     ];
 
     constructor(_id: string, data?: ControlData) {
         super(_id);
-
         this.table = Control.tableStr;
-        this.requiredProperties = ['control_template_id', 'name', 'usertype', 'value', 'config'];
+        this.requiredProperties = [
+            'endpoint_id',
+            'ctid',
+            'name',
+            'usertype',
+            'control_type',
+            'poll',
+            'config',
+            'value'
+        ];
+
 
         if (data) {
             this.loadData(data);
         }
     }
 
-    get control_template() : ControlTemplate {
-        return this._control_template;
-    }
-
-    set control_template(template: ControlTemplate) {
-        this.control_template_id = template._id;
-        this._control_template = template;
-    }
-
-    get usertype(): string {
-        if (this._usertype) {
-            return this._usertype;
-        }
-
-        return this.control_template.usertype;
-    }
-
-    set usertype(newType: string) {
-        this._usertype = newType;
-    }
-
 
     getDataObject() : ControlData {
         return {
             _id: this._id,
-            control_template_id: this.control_template_id,
+            endpoint_id: this.endpoint_id,
+            ctid: this.ctid,
             name: this.name,
-            usertype: this._usertype,
-            value: this.value,
-            config: this.config
-        };
+            usertype: this.usertype,
+            control_type: this.control_type,
+            poll: this.poll,
+            config: this.config,
+            value: this.value
+        }
     }
 }
 

@@ -6,7 +6,6 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
         this.endpointTypes = DataService.getTable("endpoint_types");
         this.endpoints = DataService.getTable("endpoints");
         this.controls = DataService.getTable("controls");
-        this.control_templates = DataService.getTable("control_templates");
 
         this.newPanelControl = DataService.getNewRowRef("panel_controls");
         this.newPanelControl.fields.panel_id = this.panelId;
@@ -17,10 +16,6 @@ DevCtrl.PanelControlSelector.Ctrl = ['$mdDialog', 'DataService',
 
         this.getControlName = function(row) {
             var ret = row.fields.name;
-
-            if (row.fields.name == '') {
-                ret = row.foreign.control_templates.fields.name;
-            }
 
             return ret;
         };

@@ -43,21 +43,7 @@ class AP400Communicator extends TCPCommunicator {
         return line;
     }
 
-    getControlTemplates() : IndexedDataSet<Control> {
-        this.buildCommandList();
 
-        for (let cmd in this.commands) {
-            let templateList = this.commands[cmd].getControlTemplates();
-
-            for (let tpl of templateList) {
-                this.controls[tpl._id] = tpl;
-                this.controlsByCtid[tpl.ctid] = tpl;
-                this.commandsByTemplate[tpl.ctid] = this.commands[cmd];
-            }
-        }
-
-        return this.controlsByCtid;
-    }
 
     buildCommandList() {
         // First build a command list

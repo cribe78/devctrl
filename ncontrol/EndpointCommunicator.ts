@@ -9,6 +9,7 @@ import {ControlUpdateData} from "../shared/ControlUpdate";
 export interface IEndpointCommunicatorConfig {
     endpoint: Endpoint
     controlUpdateCallback: (control: Control, value: any) => void;
+    statusUpdateCallback: (status: string) => void;
 }
 
 
@@ -21,6 +22,10 @@ export class EndpointCommunicator {
     }
 
     connect() {};
+
+    get endpoint_id() : string {
+        return this.config.endpoint._id;
+    }
 
     setConfig(config: IEndpointCommunicatorConfig) {
         this.config = config;

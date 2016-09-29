@@ -10,11 +10,13 @@ export interface ITCPCommandConfig {
     control_type: string;
     usertype: string;
     templateConfig: ITCPTemplateConfig;
+    poll?: number;
 }
 
 export interface ITCPTemplateConfig {
     min?: number;
     max?: number;
+    options?: any;
 
 }
 
@@ -27,6 +29,7 @@ export class TCPCommand {
     control_type: string;
     templateConfig: ITCPTemplateConfig;
     ctidList: string[];
+    poll: number = 0;
 
     constructor(config: ITCPCommandConfig) {
         this.cmdStr = config.cmdStr;
@@ -35,6 +38,10 @@ export class TCPCommand {
         this.usertype = config.usertype;
         this.control_type = config.control_type;
         this.templateConfig = config.templateConfig;
+
+        if (config.poll) {
+            this.poll = config.poll;
+        }
     }
 
 
@@ -55,7 +62,7 @@ export class TCPCommand {
             usertype: this.usertype,
             name: this.name,
             control_type: this.control_type,
-            poll: 0,
+            poll: this.poll,
             config: this.templateConfig,
             value: 0
         };

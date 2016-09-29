@@ -7,8 +7,8 @@
     <md-select placeholder="Select"
                ng-model="ctrl.ctrl.fields.value"
                ng-change="ctrl.updateValue()">
-        <md-option ng-value="obj.fields.value" ng-repeat="obj in ctrl.selectOptions() | toArray | filter: { fields : { enabled : 1 }}">
-            {{obj.fields.name}}
+        <md-option ng-value="value" ng-repeat="(value, name) in ctrl.selectOptions()">
+            {{name}}
         </md-option>
     </md-select>
 </div>

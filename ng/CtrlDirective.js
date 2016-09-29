@@ -83,14 +83,11 @@ DevCtrl.Ctrl.Directive  = ['DataService', 'MenuService', function(DataService, M
             };
 
             this.selectOptions = function() {
-                var eid = self.ctrl.fields.enum_id;
-
-                var ret = {};
-                if (eid > 0) {
-                    ret = self.enums.indexed[eid].referenced.enum_vals;
+                if (angular.isDefined(self.ctrl.fields.config.options)) {
+                    return self.ctrl.fields.config.options;
                 }
 
-                return ret;
+                return {};
             };
 
             this.selectValueName = function() {

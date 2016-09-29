@@ -28,7 +28,6 @@ var NControl = (function () {
             self.dataModel.loadData(data);
         });
         this.io.on('control-updates', function (data) {
-            debug("control-updates: " + data);
             self.handleControlUpdates(data);
         });
         debug("testString is " + config.testString);
@@ -102,7 +101,9 @@ var NControl = (function () {
             var update = data_1[_i];
             if (this.dataModel.controls[update.control_id]) {
                 var control = this.dataModel.controls[update.control_id];
-                if (control.endpoint_id && control.endpoint_id == this.endpoint._id) {
+                if (control.endpoint_id && control.endpoint_id == this.endpoint._id
+                    && update.status == "requested") {
+                    debug("control update: " + control.name + " : " + update.value);
                     this.communicator.handleControlUpdateRequest(update);
                 }
             }
@@ -120,6 +121,9 @@ var NControl = (function () {
             endpoint: this.endpoint,
             controlUpdateCallback: function (control, value) {
                 self.pushControlUpdate(control, value);
+            },
+            statusUpdateCallback: function (status) {
+                self.pushEndpointStatusUpdate(status);
             }
         });
         this.syncControls();
@@ -135,6 +139,14 @@ var NControl = (function () {
             source: this.endpoint._id
         };
         this.io.emit('control-updates', [update]);
+    };
+    NControl.prototype.pushEndpointStatusUpdate = function (status) {
+        var update = {
+            table: Shared_1.Endpoint.tableStr,
+            _id: this.endpoint._id,
+            "set": { status: status }
+        };
+        this.updateData(update, function () { });
     };
     NControl.prototype.syncControls = function () {
         this.syncControlsPassNumber++;

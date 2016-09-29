@@ -6,6 +6,13 @@ var EndpointCommunicator = (function () {
     }
     EndpointCommunicator.prototype.connect = function () { };
     ;
+    Object.defineProperty(EndpointCommunicator.prototype, "endpoint_id", {
+        get: function () {
+            return this.config.endpoint._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
     EndpointCommunicator.prototype.setConfig = function (config) {
         this.config = config;
     };

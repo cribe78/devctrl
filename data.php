@@ -4,6 +4,8 @@ require("sub/head.php");
 checkpoint("post head");
 $db = getMongoDb();
 
+errorResponse("You can't use this no more");
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $table = isset($_GET['table']) ? $_GET['table'] : false;
 
@@ -28,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    adminAuthCheck();
+    adminAuthCheck(true);
     $post = getPostData();
     $table = getTableName($post['tableName']);
 
@@ -60,7 +62,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    adminAuthCheck();
+    adminAuthCheck(true);
     $keys = getPathKeys();
     $post = getPostData();
 
@@ -80,7 +82,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     jsonResponse($resp);
 }
 elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    adminAuthCheck();
+    adminAuthCheck(true);
     $keys = getPathKeys();
 
     $table = getTableName($keys[0]);

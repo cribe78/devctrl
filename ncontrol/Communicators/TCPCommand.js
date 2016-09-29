@@ -2,12 +2,16 @@
 var Shared_1 = require("../../shared/Shared");
 var TCPCommand = (function () {
     function TCPCommand(config) {
+        this.poll = 0;
         this.cmdStr = config.cmdStr;
         this.name = config.cmdStr;
         this.endpoint_id = config.endpoint_id;
         this.usertype = config.usertype;
         this.control_type = config.control_type;
         this.templateConfig = config.templateConfig;
+        if (config.poll) {
+            this.poll = config.poll;
+        }
     }
     TCPCommand.prototype.deviceQueryString = function () {
         return this.cmdStr + "?";
@@ -24,7 +28,7 @@ var TCPCommand = (function () {
             usertype: this.usertype,
             name: this.name,
             control_type: this.control_type,
-            poll: 0,
+            poll: this.poll,
             config: this.templateConfig,
             value: 0
         };

@@ -7,7 +7,7 @@ import {
 } from "../shared/Shared";
 
 import { EndpointCommunicator } from "./EndpointCommunicator";
-import {IDCDataRequest} from "../shared/DCSerializable";
+import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
 import * as debugMod from "debug";
 import {Control} from "../shared/Control";
 import {ControlUpdateData} from "../shared/ControlUpdate"; // see https://www.npmjs.com/package/debug
@@ -58,7 +58,6 @@ class NControl {
         });
 
         this.io.on('control-updates', function(data) {
-            debug("control-updates: " + data);
             self.handleControlUpdates(data);
         });
 
@@ -105,7 +104,7 @@ class NControl {
         });
     }
 
-    private updateData(reqData: any, then: () => void ) {
+    private updateData(reqData: IDCDataUpdate, then: () => void ) {
         var self = this;
         this.io.emit('update-data', reqData, function(data) {
             if ( data.error ) {
@@ -151,7 +150,9 @@ class NControl {
             if (this.dataModel.controls[update.control_id]) {
                 let control = this.dataModel.controls[update.control_id];
 
-                if (control.endpoint_id && control.endpoint_id == this.endpoint._id) {
+                if (control.endpoint_id && control.endpoint_id == this.endpoint._id
+                && update.status == "requested") {
+                    debug(`control update: ${ control.name } : ${ update.value }`);
                     this.communicator.handleControlUpdateRequest(update);
                 }
             }
@@ -173,6 +174,9 @@ class NControl {
             endpoint: this.endpoint,
             controlUpdateCallback: function(control, value) {
                 self.pushControlUpdate(control, value);
+            },
+            statusUpdateCallback: function(status) {
+                self.pushEndpointStatusUpdate(status);
             }
         });
 
@@ -192,6 +196,16 @@ class NControl {
         };
 
         this.io.emit('control-updates', [update]);
+    }
+
+    pushEndpointStatusUpdate(status: string) {
+        let update : IDCDataUpdate = {
+            table: Endpoint.tableStr,
+            _id: this.endpoint._id,
+            "set" : { status: status }
+        };
+
+        this.updateData(update, () => {});
     }
 
     syncControls() {

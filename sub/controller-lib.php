@@ -121,7 +121,6 @@ function adminAuthCheck($do_logon = false) {
             adminAuthSetIdAndRedirect();
         }
 
-        errorResponse("Admin login required", 401);
         return false;
     }
 }
@@ -615,24 +614,6 @@ function publishDataUpdate($update) {
 
 $insert_log = '';
 
-function queueCommand($control) {
-    /**
-    global $mysqli;
-
-    $queue_command = $mysqli->prepare(
-        "insert into command_queue
-        (control_id, status, value)
-            value (?, 'QUEUED', ?)");
-
-    $queue_command->bind_param('is', $control['control_id'], $control['value']);
-    if (! $queue_command->execute()) {
-        error_log("execute queue command error: {$mysqli->error}");
-    }
-
-    
-    error_log("command queued: {$control['control_id']} : {$control['value']}");
-     * */
-}
 
 
 function sanitizeId($id) {

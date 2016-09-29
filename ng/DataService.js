@@ -69,30 +69,30 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             dataModel : dataModel,
             schema : schema,
             addRow : function(row, callback) {
-                $http.post("data.php", row)
-                    .then(
-                        function(response) {
-                            var newId = Object.keys(response.data.add[row.tableName])[0];
-                            console.log("new record " + newId + "added to " + row.tableName);
+                var req = {};
+                req[row.tableName] = [row.fields];
+                messenger.emit('add-data', req, function(response) {
+                    if (response.error) {
+                        self.errorToast(data);
+                        return;
+                    }
+                    var newId = Object.keys(response.data.add[row.tableName])[0];
+                    console.log("new record " + newId + "added to " + row.tableName);
 
-                            self.loadData(response.data);
+                    self.loadData(response.data);
 
-                            var record = dataModel[row.tableName].indexed[newId];
+                    var record = dataModel[row.tableName].indexed[newId];
 
-                            angular.forEach(row, function(value, key) {
-                                if (key != 'table') {
-                                    row[key] = null;
-                                }
-                            });
-
-                            if (angular.isFunction(callback)) {
-                                callback(record);
-                            }
-                        },
-                        function (response) {
-                            self.errorToast(response.data);
+                    angular.forEach(row, function(value, key) {
+                        if (key != 'tableName') {
+                            row[key] = null;
                         }
-                )
+                    });
+
+                    if (angular.isFunction(callback)) {
+                        callback(record);
+                    }
+                });
             },
 
             dialogClose : function() {
@@ -272,7 +272,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 var tSchema = self.getSchema(tableName);
 
                 angular.forEach(tSchema.fields, function(value, name) {
-                    newRow.fields[name] = '';
+                    newRow.fields[value.name] = '';
                 });
 
                 return newRow;
@@ -461,7 +461,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
 
                     if (update.status == "observed" || update.status == "executed") {
                         var control = self.getRowRef("controls", update.control_id);
-                        control.value = update.value;
+                        control.fields.value = update.value;
                     }
                 }
             },
@@ -598,18 +598,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
                 }
 
                 pendingUpdates[control.id] = $timeout(function(control, self) {
-                    /**
-                    var resource = "control.php/" + control.id;
-                    pendingDebounce = false;
-
-                    $http.put(resource, control.fields)
-                        .success(function(data) {
-                            self.loadData(data);
-                        })
-                        .error(function (data) {
-                            self.errorToast(data);
-                        })
-                     **/
 
                     var cuid = self.guid();
                     var updates = [
@@ -632,17 +620,6 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             // unless cancelled
 
             updateRow : function(row) {
-                /**
-                var resource = "data.php/" + row.tableName + "/" + row.id;
-
-                $http.put(resource, row.fields)
-                    .success(function(data) {
-                        self.loadData(data);
-                    })
-                    .error(function (data) {
-                        self.errorToast(data);
-                    });
-                 **/
 
                 var reqData = {
                     table: row.tableName,

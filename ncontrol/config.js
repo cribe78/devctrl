@@ -3,12 +3,13 @@ var fs = require('fs');
 var config = {
   "wsUrl" : "https://devctrl.dwi.ufl.edu/",
   "testString" : "default",
-  "endpointId" : "57d9a94ff88bacb050374753",
+  "endpointId" : "57ed0698fc6aa2353d684793",
   "mongoHost" : "localhost",
   "mongoPort" : 27017,
   "mongoDB" : "devctrl-dev",
   "ioPort" : 2880,
-  "updatePort" : 2881
+  "updatePort" : 2881,
+  "endpointPassword" : "DWCONTROL"
 };
 
 var customConfig = {};

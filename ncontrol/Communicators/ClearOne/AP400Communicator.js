@@ -26,19 +26,6 @@ var AP400Communicator = (function (_super) {
         }
         return line;
     };
-    AP400Communicator.prototype.getControlTemplates = function () {
-        this.buildCommandList();
-        for (var cmd in this.commands) {
-            var templateList = this.commands[cmd].getControlTemplates();
-            for (var _i = 0, templateList_1 = templateList; _i < templateList_1.length; _i++) {
-                var tpl = templateList_1[_i];
-                this.controls[tpl._id] = tpl;
-                this.controlsByCtid[tpl.ctid] = tpl;
-                this.commandsByTemplate[tpl.ctid] = this.commands[cmd];
-            }
-        }
-        return this.controlsByCtid;
-    };
     AP400Communicator.prototype.buildCommandList = function () {
         // First build a command list
         for (var cmdIdx in AP400Controls_1.commands) {

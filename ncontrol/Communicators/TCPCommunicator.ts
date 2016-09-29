@@ -19,18 +19,22 @@ export class TCPCommunicator extends EndpointCommunicator {
     connected: boolean = false;
     commands: IndexedDataSet<TCPCommand> = {};
     commandsByTemplate: IndexedDataSet<TCPCommand> = {};
-    lineTerminator = '\r\n';
+    inputLineTerminator = '\r\n';
+    outputLineTerminator = '\r\n';
     socketEncoding = 'utf8';
     inputBuffer: string = '';
     pollTimer: any = 0;
     backoffTime: number = 1000;
+    expectedResponses: [string, () => any][] = [];
 
 
     constructor() {
         super();
     }
 
+    buildCommandList() {
 
+    }
 
     connect() {
         let self = this;
@@ -44,7 +48,8 @@ export class TCPCommunicator extends EndpointCommunicator {
         };
         this.socket = net.connect(connectOpts, function() {
             debug("connected to " + connectOpts.host + ":" + connectOpts.port);
-            self.connected = true;
+
+            self.doDeviceLogon();
         });
 
         this.socket.on('data', function(data) {
@@ -65,7 +70,24 @@ export class TCPCommunicator extends EndpointCommunicator {
         this.backoffTime = 1000;
     }
 
+    doDeviceLogon() {
+        this.connected = true;
+    };
+
+
     getControlTemplates() : IndexedDataSet<Control> {
+        this.buildCommandList();
+
+        for (let cmd in this.commands) {
+            let templateList = this.commands[cmd].getControlTemplates();
+
+            for (let tpl of templateList) {
+                this.controls[tpl._id] = tpl;
+                this.controlsByCtid[tpl.ctid] = tpl;
+                this.commandsByTemplate[tpl.ctid] = this.commands[cmd];
+            }
+        }
+
         return this.controlsByCtid;
     }
 
@@ -79,14 +101,43 @@ export class TCPCommunicator extends EndpointCommunicator {
 
         let updateStr = command.deviceUpdateString(control, request);
         debug("sending update: " + updateStr);
-        this.socket.write(updateStr + this.lineTerminator);
+        this.socket.write(updateStr + this.outputLineTerminator);
+    }
+
+
+    matchLineToCommand(line: string) : TCPCommand | boolean {
+        for (let cmdStr in this.commands) {
+            let cmd = this.commands[cmdStr];
+
+            if (cmd.matchesDeviceString(line)) {
+                debug("read: " + line + ", matches cmd " + cmd.name);
+                return cmd;
+            }
+        }
+
+        return false;
+    }
+
+    matchLineToExpectedResponse(line: string) : boolean {
+        for (let idx = 0; idx < this.expectedResponses.length; idx++) {
+            let eresp = this.expectedResponses[idx];
+            if (line.search(eresp[0]) > -1 ) {
+                debug(`${line} matched expected response "${eresp[0]}" at [${idx}]`);
+                eresp[1]();
+
+                this.expectedResponses = this.expectedResponses.slice(idx + 1);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     onData(data: any) {
         let strData = String(data);
 
         this.inputBuffer += strData;
-        let lines = this.inputBuffer.split(this.lineTerminator);
+        let lines = this.inputBuffer.split(this.inputLineTerminator);
 
         while (lines.length > 1) {
             //debug("data recieved: " + lines[0]);
@@ -129,7 +180,7 @@ export class TCPCommunicator extends EndpointCommunicator {
                 if (cmd) {
                     let queryStr = cmd.deviceQueryString();
                     debug("sending query: " + queryStr);
-                    this.socket.write(queryStr + this.lineTerminator);
+                    this.socket.write(queryStr + this.outputLineTerminator);
                 }
                 else {
                     debug("command not found for poll control " + control.ctid);
@@ -144,35 +195,37 @@ export class TCPCommunicator extends EndpointCommunicator {
 
     processLine(line: string) {
         line = this.preprocessLine(line);
+
+        //Ignore empty lines
+        if (line == '') return;
+
+        // Check line against expected responses
+        if (this.matchLineToExpectedResponse(line)) {
+            return;
+        };
+
         // Match line to a command
-        let matched = false;
-        for (let cmdStr in this.commands) {
-            let cmd = this.commands[cmdStr];
+        let match = this.matchLineToCommand(line);
+        //TODO: match error strings
 
-            if (cmd.matchesDeviceString(line)) {
-                matched = true;
-                debug("read: " + line + ", matches cmd " + cmd.name);
+        if (match) {
+            let cmd = <TCPCommand>match;
+            for (let ctid of cmd.ctidList) {
+                let control = this.controlsByCtid[ctid];
 
-                for (let ctid of cmd.ctidList) {
-                    let control =  this.controlsByCtid[ctid];
+                let val = cmd.parseControlValue(control, line);
 
-                    let val = cmd.parseControlValue(control, line);
-
-                    if (control.value != val ) {
-                        this.config.controlUpdateCallback(control, val);
-                        control.value = val;
-                    }
+                if (control.value != val) {
+                    debug(`control update: ${control.name} = ${val}`);
+                    this.config.controlUpdateCallback(control, val);
+                    control.value = val;
                 }
-
-                break;
             }
-        }
 
-        if (! matched) {
-            debug("read, unmatched: " + line );
+            this.connectionConfirmed();
         }
         else {
-            this.connectionConfirmed();
+            debug("read, unmatched: " + line );
         }
     }
 

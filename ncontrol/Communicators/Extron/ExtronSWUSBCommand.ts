@@ -1,6 +1,6 @@
 import {TCPCommand} from "../TCPCommand";
-import {Control} from "../../../shared/Control";
-import {ControlUpdateData} from "../../../shared/ControlUpdate";
+import {Control} from "../../shared/Control";
+import {ControlUpdateData} from "../../shared/ControlUpdate";
 
 export class ExtronSWUSBCommand extends TCPCommand {
 

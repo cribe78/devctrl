@@ -1,16 +1,13 @@
 "use strict";
 
 import * as io from "socket.io-client";
-import {
-    Endpoint,
-    DCDataModel
-} from "../shared/Shared";
-
+import {DCDataModel} from "./shared/DCDataModel";
 import { EndpointCommunicator } from "./EndpointCommunicator";
-import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
-import * as debugMod from "debug";
-import {Control} from "../shared/Control";
-import {ControlUpdateData} from "../shared/ControlUpdate"; // see https://www.npmjs.com/package/debug
+import {IDCDataRequest, IDCDataUpdate} from "./shared/DCSerializable";
+import * as debugMod from "debug"; // see https://www.npmjs.com/package/debug
+import {Control} from "./shared/Control";
+import {ControlUpdateData} from "./shared/ControlUpdate";
+import {Endpoint, EndpointStatus} from "./shared/Endpoint";
 
 let debug = debugMod('ncontrol');
 
@@ -192,13 +189,14 @@ class NControl {
             value: value,
             type: "device",
             status: "observed",
-            source: this.endpoint._id
+            source: this.endpoint._id,
+            ephemeral: control.ephemeral
         };
 
         this.io.emit('control-updates', [update]);
     }
 
-    pushEndpointStatusUpdate(status: string) {
+    pushEndpointStatusUpdate(status: EndpointStatus) {
         let update : IDCDataUpdate = {
             table: Endpoint.tableStr,
             _id: this.endpoint._id,

@@ -6,6 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var TCPCommunicator_1 = require("../TCPCommunicator");
 var ExtronDXPCommand_1 = require("./ExtronDXPCommand");
+var Endpoint_1 = require("../../shared/Endpoint");
 var outputs = {};
 var inputs = {};
 for (var i = 1; i <= 8; i++) {
@@ -24,8 +25,13 @@ var ExtronDXPCommunicator = (function (_super) {
         // Video/Audio Tie Commands
         for (var i in outputs) {
             // Video Output command
-            var config = {
+            var vidoutConfig = {
                 cmdStr: "Out" + i + "Vid",
+                cmdQueryStr: i + "%",
+                cmdQueryResponseRE: /(\d)/,
+                cmdUpdateTemplate: '{value}*' + i + '%',
+                cmdUpdateResponseTemplate: 'Out' + i + ' In{value} Vid',
+                cmdReportRE: 'Out' + i + ' In(\\d) Vid',
                 endpoint_id: this.endpoint_id,
                 control_type: "string",
                 usertype: "select",
@@ -35,16 +41,37 @@ var ExtronDXPCommunicator = (function (_super) {
                 dxpCmdType: "tie-video",
                 channelNum: i
             };
-            this.commands[config.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(config);
-            // Modify and create audio command
-            config.cmdStr = "Out" + i + "Aud";
-            config.dxpCmdType = "tie-audio";
-            this.commands[config.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(config);
+            this.commands[vidoutConfig.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(vidoutConfig);
         }
-        //Video/Audio Mute Commands
         for (var i in outputs) {
-            var config = {
+            // Audio Output command
+            var audoutConfig = {
+                cmdStr: "Out" + i + "Aud",
+                cmdQueryStr: i + "$",
+                cmdQueryResponseRE: /(\d)/,
+                cmdUpdateTemplate: '{value}*' + i + '$',
+                cmdUpdateResponseTemplate: 'Out' + i + ' In{value} Aud',
+                cmdReportRE: 'Out' + i + ' In(\d) Aud',
+                endpoint_id: this.endpoint_id,
+                control_type: "string",
+                usertype: "select",
+                templateConfig: {
+                    options: inputs
+                },
+                dxpCmdType: "tie-audio",
+                channelNum: i
+            };
+            this.commands[audoutConfig.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(audoutConfig);
+        }
+        for (var i in outputs) {
+            //Video/Audio Mute Commands
+            var vmuteConfig = {
                 cmdStr: "Vmt" + i,
+                cmdQueryStr: i + "B",
+                cmdQueryResponseRE: '(0|1)',
+                cmdUpdateTemplate: i + "*{value}B",
+                cmdUpdateResponseTemplate: "Vmt" + i + "*{value}",
+                cmdReportRE: 'Vmt' + i + '*(0|1)',
                 endpoint_id: this.endpoint_id,
                 control_type: "boolean",
                 usertype: "switch",
@@ -52,15 +79,29 @@ var ExtronDXPCommunicator = (function (_super) {
                 dxpCmdType: "mute-video",
                 channelNum: i
             };
-            this.commands[config.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(config);
-            // Modify and create audio command
-            config.cmdStr = "Amt" + i;
-            config.dxpCmdType = "mute-audio";
-            this.commands[config.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(config);
+            this.commands[vmuteConfig.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(vmuteConfig);
+        }
+        for (var i in outputs) {
+            var amuteConfig = {
+                cmdStr: "Amt" + i,
+                cmdQueryStr: i + "Z",
+                cmdQueryResponseRE: '(0|1)',
+                cmdUpdateTemplate: i + "*{value}Z",
+                cmdUpdateResponseTemplate: "Amt" + i + "*{value}",
+                cmdReportRE: new RegExp('Amt' + i + '*(0|1)'),
+                endpoint_id: this.endpoint_id,
+                control_type: "boolean",
+                usertype: "switch",
+                templateConfig: {},
+                dxpCmdType: "mute-audio",
+                channelNum: i
+            };
+            this.commands[amuteConfig.cmdStr] = new ExtronDXPCommand_1.ExtronDXPCommand(amuteConfig);
         }
         //Device Status Command
         var statusConfig = {
             cmdStr: "status",
+            cmdQueryStr: "S",
             endpoint_id: this.endpoint_id,
             control_type: "string",
             usertype: "readonly",
@@ -78,15 +119,20 @@ var ExtronDXPCommunicator = (function (_super) {
             function () {
                 _this.socket.write(_this.endpointPassword + "\r");
                 _this.expectedResponses.push([
-                    "Login Administrator",
+                    "Login (Administrator|User)",
                     function () {
                         _this.connected = true;
-                        _this.config.statusUpdateCallback("online");
+                        _this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
+                        _this.online();
                     }
                 ]);
             }
         ]);
     };
+    /*
+    * This implementation should be more efficient than the default implementation
+    * which checks every command individually
+     */
     ExtronDXPCommunicator.prototype.matchLineToCommand = function (line) {
         var matches = line.match(ExtronDXPCommand_1.ExtronDXPCommand.tieResponseRE);
         if (matches) {

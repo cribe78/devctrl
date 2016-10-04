@@ -1,6 +1,6 @@
 import {TCPCommand, ITCPCommandConfig} from "../TCPCommand";
-import {Control} from "../../../shared/Control";
-import {ControlUpdate, ControlUpdateData} from "../../../shared/ControlUpdate";
+import {Control} from "../../shared/Control";
+import {ControlUpdateData} from "../../shared/ControlUpdate";
 
 export interface IClearOneCommandConfig extends ITCPCommandConfig {
     channel: string;
@@ -33,23 +33,35 @@ export class ClearOneCommand extends TCPCommand {
         this.device = config.device;
     }
 
-    matchesDeviceString(devStr: string) : boolean {
-        let matchStr = this.deviceQueryString();
+    matchesReport(devStr: string) : boolean {
+        let matchStr = this.queryString();
         let matchLen = matchStr.length;
         return devStr.substring(0, matchLen) == matchStr;
     }
 
 
-    deviceQueryString() {
+    queryString() {
         return `${ this.device } ${ this.cmdStr }`;
     }
 
-    deviceUpdateString(control: Control, update: ControlUpdateData) {
+    queryResponseMatchString() {
+        return this.queryString + '.*';
+    }
+
+    updateString(control: Control, update: ControlUpdateData) {
+        return this.updateResponseMatchString(update);
+    }
+
+    updateResponseMatchString(update: ControlUpdateData) {
         return `${ this.device } ${ this.cmdStr } ${ update.value } ${ this.updateTerminator }`;
     }
 
-    parseControlValue(control: Control, line: string) : any {
-        let qStr = this.deviceQueryString();
+    parseQueryResponse(control: Control, line: string) : any {
+        return this.parseReportValue(control, line);
+    }
+
+    parseReportValue(control: Control, line: string) : any {
+        let qStr = this.queryString();
         let val = line.slice(qStr.length);
 
         // String a trailing " A", indicating an absolute level

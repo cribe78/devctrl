@@ -3,10 +3,13 @@
 
 import * as ioMod from "socket.io";
 import * as http from "http";
+import * as url from "url";
 import * as debugMod from "debug";
 import * as mongo from "mongodb";
-import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
-import {DCDataModel} from "../shared/DCDataModel";
+import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "./shared/DCSerializable";
+import {DCDataModel} from "./shared/DCDataModel";
+import {ControlUpdateData} from "./shared/ControlUpdate";
+import {Control} from "./shared/Control";
 
 let debug = debugMod("messenger");
 let mongoDebug = debugMod("mongodb");
@@ -15,10 +18,56 @@ let app = http.createServer(handler);
 let io :SocketIO.Server = ioMod(app);
 
 function handler(req: any, res: any) {
-    res.writeHead(200);
-    res.end("Hello World");
 
-    //TODO: add REST API for data functions
+
+
+    let parts = url.parse(req.url);
+    let pathComponents = parts.pathname.split("/");
+
+    debug(`http request: ${parts.pathname}`);
+
+    if (pathComponents[0] == '') {
+        pathComponents= pathComponents.slice(1);
+    }
+
+    let [api, endpoint, ...path] = pathComponents;
+
+    //TODO: implement REST API for all data functions
+    if (api == "api") {
+        if (endpoint == "data") {
+            if (req.method == 'DELETE') {
+                let [table, _id] = path;
+
+                Messenger.deleteData({ table: table, _id: _id}, function(data) {
+                    if (data.error) {
+                        res.writeHead(400);
+                        res.end(JSON.stringify(data));
+                        return;
+                    }
+
+                    res.writeHead(200);
+                    res.end(JSON.stringify(data));
+                    return;
+                });
+
+            }
+        }
+        else {
+            res.writeHead(400);
+            res.end("api endpoint not recognized");
+            return;
+        }
+    }
+    else {
+        res.writeHead(200);
+        res.end("API missed");
+        return;
+    }
+
+    debug(`api call to ${req.url} unhandled`);
+    res.writeHead(500);
+    res.end("unhandled api call");
+
 }
 
 
@@ -132,9 +181,53 @@ class Messenger {
     }
 
 
-    static broadcastControlValues(request: any, fn: any) {
-        io.emit('control-updates', request);
+    static broadcastControlValues(updates: ControlUpdateData[], fn: any) {
+        io.emit('control-updates', updates);
+
+        let controls = Messenger.mongodb.collection(Control.tableStr);
+
+        // Commit value to database for non-ephemeral controls
+        for (let update of updates) {
+            if (update.status == "observed" && ! update.ephemeral) {
+                controls.updateOne({ _id: update.control_id}, { '$set' : { value: update.value}});
+            }
+        }
     }
+
+    static deleteData(data: IDCDataDelete, fn: any) {
+        debug(`delete ${data._id} from ${data.table}`);
+
+        if (! Messenger.dataModel.types[data.table]) {
+            let errmsg = `deleteData: invalid table name ${data.table}`;
+            debug(errmsg);
+            fn({ error: errmsg});
+            return;
+        }
+
+        let col = Messenger.mongodb.collection(data.table);
+
+        col.deleteOne({ _id : data._id }, function(err, res) {
+            if (err) {
+                let errmsg = "deleteData: mongo error: " + err.message;
+                debug(errmsg);
+                fn({error: errmsg});
+                return;
+            }
+
+            if (res.result.n == 0) {
+                let errmsg = "deleteData: doc not found: " + data._id;
+                debug(errmsg);
+                fn({error: errmsg})
+                return;
+            }
+
+            let resp = { "delete": data }
+            fn(resp);
+            io.emit("control-data", resp);
+        });
+
+    }
+
 
     static getData(request: IDCDataRequest, fn: any) {
 

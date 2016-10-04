@@ -2,10 +2,8 @@ import { TCPCommunicator } from "../TCPCommunicator";
 import { commands } from "./AP400Controls";
 import {TCPCommand, ITCPTemplateConfig} from "../TCPCommand";
 import {IClearOneCommandConfig, ClearOneCommand} from "./ClearOneCommand";
-import {IndexedDataSet} from "../../../shared/DCDataModel";
 
 import * as debugMod from "debug";
-import {Control} from "../../../shared/Control";
 let debug = debugMod("comms");
 
 

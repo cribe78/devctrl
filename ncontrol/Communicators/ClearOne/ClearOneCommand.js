@@ -22,19 +22,28 @@ var ClearOneCommand = (function (_super) {
         }
         this.device = config.device;
     }
-    ClearOneCommand.prototype.matchesDeviceString = function (devStr) {
-        var matchStr = this.deviceQueryString();
+    ClearOneCommand.prototype.matchesReport = function (devStr) {
+        var matchStr = this.queryString();
         var matchLen = matchStr.length;
         return devStr.substring(0, matchLen) == matchStr;
     };
-    ClearOneCommand.prototype.deviceQueryString = function () {
+    ClearOneCommand.prototype.queryString = function () {
         return this.device + " " + this.cmdStr;
     };
-    ClearOneCommand.prototype.deviceUpdateString = function (control, update) {
+    ClearOneCommand.prototype.queryResponseMatchString = function () {
+        return this.queryString + '.*';
+    };
+    ClearOneCommand.prototype.updateString = function (control, update) {
+        return this.updateResponseMatchString(update);
+    };
+    ClearOneCommand.prototype.updateResponseMatchString = function (update) {
         return this.device + " " + this.cmdStr + " " + update.value + " " + this.updateTerminator;
     };
-    ClearOneCommand.prototype.parseControlValue = function (control, line) {
-        var qStr = this.deviceQueryString();
+    ClearOneCommand.prototype.parseQueryResponse = function (control, line) {
+        return this.parseReportValue(control, line);
+    };
+    ClearOneCommand.prototype.parseReportValue = function (control, line) {
+        var qStr = this.queryString();
         var val = line.slice(qStr.length);
         // String a trailing " A", indicating an absolute level
         if (val.substring(val.length - 2) == " A") {

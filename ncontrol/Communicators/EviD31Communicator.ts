@@ -1,5 +1,4 @@
 import { TCPCommunicator } from "./TCPCommunicator";
-import { Endpoint } from "../../shared/Shared";
 
 class EviD31Communicator extends TCPCommunicator {
     constructor() {

@@ -1,6 +1,7 @@
 import { TCPCommunicator } from "../TCPCommunicator";
 import {IExtronDXPCommandConfig, ExtronDXPCommand} from "./ExtronDXPCommand";
 import {TCPCommand} from "../TCPCommand";
+import {EndpointStatus} from "../../shared/Endpoint";
 
 let outputs = {};
 let inputs = {};
@@ -20,8 +21,13 @@ class ExtronDXPCommunicator extends TCPCommunicator {
         // Video/Audio Tie Commands
         for (let i in outputs) {
             // Video Output command
-            let config : IExtronDXPCommandConfig = {
+            let vidoutConfig:IExtronDXPCommandConfig = {
                 cmdStr: "Out" + i + "Vid",
+                cmdQueryStr: i + "%",
+                cmdQueryResponseRE: /(\d)/,
+                cmdUpdateTemplate: '{value}*' + i + '%',
+                cmdUpdateResponseTemplate: 'Out' + i + ' In{value} Vid',
+                cmdReportRE: 'Out' + i + ' In(\\d) Vid',
                 endpoint_id: this.endpoint_id,
                 control_type: "string",
                 usertype: "select",
@@ -32,19 +38,38 @@ class ExtronDXPCommunicator extends TCPCommunicator {
                 channelNum: i
             };
 
-            this.commands[config.cmdStr] = new ExtronDXPCommand(config);
-
-            // Modify and create audio command
-            config.cmdStr = "Out" + i + "Aud";
-            config.dxpCmdType = "tie-audio";
-
-            this.commands[config.cmdStr] = new ExtronDXPCommand(config);
+            this.commands[vidoutConfig.cmdStr] = new ExtronDXPCommand(vidoutConfig);
         }
-
-        //Video/Audio Mute Commands
         for (let i in outputs) {
-            let config : IExtronDXPCommandConfig = {
+            // Audio Output command
+            let audoutConfig : IExtronDXPCommandConfig = {
+                cmdStr: "Out" + i + "Aud",
+                cmdQueryStr: i + "$",
+                cmdQueryResponseRE: /(\d)/,
+                cmdUpdateTemplate: '{value}*' + i + '$',
+                cmdUpdateResponseTemplate: 'Out' + i + ' In{value} Aud',
+                cmdReportRE: 'Out' + i + ' In(\d) Aud',
+                endpoint_id: this.endpoint_id,
+                control_type: "string",
+                usertype: "select",
+                templateConfig: {
+                    options: inputs
+                },
+                dxpCmdType: "tie-audio",
+                channelNum: i
+            };
+
+            this.commands[audoutConfig.cmdStr] = new ExtronDXPCommand(audoutConfig);
+        }
+        for (let i in outputs) {
+            //Video/Audio Mute Commands
+            let vmuteConfig : IExtronDXPCommandConfig = {
                 cmdStr: "Vmt" + i,
+                cmdQueryStr: i + "B",
+                cmdQueryResponseRE: '(0|1)',
+                cmdUpdateTemplate: `${i}*{value}B`,
+                cmdUpdateResponseTemplate: `Vmt${i}*{value}`,
+                cmdReportRE: 'Vmt' + i + '*(0|1)',
                 endpoint_id: this.endpoint_id,
                 control_type: "boolean",
                 usertype: "switch",
@@ -53,18 +78,33 @@ class ExtronDXPCommunicator extends TCPCommunicator {
                 channelNum: i
             };
 
-            this.commands[config.cmdStr] = new ExtronDXPCommand(config);
 
-            // Modify and create audio command
-            config.cmdStr = "Amt" + i;
-            config.dxpCmdType = "mute-audio";
+            this.commands[vmuteConfig.cmdStr] = new ExtronDXPCommand(vmuteConfig);
+        }
+        for (let i in outputs) {
+            let amuteConfig : IExtronDXPCommandConfig = {
+                cmdStr: "Amt" + i,
+                cmdQueryStr: i + "Z",
+                cmdQueryResponseRE: '(0|1)',
+                cmdUpdateTemplate: `${i}*{value}Z`,
+                cmdUpdateResponseTemplate: `Amt${i}*{value}`,
+                cmdReportRE: new RegExp('Amt' + i + '*(0|1)'),
+                endpoint_id: this.endpoint_id,
+                control_type: "boolean",
+                usertype: "switch",
+                templateConfig: {},
+                dxpCmdType: "mute-audio",
+                channelNum: i
+            };
 
-            this.commands[config.cmdStr] = new ExtronDXPCommand(config);
+            this.commands[amuteConfig.cmdStr] = new ExtronDXPCommand(amuteConfig);
+
         }
 
         //Device Status Command
         let statusConfig : IExtronDXPCommandConfig = {
             cmdStr: "status",
+            cmdQueryStr: "S",
             endpoint_id: this.endpoint_id,
             control_type: "string",
             usertype: "readonly",
@@ -83,17 +123,24 @@ class ExtronDXPCommunicator extends TCPCommunicator {
             () => {
                 this.socket.write(this.endpointPassword + "\r");
                 this.expectedResponses.push([
-                    "Login Administrator",
+                    "Login (Administrator|User)",
                     () => {
                         this.connected = true;
-                        this.config.statusUpdateCallback("online");
+                        this.config.statusUpdateCallback(EndpointStatus.Online);
+                        this.online();
                     }
                 ])
             }
         ]);
+
+
     }
 
 
+    /*
+    * This implementation should be more efficient than the default implementation
+    * which checks every command individually
+     */
     matchLineToCommand(line: string) : TCPCommand | boolean {
         let matches =  line.match(ExtronDXPCommand.tieResponseRE);
         if (matches) {

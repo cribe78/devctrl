@@ -1,15 +1,16 @@
 import {
     Endpoint,
     IndexedDataSet
-} from "../shared/Shared";
-import {Control} from "../shared/Control";
-import {ControlUpdateData} from "../shared/ControlUpdate";
+} from "./shared/Shared";
+import {Control} from "./shared/Control";
+import {ControlUpdateData} from "./shared/ControlUpdate";
+import {EndpointStatus} from "./shared/Endpoint";
 
 
 export interface IEndpointCommunicatorConfig {
     endpoint: Endpoint
     controlUpdateCallback: (control: Control, value: any) => void;
-    statusUpdateCallback: (status: string) => void;
+    statusUpdateCallback: (status: EndpointStatus) => void;
 }
 
 

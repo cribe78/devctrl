@@ -100,7 +100,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             },
 
             deleteRow : function(row) {
-                var resource = "data.php/" + row.tableName + "/" + row.id;
+                var resource = "api/data/" + row.tableName + "/" + row.id;
 
                 // Check for foreign key constraints
                 var referencedTable = false;

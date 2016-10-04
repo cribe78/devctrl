@@ -80,6 +80,10 @@ function adminAuthCheck($do_logon = false) {
 
         if (time() > $admin_session['expiration']) {
             if ($do_logon) {
+                /* @var $locusService OAuth\OAuth2\Service\Locus */
+                $locusService = getLocusService();
+                $resp['location'] = (string)$locusService->getAuthorizationUri();
+
                 errorResponse("Admin authorization expired {$admin_user['glid']}", 401);
             }
 
@@ -299,7 +303,7 @@ function getMongoDb() {
     static $m = false;
 
     if (! $m) {
-        $m = new MongoClient();
+        $m = new MongoDB\Client("mongodb://localhost:27017");
     }
 
     $db = $m->$g_mongodb;
@@ -494,6 +498,9 @@ function jsonResponse($response = "", $response_code = 200) {
     }
     elseif ($response_code === 401) {
         header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized', true, 401);
+    }
+    elseif ($response_code === 410) {
+        header($_SERVER['SERVER_PROTOCOL'] . ' 410 Gone', true, 410);
     }
 
     header('Content-type: application/json');

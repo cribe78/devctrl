@@ -2,17 +2,54 @@
 "use strict";
 var ioMod = require("socket.io");
 var http = require("http");
+var url = require("url");
 var debugMod = require("debug");
 var mongo = require("mongodb");
-var DCDataModel_1 = require("../shared/DCDataModel");
+var DCDataModel_1 = require("./shared/DCDataModel");
+var Control_1 = require("./shared/Control");
 var debug = debugMod("messenger");
 var mongoDebug = debugMod("mongodb");
 var app = http.createServer(handler);
 var io = ioMod(app);
 function handler(req, res) {
-    res.writeHead(200);
-    res.end("Hello World");
-    //TODO: add REST API for data functions
+    var parts = url.parse(req.url);
+    var pathComponents = parts.pathname.split("/");
+    debug("http request: " + parts.pathname);
+    if (pathComponents[0] == '') {
+        pathComponents = pathComponents.slice(1);
+    }
+    var api = pathComponents[0], endpoint = pathComponents[1], path = pathComponents.slice(2);
+    //TODO: implement REST API for all data functions
+    if (api == "api") {
+        if (endpoint == "data") {
+            if (req.method == 'DELETE') {
+                var table = path[0], _id = path[1];
+                Messenger.deleteData({ table: table, _id: _id }, function (data) {
+                    if (data.error) {
+                        res.writeHead(400);
+                        res.end(JSON.stringify(data));
+                        return;
+                    }
+                    res.writeHead(200);
+                    res.end(JSON.stringify(data));
+                    return;
+                });
+            }
+        }
+        else {
+            res.writeHead(400);
+            res.end("api endpoint not recognized");
+            return;
+        }
+    }
+    else {
+        res.writeHead(200);
+        res.end("API missed");
+        return;
+    }
+    debug("api call to " + req.url + " unhandled");
+    res.writeHead(500);
+    res.end("unhandled api call");
 }
 var Messenger = (function () {
     function Messenger() {
@@ -106,8 +143,43 @@ var Messenger = (function () {
             if (state_1 === "break") break;
         }
     };
-    Messenger.broadcastControlValues = function (request, fn) {
-        io.emit('control-updates', request);
+    Messenger.broadcastControlValues = function (updates, fn) {
+        io.emit('control-updates', updates);
+        var controls = Messenger.mongodb.collection(Control_1.Control.tableStr);
+        // Commit value to database for non-ephemeral controls
+        for (var _i = 0, updates_1 = updates; _i < updates_1.length; _i++) {
+            var update = updates_1[_i];
+            if (update.status == "observed" && !update.ephemeral) {
+                controls.updateOne({ _id: update.control_id }, { '$set': { value: update.value } });
+            }
+        }
+    };
+    Messenger.deleteData = function (data, fn) {
+        debug("delete " + data._id + " from " + data.table);
+        if (!Messenger.dataModel.types[data.table]) {
+            var errmsg = "deleteData: invalid table name " + data.table;
+            debug(errmsg);
+            fn({ error: errmsg });
+            return;
+        }
+        var col = Messenger.mongodb.collection(data.table);
+        col.deleteOne({ _id: data._id }, function (err, res) {
+            if (err) {
+                var errmsg = "deleteData: mongo error: " + err.message;
+                debug(errmsg);
+                fn({ error: errmsg });
+                return;
+            }
+            if (res.result.n == 0) {
+                var errmsg = "deleteData: doc not found: " + data._id;
+                debug(errmsg);
+                fn({ error: errmsg });
+                return;
+            }
+            var resp = { "delete": data };
+            fn(resp);
+            io.emit("control-data", resp);
+        });
     };
     Messenger.getData = function (request, fn) {
         debug("data requested from " + request.table);

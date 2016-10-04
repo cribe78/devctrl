@@ -1,14 +1,15 @@
 "use strict";
 var io = require("socket.io-client");
-var Shared_1 = require("../shared/Shared");
+var DCDataModel_1 = require("./shared/DCDataModel");
 var EndpointCommunicator_1 = require("./EndpointCommunicator");
-var debugMod = require("debug");
-var Control_1 = require("../shared/Control");
+var debugMod = require("debug"); // see https://www.npmjs.com/package/debug
+var Control_1 = require("./shared/Control");
+var Endpoint_1 = require("./shared/Endpoint");
 var debug = debugMod('ncontrol');
 var NControl = (function () {
     function NControl() {
         this.syncControlsPassNumber = 0;
-        this.dataModel = new Shared_1.DCDataModel();
+        this.dataModel = new DCDataModel_1.DCDataModel();
         this.dataModel.debug = debugMod("dataModel");
     }
     NControl.bootstrap = function () {
@@ -79,7 +80,7 @@ var NControl = (function () {
     };
     NControl.prototype.getEndpointConfig = function () {
         var self = this;
-        self.endpoint = self.dataModel.getItem(self.config.endpointId, Shared_1.Endpoint.tableStr);
+        self.endpoint = self.dataModel.getItem(self.config.endpointId, Endpoint_1.Endpoint.tableStr);
         var reqData = self.endpoint.itemRequestData();
         self.getData(reqData, self.getEndpointTypeConfig);
     };
@@ -136,13 +137,14 @@ var NControl = (function () {
             value: value,
             type: "device",
             status: "observed",
-            source: this.endpoint._id
+            source: this.endpoint._id,
+            ephemeral: control.ephemeral
         };
         this.io.emit('control-updates', [update]);
     };
     NControl.prototype.pushEndpointStatusUpdate = function (status) {
         var update = {
-            table: Shared_1.Endpoint.tableStr,
+            table: Endpoint_1.Endpoint.tableStr,
             _id: this.endpoint._id,
             "set": { status: status }
         };

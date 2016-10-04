@@ -95,18 +95,6 @@ $g_schema = array(
                 'input_disabled' => true
             ),
             array(
-                'name' => 'daemon_port',
-                'type' => 'int',
-                'label' => 'Daemon Port',
-                'input_disabled' => true
-            ),
-            array(
-                'name' => 'daemon_pid',
-                'type' => 'int',
-                'label' => 'Daemon Pid',
-                'input_disabled' => true
-            ),
-            array(
                 'name' => 'enabled',
                 'type' => 'bool',
                 'label' => 'Enabled?',

@@ -3,7 +3,7 @@ var fs = require('fs');
 var config = {
   "wsUrl" : "https://devctrl.dwi.ufl.edu/",
   "testString" : "default",
-  "endpointId" : "57ed0698fc6aa2353d684793",
+  "endpointId" : "57ee8aaaad74d31275995a75",
   "mongoHost" : "localhost",
   "mongoPort" : 27017,
   "mongoDB" : "devctrl-dev",

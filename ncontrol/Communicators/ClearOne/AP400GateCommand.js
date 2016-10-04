@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var ClearOneCommand_1 = require("./ClearOneCommand");
-var Control_1 = require("../../../shared/Control");
+var Control_1 = require("../../shared/Control");
 var AP400GateCommand = (function (_super) {
     __extends(AP400GateCommand, _super);
     function AP400GateCommand() {

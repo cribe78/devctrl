@@ -11,11 +11,12 @@
 ],
 "repositories" : [
     {
-        "type": "vcs",
-        "url": "git@bitbucket.org:ufcoe/phpoauthlib.git"
+        "type": "composer",
+        "url": "https://packages.education.ufl.edu"
     }
 ],
 "require" : {
-        "ufcoe/oauth": "dev-master"
+        "ufcoe/oauth": "dev-master",
+        "mongodb/mongodb": "^1.0"
     }
 }

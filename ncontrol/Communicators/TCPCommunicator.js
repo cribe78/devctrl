@@ -7,6 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var EndpointCommunicator_1 = require("../EndpointCommunicator");
 var net = require("net");
 var debugMod = require("debug");
+var Endpoint_1 = require("../shared/Endpoint");
 var debug = debugMod("comms");
 var TCPCommunicator = (function (_super) {
     __extends(TCPCommunicator, _super);
@@ -37,6 +38,10 @@ var TCPCommunicator = (function (_super) {
             debug("connected to " + connectOpts.host + ":" + connectOpts.port);
             self.doDeviceLogon();
         });
+        this.socket.on('error', function (e) {
+            debug("caught socket error: " + e.message);
+            self.onEnd();
+        });
         this.socket.on('data', function (data) {
             self.onData(data);
         });
@@ -54,8 +59,31 @@ var TCPCommunicator = (function (_super) {
     };
     TCPCommunicator.prototype.doDeviceLogon = function () {
         this.connected = true;
+        this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
+        this.online();
     };
     ;
+    TCPCommunicator.prototype.executeCommandQuery = function (cmd) {
+        var _this = this;
+        if (!cmd.queryString()) {
+            return;
+        }
+        var queryStr = cmd.queryString();
+        debug("sending query: " + queryStr);
+        this.socket.write(queryStr + this.outputLineTerminator);
+        this.expectedResponses.push([
+            cmd.queryResponseMatchString(),
+            function (line) {
+                for (var _i = 0, _a = cmd.ctidList; _i < _a.length; _i++) {
+                    var ctid = _a[_i];
+                    var control = _this.controlsByCtid[ctid];
+                    var val = cmd.parseQueryResponse(control, line);
+                    _this.setControlValue(control, val);
+                }
+                _this.connectionConfirmed();
+            }
+        ]);
+    };
     TCPCommunicator.prototype.getControlTemplates = function () {
         this.buildCommandList();
         for (var cmd in this.commands) {
@@ -70,19 +98,26 @@ var TCPCommunicator = (function (_super) {
         return this.controlsByCtid;
     };
     TCPCommunicator.prototype.handleControlUpdateRequest = function (request) {
+        var _this = this;
         if (!this.connected) {
             return;
         }
         var control = this.controls[request.control_id];
         var command = this.commandsByTemplate[control.ctid];
-        var updateStr = command.deviceUpdateString(control, request);
+        var updateStr = command.updateString(control, request);
         debug("sending update: " + updateStr);
         this.socket.write(updateStr + this.outputLineTerminator);
+        this.expectedResponses.push([
+            command.updateResponseMatchString(request),
+            function (line) {
+                _this.setControlValue(control, request.value);
+            }
+        ]);
     };
     TCPCommunicator.prototype.matchLineToCommand = function (line) {
         for (var cmdStr in this.commands) {
             var cmd = this.commands[cmdStr];
-            if (cmd.matchesDeviceString(line)) {
+            if (cmd.matchesReport(line)) {
                 debug("read: " + line + ", matches cmd " + cmd.name);
                 return cmd;
             }
@@ -94,7 +129,7 @@ var TCPCommunicator = (function (_super) {
             var eresp = this.expectedResponses[idx];
             if (line.search(eresp[0]) > -1) {
                 debug(line + " matched expected response \"" + eresp[0] + "\" at [" + idx + "]");
-                eresp[1]();
+                eresp[1](line);
                 this.expectedResponses = this.expectedResponses.slice(idx + 1);
                 return true;
             }
@@ -116,12 +151,19 @@ var TCPCommunicator = (function (_super) {
         var self = this;
         debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
         this.connected = false;
+        this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Offline);
         setTimeout(function () {
             self.connect();
         }, this.backoffTime);
         if (this.backoffTime < 20000) {
             this.backoffTime = this.backoffTime * 2;
         }
+    };
+    /**
+     *  Functions to perform when device connection has been confirmed
+     */
+    TCPCommunicator.prototype.online = function () {
+        this.queryAll();
     };
     TCPCommunicator.prototype.poll = function () {
         if (!this.connected) {
@@ -133,9 +175,7 @@ var TCPCommunicator = (function (_super) {
             if (control.poll) {
                 var cmd = this.commandsByTemplate[control.ctid];
                 if (cmd) {
-                    var queryStr = cmd.deviceQueryString();
-                    debug("sending query: " + queryStr);
-                    this.socket.write(queryStr + this.outputLineTerminator);
+                    this.executeCommandQuery(cmd);
                 }
                 else {
                     debug("command not found for poll control " + control.ctid);
@@ -155,7 +195,6 @@ var TCPCommunicator = (function (_super) {
         if (this.matchLineToExpectedResponse(line)) {
             return;
         }
-        ;
         // Match line to a command
         var match = this.matchLineToCommand(line);
         //TODO: match error strings
@@ -164,17 +203,36 @@ var TCPCommunicator = (function (_super) {
             for (var _i = 0, _a = cmd.ctidList; _i < _a.length; _i++) {
                 var ctid = _a[_i];
                 var control = this.controlsByCtid[ctid];
-                var val = cmd.parseControlValue(control, line);
-                if (control.value != val) {
-                    debug("control update: " + control.name + " = " + val);
-                    this.config.controlUpdateCallback(control, val);
-                    control.value = val;
-                }
+                var val = cmd.parseReportValue(control, line);
+                this.setControlValue(control, val);
             }
             this.connectionConfirmed();
         }
         else {
             debug("read, unmatched: " + line);
+        }
+    };
+    /**
+     * Query all controls, regardless of poll setting.
+     *
+     * Override this method to exclude polling of certain controls
+     */
+    TCPCommunicator.prototype.queryAll = function () {
+        for (var cmdStr in this.commands) {
+            this.executeCommandQuery(this.commands[cmdStr]);
+        }
+    };
+    TCPCommunicator.prototype.setControlValue = function (control, val) {
+        if (control.value != val) {
+            if (typeof val == 'object') {
+                // Don't send update if nothing will change
+                if (JSON.stringify(control.value) == JSON.stringify(val)) {
+                    return;
+                }
+            }
+            debug("control update: " + control.name + " = " + val);
+            this.config.controlUpdateCallback(control, val);
+            control.value = val;
         }
     };
     TCPCommunicator.prototype.setTemplates = function (templates) {

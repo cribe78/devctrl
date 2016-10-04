@@ -549,7 +549,7 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             },
 
             deleteRow : function(row) {
-                var resource = "data.php/" + row.tableName + "/" + row.id;
+                var resource = "api/data/" + row.tableName + "/" + row.id;
 
                 // Check for foreign key constraints
                 var referencedTable = false;
@@ -2064,29 +2064,29 @@ DevCtrl.Panel.Directive  = ['$mdDialog', 'MenuService', 'DataService', function(
 // ../ng/DevCtrlApp.js
 
 DevCtrl.App = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
-    .factory('DataService', DevCtrl.DataService.factory)
-    .factory('MenuService', DevCtrl.MenuService.factory)
-    .directive('ctrl', DevCtrl.Ctrl.Directive)
-    .directive('coeMenu', DevCtrl.Menu.Directive)
-    .directive('devctrlPanel', DevCtrl.Panel.Directive)
-    .directive('fkSelect', DevCtrl.FkSelect.Directive)
-    .directive('enumSelect', DevCtrl.EnumSelect.Directive)
-    .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
-    .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
-    .directive('devctrlAdminOnly', DevCtrl.AdminOnly.Directive)
-    .directive('devctrlEndpointStatus', DevCtrl.EndpointStatus.Directive)
-    .directive('devctrlToolbar', DevCtrl.Toolbar.Directive)
-    .controller('MainCtrl', DevCtrl.MainCtrl)
-    .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
-    .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
-    .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
-    .controller('LogCtrl', DevCtrl.Log.Ctrl)
-    .controller('CtrlLog', DevCtrl.CtrlLog.Ctrl)
-    .controller('TableCtrl', DevCtrl.Table.Ctrl)
-    .controller('RecordCtrl', DevCtrl.Record.Ctrl)
-    .controller('RoomCtrl', DevCtrl.Room.Ctrl)
-    .controller('RoomsCtrl', DevCtrl.Rooms.Ctrl)
-    .config(DevCtrl.stateConfig)
+ //   .factory('DataService', DevCtrl.DataService.factory)
+ //   .factory('MenuService', DevCtrl.MenuService.factory)
+ //   .directive('ctrl', DevCtrl.Ctrl.Directive)
+ //   .directive('coeMenu', DevCtrl.Menu.Directive)
+ //   .directive('devctrlPanel', DevCtrl.Panel.Directive)
+ //   .directive('fkSelect', DevCtrl.FkSelect.Directive)
+ //   .directive('enumSelect', DevCtrl.EnumSelect.Directive)
+ //   .directive('devctrlSlider2d', DevCtrl.Slider2d.Directive)
+ //   .directive('devctrlObjectEditor', DevCtrl.ObjectEditor.Directive)
+ //   .directive('devctrlAdminOnly', DevCtrl.AdminOnly.Directive)
+ //   .directive('devctrlEndpointStatus', DevCtrl.EndpointStatus.Directive)
+ //   .directive('devctrlToolbar', DevCtrl.Toolbar.Directive)
+ //   .controller('MainCtrl', DevCtrl.MainCtrl)
+ //   .controller('EnumEditorCtrl', DevCtrl.EnumEditor.Ctrl)
+ //   .controller('PanelControlSelectorCtrl', DevCtrl.PanelControlSelector.Ctrl)
+ //   .controller('EndpointCtrl', DevCtrl.Endpoint.Ctrl)
+ //   .controller('LogCtrl', DevCtrl.Log.Ctrl)
+ //   .controller('CtrlLog', DevCtrl.CtrlLog.Ctrl)
+ //   .controller('TableCtrl', DevCtrl.Table.Ctrl)
+ //   .controller('RecordCtrl', DevCtrl.Record.Ctrl)
+ //   .controller('RoomCtrl', DevCtrl.Room.Ctrl)
+ //  .controller('RoomsCtrl', DevCtrl.Rooms.Ctrl)
+ //   .config(DevCtrl.stateConfig)
 
 //state change debugging
     .run (['$rootScope', function($rootScope) {

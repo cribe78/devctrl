@@ -4,7 +4,7 @@ require("sub/head.php");
 checkpoint("post head");
 $db = getMongoDb();
 
-errorResponse("You can't use this no more");
+errorResponse("You can't use this no more", 410);
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $table = isset($_GET['table']) ? $_GET['table'] : false;

@@ -1,0 +1,53 @@
+<div ng-if="! main.menu.narrowMode()"
+     ng-show="main.menu.isSidenavOpen()"
+     class="dc-sidenav md-sidenav-left md-whiteframe-z2"
+     layout="column">
+    <md-toolbar layout="row"  layout-align="start center" class="md-accent">
+        <md-button ng-click="main.menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
+            <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
+        </md-button>
+        <span flex class="text-display-1 md-accent md-hue-1"><?=$g_title?></span>
+    </md-toolbar>
+    <md-content flex role="navigation" class="md-accent md-hue-1">
+        <coe-menu items="main.menu.items"></coe-menu>
+    </md-content>
+</div>
+<md-sidenav ng-if="main.menu.narrowMode()"
+            class="md-sidenav-left md-whiteframe-z2 "
+            layout="column"
+            md-component-id="left">
+    <md-toolbar layout="row"  layout-align="start center" class="md-accent">
+        <md-button ng-click="main.menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
+            <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
+        </md-button>
+        <span flex class="text-display-1 md-accent md-hue-1">DWI DevCtrl</span>
+    </md-toolbar>
+    <md-content flex role="navigation" class="md-accent md-hue-1">
+        <coe-menu items="main.menu.items"></coe-menu>
+    </md-content>
+</md-sidenav>
+<div layout="column" flex>
+    <devctrl-toolbar></devctrl-toolbar>
+    <md-content ng-if="main.menu.narrowMode()"
+                layout="column"
+                flex
+                layout-margin
+                id="content"
+                class="devctrl-main-content">
+        <ui-view></ui-view>
+    </md-content>
+    <md-content ng-if="! main.menu.narrowMode()"
+                layout="column"
+                layout-align="start center"
+                flex
+                layout-margin
+                id="content"
+                ng-style="main.menu.backgroundImageStyle()">
+        <md-card class="devctrl-main-card">
+            <md-card-content>
+                <ui-view></ui-view>
+            </md-card-content>
+        </md-card>
+    </md-content>
+</div>
+</body>

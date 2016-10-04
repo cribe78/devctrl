@@ -1,0 +1,68 @@
+"use strict";
+var admin_only_directive_1 = require("./admin-only.directive");
+var DataService_1 = require("./DataService");
+var MenuService_1 = require("./MenuService");
+var StateConfig_1 = require("./StateConfig");
+var CtrlDirective_1 = require("./CtrlDirective");
+var TableCtrl_1 = require("./TableCtrl");
+var LogCtrl_1 = require("./LogCtrl");
+var RecordCtrl_1 = require("./RecordCtrl");
+var EnumEditorCtrl_1 = require("./EnumEditorCtrl");
+var CtrlLogCtrl_1 = require("./CtrlLogCtrl");
+var MenuDirective_1 = require("./MenuDirective");
+var PanelDirective_1 = require("./PanelDirective");
+var PanelControlSelectorCtrl_1 = require("./PanelControlSelectorCtrl");
+var FkSelectDirective_1 = require("./FkSelectDirective");
+var EnumSelectDirective_1 = require("./EnumSelectDirective");
+var Slider2dDirective_1 = require("./Slider2dDirective");
+var ObjectEditorDirective_1 = require("./ObjectEditorDirective");
+var EndpointStatusDirective_1 = require("./EndpointStatusDirective");
+var ToolbarDirective_1 = require("./ToolbarDirective");
+var MainCtrl_1 = require("./MainCtrl");
+var EndpointCtrl_1 = require("./EndpointCtrl");
+var RoomCtrl_1 = require("./RoomCtrl");
+var RoomsCtrl_1 = require("./RoomsCtrl");
+exports.DevCtrlApp = angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
+    .factory('DataService', DataService_1.DataServiceFactory)
+    .factory('MenuService', MenuService_1.MenuServiceFactory)
+    .directive('ctrl', CtrlDirective_1.CtrlDirective)
+    .directive('coeMenu', MenuDirective_1.MenuDirective)
+    .directive('devctrlPanel', PanelDirective_1.PanelDirective)
+    .directive('fkSelect', FkSelectDirective_1.FkSelectDirective)
+    .directive('enumSelect', EnumSelectDirective_1.EnumSelectDirective)
+    .directive('devctrlSlider2d', Slider2dDirective_1.Slider2dDirective)
+    .directive('devctrlObjectEditor', ObjectEditorDirective_1.ObjectEditorDirective)
+    .directive('devctrlAdminOnly', admin_only_directive_1.AdminOnlyDirective)
+    .directive('devctrlEndpointStatus', EndpointStatusDirective_1.EndpointStatusDirective)
+    .directive('devctrlToolbar', ToolbarDirective_1.ToolbarDirective)
+    .controller('MainCtrl', MainCtrl_1.MainCtrl)
+    .controller('EnumEditorCtrl', EnumEditorCtrl_1.EnumEditorCtrl)
+    .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl_1.PanelControlSelectorCtrl)
+    .controller('EndpointCtrl', EndpointCtrl_1.EndpointCtrl)
+    .controller('LogCtrl', LogCtrl_1.LogCtrl)
+    .controller('CtrlLog', CtrlLogCtrl_1.CtrlLogCtrl)
+    .controller('TableCtrl', TableCtrl_1.TableCtrl)
+    .controller('RecordCtrl', RecordCtrl_1.RecordCtrl)
+    .controller('RoomCtrl', RoomCtrl_1.RoomCtrl)
+    .controller('RoomsCtrl', RoomsCtrl_1.RoomsCtrl)
+    .config(StateConfig_1.StateConfig)
+    .run(['$rootScope', function ($rootScope) {
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            //console.log('$stateChangeStart to ' + toState.to + '- fired when the transition begins. toState,toParams : \n', toState, toParams);
+        });
+        $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {
+            console.log('$stateChangeError - fired when an error occurs during transition.');
+            console.log(arguments);
+        });
+        $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+            //console.log('$stateChangeSuccess to ' + toState.name + '- fired once the state transition is complete.');
+        });
+        $rootScope.$on('$viewContentLoaded', function (event) {
+            //console.log('$viewContentLoaded - fired after dom rendered', event);
+        });
+        $rootScope.$on('$stateNotFound', function (event, unfoundState, fromState, fromParams) {
+            console.log('$stateNotFound ' + unfoundState.to + '  - fired when a state cannot be found by its name.');
+            console.log(unfoundState, fromState, fromParams);
+        });
+    }]);
+//# sourceMappingURL=dev-ctrl-app.module.js.map

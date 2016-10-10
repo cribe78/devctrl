@@ -45,6 +45,6 @@ export let ToolbarDirective  = ['$mdMedia', '$state', 'MenuService', 'DataServic
 
         },
         controllerAs: 'toolbar',
-        templateUrl: 'ng/toolbar.html'
+        templateUrl: 'ncontrol/app/ng1/toolbar.html'
     }
 }];

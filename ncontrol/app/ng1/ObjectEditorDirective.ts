@@ -23,6 +23,6 @@ export let ObjectEditorDirective  = [ function() : ng.IDirective {
             }
         },
         controllerAs: 'obj',
-        templateUrl: 'ng/object-editor.html'
+        templateUrl: 'ncontrol/app/ng1/object-editor.html'
     }
 }];

@@ -10,6 +10,8 @@ var EviD31Communicator = (function (_super) {
     function EviD31Communicator() {
         _super.call(this);
     }
+    EviD31Communicator.prototype.buildCommandList = function () {
+    };
     EviD31Communicator.prototype.connect = function () {
         console.log("connecting to EviD31");
     };

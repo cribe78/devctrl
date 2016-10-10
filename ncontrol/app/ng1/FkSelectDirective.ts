@@ -20,6 +20,6 @@ export let FkSelectDirective = ['DataService', function(DataService) : ng.IDirec
             }
         },
         controllerAs: 'fkSelect',
-        templateUrl: 'ng/fk-select.html'
+        templateUrl: 'ncontrol/app/ng1/fk-select.html'
     }
 }];

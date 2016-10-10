@@ -36,7 +36,7 @@ exports.ToolbarDirective = ['$mdMedia', '$state', 'MenuService', 'DataService',
                 };
             },
             controllerAs: 'toolbar',
-            templateUrl: 'ng/toolbar.html'
+            templateUrl: 'ncontrol/app/ng1/toolbar.html'
         };
     }];
 //# sourceMappingURL=ToolbarDirective.js.map

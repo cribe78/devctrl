@@ -50,6 +50,6 @@ export let EndpointStatusDirective  = ['DataService', function(DataService) : ng
             }
         },
         controllerAs: 'endpointStatus',
-        templateUrl: 'ng/endpoint-status.html'
+        templateUrl: 'ncontrol/app/ng1/endpoint-status.html'
     }
 }];

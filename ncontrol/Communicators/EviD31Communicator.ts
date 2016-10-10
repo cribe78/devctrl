@@ -5,6 +5,13 @@ class EviD31Communicator extends TCPCommunicator {
         super();
     }
 
+    buildCommandList() {
+
+
+
+
+    }
+
     connect() {
         console.log("connecting to EviD31");
     }

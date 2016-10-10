@@ -89,7 +89,7 @@ exports.CtrlDirective = ['DataService', 'MenuService', function (DataService, Me
                 };
             },
             controllerAs: 'ctrl',
-            templateUrl: 'ng/ctrl.html'
+            templateUrl: 'ncontrol/app/ng1/ctrl.html'
         };
     }];
 //# sourceMappingURL=CtrlDirective.js.map

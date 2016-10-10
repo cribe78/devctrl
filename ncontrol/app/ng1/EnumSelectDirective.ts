@@ -38,6 +38,6 @@ export let EnumSelectDirective = ['DataService', function(DataService) : ng.IDir
             }
         },
         controllerAs: 'enumSelect',
-        templateUrl: 'ng/enum-select.html'
+        templateUrl: 'ncontrol/app/ng1/enum-select.html'
     }
 }];

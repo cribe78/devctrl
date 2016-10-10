@@ -49,7 +49,8 @@ function handler(req: any, res: any) {
                     res.end(JSON.stringify(data));
                     return;
                 });
-
+                
+                return;
             }
         }
         else {

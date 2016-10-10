@@ -37,6 +37,6 @@ export let CommonResolve = {
     },
 
     loadUserInfo : function(DataService) {
-        return DataService.getAdminAuth();
+        return DataService.getUserInfo();
     }
 };

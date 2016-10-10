@@ -2,19 +2,26 @@
 import {RecordCtrl} from "./RecordCtrl";
 import {EnumEditorCtrl} from "./EnumEditorCtrl";
 import {CtrlLogCtrl} from "./CtrlLogCtrl";
+import {UserSession} from "../../shared/UserSession";
 export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
     function($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
-        var dataModel = {
-            user : {
-                username: null,
-                admin: false,
-                client_id : 0
-            },
+        let dataModel = {
             applog : [],
             menu : { items : {}}
         };
+
+        let userSession : UserSession = {
+            _id: '',
+            username: null,
+            login_expires: 0,
+            auth: false,
+            admin_auth: false,
+            admin_auth_expires: 0
+        };
+
         var schema = { loaded: false };
         var schemaLoaded = false;
+
 
         var schemaPromise = $http.get('schema.php')
             .success(function(data) {
@@ -44,7 +51,8 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
         var tablePromises = {};
 
         var clientConfig = {
-            editEnabled: true
+            editEnabled: true,
+            lastLogonAttempt: 0
         };
 
         if (typeof($window.localStorage) !== 'undefined') {
@@ -70,6 +78,7 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
             config : clientConfig,
             messenger: messenger,
             dataModel : dataModel,
+            userSession: userSession,
             schema : schema,
             getMProm : null,
             addRow : function(row, callback) {
@@ -129,6 +138,59 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                     .error(function (data) {
                         self.errorToast(data);
                     });
+            },
+
+
+            doAdminLogon : function() {
+                // First, check current login status
+                if (self.userSession.login_expires > Date.now()) {
+                    let url = "/auth/admin_auth";
+                    $http.get(url).then(
+                        //Success
+                        function(response) {
+                            angular.merge(self.userSession, response.data.session);
+                        },
+                        //Failure
+                        function(response) {
+                            if (response.status == 401) {
+                                self.errorToast("You are not authorize to access admin functions");
+                            }
+                            else {
+                                self.errorToast("Admin auth error: " + response.status);
+                            }
+                        }
+                    )
+                }
+                else {
+                     self.doLogon(true);
+                }
+
+            },
+
+            doLogon : function(admin_auth_check: boolean = false) {
+                if (userSession.login_expires < Date.now()) {
+                    // Circuit breaker for login loops
+                    if (self.config.lastLogonAttempt) {
+                        let timeSinceLogon = Date.now() - self.config.lastLogonAttempt;
+                        if (timeSinceLogon < 10) {
+                            self.errorToast("Login loop detected.  Not processing logon request");
+                            return;
+                        }
+                    }
+
+                    self.config.lastLogonAttempt = Date.now();
+                    self.updateConfig();
+
+                    let location = $location.path();
+                    let newLocation = "/auth/do_logon?";
+
+                    if (admin_auth_check) {
+                        newLocation = newLocation + "admin_auth_requested=1&";
+                    }
+
+                    newLocation = newLocation + "location=" + location;
+                    window.location.href = newLocation;
+                }
             },
 
             editEnum : function($event, myEnum, enumRefRecord, options) {
@@ -205,36 +267,6 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                 })
             },
 
-            getAdminAuth : function(doLogin) {
-                var url = "admin_auth.php";
-                if (doLogin) {
-                    var location = $location.path();
-                    url = "admin_auth.php?logon=1&location=" + location;
-                }
-
-                return $http.get(url)
-                    .then(function(response) {
-                        if (angular.isDefined(response.data.user)) {
-                            angular.merge(dataModel.user, response.data.user);
-                        }
-                        else {
-                            console.log("admin_auth did not return an admin status");
-                        }
-                    }, function (response) {
-                        if (response.status == '401') {
-                            if (doLogin && angular.isDefined(response.data.location)) {
-                                window.location = response.data.location;
-                            }
-                            else {
-                                if (angular.isDefined(response.data.user)) {
-                                    angular.merge(dataModel.user, response.data.user);
-                                }
-
-                                self.errorToast(response.data);
-                            }
-                        }
-                    })
-            },
 
             // Get the application log entries
             getLog : function() {
@@ -310,8 +342,6 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                 return table.indexed[key];
             },
 
-
-
             getMenu : function() {
                 if (! angular.isDefined(dataModel.menu)) {
                     dataModel.menu = { items : {}};
@@ -378,27 +408,6 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                 }
 
                 if (angular.isDefined(table)) {
-                    /**
-                    tablePromises[table] = $http.get('data.php?table=' + table)
-                        .then(
-                            function (response) {
-                                self.loadData(response.data);
-
-                                if (schemaLoaded) {
-                                    return dataModel[table];
-                                }
-                                return schemaPromise.then(
-                                    function() {
-                                        return dataModel[table];
-                                    }
-                                );
-                            },
-                            function (response) {
-                                self.errorToast(response.data);
-                            }
-                        );
-                    return tablePromises[table];
-                     **/
                     tablePromises[table] = self.getMData(table, {})
                         .then(
                             function() {
@@ -442,6 +451,28 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                 return dataModel[table];
             },
 
+
+
+            getUserInfo : function() {
+                let userInfoUrl = "/auth/user_session";
+                return $http.get(userInfoUrl)
+                    .then(function(response) {
+                        angular.merge(self.userSession, response.data.session);
+
+                        // If we are logged in, check for admin auth
+                        if (self.userSession.admin_auth_requested) {
+                            self.doAdminLogon();
+                        }
+                        else if (! self.userSession.auth) {
+                            // User is not authorized application and should be directed to log on
+                            self.doLogon();
+                        }
+                    }, function (response) {
+                        console.log("get user session failed with response code:" + response.status);
+                    }
+                );
+            },
+
             guid : function() {
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                     var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
@@ -450,7 +481,7 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
             },
 
             isAdminAuthorized: function() {
-                return dataModel.user.admin;
+                return userSession.admin_auth && (userSession.admin_auth_expires > Date.now());
             },
 
 
@@ -554,17 +585,9 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
 
 
             revokeAdminAuth : function() {
-                $http.get('admin_auth_revoke.php')
-                .then(function(response) {
-                    if (angular.isDefined(response.data.user)) {
-                        angular.merge(dataModel.user, response.data.user);
-                    }
-                    else {
-                        console.log("revoke admin_auth did not return user info");
-                    }
-                }, function (response) {
-                    self.errorToast(response.data);
-                })
+                //TODO: this doesn't do anything unless the Apache auth session credentials
+                // are also revoked
+                self.userSession.admin_auth_expires = Date.now();
             },
 
             showControlLog : function($event, ctrl) {

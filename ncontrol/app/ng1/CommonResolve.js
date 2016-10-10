@@ -30,7 +30,7 @@ exports.CommonResolve = {
         return DataService.getTablePromise('endpoints');
     },
     loadUserInfo: function (DataService) {
-        return DataService.getAdminAuth();
+        return DataService.getUserInfo();
     }
 };
 //# sourceMappingURL=CommonResolve.js.map

@@ -82,7 +82,7 @@ export let RoomCtrl = ['$stateParams', 'DataService', 'MenuService',
                     var panelControls = panel.referenced.panel_controls;
                     angular.forEach(panelControls, function(panelControl, panelControlId) {
                         var endpoint = panelControl.foreign.controls.foreign.endpoints;
-                        if (! angular.isDefined(roomEndpoints[endpoint.id])) {
+                        if (endpoint && ! angular.isDefined(roomEndpoints[endpoint.id])) {
                             roomEndpoints[endpoint.id] = endpoint;
                         }
                     });

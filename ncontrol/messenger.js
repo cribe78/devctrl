@@ -34,6 +34,7 @@ function handler(req, res) {
                     res.end(JSON.stringify(data));
                     return;
                 });
+                return;
             }
         }
         else {

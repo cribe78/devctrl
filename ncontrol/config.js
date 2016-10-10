@@ -8,6 +8,7 @@ var config = {
   "mongoPort" : 27017,
   "mongoDB" : "devctrl-dev",
   "ioPort" : 2880,
+  "authPort" : 2992,
   "updatePort" : 2881,
   "endpointPassword" : "DWCONTROL"
 };

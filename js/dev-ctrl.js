@@ -452,10 +452,12 @@ DevCtrl.DataService = {};
 DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
     function($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
         var dataModel = {
-            user : {
+            session : {
                 username: null,
-                admin: false,
-                client_id : 0
+                auth: false,
+                admin_auth: false,
+                _id : 0,
+                admin_expiration: 0
             },
             applog : []
         };
@@ -651,10 +653,10 @@ DevCtrl.DataService.factory = ['$window', '$http', '$mdToast', '$timeout', '$q',
             },
 
             getAdminAuth : function(doLogin) {
-                var url = "admin_auth.php";
+                var url = "auth/admin_auth";
                 if (doLogin) {
                     var location = $location.path();
-                    url = "admin_auth.php?logon=1&location=" + location;
+                    url = "admin_auth.php?location=" + location;
                 }
 
                 return $http.get(url)

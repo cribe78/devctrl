@@ -8,12 +8,13 @@ export let ToolbarDirective  = ['$mdMedia', '$state', 'MenuService', 'DataServic
         controller: function($state, MenuService, DataService) {
             var self = this;
             this.menu = MenuService;
-            this.user = DataService.dataModel.user;
+            this.session = DataService.userSession;
             this.config = DataService.config;
             this.$mdMedia = $mdMedia;
 
-            this.client = function() {
-                return DataService.getRowRef("clients", self.user.client_id);
+            this.showAdminLogin = function() {
+                // Show Admin login option if not currently admin authorized
+                return ! DataService.isAdminAuthorized();
             };
 
 
@@ -26,7 +27,7 @@ export let ToolbarDirective  = ['$mdMedia', '$state', 'MenuService', 'DataServic
             };
 
             this.adminLogin = function() {
-                DataService.getAdminAuth(true);
+                DataService.doAdminLogon();
             };
 
             this.editClient = function($event) {

@@ -12,7 +12,7 @@ if (! isset($ctx)) {
 
 require("controller-lib.php");
 checkpoint("start");
-require(__DIR__ . "/auth.php");
+//require(__DIR__ . "/auth.php");
 
 
 // Define the $resp global array

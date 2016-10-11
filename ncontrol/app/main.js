@@ -24,12 +24,14 @@ var MainCtrl_1 = require("./ng1/MainCtrl");
 var EndpointCtrl_1 = require("./ng1/EndpointCtrl");
 var RoomCtrl_1 = require("./ng1/RoomCtrl");
 var RoomsCtrl_1 = require("./ng1/RoomsCtrl");
+var ds2_service_1 = require("./ds2.service");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
  * */
 angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
     .factory('DataService', DataService_1.DataServiceFactory)
+    .service('DataService2', ds2_service_1.DataService2)
     .factory('MenuService', MenuService_1.MenuServiceFactory)
     .directive('ctrl', CtrlDirective_1.CtrlDirective)
     .directive('coeMenu', MenuDirective_1.MenuDirective)

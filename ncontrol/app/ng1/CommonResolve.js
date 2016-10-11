@@ -3,16 +3,15 @@ exports.CommonResolve = {
     resetToolbar: function (MenuService) {
         MenuService.toolbarSelect.enable = false;
     },
-    loadSchema: function (DataService) {
-        console.log("loadSchema called");
-        return DataService.getSchemaPromise();
-    },
-    loadClients: function (DataService) {
-        return DataService.getTablePromise('clients');
-    },
     // Load all controls.  Do something smarter with this if it starts slowing us down
     loadControls: function (DataService) {
         return DataService.getTablePromise('controls');
+    },
+    loadEnums: function (DataService) {
+        return DataService.getTablePromise('enums');
+    },
+    loadEnumValues: function (DataService) {
+        return DataService.getTablePromise('enum_vals');
     },
     loadRooms: function (DataService) {
         return DataService.getTablePromise('rooms');
@@ -31,6 +30,9 @@ exports.CommonResolve = {
     },
     loadUserInfo: function (DataService) {
         return DataService.getUserInfo();
+    },
+    initDataService: function (DataService2) {
+        return DataService2.init();
     }
 };
 //# sourceMappingURL=CommonResolve.js.map

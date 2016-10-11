@@ -27,7 +27,7 @@ exports.PanelControlSelectorCtrl = ['$mdDialog', 'DataService',
                 var loadAll = true;
                 if (angular.isArray(self.endpointsSelected) && self.endpointsSelected.length > 0) {
                     loadAll = false;
-                    var ctrlEp = control.fields.control_endpoint_id;
+                    var ctrlEp = control.fields.endpoint_id;
                     angular.forEach(self.endpointsSelected, function (endpointId) {
                         if (endpointId == ctrlEp) {
                             loadControl = true;
@@ -36,7 +36,7 @@ exports.PanelControlSelectorCtrl = ['$mdDialog', 'DataService',
                 }
                 else if (self.endpointSelected !== '0') {
                     loadAll = false;
-                    if (self.endpointSelected == control.foreign.control_endpoint_id.id) {
+                    if (self.endpointSelected == control.foreign.endpoint_id.id) {
                         loadControl = true;
                     }
                 }

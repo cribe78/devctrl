@@ -12,17 +12,16 @@ var core_1 = require('@angular/core');
 var DCDataModel_1 = require("../shared/DCDataModel");
 var io = require("socket.io-client");
 var DataService = (function () {
+    //static $inject = ['$q'];
     function DataService(dataModel) {
         this.dataModel = dataModel;
+        this.tablePromises = {};
         this.io = io.connect("https://devctrl.dwi.ufl.edu");
         this.io.on('connect', function () {
             console.log("websocket client connected");
         });
     }
     ;
-    DataService.prototype.addRow = function (row, callback) {
-        console.log("addRow not implemented");
-    };
     DataService = __decorate([
         core_1.Injectable(), 
         __metadata('design:paramtypes', [DCDataModel_1.DCDataModel])

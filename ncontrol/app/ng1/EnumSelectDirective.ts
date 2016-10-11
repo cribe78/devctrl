@@ -13,7 +13,7 @@ export let EnumSelectDirective = ['DataService', function(DataService) : ng.IDir
             this.schema = DataService.getSchema(this.tableName);
 
             this.enumId = function() {
-                var myId = 0;
+                var myId = '';
                 var enumName = this.tableName + "." + this.field.name;
 
                 angular.forEach(this.enums.indexed, function(obj, id) {
@@ -30,7 +30,7 @@ export let EnumSelectDirective = ['DataService', function(DataService) : ng.IDir
                 var eid = this.enumId();
 
                 var ret = {};
-                if (eid > 0) {
+                if (eid) {
                     ret = this.enums.indexed[eid].referenced['enum_vals'];
                 }
 

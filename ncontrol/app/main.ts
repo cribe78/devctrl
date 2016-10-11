@@ -24,15 +24,19 @@ import {MainCtrl} from "./ng1/MainCtrl";
 import {EndpointCtrl} from "./ng1/EndpointCtrl";
 import {RoomCtrl} from "./ng1/RoomCtrl";
 import {RoomsCtrl} from "./ng1/RoomsCtrl";
+import {DataService2} from "./ds2.service";
+
 
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
  * */
 
+
 angular.module('DevCtrlApp',
     ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
     .factory('DataService', DataServiceFactory)
+    .service('DataService2', DataService2)
     .factory('MenuService', MenuServiceFactory)
     .directive('ctrl', CtrlDirective)
     .directive('coeMenu', MenuDirective)

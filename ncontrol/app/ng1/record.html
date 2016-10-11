@@ -18,7 +18,7 @@
                     <label>{{field.label}}</label>
                     <input  type="number" ng-model="record.obj.fields[field.name]">
                 </md-input-container>
-                <fk-select ng-if="field.type == 'fk'"
+               <fk-select ng-if="field.type == 'fk'"
                            table="record.schema.foreign_keys[field.name]"
                            field="field"
                            select-model="record.obj.fields">
@@ -28,6 +28,15 @@
                              field="field"
                              select-model="record.obj.fields">
                 </enum-select>
+                <md-input-container ng-if="field.type == 'select-static'">
+                    <label>{{field.label}}</label>
+                    <md-select placeholder={{field.label}} ng-model="record.obj.fields[field.name]">
+                        <md-option ng-value="option.value"
+                                   ng-repeat="option in field.options">
+                            {{option.name}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
                 <md-input-container ng-if="field.type == 'bool'">
                     <md-checkbox
                                  class="md-primary"

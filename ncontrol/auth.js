@@ -63,6 +63,7 @@ var http = require("http");
 var url = require("url");
 var debugMod = require("debug");
 var mongo = require("mongodb");
+var querystring = require("querystring");
 var debug = debugMod("auth");
 var Auth = (function () {
     function Auth() {
@@ -108,6 +109,7 @@ var Auth = (function () {
     Auth.prototype.httpHandler = function (req, response) {
         var _this = this;
         var parts = url.parse(req.url);
+        var queryVars = querystring.parse(parts.query);
         var sessions = this.mongodb.collection("sessions");
         debug("http request: " + parts.pathname);
         if (req.method != 'GET') {
@@ -152,15 +154,15 @@ var Auth = (function () {
                 this.errorResponse(response, 400, "Don't come here without a session");
                 return;
             }
-            var admin_auth_requested = false;
-            if (parts.query['admin_auth_requested']) {
-                admin_auth_requested = true;
+            var admin_auth_requested_1 = false;
+            if (queryVars['admin_auth_requested']) {
+                admin_auth_requested_1 = true;
             }
             var loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
             sessions.findOneAndUpdate({ _id: identifier }, { '$set': {
                     login_expires: loginExpires,
                     auth: true,
-                    admin_auth_requested: admin_auth_requested,
+                    admin_auth_requested: admin_auth_requested_1,
                     username: req.headers["oidc_claim_preferred_username"]
                 } }, function (err, doc) {
                 if (err) {
@@ -170,9 +172,10 @@ var Auth = (function () {
                 // Redirect to the location specified in the query string
                 if (doc.value) {
                     var location_1 = '/';
-                    if (parts.query.location) {
-                        location_1 = parts.query.location;
+                    if (queryVars.location) {
+                        location_1 = queryVars.location;
                     }
+                    debug("logon complete, redirecting to " + location_1 + ", aar=" + admin_auth_requested_1);
                     response.setHeader('Location', location_1);
                     response.writeHead(302);
                     response.end();

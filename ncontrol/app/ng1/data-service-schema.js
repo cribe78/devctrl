@@ -1,0 +1,271 @@
+"use strict";
+exports.dataServiceSchema = {
+    endpoints: {
+        "pk": "control_endpoint_id",
+        "fk_name": "name",
+        "foreign_keys": {
+            "endpoint_type_id": "endpoint_types"
+        },
+        label: "Endpoints",
+        fields: [
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Endpoint Name"
+            },
+            {
+                "name": "endpoint_type_id",
+                "type": "fk",
+                "label": "Endpoint Type"
+            },
+            {
+                "name": "ip",
+                "type": "string",
+                "label": "IP Address"
+            },
+            {
+                "name": "port",
+                "type": "int",
+                "label": "Port"
+            },
+            {
+                "name": "status",
+                "type": "string",
+                "label": "Status",
+                "input_disabled": true
+            },
+            {
+                "name": "enabled",
+                "type": "bool",
+                "label": "Enabled?"
+            }
+        ]
+    },
+    "control_log": {
+        "db": "mongo",
+        "pk": "_id",
+        "label": "Control Log",
+        "foreign_keys": {
+            "control_id": "controls",
+            "client_id": "clients"
+        },
+        "fields": [
+            {
+                "name": "control_id",
+                "type": "fk",
+                "label": "Control"
+            },
+            {
+                "name": "client_id",
+                "type": "fk",
+                "label": "Client"
+            },
+            {
+                "name": "new_value",
+                "type": "string",
+                "label": "New Value"
+            },
+            {
+                "name": "old_value",
+                "type": "string",
+                "label": "Old Value"
+            },
+            {
+                "name": "ts",
+                "type": "ts",
+                "label": "Timestamp"
+            }
+        ]
+    },
+    "controls": {
+        "pk": "_id",
+        "fk_name": "command",
+        "label": "Controls",
+        "foreign_keys": {
+            "enum_id": "enums",
+            "endpoint_id": "endpoints"
+        },
+        "fields": [
+            {
+                "name": "endpoint_id",
+                "type": "fk",
+                "label": "Endpoint"
+            },
+            {
+                "name": "ctid",
+                "type": "string",
+                "label": "CTID"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Name"
+            },
+            {
+                "name": "usertype",
+                "type": "enum",
+                "label": "User Type"
+            },
+            {
+                "name": "control_type",
+                "type": "enum",
+                "label": "Control Type"
+            },
+            {
+                "name": "enum_id",
+                "type": "fk",
+                "label": "Enum"
+            },
+            {
+                "name": "poll",
+                "type": "bool",
+                "label": "Poll?"
+            },
+            {
+                "name": "config",
+                "type": "object",
+                "label": "Default Config"
+            },
+            {
+                "name": "value",
+                "type": "string",
+                "label": "Value"
+            }
+        ]
+    },
+    "endpoint_types": {
+        "pk": "endpoint_type_id",
+        "fk_name": "name",
+        "label": "Endpoint Types",
+        "fields": [
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Name"
+            },
+            {
+                "name": "communicatorClass",
+                "type": "string",
+                "label": "Communicator Class"
+            }
+        ]
+    },
+    "enums": {
+        "pk": "enum_id",
+        "fk_name": "name",
+        "label": "Enums",
+        "fields": [
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Name"
+            }
+        ]
+    },
+    "enum_vals": {
+        "pk": "enum_val_id",
+        "foreign_keys": {
+            "enum_id": "enums"
+        },
+        "label": "Enum Values",
+        "fields": [
+            {
+                "name": "enum_id",
+                "type": "fk",
+                "label": "Enum"
+            },
+            {
+                "name": "value",
+                "type": "string",
+                "label": "Value"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Name"
+            },
+            {
+                "name": "enabled",
+                "type": "bool",
+                "label": "Enabled?"
+            }
+        ]
+    },
+    "panels": {
+        "pk": "panel_id",
+        "fk_name": "name",
+        "foreign_keys": {
+            "room_id": "rooms"
+        },
+        "label": "Panels",
+        "fields": [
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Name"
+            },
+            {
+                "name": "room_id",
+                "type": "fk",
+                "label": "Room"
+            },
+            {
+                "name": "grouping",
+                "type": "string",
+                "label": "Subgroup"
+            },
+            {
+                name: "type",
+                type: "select-static",
+                label: "Type",
+                options: [
+                    { name: "List", value: "list" },
+                    { name: "Switch Group", value: "switch-group" }
+                ]
+            },
+            {
+                "name": "panel_index",
+                "type": "int",
+                "label": "Order"
+            }
+        ]
+    },
+    "panel_controls": {
+        "pk": "panel_control_id",
+        "foreign_keys": {
+            "control_id": "controls",
+            "panel_id": "panels"
+        },
+        "label": "Panel Controls",
+        "fields": [
+            {
+                "name": "control_id",
+                "type": "fk",
+                "label": "Control"
+            },
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Name"
+            },
+            {
+                "name": "panel_id",
+                "type": "fk",
+                "label": "Panel"
+            }
+        ]
+    },
+    "rooms": {
+        "pk": "room_id",
+        "fk_name": "name",
+        "label": "Rooms",
+        "fields": [
+            {
+                "name": "name",
+                "type": "string",
+                "label": "Name"
+            }
+        ]
+    }
+};
+//# sourceMappingURL=data-service-schema.js.map

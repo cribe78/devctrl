@@ -2,6 +2,7 @@
 var RecordCtrl_1 = require("./RecordCtrl");
 var EnumEditorCtrl_1 = require("./EnumEditorCtrl");
 var CtrlLogCtrl_1 = require("./CtrlLogCtrl");
+var data_service_schema_1 = require("./data-service-schema");
 exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
     function ($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
         var dataModel = {
@@ -16,25 +17,16 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
             admin_auth: false,
             admin_auth_expires: 0
         };
-        var schema = { loaded: false };
-        var schemaLoaded = false;
-        var schemaPromise = $http.get('schema.php')
-            .success(function (data) {
-            if (angular.isDefined(data.schema)) {
-                angular.forEach(data.schema, function (value, tableName) {
-                    var tschema = self.getSchema(tableName);
-                    angular.merge(tschema, value);
-                    if (angular.isDefined(tschema['foreign_keys'])) {
-                        angular.forEach(tschema['foreign_keys'], function (keyTable, keyName) {
-                            tschema.referenced[keyTable] = keyName;
-                        });
-                    }
+        var schema = data_service_schema_1.dataServiceSchema;
+        var schemaLoaded = true;
+        angular.forEach(schema, function (value, tableName) {
+            var tschema = value;
+            if (angular.isDefined(tschema['foreign_keys'])) {
+                tschema['referenced'] = {};
+                angular.forEach(tschema['foreign_keys'], function (keyTable, keyName) {
+                    tschema.referenced[keyTable] = keyName;
                 });
             }
-            schemaLoaded = true;
-        })
-            .error(function (data) {
-            self.errorToast(data);
         });
         //TODO: make this configurable
         var ioSocket = io($location.protocol() + "://" + $location.host());
@@ -77,9 +69,9 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                         self.errorToast(response.error);
                         return;
                     }
-                    var newId = Object.keys(response.data.add[row.tableName])[0];
+                    var newId = Object.keys(response.add[row.tableName])[0];
                     console.log("new record " + newId + "added to " + row.tableName);
-                    self.loadData(response.data);
+                    self.loadData(response);
                     var record = dataModel[row.tableName].indexed[newId];
                     angular.forEach(row, function (value, key) {
                         if (key != 'tableName') {
@@ -131,6 +123,10 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                         if (response.status == 401) {
                             self.errorToast("You are not authorize to access admin functions");
                         }
+                        else if (response.status == -1) {
+                            console.log("XHR admin auth failed, attempting logon");
+                            self.doLogon(true, true);
+                        }
                         else {
                             self.errorToast("Admin auth error: " + response.status);
                         }
@@ -140,9 +136,10 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                     self.doLogon(true);
                 }
             },
-            doLogon: function (admin_auth_check) {
+            doLogon: function (admin_auth_check, force_login) {
                 if (admin_auth_check === void 0) { admin_auth_check = false; }
-                if (userSession.login_expires < Date.now()) {
+                if (force_login === void 0) { force_login = false; }
+                if (force_login || userSession.login_expires < Date.now()) {
                     // Circuit breaker for login loops
                     if (self.config.lastLogonAttempt) {
                         var timeSinceLogon = Date.now() - self.config.lastLogonAttempt;
@@ -214,6 +211,10 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                 if (angular.isDefined(data.error)) {
                     errorText = data.error;
                 }
+                else if (angular.isString(data)) {
+                    errorText = data;
+                }
+                console.log(errorText);
                 //$mdToast.show($mdToast.simple().content(errorText));
                 $mdToast.show({
                     templateUrl: "ncontrol/app/ng1/error-toast.html",
@@ -288,41 +289,8 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                 }
                 return table.indexed[key];
             },
-            getMenu: function () {
-                if (!angular.isDefined(dataModel.menu)) {
-                    dataModel.menu = { items: {} };
-                    $http.get('menu.php')
-                        .success(function (data) {
-                        if (angular.isDefined(data.menu.items)) {
-                            console.log("test/menu.php loaded");
-                            dataModel.menu.items = data.menu.items;
-                        }
-                        else {
-                            console.log("test/menu.php did not return a valid menu object");
-                        }
-                    })
-                        .error(function (data) {
-                        self.errorToast(data);
-                    });
-                }
-                return dataModel.menu;
-            },
             getSchema: function (table) {
-                if (!schema.loaded) {
-                    // The table argument is only used to determine if the schema has been loaded
-                    if (!angular.isDefined(schema[table])) {
-                        schema[table] = {
-                            referenced: {},
-                            'foreign_keys': {}
-                        };
-                    }
-                }
                 return schema[table];
-            },
-            getSchemaPromise: function () {
-                if (!schemaLoaded) {
-                    return schemaPromise;
-                }
             },
             getTable: function (table) {
                 //console.log("DataService.getTable(" + table + ")");
@@ -347,12 +315,7 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                 if (angular.isDefined(table)) {
                     tablePromises[table] = self.getMData(table, {})
                         .then(function () {
-                        if (schemaLoaded) {
-                            return dataModel[table];
-                        }
-                        return schemaPromise.then(function () {
-                            return dataModel[table];
-                        });
+                        return dataModel[table];
                     }, function () {
                         self.errorToast("getMData " + table + " problem");
                     });
@@ -419,18 +382,7 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                 }
             },
             loadData: function (data) {
-                if (schemaLoaded) {
-                    //console.log("loading data");
-                    self.loadDataKernel(data);
-                }
-                else {
-                    //console.log("deferring data loading");
-                    schemaPromise = schemaPromise.then(function () {
-                        //console.log("loading deffered data");
-                        self.loadDataKernel(data);
-                    });
-                    return schemaPromise;
-                }
+                self.loadDataKernel(data);
             },
             loadDataKernel: function (data) {
                 // Treat update as a synonym for add
@@ -470,22 +422,23 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
                     });
                 }
                 if (angular.isDefined(data.delete)) {
-                    angular.forEach(data.delete, function (tableData, table) {
-                        angular.forEach(tableData, function (value, key) {
-                            // Remove references
-                            var record = dataModel[table].indexed[key];
-                            angular.forEach(record.foreign, function (referenced, refID) {
-                                if (angular.isDefined(referenced.referenced[table][key])) {
-                                    delete referenced.referenced[table][key];
-                                }
-                            });
-                            delete dataModel[table].indexed[key];
-                        });
-                        // Rebuild object list
-                        dataModel[table].listed.length = 0;
-                        angular.forEach(dataModel[table].indexed, function (value, key) {
-                            dataModel[table].listed.push(value);
-                        });
+                    // Remove references
+                    var table_1 = data.delete.table;
+                    var key_1 = data.delete._id;
+                    var record = dataModel[table_1].indexed[key_1];
+                    if (!angular.isDefined(record)) {
+                        return;
+                    }
+                    angular.forEach(record.foreign, function (referenced, refID) {
+                        if (angular.isDefined(referenced.referenced[table_1][key_1])) {
+                            delete referenced.referenced[table_1][key_1];
+                        }
+                    });
+                    delete dataModel[table_1].indexed[key_1];
+                    // Rebuild object list
+                    dataModel[table_1].listed.length = 0;
+                    angular.forEach(dataModel[table_1].indexed, function (value, key) {
+                        dataModel[table_1].listed.push(value);
                     });
                 }
             },

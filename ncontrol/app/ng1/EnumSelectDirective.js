@@ -12,7 +12,7 @@ exports.EnumSelectDirective = ['DataService', function (DataService) {
                 this.enumVals = DataService.getTable('enum_vals');
                 this.schema = DataService.getSchema(this.tableName);
                 this.enumId = function () {
-                    var myId = 0;
+                    var myId = '';
                     var enumName = this.tableName + "." + this.field.name;
                     angular.forEach(this.enums.indexed, function (obj, id) {
                         if (obj.fields.name == enumName) {
@@ -24,7 +24,7 @@ exports.EnumSelectDirective = ['DataService', function (DataService) {
                 this.options = function () {
                     var eid = this.enumId();
                     var ret = {};
-                    if (eid > 0) {
+                    if (eid) {
                         ret = this.enums.indexed[eid].referenced['enum_vals'];
                     }
                     return ret;

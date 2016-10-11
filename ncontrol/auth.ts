@@ -65,6 +65,7 @@ import * as http from "http";
 import * as url from "url";
 import * as debugMod from "debug";
 import * as mongo from "mongodb";
+import * as querystring from "querystring";
 import {UserSession} from "./shared/UserSession";
 
 let debug = debugMod("auth");
@@ -123,6 +124,7 @@ class Auth {
 
     httpHandler(req: http.IncomingMessage, response: http.ServerResponse ) {
         let parts = url.parse(req.url);
+        let queryVars = querystring.parse(parts.query);
         let sessions = this.mongodb.collection("sessions");
         debug(`http request: ${parts.pathname}`);
 
@@ -186,7 +188,7 @@ class Auth {
             }
 
             let admin_auth_requested = false;
-            if (parts.query['admin_auth_requested']) {
+            if (queryVars['admin_auth_requested']) {
                 admin_auth_requested = true;
             }
 
@@ -208,9 +210,11 @@ class Auth {
                     // Redirect to the location specified in the query string
                     if (doc.value) {
                         let location = '/';
-                        if (parts.query.location) {
-                            location = parts.query.location;
+                        if (queryVars.location) {
+                            location = queryVars.location;
                         }
+
+                        debug(`logon complete, redirecting to ${location}, aar=${admin_auth_requested}`);
 
                         response.setHeader('Location', location);
                         response.writeHead(302);

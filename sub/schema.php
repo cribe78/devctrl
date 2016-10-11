@@ -7,66 +7,13 @@
  */
 
 $g_schema = array(
-    'admin_sessions' => array(
-        'pk' => 'admin_session_id',
-        'foreign_keys' => array(
-            'user_id' => 'users',
-        ),
-        'fields' => array(
-            array(
-                'name' => 'identifier',
-                'type' => 'string',
-                'label' => 'Identifier'
-            ),
-            array(
-                'name' => 'user_id',
-                'type' => 'fk',
-                'label' => 'User'
-            ),
-            array(
-                'name' => 'expiration',
-                'type' => 'int',
-                'label' => 'Expiration'
-            )
-        )
-    ),
-    'clients' => array(
-        'pk' => 'client_id',
-        'fk_name' => 'name',
-        'label' => 'Clients',
-        'foreign_keys' => array(
-            'added_user_id' => 'users',
-        ),
-        'fields' => array(
-            array(
-                'name' => 'identifier',
-                'type' => 'string',
-                'label' => 'Identifier'
-            ),
-            array(
-                'name' => 'name',
-                'type' => 'string',
-                'label' => 'Name'
-            ),
-            array(
-                'name' => 'added_user_id',
-                'type' => 'fk',
-                'label' => 'User'
-            ),
-            array(
-                'name' => 'time_added',
-                'type' => 'string',
-                'label' => 'Time Added'
-            )
-        )
-    ),
     'endpoints' => array(
         'pk' => 'control_endpoint_id',
         'fk_name' => 'name',
         'foreign_keys' => array(
             'endpoint_type_id' => 'endpoint_types',
         ),
-        'label' => 'Control Endpoints',
+        'label' => 'Endpoints',
         'fields' => array(
             array(
                 'name' => 'name',
@@ -323,20 +270,5 @@ $g_schema = array(
                 'label' => 'Name'
             )
         )
-    ),
-    'users' => array(
-        'pk' => 'user_id',
-        'fields' => array(
-            array(
-                'name' => 'glid',
-                'type' => 'string',
-                'label' => 'GLID'
-            ),
-            array(
-                'name' => 'groups',
-                'type' => 'string',
-                'label' => 'Groups'
-            ),
-        )
-    ),
+    )
 );

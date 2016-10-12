@@ -1,4 +1,5 @@
 "use strict";
+require("angular");
 var app_module_1 = require('./app.module');
 var upgrade_1 = require('@angular/upgrade');
 var admin_only_directive_1 = require("./ng1/admin-only.directive");

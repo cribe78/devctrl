@@ -19,7 +19,7 @@ exports.PanelDirective = ['$mdDialog', 'MenuService', 'DataService', function ($
                         controller: PanelControlSelectorCtrl_1.PanelControlSelectorCtrl,
                         controllerAs: 'selector',
                         bindToController: true,
-                        templateUrl: 'ncontrol/app/ng1/panel-control-selector.html',
+                        templateUrl: 'app/ng1/panel-control-selector.html',
                         clickOutsideToClose: true,
                         hasBackdrop: false
                     });
@@ -56,7 +56,7 @@ exports.PanelDirective = ['$mdDialog', 'MenuService', 'DataService', function ($
                 };
             },
             controllerAs: 'panel',
-            templateUrl: 'ncontrol/app/ng1/panel.html'
+            templateUrl: 'app/ng1/panel.html'
         };
     }];
 //# sourceMappingURL=PanelDirective.js.map

@@ -20,7 +20,7 @@ export let PanelDirective  = ['$mdDialog', 'MenuService', 'DataService', functio
                     controller: PanelControlSelectorCtrl,
                     controllerAs: 'selector',
                     bindToController: true,
-                    templateUrl: 'ncontrol/app/ng1/panel-control-selector.html',
+                    templateUrl: 'app/ng1/panel-control-selector.html',
                     clickOutsideToClose: true,
                     hasBackdrop : false
                 });
@@ -64,6 +64,6 @@ export let PanelDirective  = ['$mdDialog', 'MenuService', 'DataService', functio
 
         },
         controllerAs: 'panel',
-        templateUrl: 'ncontrol/app/ng1/panel.html'
+        templateUrl: 'app/ng1/panel.html'
     }
 }];

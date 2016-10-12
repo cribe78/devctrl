@@ -6,14 +6,14 @@
     System.config({
         paths: {
             // paths serve as alias
-            'npm:': '/ncontrol/node_modules/',
-            './shared:': '/ncontrol/shared/',
-            'app': '/ncontrol/app'
+            'npm:': '/node_modules/',
+            './shared:': '/shared/',
+            'app': '/app'
         },
         // map tells the System loader where to look for things
         map: {
             // our app is within the app folder
-            app: 'ncontrol/app',
+            app: 'app',
             // angular bundles
             '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
             '@angular/common': 'npm:@angular/common/bundles/common.umd.js',
@@ -48,7 +48,7 @@
                 main: './index.js',
                 defaultExtension: 'js'
             },
-            '/ncontrol/shared' : {
+            '/shared' : {
                 defaultExtension: 'js'
             }
         }

@@ -31,7 +31,7 @@ exports.EnumSelectDirective = ['DataService', function (DataService) {
                 };
             },
             controllerAs: 'enumSelect',
-            templateUrl: 'ncontrol/app/ng1/enum-select.html'
+            templateUrl: 'app/ng1/enum-select.html'
         };
     }];
 //# sourceMappingURL=EnumSelectDirective.js.map

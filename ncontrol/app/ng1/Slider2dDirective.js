@@ -42,7 +42,7 @@ exports.Slider2dDirective = ['DataService', function (DataService) {
                 };
             },
             controllerAs: 'slider2d',
-            templateUrl: 'ncontrol/app/ng1/controls/slider2d-directive.html'
+            templateUrl: 'app/ng1/controls/slider2d-directive.html'
         };
     }];
 //# sourceMappingURL=Slider2dDirective.js.map

@@ -20,7 +20,7 @@ exports.FkSelectDirective = ['DataService', function (DataService) {
                 };
             },
             controllerAs: 'fkSelect',
-            templateUrl: 'ncontrol/app/ng1/fk-select.html'
+            templateUrl: 'app/ng1/fk-select.html'
         };
     }];
 //# sourceMappingURL=FkSelectDirective.js.map

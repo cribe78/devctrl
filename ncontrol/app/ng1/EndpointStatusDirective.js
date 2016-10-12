@@ -42,7 +42,7 @@ exports.EndpointStatusDirective = ['DataService', function (DataService) {
                 };
             },
             controllerAs: 'endpointStatus',
-            templateUrl: 'ncontrol/app/ng1/endpoint-status.html'
+            templateUrl: 'app/ng1/endpoint-status.html'
         };
     }];
 //# sourceMappingURL=EndpointStatusDirective.js.map

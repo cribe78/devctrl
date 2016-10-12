@@ -8,7 +8,7 @@ exports.MenuDirective = ['MenuService', '$state',
                 this.service = MenuService;
             },
             controllerAs: 'menu',
-            templateUrl: 'ncontrol/app/ng1/menu.html'
+            templateUrl: 'app/ng1/menu.html'
         };
     }
 ];

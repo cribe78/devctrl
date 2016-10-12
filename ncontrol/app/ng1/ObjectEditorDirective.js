@@ -20,7 +20,7 @@ exports.ObjectEditorDirective = [function () {
                 };
             },
             controllerAs: 'obj',
-            templateUrl: 'ncontrol/app/ng1/object-editor.html'
+            templateUrl: 'app/ng1/object-editor.html'
         };
     }];
 //# sourceMappingURL=ObjectEditorDirective.js.map

@@ -207,7 +207,7 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                     controller: EnumEditorCtrl,
                     controllerAs: 'editor',
                     bindToController: true,
-                    templateUrl: 'ncontrol/app/ng1/enum-editor.html',
+                    templateUrl: 'app/ng1/enum-editor.html',
                     clickOutsideToClose: true,
                     hasBackdrop : false
                 });
@@ -234,7 +234,7 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                     controller: RecordCtrl,
                     controllerAs: 'record',
                     bindToController: true,
-                    templateUrl: 'ncontrol/app/ng1/record.html',
+                    templateUrl: 'app/ng1/record.html',
                     clickOutsideToClose: true,
                     hasBackdrop : false
                 });
@@ -258,7 +258,7 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
 
                 //$mdToast.show($mdToast.simple().content(errorText));
                 $mdToast.show({
-                    templateUrl: "ncontrol/app/ng1/error-toast.html",
+                    templateUrl: "app/ng1/error-toast.html",
                     locals: {
                         message: errorText
                     },
@@ -552,7 +552,7 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
                         controller: CtrlLogCtrl,
                         controllerAs: 'ctrlLog',
                         bindToController: true,
-                        templateUrl: 'ncontrol/app/ng1/ctrl-log.html',
+                        templateUrl: 'app/ng1/ctrl-log.html',
                         clickOutsideToClose: true,
                         hasBackdrop : false,
                     });

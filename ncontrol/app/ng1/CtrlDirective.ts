@@ -117,6 +117,6 @@ export let CtrlDirective  = ['DataService', 'MenuService', function(DataService,
 
         },
         controllerAs: 'ctrl',
-        templateUrl: 'ncontrol/app/ng1/ctrl.html'
+        templateUrl: 'app/ng1/ctrl.html'
     }
 }];

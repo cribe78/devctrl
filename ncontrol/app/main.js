@@ -28,6 +28,8 @@ var ds2_service_1 = require("./ds2.service");
 require("angular-animate");
 require("angular-aria");
 require("angular-material");
+require("angular-ui-router");
+require("./socket");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);

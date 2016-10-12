@@ -28,6 +28,7 @@
             'angular-material' : 'npm:angular-material/angular-material.js',
             'angular-aria' : 'npm:angular-aria/angular-aria.js',
             'angular-animate' : 'npm:angular-animate/angular-animate.js',
+            'angular-ui-router' : 'npm:angular-ui-router/release/angular-ui-router.js',
             // other libraries
             'rxjs':                      'npm:rxjs',
             'angular-in-memory-web-api': 'npm:angular-in-memory-web-api',

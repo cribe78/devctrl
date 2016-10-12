@@ -3,10 +3,12 @@ import {RecordCtrl} from "./RecordCtrl";
 import {EnumEditorCtrl} from "./EnumEditorCtrl";
 import {CtrlLogCtrl} from "./CtrlLogCtrl";
 import {UserSession} from "../../shared/UserSession";
-import {dataServiceSchema} from "./data-service-schema";
+import {dataServiceSchema} from "./data-service-schema"
+import * as io from "socket.io-client";
+import {SocketService} from "../socket";
 
-export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
-    function($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
+export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socket', '$mdDialog', '$location',
+    function($window, $http, $mdToast, $timeout, $q, socket : SocketService, $mdDialog, $location) {
         let dataModel = {
             applog : [],
             menu : { items : {}}
@@ -38,7 +40,8 @@ export let DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q
 
         //TODO: make this configurable
         var ioSocket = io($location.protocol() + "://" + $location.host());
-        var messenger = socketFactory({ ioSocket: ioSocket});
+        socket.init({ ioSocket: ioSocket});
+        let messenger = socket;
         var pendingUpdates = {};
         var tablePromises = {};
 

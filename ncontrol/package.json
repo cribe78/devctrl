@@ -16,6 +16,7 @@
     "angular-animate": "^1.5.8",
     "angular-aria": "^1.5.8",
     "angular-material": "^1.1.1",
+    "angular-ui-router": "^0.3.1",
     "angular2-in-memory-web-api": "0.0.20",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.6",

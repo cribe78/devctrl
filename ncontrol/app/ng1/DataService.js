@@ -3,8 +3,9 @@ var RecordCtrl_1 = require("./RecordCtrl");
 var EnumEditorCtrl_1 = require("./EnumEditorCtrl");
 var CtrlLogCtrl_1 = require("./CtrlLogCtrl");
 var data_service_schema_1 = require("./data-service-schema");
-exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socketFactory', '$mdDialog', '$location',
-    function ($window, $http, $mdToast, $timeout, $q, socketFactory, $mdDialog, $location) {
+var io = require("socket.io-client");
+exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socket', '$mdDialog', '$location',
+    function ($window, $http, $mdToast, $timeout, $q, socket, $mdDialog, $location) {
         var dataModel = {
             applog: [],
             menu: { items: {} }
@@ -30,7 +31,8 @@ exports.DataServiceFactory = ['$window', '$http', '$mdToast', '$timeout', '$q', 
         });
         //TODO: make this configurable
         var ioSocket = io($location.protocol() + "://" + $location.host());
-        var messenger = socketFactory({ ioSocket: ioSocket });
+        socket.init({ ioSocket: ioSocket });
+        var messenger = socket;
         var pendingUpdates = {};
         var tablePromises = {};
         var clientConfig = {

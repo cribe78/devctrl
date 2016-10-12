@@ -29,7 +29,8 @@ import {DataService2} from "./ds2.service";
 import "angular-animate";
 import "angular-aria";
 import "angular-material";
-
+import "angular-ui-router";
+import "./socket"
 
 /**
 *const platform = platformBrowserDynamic();

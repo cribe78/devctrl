@@ -30,7 +30,8 @@ import "angular-animate";
 import "angular-aria";
 import "angular-material";
 import "angular-ui-router";
-import "./socket"
+import "./socket";
+import "./ng1/toArrayFilter";
 
 /**
 *const platform = platformBrowserDynamic();

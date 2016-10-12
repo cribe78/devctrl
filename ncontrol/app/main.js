@@ -30,6 +30,7 @@ require("angular-aria");
 require("angular-material");
 require("angular-ui-router");
 require("./socket");
+require("./ng1/toArrayFilter");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);

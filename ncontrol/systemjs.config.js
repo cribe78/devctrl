@@ -24,6 +24,10 @@
             '@angular/router': 'npm:@angular/router/bundles/router.umd.js',
             '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
             '@angular/upgrade': 'npm:@angular/upgrade/bundles/upgrade.umd.js',
+            'angular' : 'npm:angular/angular.js',
+            'angular-material' : 'npm:angular-material/angular-material.js',
+            'angular-aria' : 'npm:angular-aria/angular-aria.js',
+            'angular-animate' : 'npm:angular-animate/angular-animate.js',
             // other libraries
             'rxjs':                      'npm:rxjs',
             'angular-in-memory-web-api': 'npm:angular-in-memory-web-api',

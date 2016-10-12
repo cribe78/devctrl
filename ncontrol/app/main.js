@@ -25,6 +25,9 @@ var EndpointCtrl_1 = require("./ng1/EndpointCtrl");
 var RoomCtrl_1 = require("./ng1/RoomCtrl");
 var RoomsCtrl_1 = require("./ng1/RoomsCtrl");
 var ds2_service_1 = require("./ds2.service");
+require("angular-animate");
+require("angular-aria");
+require("angular-material");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);

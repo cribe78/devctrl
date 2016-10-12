@@ -26,6 +26,10 @@ import {RoomCtrl} from "./ng1/RoomCtrl";
 import {RoomsCtrl} from "./ng1/RoomsCtrl";
 import {DataService2} from "./ds2.service";
 
+import "angular-animate";
+import "angular-aria";
+import "angular-material";
+
 
 /**
 *const platform = platformBrowserDynamic();

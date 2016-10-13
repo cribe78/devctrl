@@ -152,6 +152,7 @@ class Auth {
                 auth: true,
                 admin_auth: true,
                 admin_auth_expires: adminExpires,
+                admin_auth_requested: false,
                 username: req.headers["oidc_claim_preferred_username"]
             };
 
@@ -165,6 +166,7 @@ class Auth {
                     }
 
                     if (r.value) {
+                        debug("auth_requested set to " + r.value.admin_auth_requested);
                         response.setHeader('Content-Type', 'application/json');
                         response.writeHead(200);
                         response.end(JSON.stringify({ session: r.value}));
@@ -191,6 +193,8 @@ class Auth {
             if (queryVars['admin_auth_requested']) {
                 admin_auth_requested = true;
             }
+
+            debug("do_logon, admin_auth_requested = " + admin_auth_requested);
 
             let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
 

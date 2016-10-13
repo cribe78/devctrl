@@ -131,6 +131,7 @@ var Auth = (function () {
                 auth: true,
                 admin_auth: true,
                 admin_auth_expires: adminExpires,
+                admin_auth_requested: false,
                 username: req.headers["oidc_claim_preferred_username"]
             };
             sessions.findOneAndUpdate({ _id: identifier }, { '$set': session }, { returnOriginal: false }, function (err, r) {
@@ -139,6 +140,7 @@ var Auth = (function () {
                     return;
                 }
                 if (r.value) {
+                    debug("auth_requested set to " + r.value.admin_auth_requested);
                     response.setHeader('Content-Type', 'application/json');
                     response.writeHead(200);
                     response.end(JSON.stringify({ session: r.value }));
@@ -158,6 +160,7 @@ var Auth = (function () {
             if (queryVars['admin_auth_requested']) {
                 admin_auth_requested_1 = true;
             }
+            debug("do_logon, admin_auth_requested = " + admin_auth_requested_1);
             var loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
             sessions.findOneAndUpdate({ _id: identifier }, { '$set': {
                     login_expires: loginExpires,

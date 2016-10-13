@@ -9,8 +9,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require('@angular/core');
-var data_service_1 = require("./data.service");
-var DCDataModel_1 = require("../shared/DCDataModel");
 var AppComponent = (function () {
     function AppComponent() {
     }
@@ -18,7 +16,7 @@ var AppComponent = (function () {
         core_1.Component({
             selector: 'my-app',
             template: '<h1>My First Angular App</h1>',
-            providers: [data_service_1.DataService, DCDataModel_1.DCDataModel]
+            providers: []
         }), 
         __metadata('design:paramtypes', [])
     ], AppComponent);

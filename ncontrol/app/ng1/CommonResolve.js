@@ -31,8 +31,5 @@ exports.CommonResolve = {
     loadUserInfo: function (DataService) {
         return DataService.getUserInfo();
     },
-    initDataService: function (DataService2) {
-        return DataService2.init();
-    }
 };
 //# sourceMappingURL=CommonResolve.js.map

@@ -4,7 +4,6 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app.module';
 import { UpgradeAdapter } from '@angular/upgrade';
 import { AdminOnlyDirective } from "./ng1/admin-only.directive";
-import {DataServiceFactory} from "./ng1/DataService";
 import {MenuServiceFactory} from "./ng1/MenuService";
 import {StateConfig} from "./ng1/StateConfig";
 import {CtrlDirective} from "./ng1/CtrlDirective";
@@ -20,13 +19,12 @@ import {FkSelectDirective} from "./ng1/FkSelectDirective";
 import {EnumSelectDirective} from "./ng1/EnumSelectDirective";
 import {Slider2dDirective} from "./ng1/Slider2dDirective";
 import {ObjectEditorDirective} from "./ng1/ObjectEditorDirective";
-import {EndpointStatusDirective} from "./ng1/EndpointStatusDirective";
 import {ToolbarDirective} from "./ng1/ToolbarDirective";
 import {MainCtrl} from "./ng1/MainCtrl";
 import {EndpointCtrl} from "./ng1/EndpointCtrl";
 import {RoomCtrl} from "./ng1/RoomCtrl";
 import {RoomsCtrl} from "./ng1/RoomsCtrl";
-import {DataService2} from "./ds2.service";
+import {DataService} from "./data.service";
 
 import "angular-animate";
 import "angular-aria";
@@ -34,6 +32,7 @@ import "angular-material";
 import "angular-ui-router";
 import "./socket";
 import "./ng1/toArrayFilter";
+import {EndpointStatusComponent} from "./ng1/endpoint-status.component";
 
 /**
 *const platform = platformBrowserDynamic();
@@ -43,8 +42,8 @@ import "./ng1/toArrayFilter";
 
 angular.module('DevCtrlApp',
     ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
-    .factory('DataService', DataServiceFactory)
-    .service('DataService2', DataService2)
+    //.factory('DataService', DataServiceFactory)
+    .service('DataService', DataService)
     .factory('MenuService', MenuServiceFactory)
     .directive('ctrl', CtrlDirective)
     .directive('coeMenu', MenuDirective)
@@ -54,7 +53,7 @@ angular.module('DevCtrlApp',
     .directive('devctrlSlider2d', Slider2dDirective)
     .directive('devctrlObjectEditor', ObjectEditorDirective)
     .directive('devctrlAdminOnly', AdminOnlyDirective)
-    .directive('devctrlEndpointStatus', EndpointStatusDirective)
+    .component('devctrlEndpointStatus', EndpointStatusComponent)
     .directive('devctrlToolbar', ToolbarDirective)
     .controller('MainCtrl', MainCtrl)
     .controller('EnumEditorCtrl', EnumEditorCtrl)

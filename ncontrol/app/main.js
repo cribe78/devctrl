@@ -3,7 +3,6 @@ require("angular");
 var app_module_1 = require('./app.module');
 var upgrade_1 = require('@angular/upgrade');
 var admin_only_directive_1 = require("./ng1/admin-only.directive");
-var DataService_1 = require("./ng1/DataService");
 var MenuService_1 = require("./ng1/MenuService");
 var StateConfig_1 = require("./ng1/StateConfig");
 var CtrlDirective_1 = require("./ng1/CtrlDirective");
@@ -19,26 +18,25 @@ var FkSelectDirective_1 = require("./ng1/FkSelectDirective");
 var EnumSelectDirective_1 = require("./ng1/EnumSelectDirective");
 var Slider2dDirective_1 = require("./ng1/Slider2dDirective");
 var ObjectEditorDirective_1 = require("./ng1/ObjectEditorDirective");
-var EndpointStatusDirective_1 = require("./ng1/EndpointStatusDirective");
 var ToolbarDirective_1 = require("./ng1/ToolbarDirective");
 var MainCtrl_1 = require("./ng1/MainCtrl");
 var EndpointCtrl_1 = require("./ng1/EndpointCtrl");
 var RoomCtrl_1 = require("./ng1/RoomCtrl");
 var RoomsCtrl_1 = require("./ng1/RoomsCtrl");
-var ds2_service_1 = require("./ds2.service");
+var data_service_1 = require("./data.service");
 require("angular-animate");
 require("angular-aria");
 require("angular-material");
 require("angular-ui-router");
 require("./socket");
 require("./ng1/toArrayFilter");
+var endpoint_status_component_1 = require("./ng1/endpoint-status.component");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
  * */
 angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
-    .factory('DataService', DataService_1.DataServiceFactory)
-    .service('DataService2', ds2_service_1.DataService2)
+    .service('DataService', data_service_1.DataService)
     .factory('MenuService', MenuService_1.MenuServiceFactory)
     .directive('ctrl', CtrlDirective_1.CtrlDirective)
     .directive('coeMenu', MenuDirective_1.MenuDirective)
@@ -48,7 +46,7 @@ angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'an
     .directive('devctrlSlider2d', Slider2dDirective_1.Slider2dDirective)
     .directive('devctrlObjectEditor', ObjectEditorDirective_1.ObjectEditorDirective)
     .directive('devctrlAdminOnly', admin_only_directive_1.AdminOnlyDirective)
-    .directive('devctrlEndpointStatus', EndpointStatusDirective_1.EndpointStatusDirective)
+    .component('devctrlEndpointStatus', endpoint_status_component_1.EndpointStatusComponent)
     .directive('devctrlToolbar', ToolbarDirective_1.ToolbarDirective)
     .controller('MainCtrl', MainCtrl_1.MainCtrl)
     .controller('EnumEditorCtrl', EnumEditorCtrl_1.EnumEditorCtrl)

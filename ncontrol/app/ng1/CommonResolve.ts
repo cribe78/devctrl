@@ -39,9 +39,4 @@ export let CommonResolve = {
     loadUserInfo : function(DataService) {
         return DataService.getUserInfo();
     },
-
-
-    initDataService : function(DataService2) {
-        return DataService2.init();
-    }
 };

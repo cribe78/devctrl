@@ -5,20 +5,14 @@ The data model shared by the various DevCtrl components
 
  */
 
-import {
-    Endpoint,
-    EndpointData,
-    EndpointType,
-    EndpointTypeData,
-    Control,
-    ControlData,
-    DCSerializable,
-    DCSerializableData,
-    IDCForeignKeyDef
-} from "./Shared";
+
 import {Panel, PanelData} from "./Panel";
-import {PanelControl} from "./PanelControl";
+import {PanelControl, PanelControlData} from "./PanelControl";
 import {Room, RoomData} from "./Room";
+import {Endpoint, EndpointData} from "./Endpoint";
+import {EndpointType, EndpointTypeData} from "./EndpointType";
+import {Control, ControlData} from "./Control";
+import {DCSerializable, IDCForeignKeyDef, DCSerializableData} from "./DCSerializable";
 
 
 export interface IndexedDataSet<T> {
@@ -80,6 +74,11 @@ export class DCDataModel {
                     add.panels, this.panels, Panel
                 );
             }
+            if (add.panel_controls) {
+                this.loadTableData<PanelControl, PanelControlData>(
+                    add.panel_controls, this.panel_controls, PanelControl
+                );
+            }
             if (add.rooms) {
                 this.loadTableData<Room, RoomData>(
                     add.rooms, this.rooms, Room
@@ -127,6 +126,9 @@ export class DCDataModel {
 
                     // Set reference to "foreign" object
                     obj[fkDef.fkObjProp] = fkObjs[fkId];
+
+                    // Set reference on foreign object
+                    fkObjs[fkId].addReference(obj);
                 }
             }
 

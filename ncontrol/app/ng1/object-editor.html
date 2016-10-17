@@ -1,15 +1,22 @@
 <md-list>
+    <md-subheader>
+        {{obj.name}}
+    </md-subheader>
     <md-list-item class="md-list-item-text"
                   ng-repeat="(key, value) in obj.object">
-        <md-input-container>
+        <md-input-container ng-if="obj.valueType(value) != 'object'">
             <label>{{key}}</label>
             <input  ng-model="obj.object[key]">
         </md-input-container>
+        <devctrl-object-editor ng-if="obj.valueType(value) == 'object'"
+                                object="obj.object[key]"
+                                name="key">
+        </devctrl-object-editor>
     </md-list-item>
     <md-list-item>
         <div layout="row">
             <md-input-container>
-                <label>Key</label>
+                <label>{{obj.name}} Key</label>
                 <input id="oe-new-key" ng-model="obj.newKey">
             </md-input-container>
             <md-input-container>

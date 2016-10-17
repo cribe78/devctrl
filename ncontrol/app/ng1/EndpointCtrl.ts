@@ -1,5 +1,6 @@
+import {DataService} from "../data.service";
 export let EndpointCtrl = ['$stateParams', 'DataService', 'MenuService',
-    function($stateParams, DataService, MenuService) {
+    function($stateParams, DataService: DataService, MenuService) {
         var self = this;
         this.endpointId = $stateParams.id;
         this.endpoints = DataService.getTable('endpoints');

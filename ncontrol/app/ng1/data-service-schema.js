@@ -47,7 +47,6 @@ exports.dataServiceSchema = {
         "label": "Control Log",
         "foreign_keys": {
             "control_id": "controls",
-            "client_id": "clients"
         },
         "fields": [
             {
@@ -57,7 +56,7 @@ exports.dataServiceSchema = {
             },
             {
                 "name": "client_id",
-                "type": "fk",
+                "type": "string",
                 "label": "Client"
             },
             {
@@ -79,10 +78,9 @@ exports.dataServiceSchema = {
     },
     "controls": {
         "pk": "_id",
-        "fk_name": "command",
+        "fk_name": "name",
         "label": "Controls",
         "foreign_keys": {
-            "enum_id": "enums",
             "endpoint_id": "endpoints"
         },
         "fields": [
@@ -102,19 +100,31 @@ exports.dataServiceSchema = {
                 "label": "Name"
             },
             {
-                "name": "usertype",
-                "type": "enum",
-                "label": "User Type"
+                name: "usertype",
+                type: "select-static",
+                label: "UI Type",
+                options: [
+                    { name: "button", value: "button" },
+                    { name: "F32 Multibutton", value: "f32-multibutton" },
+                    { name: "Level Meter", value: "level" },
+                    { name: "Select", value: "select" },
+                    { name: "Select (readonly)", value: "select-readonly" },
+                    { name: "Slider", value: "slider" },
+                    { name: "2D Slider", value: "slider2d" },
+                    { name: "Switch", value: "switch" }
+                ]
             },
             {
                 "name": "control_type",
-                "type": "enum",
-                "label": "Control Type"
-            },
-            {
-                "name": "enum_id",
-                "type": "fk",
-                "label": "Enum"
+                "type": "select-static",
+                "label": "Control Type",
+                options: [
+                    { name: "boolean", value: "boolean" },
+                    { name: "int", value: "int" },
+                    { name: "range", value: "range" },
+                    { name: "rtlevel", value: "rtlevel" },
+                    { name: "string", value: "string" }
+                ]
             },
             {
                 "name": "poll",
@@ -147,47 +157,6 @@ exports.dataServiceSchema = {
                 "name": "communicatorClass",
                 "type": "string",
                 "label": "Communicator Class"
-            }
-        ]
-    },
-    "enums": {
-        "pk": "enum_id",
-        "fk_name": "name",
-        "label": "Enums",
-        "fields": [
-            {
-                "name": "name",
-                "type": "string",
-                "label": "Name"
-            }
-        ]
-    },
-    "enum_vals": {
-        "pk": "enum_val_id",
-        "foreign_keys": {
-            "enum_id": "enums"
-        },
-        "label": "Enum Values",
-        "fields": [
-            {
-                "name": "enum_id",
-                "type": "fk",
-                "label": "Enum"
-            },
-            {
-                "name": "value",
-                "type": "string",
-                "label": "Value"
-            },
-            {
-                "name": "name",
-                "type": "string",
-                "label": "Name"
-            },
-            {
-                "name": "enabled",
-                "type": "bool",
-                "label": "Enabled?"
             }
         ]
     },

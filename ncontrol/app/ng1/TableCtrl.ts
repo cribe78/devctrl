@@ -1,5 +1,6 @@
+import {DataService} from "../data.service";
 export let TableCtrl = ['$scope', '$stateParams',  'DataService',
-    function($scope, $stateParams, DataService) {
+    function($scope, $stateParams, DataService: DataService) {
         var self = this;
 
         this.tableName = $stateParams.name;
@@ -7,9 +8,7 @@ export let TableCtrl = ['$scope', '$stateParams',  'DataService',
         this.schema = DataService.getSchema(this.tableName);
         this.newRow = { table: this.tableName };
 
-        DataService.messenger.emit('status-update', {
-           message: "table " + this.tableName + " loaded"
-        });
+        DataService.publishStatusUpdate("table " + this.tableName + " loaded");
 
         this.sortColumn = 'id';
         this.sortReversed = false;

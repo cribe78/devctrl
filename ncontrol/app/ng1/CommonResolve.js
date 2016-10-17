@@ -7,12 +7,6 @@ exports.CommonResolve = {
     loadControls: function (DataService) {
         return DataService.getTablePromise('controls');
     },
-    loadEnums: function (DataService) {
-        return DataService.getTablePromise('enums');
-    },
-    loadEnumValues: function (DataService) {
-        return DataService.getTablePromise('enum_vals');
-    },
     loadRooms: function (DataService) {
         return DataService.getTablePromise('rooms');
     },

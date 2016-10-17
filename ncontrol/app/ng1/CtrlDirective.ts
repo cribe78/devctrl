@@ -1,3 +1,4 @@
+import {DataService} from "../data.service";
 export let CtrlDirective  = ['DataService', 'MenuService', function(DataService, MenuService) : angular.IDirective {
     return {
         scope: {
@@ -5,7 +6,7 @@ export let CtrlDirective  = ['DataService', 'MenuService', function(DataService,
             controlId: '='
         },
         bindToController: true,
-        controller: function(DataService, MenuService) {
+        controller: function(DataService: DataService, MenuService) {
             this.menu = MenuService;
 
             this.panelContext = angular.isDefined(this.panelControl);
@@ -42,9 +43,6 @@ export let CtrlDirective  = ['DataService', 'MenuService', function(DataService,
 
             this.appConfig = DataService.config;
             this.type = this.ctrl.fields.usertype;
-
-            this.enums = DataService.getTable('enums');
-            this.enumVals = DataService.getTable('enum_vals');
 
             var self = this;
 

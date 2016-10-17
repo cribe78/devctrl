@@ -1,15 +1,12 @@
 import {EndpointCommunicator, IEndpointCommunicatorConfig} from "../EndpointCommunicator";
 import { TCPCommand } from "./TCPCommand";
-import {
-    Endpoint,
-    IndexedDataSet
-} from "../shared/Shared";
 import * as net from "net";
 import {Control} from "../shared/Control";
 
 import * as debugMod from "debug";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import {EndpointStatus} from "../shared/Endpoint";
+import {IndexedDataSet} from "../shared/DCDataModel";
 let debug = debugMod("comms");
 
 

@@ -1,5 +1,5 @@
 "use strict";
-var Shared_1 = require("../shared/Shared");
+var Control_1 = require("../shared/Control");
 var TCPCommand = (function () {
     function TCPCommand(config) {
         this.cmdQueryResponseRE = /^$a/; // RE to match the response to a device poll, default matches nothing
@@ -56,7 +56,7 @@ var TCPCommand = (function () {
             config: this.templateConfig,
             value: 0
         };
-        var templates = [new Shared_1.Control(ctid, templateData)];
+        var templates = [new Control_1.Control(ctid, templateData)];
         this.ctidList = [ctid];
         return templates;
     };

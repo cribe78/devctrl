@@ -1,3 +1,4 @@
+import {DataService} from "../data.service";
 export let FkSelectDirective = ['DataService', function(DataService) : ng.IDirective {
     return {
         scope: {
@@ -8,7 +9,7 @@ export let FkSelectDirective = ['DataService', function(DataService) : ng.IDirec
             addNewOption: '='
         },
         bindToController: true,
-        controller: function(DataService) {
+        controller: function(DataService: DataService) {
             var self = this;
             this.options = DataService.getTable(this.tableName);
             this.schema = DataService.getSchema(this.tableName);

@@ -13,6 +13,12 @@ var DCSerializable = (function () {
         this.foreignKeys = [];
     }
     ;
+    DCSerializable.prototype.addReference = function (refObj) {
+        if (!this.referenced[refObj.table]) {
+            this.referenced[refObj.table] = {};
+        }
+        this.referenced[refObj.table][refObj._id] = refObj;
+    };
     DCSerializable.prototype.itemRequestData = function () {
         return {
             table: this.table,

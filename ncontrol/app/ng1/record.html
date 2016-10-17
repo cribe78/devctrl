@@ -23,11 +23,6 @@
                            field="field"
                            select-model="record.obj.fields">
                 </fk-select>
-                <enum-select ng-if="field.type == 'enum'"
-                             table="record.obj.tableName"
-                             field="field"
-                             select-model="record.obj.fields">
-                </enum-select>
                 <md-input-container ng-if="field.type == 'select-static'">
                     <label>{{field.label}}</label>
                     <md-select placeholder={{field.label}} ng-model="record.obj.fields[field.name]">
@@ -47,7 +42,8 @@
                     </md-checkbox>
                 </md-input-container>
                 <devctrl-object-editor ng-if="field.type == 'object'"
-                                       object="record.obj.fields[field.name]">
+                                       object="record.obj.fields[field.name]"
+                                       name="field.name">
                 </devctrl-object-editor>
             </md-list-item>
             <md-list-item>

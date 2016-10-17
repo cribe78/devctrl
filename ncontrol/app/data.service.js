@@ -2,7 +2,6 @@
 var data_service_schema_1 = require("./ng1/data-service-schema");
 var io = require("socket.io-client");
 var RecordCtrl_1 = require("./ng1/RecordCtrl");
-var EnumEditorCtrl_1 = require("./ng1/EnumEditorCtrl");
 var CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
 var DataService = (function () {
     function DataService($window, $http, $mdToast, $timeout, $q, socket, $mdDialog, $location) {
@@ -161,23 +160,6 @@ var DataService = (function () {
             newLocation = newLocation + "location=" + location_1;
             window.location.href = newLocation;
         }
-    };
-    DataService.prototype.editEnum = function ($event, myEnum, enumRefRecord, options) {
-        if (options === void 0) { options = {}; }
-        this.$mdDialog.show({
-            targetEvent: $event,
-            locals: {
-                myEnum: myEnum,
-                enumRefRecord: enumRefRecord,
-                options: options
-            },
-            controller: EnumEditorCtrl_1.EnumEditorCtrl,
-            controllerAs: 'editor',
-            bindToController: true,
-            templateUrl: 'app/ng1/enum-editor.html',
-            clickOutsideToClose: true,
-            hasBackdrop: false
-        });
     };
     DataService.prototype.editRecord = function ($event, id, tableName, recordDefaults) {
         if (recordDefaults === void 0) { recordDefaults = {}; }
@@ -507,6 +489,9 @@ var DataService = (function () {
         }, function (error) {
             _this.errorToast(error);
         });
+    };
+    DataService.prototype.publishStatusUpdate = function (message) {
+        this.socket.emit('status-update', { message: message });
     };
     DataService.prototype.updateConfig = function () {
         if (typeof (this.$window.localStorage) !== 'undefined') {

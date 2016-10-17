@@ -1,8 +1,6 @@
-import {
-    Control,
-    ControlData
-} from "../shared/Shared";
+
 import {ControlUpdate, ControlUpdateData} from "../shared/ControlUpdate";
+import {Control, ControlData} from "../shared/Control";
 
 export interface ITCPCommandConfig {
     cmdStr: string;

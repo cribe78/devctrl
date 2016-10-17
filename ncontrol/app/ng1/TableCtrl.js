@@ -6,9 +6,7 @@ exports.TableCtrl = ['$scope', '$stateParams', 'DataService',
         this.data = DataService.getTable(this.tableName);
         this.schema = DataService.getSchema(this.tableName);
         this.newRow = { table: this.tableName };
-        DataService.messenger.emit('status-update', {
-            message: "table " + this.tableName + " loaded"
-        });
+        DataService.publishStatusUpdate("table " + this.tableName + " loaded");
         this.sortColumn = 'id';
         this.sortReversed = false;
         this.setSortColumn = function (field) {

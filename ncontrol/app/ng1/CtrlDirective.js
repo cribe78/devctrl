@@ -36,8 +36,6 @@ exports.CtrlDirective = ['DataService', 'MenuService', function (DataService, Me
                 };
                 this.appConfig = DataService.config;
                 this.type = this.ctrl.fields.usertype;
-                this.enums = DataService.getTable('enums');
-                this.enumVals = DataService.getTable('enum_vals');
                 var self = this;
                 this.normalizedValue = function () {
                     // Normalize a numeric value to a scale of 0 - 100

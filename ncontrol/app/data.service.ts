@@ -4,7 +4,6 @@ import {UserSession} from "../shared/UserSession";
 import * as io from "socket.io-client";
 import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
 import {RecordCtrl} from "./ng1/RecordCtrl";
-import {EnumEditorCtrl} from "./ng1/EnumEditorCtrl";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import IPromise = angular.IPromise;
 import {CtrlLogCtrl} from "./ng1/CtrlLogCtrl";
@@ -13,7 +12,7 @@ export class DataService {
     schema;
     userSession : UserSession;
     private initialized = false;
-    dataModel : any;
+    private dataModel : any;
     pendingUpdates : IPromise<void>[] = [];
     tablePromises = {};
     config = {
@@ -199,22 +198,8 @@ export class DataService {
         }
     }
 
-    editEnum($event, myEnum, enumRefRecord, options = {}) {
-        this.$mdDialog.show({
-            targetEvent: $event,
-            locals: {
-                myEnum: myEnum,
-                enumRefRecord: enumRefRecord,
-                options: options
-            },
-            controller: EnumEditorCtrl,
-            controllerAs: 'editor',
-            bindToController: true,
-            templateUrl: 'app/ng1/enum-editor.html',
-            clickOutsideToClose: true,
-            hasBackdrop : false
-        });
-    }
+
+
 
     editRecord($event, id: string, tableName: string, recordDefaults = {}) {
         let record;
@@ -601,6 +586,10 @@ export class DataService {
                 this.errorToast(error);
             }
         );
+    }
+
+    publishStatusUpdate(message: string) {
+        this.socket.emit('status-update', { message: message});
     }
 
     updateConfig() {

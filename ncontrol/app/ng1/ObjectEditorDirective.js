@@ -1,24 +1,30 @@
 "use strict";
+var ObjectEditorController = (function () {
+    function ObjectEditorController(DataService) {
+        this.DataService = DataService;
+    }
+    ObjectEditorController.prototype.addItem = function () {
+        if (this.newKey && this.newValue) {
+            this.object[this.newKey] = this.newValue;
+        }
+        this.newKey = undefined;
+        this.newValue = undefined;
+        angular.element('#oe-new-key').focus();
+    };
+    ObjectEditorController.prototype.valueType = function (value) {
+        return typeof value;
+    };
+    ObjectEditorController.$inject = ['DataService'];
+    return ObjectEditorController;
+}());
 exports.ObjectEditorDirective = [function () {
         return {
             scope: {
-                object: '='
+                object: '=',
+                name: '='
             },
             bindToController: true,
-            controller: function () {
-                var self = this;
-                if (!angular.isDefined(this.object) || this.object == null || angular.isArray(this.object)) {
-                    this.object = {};
-                }
-                this.addItem = function (key, value) {
-                    if (angular.isDefined(this.newKey) && angular.isDefined(this.newVal)) {
-                        this.object[this.newKey] = this.newVal;
-                    }
-                    this.newKey = undefined;
-                    this.newVal = undefined;
-                    angular.element('#oe-new-key').focus();
-                };
-            },
+            controller: ObjectEditorController,
             controllerAs: 'obj',
             templateUrl: 'app/ng1/object-editor.html'
         };

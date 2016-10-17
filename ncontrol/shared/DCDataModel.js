@@ -5,10 +5,12 @@ The data model shared by the various DevCtrl components
 
  */
 "use strict";
-var Shared_1 = require("./Shared");
 var Panel_1 = require("./Panel");
 var PanelControl_1 = require("./PanelControl");
 var Room_1 = require("./Room");
+var Endpoint_1 = require("./Endpoint");
+var EndpointType_1 = require("./EndpointType");
+var Control_1 = require("./Control");
 var DCDataModel = (function () {
     function DCDataModel() {
         this.endpoints = {};
@@ -18,9 +20,9 @@ var DCDataModel = (function () {
         this.panel_controls = {};
         this.rooms = {};
         this.types = {
-            endpoints: Shared_1.Endpoint,
-            endpoint_type: Shared_1.EndpointType,
-            controls: Shared_1.Control,
+            endpoints: Endpoint_1.Endpoint,
+            endpoint_type: EndpointType_1.EndpointType,
+            controls: Control_1.Control,
             panels: Panel_1.Panel,
             panel_controls: PanelControl_1.PanelControl,
             rooms: Room_1.Room
@@ -40,26 +42,29 @@ var DCDataModel = (function () {
             // There is some boilerplate here that is necessary to allow typescript
             // to perform its type checking magic.
             if (add.endpoint_types) {
-                this.loadTableData(add.endpoint_types, this.endpoint_types, Shared_1.EndpointType);
+                this.loadTableData(add.endpoint_types, this.endpoint_types, EndpointType_1.EndpointType);
             }
             if (add.endpoints) {
-                this.loadTableData(add.endpoints, this.endpoints, Shared_1.Endpoint);
+                this.loadTableData(add.endpoints, this.endpoints, Endpoint_1.Endpoint);
             }
             if (add.controls) {
-                this.loadTableData(add.controls, this.controls, Shared_1.Control);
+                this.loadTableData(add.controls, this.controls, Control_1.Control);
             }
             if (add.panels) {
                 this.loadTableData(add.panels, this.panels, Panel_1.Panel);
+            }
+            if (add.panel_controls) {
+                this.loadTableData(add.panel_controls, this.panel_controls, PanelControl_1.PanelControl);
             }
             if (add.rooms) {
                 this.loadTableData(add.rooms, this.rooms, Room_1.Room);
             }
             // Call indexForeignKeys if relevant tables have been updated
             if (add.endpoints || add.endpoint_types) {
-                this.indexForeignKeys(this.endpoints, Shared_1.Endpoint.foreignKeys);
+                this.indexForeignKeys(this.endpoints, Endpoint_1.Endpoint.foreignKeys);
             }
             if (add.controls || add.control_templates) {
-                this.indexForeignKeys(this.controls, Shared_1.Control.foreignKeys);
+                this.indexForeignKeys(this.controls, Control_1.Control.foreignKeys);
             }
             if (add.panels || add.rooms) {
                 this.indexForeignKeys(this.panels, Panel_1.Panel.foreignKeys);
@@ -89,6 +94,8 @@ var DCDataModel = (function () {
                     }
                     // Set reference to "foreign" object
                     obj[fkDef.fkObjProp] = fkObjs[fkId];
+                    // Set reference on foreign object
+                    fkObjs[fkId].addReference(obj);
                 }
             }
         }

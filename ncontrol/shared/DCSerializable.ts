@@ -36,7 +36,11 @@ export abstract class DCSerializable {
     dataLoaded: boolean;
     table : string;
     foreignKeys: IDCForeignKeyDef[];
-    referenced: { [index: string]  : DCSerializable };
+    referenced: {
+        [index: string]  : {
+            [index: string] : DCSerializable
+        }
+    };
     requiredProperties: string[] = [];
     optionalProperties: string[] = [];
 
@@ -44,6 +48,14 @@ export abstract class DCSerializable {
         this.dataLoaded = false;
         this.foreignKeys = [];
     };
+
+    addReference(refObj: DCSerializable) {
+        if (! this.referenced[refObj.table]) {
+            this.referenced[refObj.table] = {};
+        }
+
+        this.referenced[refObj.table][refObj._id] = refObj;
+    }
 
     itemRequestData(): IDCDataRequest {
         return {

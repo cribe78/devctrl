@@ -7,6 +7,7 @@ export let TableCtrl = ['$scope', '$stateParams',  'DataService',
         this.data = DataService.getTable(this.tableName);
         this.schema = DataService.getSchema(this.tableName);
         this.newRow = { table: this.tableName };
+        this.listed = [];
 
         DataService.publishStatusUpdate("table " + this.tableName + " loaded");
 
@@ -25,6 +26,7 @@ export let TableCtrl = ['$scope', '$stateParams',  'DataService',
         this.deleteRow = function(row) {
             row.table = this.tableName;
             DataService.deleteRow(row);
+            this.listData();
         };
 
         this.fkDisplayVal = function(field, row) {
@@ -51,7 +53,17 @@ export let TableCtrl = ['$scope', '$stateParams',  'DataService',
 
         this.addRow = function($event) {
             DataService.editRecord($event, '0', self.tableName);
+            this.listData();
         };
+
+        this.listData = function() {
+            self.listed.length = 0;
+            for (let id in self.data.indexed) {
+                self.listed.push(self.data.indexed[id]);
+            }
+        };
+
+        this.listData();
 
         this.openRecord = function($event, id) {
             DataService.editRecord($event, id, self.tableName);

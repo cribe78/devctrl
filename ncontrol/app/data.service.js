@@ -44,7 +44,6 @@ var DataService = (function () {
         };
         for (var table in this.schema) {
             this.dataModel[table] = {
-                listed: [],
                 indexed: {},
                 loaded: false
             };
@@ -281,7 +280,6 @@ var DataService = (function () {
                 referenced: {},
                 tableName: tableName
             };
-            table.listed.push(table.indexed[key]);
         }
         return table.indexed[key];
     };
@@ -400,7 +398,6 @@ var DataService = (function () {
         }
     };
     DataService.prototype.loadData = function (data) {
-        var _this = this;
         // Treat update as a synonym for add
         if (data.update) {
             if (data.add) {
@@ -456,11 +453,6 @@ var DataService = (function () {
                 }
             });
             delete this.dataModel[table_1].indexed[key_1];
-            // Rebuild object list
-            this.dataModel[table_1].listed.length = 0;
-            angular.forEach(this.dataModel[table_1].indexed, function (value, key) {
-                _this.dataModel[table_1].listed.push(value);
-            });
         }
     };
     DataService.prototype.revokeAdminAuth = function () {

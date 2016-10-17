@@ -10,12 +10,12 @@ export let RoomCtrl = ['$stateParams', 'DataService', 'MenuService',
             $stateParams.name = this.obj.fields.name;
         }
         else {
-            angular.forEach(this.rooms.listed, function (value) {
-                if (value.fields['name'] == $stateParams.name) {
-                    self.obj = value;
-                    self.id = value.id;
+            for (let id in this.rooms.indexed) {
+                if (this.rooms.indexed[id].fields['name'] == $stateParams.name) {
+                    self.obj = this.rooms.indexed[id];
+                    self.id = id;
                 }
-            });
+            }
         }
 
         this.menu.toolbarSelectTable("rooms", "rooms.room", self.id);

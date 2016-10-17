@@ -22,13 +22,10 @@ exports.MenuServiceFactory = ['$state', '$mdSidenav', '$mdMedia', 'DataService',
             toolbarSelect: toolbarSelect,
             toolbarSelectTable: function (tableName, destState, selectedId) {
                 var table = DataService.getTable(tableName);
-                toolbarSelect.options = table.listed.map(function (row) {
-                    var option = {
-                        value: row.id,
-                        name: row.fields.name
-                    };
-                    return option;
-                });
+                toolbarSelect.options = [];
+                for (var id in table.indexed) {
+                    toolbarSelect.options.push({ id: id, name: table.indexed[id].fields.name });
+                }
                 toolbarSelect.tableName = tableName;
                 toolbarSelect.destState = destState;
                 toolbarSelect.selected = selectedId;
@@ -99,8 +96,9 @@ exports.MenuServiceFactory = ['$state', '$mdSidenav', '$mdMedia', 'DataService',
                     var parent = $state.get('^', state);
                     if (angular.isDefined(self.items[parent.name])) {
                         if (angular.isDefined(state.data.listByName)) {
-                            var records = DataService.getTable(state.data.listByName).listed;
-                            angular.forEach(records, function (record) {
+                            var records = DataService.getTable(state.data.listByName).indexed;
+                            for (var id in records) {
+                                var record = records[id];
                                 if (!angular.isDefined(parent.substates[record.id])) {
                                     parent.substates[record.id] = {
                                         name: state.name,
@@ -115,7 +113,7 @@ exports.MenuServiceFactory = ['$state', '$mdSidenav', '$mdMedia', 'DataService',
                                     parent.substates[record.id].params.name = record.fields.name;
                                     parent.substates[record.id].title = record.fields.name;
                                 }
-                            });
+                            }
                         }
                         else {
                             self.items[parent.name].substates[state.name] = state;

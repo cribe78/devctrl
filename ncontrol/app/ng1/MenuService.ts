@@ -26,14 +26,11 @@ export let MenuServiceFactory = ['$state', '$mdSidenav', '$mdMedia', 'DataServic
 
             toolbarSelectTable : function(tableName, destState, selectedId) {
                 var table = DataService.getTable(tableName);
-                toolbarSelect.options = table.listed.map(function(row) {
-                    var option = {
-                        value : row.id,
-                        name : row.fields.name
-                    };
 
-                    return option;
-                });
+                toolbarSelect.options = [];
+                for (let id in table.indexed) {
+                    toolbarSelect.options.push({ id: id, name: table.indexed[id].fields.name});
+                }
 
                 toolbarSelect.tableName = tableName;
                 toolbarSelect.destState = destState;
@@ -115,9 +112,11 @@ export let MenuServiceFactory = ['$state', '$mdSidenav', '$mdMedia', 'DataServic
                     var parent = $state.get('^', state);
                     if (angular.isDefined(self.items[parent.name])) {
                         if (angular.isDefined(state.data.listByName)) {
-                            var records = DataService.getTable(state.data.listByName).listed;
+                            var records = DataService.getTable(state.data.listByName).indexed;
 
-                            angular.forEach(records, function(record) {
+                            for (let id in records) {
+                                let record = records[id];
+
                                 if (! angular.isDefined(parent.substates[record.id])) {
                                     parent.substates[record.id] = {
                                         name: state.name,
@@ -132,7 +131,7 @@ export let MenuServiceFactory = ['$state', '$mdSidenav', '$mdMedia', 'DataServic
                                     parent.substates[record.id].params.name  = record.fields.name;
                                     parent.substates[record.id].title = record.fields.name;
                                 }
-                            });
+                            }
                         }
                         else {
                             self.items[parent.name].substates[state.name] = state;

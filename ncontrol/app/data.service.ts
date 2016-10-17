@@ -60,7 +60,6 @@ export class DataService {
 
         for (let table in this.schema) {
             this.dataModel[table] = {
-                listed: [],
                 indexed: {},
                 loaded : false
             }
@@ -339,7 +338,6 @@ export class DataService {
                 referenced: {},
                 tableName: tableName
             };
-            table.listed.push(table.indexed[key]);
         }
 
         return table.indexed[key];
@@ -547,12 +545,6 @@ export class DataService {
             });
 
             delete this.dataModel[table].indexed[key];
-
-            // Rebuild object list
-            this.dataModel[table].listed.length = 0;
-            angular.forEach(this.dataModel[table].indexed, (value, key) => {
-                this.dataModel[table].listed.push(value);
-            });
         }
     }
 

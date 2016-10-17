@@ -10,13 +10,13 @@ import {CtrlDirective} from "./ng1/CtrlDirective";
 import {TableCtrl} from "./ng1/TableCtrl";
 import {LogCtrl} from "./ng1/LogCtrl";
 import {RecordCtrl} from "./ng1/RecordCtrl";
-import {EnumEditorCtrl} from "./ng1/EnumEditorCtrl";
+//import {EnumEditorCtrl} from "./ng1/EnumEditorCtrl";
 import {CtrlLogCtrl} from "./ng1/CtrlLogCtrl";
 import {MenuDirective} from "./ng1/MenuDirective";
 import {PanelDirective} from "./ng1/PanelDirective";
 import {PanelControlSelectorCtrl} from "./ng1/PanelControlSelectorCtrl";
 import {FkSelectDirective} from "./ng1/FkSelectDirective";
-import {EnumSelectDirective} from "./ng1/EnumSelectDirective";
+//import {EnumSelectDirective} from "./ng1/EnumSelectDirective";
 import {Slider2dDirective} from "./ng1/Slider2dDirective";
 import {ObjectEditorDirective} from "./ng1/ObjectEditorDirective";
 import {ToolbarDirective} from "./ng1/ToolbarDirective";
@@ -49,14 +49,14 @@ angular.module('DevCtrlApp',
     .directive('coeMenu', MenuDirective)
     .directive('devctrlPanel', PanelDirective)
     .directive('fkSelect', FkSelectDirective)
-    .directive('enumSelect', EnumSelectDirective)
+    //.directive('enumSelect', EnumSelectDirective)
     .directive('devctrlSlider2d', Slider2dDirective)
     .directive('devctrlObjectEditor', ObjectEditorDirective)
     .directive('devctrlAdminOnly', AdminOnlyDirective)
     .component('devctrlEndpointStatus', EndpointStatusComponent)
     .directive('devctrlToolbar', ToolbarDirective)
     .controller('MainCtrl', MainCtrl)
-    .controller('EnumEditorCtrl', EnumEditorCtrl)
+    //.controller('EnumEditorCtrl', EnumEditorCtrl)
     .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl)
     .controller('EndpointCtrl', EndpointCtrl)
     .controller('LogCtrl', LogCtrl)

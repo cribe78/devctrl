@@ -9,13 +9,13 @@ var CtrlDirective_1 = require("./ng1/CtrlDirective");
 var TableCtrl_1 = require("./ng1/TableCtrl");
 var LogCtrl_1 = require("./ng1/LogCtrl");
 var RecordCtrl_1 = require("./ng1/RecordCtrl");
-var EnumEditorCtrl_1 = require("./ng1/EnumEditorCtrl");
+//import {EnumEditorCtrl} from "./ng1/EnumEditorCtrl";
 var CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
 var MenuDirective_1 = require("./ng1/MenuDirective");
 var PanelDirective_1 = require("./ng1/PanelDirective");
 var PanelControlSelectorCtrl_1 = require("./ng1/PanelControlSelectorCtrl");
 var FkSelectDirective_1 = require("./ng1/FkSelectDirective");
-var EnumSelectDirective_1 = require("./ng1/EnumSelectDirective");
+//import {EnumSelectDirective} from "./ng1/EnumSelectDirective";
 var Slider2dDirective_1 = require("./ng1/Slider2dDirective");
 var ObjectEditorDirective_1 = require("./ng1/ObjectEditorDirective");
 var ToolbarDirective_1 = require("./ng1/ToolbarDirective");
@@ -42,14 +42,12 @@ angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'an
     .directive('coeMenu', MenuDirective_1.MenuDirective)
     .directive('devctrlPanel', PanelDirective_1.PanelDirective)
     .directive('fkSelect', FkSelectDirective_1.FkSelectDirective)
-    .directive('enumSelect', EnumSelectDirective_1.EnumSelectDirective)
     .directive('devctrlSlider2d', Slider2dDirective_1.Slider2dDirective)
     .directive('devctrlObjectEditor', ObjectEditorDirective_1.ObjectEditorDirective)
     .directive('devctrlAdminOnly', admin_only_directive_1.AdminOnlyDirective)
     .component('devctrlEndpointStatus', endpoint_status_component_1.EndpointStatusComponent)
     .directive('devctrlToolbar', ToolbarDirective_1.ToolbarDirective)
     .controller('MainCtrl', MainCtrl_1.MainCtrl)
-    .controller('EnumEditorCtrl', EnumEditorCtrl_1.EnumEditorCtrl)
     .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl_1.PanelControlSelectorCtrl)
     .controller('EndpointCtrl', EndpointCtrl_1.EndpointCtrl)
     .controller('LogCtrl', LogCtrl_1.LogCtrl)

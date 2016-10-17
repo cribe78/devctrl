@@ -48,6 +48,11 @@ var DCSerializable = (function () {
         }
         return data;
     };
+    DCSerializable.prototype.removeReference = function (refObj) {
+        if (this.referenced[refObj.table] && this.referenced[refObj.table][refObj._id]) {
+            delete this.referenced[refObj.table][refObj._id];
+        }
+    };
     return DCSerializable;
 }());
 exports.DCSerializable = DCSerializable;

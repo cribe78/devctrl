@@ -12,7 +12,7 @@ import {Room, RoomData} from "./Room";
 import {Endpoint, EndpointData} from "./Endpoint";
 import {EndpointType, EndpointTypeData} from "./EndpointType";
 import {Control, ControlData} from "./Control";
-import {DCSerializable, IDCForeignKeyDef, DCSerializableData} from "./DCSerializable";
+import {DCSerializable, IDCForeignKeyDef, DCSerializableData, IDCDataDelete} from "./DCSerializable";
 
 
 export interface IndexedDataSet<T> {
@@ -101,6 +101,20 @@ export class DCDataModel {
                 this.indexForeignKeys(this.panel_controls, PanelControl.foreignKeys);
             }
 
+        }
+
+        if (data.delete) {
+            let del = (<IDCDataDelete>data.delete);
+            let table = del.table;
+            let _id = del._id;
+
+            // Remove references from foreign key objects
+            if (this[table][_id]) {
+                let deleteRec = (<DCSerializable>this[table][_id]);
+                for (let fkDef of deleteRec.foreignKeys) {
+                    deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
+                }
+            }
         }
     }
 

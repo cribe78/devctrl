@@ -73,6 +73,19 @@ var DCDataModel = (function () {
                 this.indexForeignKeys(this.panel_controls, PanelControl_1.PanelControl.foreignKeys);
             }
         }
+        if (data.delete) {
+            var del = data.delete;
+            var table = del.table;
+            var _id = del._id;
+            // Remove references from foreign key objects
+            if (this[table][_id]) {
+                var deleteRec = this[table][_id];
+                for (var _i = 0, _a = deleteRec.foreignKeys; _i < _a.length; _i++) {
+                    var fkDef = _a[_i];
+                    deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
+                }
+            }
+        }
     };
     /**
      *  For data model objects that hold references to other data model objects,

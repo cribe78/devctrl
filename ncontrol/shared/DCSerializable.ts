@@ -92,4 +92,10 @@ export abstract class DCSerializable {
 
         return data;
     }
+
+    removeReference(refObj: DCSerializable) {
+        if (this.referenced[refObj.table] && this.referenced[refObj.table][refObj._id]) {
+            delete this.referenced[refObj.table][refObj._id];
+        }
+    }
  }

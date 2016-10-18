@@ -1,8 +1,9 @@
 "use strict";
 var data_service_schema_1 = require("./ng1/data-service-schema");
 var io = require("socket.io-client");
-var RecordCtrl_1 = require("./ng1/RecordCtrl");
+var record_controller_1 = require("./ng1/record.controller");
 var CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
+var DCDataModel_1 = require("../shared/DCDataModel");
 var DataService = (function () {
     function DataService($window, $http, $mdToast, $timeout, $q, socket, $mdDialog, $location) {
         this.$window = $window;
@@ -18,7 +19,10 @@ var DataService = (function () {
         this.tablePromises = {};
         this.config = {
             editEnabled: true,
-            lastLogonAttempt: 0
+            lastLogonAttempt: 0,
+            menu: {
+                sidenavOpen: false
+            }
         };
         this.schema = data_service_schema_1.dataServiceSchema;
         for (var table in this.schema) {
@@ -38,16 +42,7 @@ var DataService = (function () {
             admin_auth: false,
             admin_auth_expires: 0
         };
-        this.dataModel = {
-            applog: [],
-            menu: { items: {} }
-        };
-        for (var table in this.schema) {
-            this.dataModel[table] = {
-                indexed: {},
-                loaded: false
-            };
-        }
+        this.dataModel = new DCDataModel_1.DCDataModel();
         if (typeof ($window.localStorage) !== 'undefined') {
             var localConfig = $window.localStorage.config;
             if (angular.isString(localConfig)) {
@@ -70,14 +65,7 @@ var DataService = (function () {
             var newId = Object.keys(response.add[row.tableName])[0];
             console.log("new record " + newId + "added to " + row.tableName);
             _this.loadData(response);
-            var record = _this.dataModel[row.tableName].indexed[newId];
-            /**
-            angular.forEach(row, function(value, key) {
-                if (key != 'tableName') {
-                    row[key] = null;
-                }
-            });
-             **/
+            var record = _this.dataModel[row.tableName][newId];
             if (angular.isFunction(callback)) {
                 callback(record);
             }
@@ -175,7 +163,7 @@ var DataService = (function () {
             locals: {
                 obj: record
             },
-            controller: RecordCtrl_1.RecordCtrl,
+            controller: record_controller_1.RecordController,
             controllerAs: 'record',
             bindToController: true,
             templateUrl: 'app/ng1/record.html',
@@ -263,17 +251,15 @@ var DataService = (function () {
      */
     DataService.prototype.getRowRef = function (tableName, key) {
         if (!tableName) {
-            console.error("error looking up record for undefined table");
-            return {};
+            throw new Error("error looking up record for undefined table");
         }
         if (!angular.isDefined(key) || key === null) {
-            console.error("error looking up %s record for undefined key", tableName);
-            return {};
+            throw new Error("error looking up " + tableName + " record for undefined key");
         }
-        var table = this.getTableRef(tableName);
-        if (!table.indexed[key]) {
+        /**
+        if (! table.indexed[key]) {
             table.indexed[key] = {
-                fields: {},
+                fields : {},
                 foreign: {},
                 id: key,
                 loaded: false,
@@ -281,7 +267,8 @@ var DataService = (function () {
                 tableName: tableName
             };
         }
-        return table.indexed[key];
+         **/
+        return this.dataModel.getTableItem(key, tableName);
     };
     DataService.prototype.getSchema = function (table) {
         return this.schema[table];
@@ -325,8 +312,7 @@ var DataService = (function () {
      */
     DataService.prototype.getTableRef = function (table) {
         if (!this.dataModel[table]) {
-            console.log("Error: getTableRef request for invalid table");
-            return {};
+            throw new Error("Error: getTableRef request for invalid table");
         }
         return this.dataModel[table];
     };
@@ -393,11 +379,18 @@ var DataService = (function () {
             var update = updates_1[_i];
             if (update.status == "observed" || update.status == "executed") {
                 var control = this.getRowRef("controls", update.control_id);
-                control.fields.value = update.value;
+                control.value = update.value;
             }
         }
     };
     DataService.prototype.loadData = function (data) {
+        //try {
+        this.dataModel.loadData(data);
+        //}
+        //catch (e) {
+        //    console.error("loadData error: " + e.message);
+        //}
+        /**
         // Treat update as a synonym for add
         if (data.update) {
             if (data.add) {
@@ -407,24 +400,27 @@ var DataService = (function () {
                 data.add = data.update;
             }
         }
+
         if (data.add) {
-            for (var table in data.add) {
-                //angular.forEach(data.add, function(tableData, tableName) {
-                var tschema = this.getSchema(table);
-                var fks = tschema['foreign_keys'] || {};
-                var tableData = data.add[table];
-                for (var key in tableData) {
-                    //angular.forEach(tableData, function(value, key) {
-                    var row = this.getRowRef(table, key);
+            for (let table in data.add) {
+            //angular.forEach(data.add, function(tableData, tableName) {
+                let tschema = this.getSchema(table);
+                let fks = tschema['foreign_keys'] || {};
+                let tableData = data.add[table];
+
+                for (let key in tableData) {
+                //angular.forEach(tableData, function(value, key) {
+                    let row = this.getRowRef(table, key);
                     angular.merge(row.fields, tableData[key]);
                     row.loaded = true;
+
                     // Set up foreign key object references
-                    for (var fkField in fks) {
-                        //angular.forEach(fks, function(fkTable, fkField) {
-                        var fkTable = fks[fkField];
+                    for (let fkField in fks) {
+                    //angular.forEach(fks, function(fkTable, fkField) {
+                        let fkTable = fks[fkField];
                         if (row.fields[fkField] && row.fields[fkField] !== null) {
-                            var fkRow = this.getRowRef(fkTable, row.fields[fkField]);
-                            if (!fkRow.referenced[table]) {
+                            let fkRow = this.getRowRef(fkTable, row.fields[fkField]);
+                            if (! fkRow.referenced[table]) {
                                 fkRow.referenced[table] = {};
                             }
                             fkRow.referenced[table][row.id] = row;
@@ -439,21 +435,26 @@ var DataService = (function () {
                 }
             }
         }
+
         if (angular.isDefined(data.delete)) {
             // Remove references
-            var table_1 = data.delete.table;
-            var key_1 = data.delete._id;
-            var record = this.dataModel[table_1].indexed[key_1];
-            if (!angular.isDefined(record)) {
+            let table = data.delete.table;
+            let key = data.delete._id;
+            let record = this.dataModel[table].indexed[key];
+
+            if (! angular.isDefined(record)) {
                 return;
             }
-            angular.forEach(record.foreign, function (referenced, refID) {
-                if (angular.isDefined(referenced.referenced[table_1][key_1])) {
-                    delete referenced.referenced[table_1][key_1];
+
+            angular.forEach(record.foreign, function(referenced, refID) {
+                if (angular.isDefined(referenced.referenced[table][key])) {
+                    delete referenced.referenced[table][key];
                 }
             });
-            delete this.dataModel[table_1].indexed[key_1];
+
+            delete this.dataModel[table].indexed[key];
         }
+        **/
     };
     DataService.prototype.revokeAdminAuth = function () {
         //TODO: this doesn't do anything unless the Apache auth session credentials

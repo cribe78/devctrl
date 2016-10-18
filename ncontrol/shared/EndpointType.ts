@@ -6,7 +6,6 @@ export interface EndpointTypeData extends DCSerializableData {
 }
 
 export class EndpointType extends DCSerializable {
-    name: string;
     communicatorClass: string;
     static tableStr = "endpoint_types";
     table: string;
@@ -15,10 +14,9 @@ export class EndpointType extends DCSerializable {
         super(_id);
         this.table = EndpointType.tableStr;
 
-        this.requiredProperties = [
-            'communicatorClass',
-            'name'
-        ];
+        this.requiredProperties = this.requiredProperties.concat([
+            'communicatorClass'
+        ]);
 
         if (data) {
             this.loadData(data);

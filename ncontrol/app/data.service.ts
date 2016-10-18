@@ -2,11 +2,13 @@ import {dataServiceSchema} from "./ng1/data-service-schema";
 import {SocketService} from "./socket";
 import {UserSession} from "../shared/UserSession";
 import * as io from "socket.io-client";
-import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
-import {RecordCtrl} from "./ng1/RecordCtrl";
+import {IDCDataRequest, IDCDataUpdate, DCSerializable} from "../shared/DCSerializable";
+import {RecordController} from "./ng1/record.controller";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import IPromise = angular.IPromise;
 import {CtrlLogCtrl} from "./ng1/CtrlLogCtrl";
+import {DCDataModel, IndexedDataSet} from "../shared/DCDataModel";
+import {Control} from "../shared/Control";
 
 export class DataService {
     schema;
@@ -17,7 +19,10 @@ export class DataService {
     tablePromises = {};
     config = {
         editEnabled: true,
-        lastLogonAttempt: 0
+        lastLogonAttempt: 0,
+        menu : {
+            sidenavOpen : false
+        }
     };
 
     static $inject = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socket', '$mdDialog', '$location'];
@@ -52,18 +57,7 @@ export class DataService {
             admin_auth_expires: 0
         };
 
-        this.dataModel = {
-            applog : [],
-            menu : { items : {}}
-        };
-
-
-        for (let table in this.schema) {
-            this.dataModel[table] = {
-                indexed: {},
-                loaded : false
-            }
-        }
+        this.dataModel = new DCDataModel();
 
         if (typeof($window.localStorage) !== 'undefined') {
             var localConfig = $window.localStorage.config;
@@ -90,15 +84,8 @@ export class DataService {
 
             this.loadData(response);
 
-            let record = this.dataModel[row.tableName].indexed[newId];
+            let record = this.dataModel[row.tableName][newId];
 
-            /**
-            angular.forEach(row, function(value, key) {
-                if (key != 'tableName') {
-                    row[key] = null;
-                }
-            });
-             **/
 
             if (angular.isFunction(callback)) {
                 callback(record);
@@ -198,10 +185,9 @@ export class DataService {
     }
 
 
-
-
     editRecord($event, id: string, tableName: string, recordDefaults = {}) {
         let record;
+
         if (id !== "0") {
             record = this.getRowRef(tableName, id);
         }
@@ -215,7 +201,7 @@ export class DataService {
             locals: {
                 obj: record
             },
-            controller: RecordCtrl,
+            controller: RecordController,
             controllerAs: 'record',
             bindToController: true,
             templateUrl: 'app/ng1/record.html',
@@ -316,19 +302,16 @@ export class DataService {
      *   referenced - other rows that reference this row
      */
 
-    getRowRef(tableName: string, key: string) {
+    getRowRef(tableName: string, key: string) : DCSerializable {
         if (! tableName) {
-            console.error("error looking up record for undefined table");
-            return {};
+            throw new Error("error looking up record for undefined table");
         }
 
         if (! angular.isDefined(key) || key === null) {
-            console.error("error looking up %s record for undefined key", tableName);
-            return {};
+            throw new Error(`error looking up ${tableName} record for undefined key`);
         }
 
-        let table = this.getTableRef(tableName);
-
+        /**
         if (! table.indexed[key]) {
             table.indexed[key] = {
                 fields : {},
@@ -339,8 +322,8 @@ export class DataService {
                 tableName: tableName
             };
         }
-
-        return table.indexed[key];
+         **/
+        return this.dataModel.getTableItem(key, tableName);
     }
 
 
@@ -348,7 +331,7 @@ export class DataService {
         return this.schema[table];
     }
 
-    getTable(table: string) {
+    getTable(table: string) : IndexedDataSet<DCSerializable> {
         if (! this.tablePromises[table]) {
             this.tablePromises[table] = this.getTablePromise(table);
         }
@@ -394,10 +377,9 @@ export class DataService {
      * @param table
      * @returns {*}
      */
-    getTableRef(table: string) {
+    getTableRef(table: string) : IndexedDataSet<DCSerializable> {
         if (! this.dataModel[table]) {
-            console.log("Error: getTableRef request for invalid table");
-            return {};
+            throw new Error("Error: getTableRef request for invalid table");
         }
         return this.dataModel[table];
     }
@@ -476,13 +458,21 @@ export class DataService {
     loadControlUpdates(updates: ControlUpdateData[]) {
         for (let update of updates) {
             if (update.status == "observed" || update.status == "executed") {
-                let control = this.getRowRef("controls", update.control_id);
-                control.fields.value = update.value;
+                let control = <Control>this.getRowRef("controls", update.control_id);
+                control.value = update.value;
             }
         }
     }
 
     loadData(data) {
+        //try {
+            this.dataModel.loadData(data);
+        //}
+        //catch (e) {
+        //    console.error("loadData error: " + e.message);
+        //}
+
+        /**
         // Treat update as a synonym for add
         if (data.update) {
             if (data.add) {
@@ -546,6 +536,7 @@ export class DataService {
 
             delete this.dataModel[table].indexed[key];
         }
+        **/
     }
 
     revokeAdminAuth() {

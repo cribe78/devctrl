@@ -2,7 +2,7 @@
      layout-align="space-between center"
      class="devctrl-ctrl"
      flex >
-    <label class="text-menu">{{ctrl.ctrlName()}}</label>
-    <md-switch aria-label="{{ctrl.ctrlName()}}" ng-model="ctrl.ctrl.fields.value"
-               ng-true-value="1" ng-false-value="0" ng-change="ctrl.updateValue()"></md-switch>
+    <label class="text-menu">{{$ctrl.name}}</label>
+    <md-switch aria-label="{{$ctrl.name}}" ng-model="$ctrl.value"
+               ng-true-value="1" ng-false-value="0" ng-change="$ctrl.updateValue()"></md-switch>
 </div>

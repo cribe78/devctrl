@@ -11,13 +11,20 @@ var Panel = (function (_super) {
     function Panel(_id, data) {
         _super.call(this, _id);
         this.table = Panel.tableStr;
-        this.requiredProperties = [
-            'name',
+        this.foreignKeys = [
+            {
+                type: Room_1.Room,
+                fkObjProp: "room",
+                fkIdProp: "room_id",
+                fkTable: Room_1.Room.tableStr
+            }
+        ];
+        this.requiredProperties = this.requiredProperties.concat([
             'room_id',
             'grouping',
             'type',
             'panel_index'
-        ];
+        ]);
         if (data) {
             this.loadData(data);
         }
@@ -36,15 +43,7 @@ var Panel = (function (_super) {
     Panel.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    Panel.tableStr = "Panels";
-    Panel.foreignKeys = [
-        {
-            type: Room_1.Room,
-            fkObjProp: "room",
-            fkIdProp: "room_id",
-            fkTable: Room_1.Room.tableStr
-        }
-    ];
+    Panel.tableStr = "panels";
     return Panel;
 }(DCSerializable_1.DCSerializable));
 exports.Panel = Panel;

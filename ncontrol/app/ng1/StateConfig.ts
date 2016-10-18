@@ -10,7 +10,7 @@ export let StateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterPro
                 scope: true,
                 controller: 'RoomsCtrl',
                 controllerAs: 'rooms',
-                templateUrl: 'app/ng1/locations.html',
+                templateUrl: 'app/ng1/rooms.html',
                 resolve: CommonResolve,
                 data : {
                     title: 'Locations'
@@ -75,7 +75,6 @@ export let StateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterPro
                 templateUrl: 'app/ng1/tableeditor.html',
                 controller: 'TableCtrl',
                 controllerAs: 'table',
-                resolve: TableResolve,
                 data : {
                     title : "Table Editor"
                 }

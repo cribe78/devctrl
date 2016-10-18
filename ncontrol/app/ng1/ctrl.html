@@ -1,7 +1,7 @@
 <div class="devctrl-ctrl-item" flex="auto" layout="row" layout-align="space-between start">
-   <ng-include flex src="'app/ng1/controls/' + ctrl.type + '.html'"></ng-include>
+   <ng-include flex src="'app/ng1/controls/' + $ctrl.type + '.html'"></ng-include>
     <div class="devctrl-ctrl-admin-placeholder"
-         ng-if="! ctrl.menu.narrowMode()"
+         ng-if="! $ctrl.menu.narrowMode()"
          flex="none">
         <md-menu devctrl-admin-only>
             <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
@@ -9,25 +9,25 @@
             </md-button>
             <md-menu-content>
                 <md-menu-item>
-                    <md-button ng-click="ctrl.editControl($event)">
+                    <md-button ng-click="$ctrl.editControl($event)">
                         <md-icon md-font-set="material-icons">create</md-icon>
                         Control
                     </md-button>
                 </md-menu-item>
-                <md-menu-item ng-if="ctrl.panelContext">
-                    <md-button ng-click="ctrl.editPanelControl($event)">
+                <md-menu-item ng-if="$ctrl.panelContext">
+                    <md-button ng-click="$ctrl.editPanelControl($event)">
                         Edit Panel Control
                     </md-button>
                 </md-menu-item>
-                <md-menu-item ng-if="ctrl.type == 'select' || ctrl.type == 'select-readonly'">
+                <md-menu-item ng-if="$ctrl.type == 'select' || $ctrl.type == 'select-readonly'">
                     <md-button label="Control Options"
-                               ng-click="ctrl.editOptions()">
+                               ng-click="$ctrl.editOptions()">
                         <md-icon md-font-set="material-icons">create</md-icon>
                         Control Options
                     </md-button>
                 </md-menu-item>
                 <md-menu-item>
-                    <md-button  ng-click="ctrl.showLog($event)">
+                    <md-button  ng-click="$ctrl.showLog($event)">
                         <md-icon md-font-set="material-icons">change_history</md-icon>
                         Control Log
                     </md-button>

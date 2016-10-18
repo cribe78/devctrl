@@ -12,11 +12,24 @@ var PanelControl = (function (_super) {
     function PanelControl(_id, data) {
         _super.call(this, _id);
         this.table = PanelControl.tableStr;
-        this.requiredProperties = [
-            'control_id',
-            'panel_id',
-            'name'
+        this.foreignKeys = [
+            {
+                type: Control_1.Control,
+                fkObjProp: "control",
+                fkIdProp: "control_id",
+                fkTable: Control_1.Control.tableStr
+            },
+            {
+                type: Panel_1.Panel,
+                fkObjProp: "panel",
+                fkIdProp: "panel_id",
+                fkTable: Panel_1.Panel.tableStr
+            }
         ];
+        this.requiredProperties = this.requiredProperties.concat([
+            'control_id',
+            'panel_id'
+        ]);
         if (data) {
             this.loadData(data);
         }
@@ -28,6 +41,13 @@ var PanelControl = (function (_super) {
         set: function (control) {
             this._control = control;
             this.control_id = control._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PanelControl.prototype, "endpoint", {
+        get: function () {
+            return this._control.endpoint;
         },
         enumerable: true,
         configurable: true
@@ -47,20 +67,6 @@ var PanelControl = (function (_super) {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
     PanelControl.tableStr = "panel_controls";
-    PanelControl.foreignKeys = [
-        {
-            type: Control_1.Control,
-            fkObjProp: "control",
-            fkIdProp: "control_id",
-            fkTable: Control_1.Control.tableStr
-        },
-        {
-            type: Panel_1.Panel,
-            fkObjProp: "panel",
-            fkIdProp: "panel_id",
-            fkTable: Panel_1.Panel.tableStr
-        }
-    ];
     return PanelControl;
 }(DCSerializable_1.DCSerializable));
 exports.PanelControl = PanelControl;

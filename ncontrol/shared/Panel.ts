@@ -10,36 +10,34 @@ export interface PanelData extends DCSerializableData {
 }
 
 export class Panel extends DCSerializable {
-    name: string;
     private _room: Room;
     room_id: string;
     grouping: string;
     type: string;
     panel_index: number;
 
-    static tableStr = "Panels";
+    static tableStr = "panels";
     table: string;
-
-    static foreignKeys = [
-        {
-            type: Room,
-            fkObjProp: "room",
-            fkIdProp: "room_id",
-            fkTable: Room.tableStr
-        }
-    ];
 
     constructor(_id: string, data?: PanelData) {
         super(_id);
         this.table = Panel.tableStr;
 
-        this.requiredProperties = [
-            'name',
+        this.foreignKeys = [
+            {
+                type: Room,
+                fkObjProp: "room",
+                fkIdProp: "room_id",
+                fkTable: Room.tableStr
+            }
+        ];
+
+        this.requiredProperties = this.requiredProperties.concat([
             'room_id',
             'grouping',
             'type',
             'panel_index'
-        ];
+        ]);
 
         if (data) {
             this.loadData(data);

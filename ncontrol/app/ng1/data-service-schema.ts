@@ -1,7 +1,6 @@
 export let dataServiceSchema = {
     endpoints: {
         "pk": "control_endpoint_id",
-        "fk_name": "name",
         "foreign_keys": {
             "endpoint_type_id": "endpoint_types"
         },
@@ -77,7 +76,6 @@ export let dataServiceSchema = {
     },
     "controls": {
         "pk": "_id",
-        "fk_name": "name",
         "label": "Controls",
         "foreign_keys": {
             "endpoint_id": "endpoints"
@@ -144,7 +142,6 @@ export let dataServiceSchema = {
     },
     "endpoint_types": {
         "pk": "endpoint_type_id",
-        "fk_name": "name",
         "label": "Endpoint Types",
         "fields": [
             {
@@ -161,7 +158,6 @@ export let dataServiceSchema = {
     },
     "panels": {
         "pk": "panel_id",
-        "fk_name": "name",
         "foreign_keys": {
             "room_id": "rooms"
         },
@@ -225,7 +221,6 @@ export let dataServiceSchema = {
     },
     "rooms": {
         "pk": "room_id",
-        "fk_name": "name",
         "label": "Rooms",
         "fields": [
             {

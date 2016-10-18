@@ -4,26 +4,23 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app.module';
 import { UpgradeAdapter } from '@angular/upgrade';
 import { AdminOnlyDirective } from "./ng1/admin-only.directive";
-import {MenuServiceFactory} from "./ng1/MenuService";
+import {MenuService} from "./ng1/menu.service";
 import {StateConfig} from "./ng1/StateConfig";
-import {CtrlDirective} from "./ng1/CtrlDirective";
-import {TableCtrl} from "./ng1/TableCtrl";
+import {TableController} from "./ng1/table.controller";
 import {LogCtrl} from "./ng1/LogCtrl";
-import {RecordCtrl} from "./ng1/RecordCtrl";
-//import {EnumEditorCtrl} from "./ng1/EnumEditorCtrl";
+import {RecordController} from "./ng1/record.controller";
 import {CtrlLogCtrl} from "./ng1/CtrlLogCtrl";
 import {MenuDirective} from "./ng1/MenuDirective";
 import {PanelDirective} from "./ng1/PanelDirective";
 import {PanelControlSelectorCtrl} from "./ng1/PanelControlSelectorCtrl";
 import {FkSelectDirective} from "./ng1/FkSelectDirective";
-//import {EnumSelectDirective} from "./ng1/EnumSelectDirective";
 import {Slider2dDirective} from "./ng1/Slider2dDirective";
 import {ObjectEditorDirective} from "./ng1/ObjectEditorDirective";
 import {ToolbarDirective} from "./ng1/ToolbarDirective";
 import {MainCtrl} from "./ng1/MainCtrl";
-import {EndpointCtrl} from "./ng1/EndpointCtrl";
-import {RoomCtrl} from "./ng1/RoomCtrl";
-import {RoomsCtrl} from "./ng1/RoomsCtrl";
+import {EndpointController} from "./ng1/endpoint.controller";
+import {RoomController} from "./ng1/room.controller"
+import {RoomsController} from "./ng1/rooms.controller";
 import {DataService} from "./data.service";
 
 import "angular-animate";
@@ -33,6 +30,7 @@ import "angular-ui-router";
 import "./socket";
 import "./ng1/toArrayFilter";
 import {EndpointStatusComponent} from "./ng1/endpoint-status.component";
+import {ControlComponent} from "./ng1/control.component";
 
 /**
 *const platform = platformBrowserDynamic();
@@ -42,29 +40,26 @@ import {EndpointStatusComponent} from "./ng1/endpoint-status.component";
 
 angular.module('DevCtrlApp',
     ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
-    //.factory('DataService', DataServiceFactory)
     .service('DataService', DataService)
-    .factory('MenuService', MenuServiceFactory)
-    .directive('ctrl', CtrlDirective)
+    .service('MenuService', MenuService)
+    .component('ctrl', ControlComponent)
     .directive('coeMenu', MenuDirective)
     .directive('devctrlPanel', PanelDirective)
     .directive('fkSelect', FkSelectDirective)
-    //.directive('enumSelect', EnumSelectDirective)
     .directive('devctrlSlider2d', Slider2dDirective)
     .directive('devctrlObjectEditor', ObjectEditorDirective)
     .directive('devctrlAdminOnly', AdminOnlyDirective)
     .component('devctrlEndpointStatus', EndpointStatusComponent)
     .directive('devctrlToolbar', ToolbarDirective)
     .controller('MainCtrl', MainCtrl)
-    //.controller('EnumEditorCtrl', EnumEditorCtrl)
     .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl)
-    .controller('EndpointCtrl', EndpointCtrl)
+    .controller('EndpointCtrl', EndpointController)
     .controller('LogCtrl', LogCtrl)
     .controller('CtrlLog', CtrlLogCtrl)
-    .controller('TableCtrl', TableCtrl)
-    .controller('RecordCtrl', RecordCtrl)
-    .controller('RoomCtrl', RoomCtrl)
-    .controller('RoomsCtrl', RoomsCtrl)
+    .controller('TableCtrl', TableController)
+    .controller('RecordController', RecordController)
+    .controller('RoomCtrl', RoomController)
+    .controller('RoomsCtrl', RoomsController)
     .config(StateConfig)
     //state change debugging
     .run (['$rootScope', function($rootScope) {

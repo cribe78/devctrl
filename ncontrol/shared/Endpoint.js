@@ -20,15 +20,22 @@ var Endpoint = (function (_super) {
     __extends(Endpoint, _super);
     function Endpoint(_id, data) {
         _super.call(this, _id);
+        this.foreignKeys = [
+            {
+                type: EndpointType_1.EndpointType,
+                fkObjProp: "type",
+                fkIdProp: "endpoint_type_id",
+                fkTable: EndpointType_1.EndpointType.tableStr
+            }
+        ];
         this.table = Endpoint.tableStr;
-        this.requiredProperties = [
+        this.requiredProperties = this.requiredProperties.concat([
             'endpoint_type_id',
             'status',
-            'name',
             'ip',
             'port',
             'enabled'
-        ];
+        ]);
         if (data) {
             this.loadData(data);
         }
@@ -56,14 +63,6 @@ var Endpoint = (function (_super) {
         };
     };
     Endpoint.tableStr = "endpoints";
-    Endpoint.foreignKeys = [
-        {
-            type: EndpointType_1.EndpointType,
-            fkObjProp: "type",
-            fkIdProp: "endpoint_type_id",
-            fkTable: EndpointType_1.EndpointType.tableStr
-        }
-    ];
     return Endpoint;
 }(DCSerializable_1.DCSerializable));
 exports.Endpoint = Endpoint;

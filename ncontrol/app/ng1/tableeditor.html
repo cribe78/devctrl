@@ -19,7 +19,7 @@
     <md-list-item ng-repeat-start="row in table.listed | orderBy: table.sortColumn : table.sortReversed"
                   layout="row">
         <div flex="20" class="devctrl-id-text">
-            <span>{{row.id}}</span>
+            <span>{{row._id}}</span>
         </div>
         <div class="md-list-item-text"
              ng-repeat="field in table.schema.fields"
@@ -30,14 +30,14 @@
                 <md-checkbox class="md-primary"
                              ng-true-value="1"
                              ng-false-value="0"
-                             ng-model="row.fields[field.name]"
+                             ng-model="row[field.name]"
                              ng-change="table.updateRow($event, row)"></md-checkbox>
             </div>
-            <p ng-switch-default>{{row.fields[field.name]}}</p>
+            <p ng-switch-default>{{row[field.name]}}</p>
 
         </div>
         <div flex="5">
-            <md-button  ng-click="table.openRecord($event, row.id)">
+            <md-button  ng-click="table.openRecord($event, row._id)">
                 <md-icon  md-font-set="material-icons">edit</md-icon>
             </md-button>
         </div>

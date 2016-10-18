@@ -17,15 +17,22 @@ var Control = (function (_super) {
         _super.call(this, _id);
         this.ephemeral = false;
         this.table = Control.tableStr;
-        this.requiredProperties = [
+        this.requiredProperties = this.requiredProperties.concat([
             'endpoint_id',
             'ctid',
-            'name',
             'usertype',
             'control_type',
             'poll',
             'config',
             'value'
+        ]);
+        this.foreignKeys = [
+            {
+                type: Endpoint_1.Endpoint,
+                fkObjProp: "endpoint",
+                fkIdProp: "endpoint_id",
+                fkTable: Endpoint_1.Endpoint.tableStr
+            }
         ];
         this.optionalProperties = ['ephemeral'];
         if (data) {
@@ -46,14 +53,6 @@ var Control = (function (_super) {
         };
     };
     Control.tableStr = "controls";
-    Control.foreignKeys = [
-        {
-            type: Endpoint_1.Endpoint,
-            fkObjProp: "endpoint",
-            fkIdProp: "endpoint_id",
-            fkTable: Endpoint_1.Endpoint.tableStr
-        }
-    ];
     return Control;
 }(DCSerializable_1.DCSerializable));
 exports.Control = Control;

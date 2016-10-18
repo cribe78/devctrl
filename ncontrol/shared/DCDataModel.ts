@@ -89,16 +89,16 @@ export class DCDataModel {
 
             // Call indexForeignKeys if relevant tables have been updated
             if (add.endpoints || add.endpoint_types) {
-                this.indexForeignKeys(this.endpoints, Endpoint.foreignKeys);
+                this.indexForeignKeys(this.endpoints);
             }
             if (add.controls || add.control_templates) {
-                this.indexForeignKeys(this.controls, Control.foreignKeys);
+                this.indexForeignKeys(this.controls);
             }
             if (add.panels || add.rooms) {
-                this.indexForeignKeys(this.panels, Panel.foreignKeys);
+                this.indexForeignKeys(this.panels);
             }
             if (add.controls || add.panels || add.panel_controls) {
-                this.indexForeignKeys(this.panel_controls, PanelControl.foreignKeys);
+                this.indexForeignKeys(this.panel_controls);
             }
 
         }
@@ -122,14 +122,13 @@ export class DCDataModel {
      *  For data model objects that hold references to other data model objects,
      *  initialize those references
      *
-     *  TODO: set up "referenced" array
      */
-    indexForeignKeys(objects: IndexedDataSet<DCSerializable>, fks: IDCForeignKeyDef[]) {
-        for (let fkDef of fks) {
-            let fkObjs = this[fkDef.fkTable];
+    indexForeignKeys(objects: IndexedDataSet<DCSerializable>) {
+        for (let id in objects) {
+            let obj = objects[id];
 
-            for (let id in objects) {
-                let obj = objects[id];
+            for (let fkDef of obj.foreignKeys) {
+                let fkObjs = this[fkDef.fkTable];
 
                 if (obj[fkDef.fkIdProp]) {
                     let fkId = obj[fkDef.fkIdProp];  // The the foreign key id value
@@ -145,7 +144,6 @@ export class DCDataModel {
                     fkObjs[fkId].addReference(obj);
                 }
             }
-
         }
     }
 
@@ -172,5 +170,22 @@ export class DCDataModel {
 
         this[table][id] = new this.types[table](id);
         return (<Type>this[table][id]);
+    }
+
+    getTableItem(id: string, table: string) : DCSerializable {
+        switch (table) {
+            case Endpoint.tableStr:
+                return this.getItem<Endpoint>(id, table);
+            case EndpointType.tableStr:
+                return this.getItem<EndpointType>(id, table);
+            case Room.tableStr:
+                return this.getItem<Room>(id, table);
+            case Panel.tableStr:
+                return this.getItem<Panel>(id, table);
+            case PanelControl.tableStr:
+                return this.getItem<PanelControl>(id, table);
+            case Control.tableStr:
+                return this.getItem<Control>(id, table);
+        }
     }
 }

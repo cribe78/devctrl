@@ -5,8 +5,6 @@ export interface RoomData extends DCSerializableData {
 }
 
 export class Room extends DCSerializable {
-    name: string;
-
     static tableStr = "rooms";
     table: string;
 
@@ -14,10 +12,8 @@ export class Room extends DCSerializable {
         super(_id);
         this.table = Room.tableStr;
 
-        this.requiredProperties = ['name'];
-
         if (data) {
-            this.loadData;
+            this.loadData(data);
         }
     }
 

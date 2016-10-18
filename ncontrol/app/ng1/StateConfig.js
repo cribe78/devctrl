@@ -1,5 +1,4 @@
 "use strict";
-var TableCtrl_1 = require("./TableCtrl");
 var CommonResolve_1 = require("./CommonResolve");
 var LogCtrl_1 = require("./LogCtrl");
 exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvider',
@@ -10,7 +9,7 @@ exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvide
             scope: true,
             controller: 'RoomsCtrl',
             controllerAs: 'rooms',
-            templateUrl: 'app/ng1/locations.html',
+            templateUrl: 'app/ng1/rooms.html',
             resolve: CommonResolve_1.CommonResolve,
             data: {
                 title: 'Locations'
@@ -75,7 +74,6 @@ exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvide
             templateUrl: 'app/ng1/tableeditor.html',
             controller: 'TableCtrl',
             controllerAs: 'table',
-            resolve: TableCtrl_1.TableResolve,
             data: {
                 title: "Table Editor"
             }

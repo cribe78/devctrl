@@ -24,7 +24,6 @@ export class Control extends DCSerializable {
     endpoint_id: string;
     endpoint: Endpoint;
     ctid: string;
-    name: string;
     usertype: string;
     control_type: string;
     poll: number;
@@ -35,27 +34,27 @@ export class Control extends DCSerializable {
     static tableStr = "controls";
     table: string;
 
-    static foreignKeys = [
-        {
-            type: Endpoint,
-            fkObjProp: "endpoint",
-            fkIdProp: "endpoint_id",
-            fkTable: Endpoint.tableStr
-        }
-    ];
 
     constructor(_id: string, data?: ControlData) {
         super(_id);
         this.table = Control.tableStr;
-        this.requiredProperties = [
+        this.requiredProperties = this.requiredProperties.concat([
             'endpoint_id',
             'ctid',
-            'name',
             'usertype',
             'control_type',
             'poll',
             'config',
             'value'
+        ]);
+
+        this.foreignKeys = [
+            {
+                type: Endpoint,
+                fkObjProp: "endpoint",
+                fkIdProp: "endpoint_id",
+                fkTable: Endpoint.tableStr
+            }
         ];
 
         this.optionalProperties = ['ephemeral'];

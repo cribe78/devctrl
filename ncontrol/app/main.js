@@ -3,26 +3,23 @@ require("angular");
 var app_module_1 = require('./app.module');
 var upgrade_1 = require('@angular/upgrade');
 var admin_only_directive_1 = require("./ng1/admin-only.directive");
-var MenuService_1 = require("./ng1/MenuService");
+var menu_service_1 = require("./ng1/menu.service");
 var StateConfig_1 = require("./ng1/StateConfig");
-var CtrlDirective_1 = require("./ng1/CtrlDirective");
-var TableCtrl_1 = require("./ng1/TableCtrl");
+var table_controller_1 = require("./ng1/table.controller");
 var LogCtrl_1 = require("./ng1/LogCtrl");
-var RecordCtrl_1 = require("./ng1/RecordCtrl");
-//import {EnumEditorCtrl} from "./ng1/EnumEditorCtrl";
+var record_controller_1 = require("./ng1/record.controller");
 var CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
 var MenuDirective_1 = require("./ng1/MenuDirective");
 var PanelDirective_1 = require("./ng1/PanelDirective");
 var PanelControlSelectorCtrl_1 = require("./ng1/PanelControlSelectorCtrl");
 var FkSelectDirective_1 = require("./ng1/FkSelectDirective");
-//import {EnumSelectDirective} from "./ng1/EnumSelectDirective";
 var Slider2dDirective_1 = require("./ng1/Slider2dDirective");
 var ObjectEditorDirective_1 = require("./ng1/ObjectEditorDirective");
 var ToolbarDirective_1 = require("./ng1/ToolbarDirective");
 var MainCtrl_1 = require("./ng1/MainCtrl");
-var EndpointCtrl_1 = require("./ng1/EndpointCtrl");
-var RoomCtrl_1 = require("./ng1/RoomCtrl");
-var RoomsCtrl_1 = require("./ng1/RoomsCtrl");
+var endpoint_controller_1 = require("./ng1/endpoint.controller");
+var room_controller_1 = require("./ng1/room.controller");
+var rooms_controller_1 = require("./ng1/rooms.controller");
 var data_service_1 = require("./data.service");
 require("angular-animate");
 require("angular-aria");
@@ -31,14 +28,15 @@ require("angular-ui-router");
 require("./socket");
 require("./ng1/toArrayFilter");
 var endpoint_status_component_1 = require("./ng1/endpoint-status.component");
+var control_component_1 = require("./ng1/control.component");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
  * */
 angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
     .service('DataService', data_service_1.DataService)
-    .factory('MenuService', MenuService_1.MenuServiceFactory)
-    .directive('ctrl', CtrlDirective_1.CtrlDirective)
+    .service('MenuService', menu_service_1.MenuService)
+    .component('ctrl', control_component_1.ControlComponent)
     .directive('coeMenu', MenuDirective_1.MenuDirective)
     .directive('devctrlPanel', PanelDirective_1.PanelDirective)
     .directive('fkSelect', FkSelectDirective_1.FkSelectDirective)
@@ -49,13 +47,13 @@ angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'an
     .directive('devctrlToolbar', ToolbarDirective_1.ToolbarDirective)
     .controller('MainCtrl', MainCtrl_1.MainCtrl)
     .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl_1.PanelControlSelectorCtrl)
-    .controller('EndpointCtrl', EndpointCtrl_1.EndpointCtrl)
+    .controller('EndpointCtrl', endpoint_controller_1.EndpointController)
     .controller('LogCtrl', LogCtrl_1.LogCtrl)
     .controller('CtrlLog', CtrlLogCtrl_1.CtrlLogCtrl)
-    .controller('TableCtrl', TableCtrl_1.TableCtrl)
-    .controller('RecordCtrl', RecordCtrl_1.RecordCtrl)
-    .controller('RoomCtrl', RoomCtrl_1.RoomCtrl)
-    .controller('RoomsCtrl', RoomsCtrl_1.RoomsCtrl)
+    .controller('TableCtrl', table_controller_1.TableController)
+    .controller('RecordController', record_controller_1.RecordController)
+    .controller('RoomCtrl', room_controller_1.RoomController)
+    .controller('RoomsCtrl', rooms_controller_1.RoomsController)
     .config(StateConfig_1.StateConfig)
     .run(['$rootScope', function ($rootScope) {
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {

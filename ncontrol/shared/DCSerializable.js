@@ -7,10 +7,12 @@
 var DCSerializable = (function () {
     function DCSerializable(_id) {
         this._id = _id;
-        this.requiredProperties = [];
+        this.requiredProperties = ['name'];
         this.optionalProperties = [];
         this.dataLoaded = false;
         this.foreignKeys = [];
+        this.fields = this;
+        this.referenced = {};
     }
     ;
     DCSerializable.prototype.addReference = function (refObj) {
@@ -29,7 +31,7 @@ var DCSerializable = (function () {
         for (var _i = 0, _a = this.requiredProperties; _i < _a.length; _i++) {
             var prop = _a[_i];
             if (typeof data[prop] == 'undefined') {
-                throw new Error("Invalid data object, " + prop + " must be defined");
+                throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this._id);
             }
             this[prop] = data[prop];
         }

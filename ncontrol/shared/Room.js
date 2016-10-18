@@ -10,9 +10,8 @@ var Room = (function (_super) {
     function Room(_id, data) {
         _super.call(this, _id);
         this.table = Room.tableStr;
-        this.requiredProperties = ['name'];
         if (data) {
-            this.loadData;
+            this.loadData(data);
         }
     }
     Room.prototype.getDataObject = function () {

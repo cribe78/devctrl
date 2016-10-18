@@ -33,21 +33,26 @@ export interface IDCForeignKeyDef {
 }
 
 export abstract class DCSerializable {
+    name: string;
     dataLoaded: boolean;
     table : string;
+    fields: DCSerializable;  // This is a hack while we work through all the references to "fields"
     foreignKeys: IDCForeignKeyDef[];
     referenced: {
         [index: string]  : {
             [index: string] : DCSerializable
         }
     };
-    requiredProperties: string[] = [];
+    requiredProperties: string[] = ['name'];
     optionalProperties: string[] = [];
 
     constructor(public _id: string) {
         this.dataLoaded = false;
         this.foreignKeys = [];
+        this.fields = this;
+        this.referenced = {};
     };
+
 
     addReference(refObj: DCSerializable) {
         if (! this.referenced[refObj.table]) {
@@ -67,7 +72,7 @@ export abstract class DCSerializable {
     loadData(data: DCSerializableData) {
         for (let prop of this.requiredProperties) {
             if (typeof data[prop] == 'undefined') {
-                throw new Error("Invalid data object, " + prop + " must be defined");
+                throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this._id);
             }
 
             this[prop] = data[prop];

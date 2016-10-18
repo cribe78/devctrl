@@ -12,20 +12,20 @@
                  ng-switch="field.type">
                 <md-input-container ng-if="field.type == 'string'">
                     <label>{{field.label}}</label>
-                    <input  ng-model="record.obj.fields[field.name]">
+                    <input  ng-model="record.obj[field.name]">
                 </md-input-container>
                 <md-input-container ng-if="field.type == 'int'">
                     <label>{{field.label}}</label>
-                    <input  type="number" ng-model="record.obj.fields[field.name]">
+                    <input  type="number" ng-model="record.obj[field.name]">
                 </md-input-container>
                <fk-select ng-if="field.type == 'fk'"
                            table="record.schema.foreign_keys[field.name]"
                            field="field"
-                           select-model="record.obj.fields">
+                           select-model="record.obj">
                 </fk-select>
                 <md-input-container ng-if="field.type == 'select-static'">
                     <label>{{field.label}}</label>
-                    <md-select placeholder={{field.label}} ng-model="record.obj.fields[field.name]">
+                    <md-select placeholder={{field.label}} ng-model="record.obj[field.name]">
                         <md-option ng-value="option.value"
                                    ng-repeat="option in field.options">
                             {{option.name}}
@@ -37,12 +37,12 @@
                                  class="md-primary"
                                  ng-true-value="1"
                                  ng-false-value="0"
-                                 ng-model="record.obj.fields[field.name]">
+                                 ng-model="record.obj[field.name]">
                         {{field.label}}
                     </md-checkbox>
                 </md-input-container>
                 <devctrl-object-editor ng-if="field.type == 'object'"
-                                       object="record.obj.fields[field.name]"
+                                       object="record.obj[field.name]"
                                        name="field.name">
                 </devctrl-object-editor>
             </md-list-item>
@@ -63,9 +63,9 @@
                 </md-list-item>
             </div>
             <md-subheader>References</md-subheader>
-            <div ng-repeat="(tableName, ref) in record.obj.foreign">
+            <div ng-repeat="fkDef in record.obj.foreignKeys">
                 <md-list-item>
-                    <md-button ng-click="record.editOtherRow(ref)">{{tableName}}[{{ref.id}}]</md-button>
+                    <md-button ng-click="record.editOtherRow(record[fkDef.fkObjProp])">{{fkDef.fkTable}}[{{record[fkDef.fkObjProp].name}}]</md-button>
                 </md-list-item>
             </div>
         </md-list>

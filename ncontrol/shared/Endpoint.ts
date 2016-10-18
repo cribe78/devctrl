@@ -27,14 +27,13 @@ export class Endpoint extends DCSerializable {
     private _type: EndpointType;
     endpoint_type_id: string;
     status: EndpointStatus;
-    name: string;
     ip: string;
     port: number;
     enabled: boolean;
 
     static tableStr = "endpoints";
     table: string;
-    static foreignKeys = [
+    foreignKeys = [
         {
             type: EndpointType,
             fkObjProp: "type",
@@ -47,14 +46,13 @@ export class Endpoint extends DCSerializable {
         super(_id);
         this.table = Endpoint.tableStr;
 
-        this.requiredProperties = [
+        this.requiredProperties = this.requiredProperties.concat([
             'endpoint_type_id',
             'status',
-            'name',
             'ip',
             'port',
             'enabled'
-        ];
+        ]);
 
         if (data) {
             this.loadData(data);

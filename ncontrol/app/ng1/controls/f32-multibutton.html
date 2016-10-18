@@ -2,26 +2,26 @@
      flex
      layout="row"
      layout-align="space-between center">
-    <label flex="initial" class="text-menu devctrl-ctrl-label">{{ctrl.ctrlName()}}</label>
-    <div ng-if="ctrl.config('direction') !== 'reverse'">
-        <md-button aria-label="1" class="md-icon-button" ng-click="ctrl.selectMenuItem(1)">
+    <label flex="initial" class="text-menu devctrl-ctrl-label">{{$ctrl.name}}</label>
+    <div ng-if="$ctrl.config('direction') !== 'reverse'">
+        <md-button aria-label="1" class="md-icon-button" ng-click="$ctrl.selectMenuItem(1)">
             <md-icon  md-font-set="material-icons">play_arrow</md-icon>
         </md-button>
-        <md-button aria-label="2" class="md-icon-button" ng-click="ctrl.selectMenuItem(2)">
+        <md-button aria-label="2" class="md-icon-button" ng-click="$ctrl.selectMenuItem(2)">
             <md-icon md-font-set="material-icons">fast_forward</md-icon>
         </md-button>
-        <md-button aria-label="3" class="md-icon-button" ng-click="ctrl.selectMenuItem(3)">
+        <md-button aria-label="3" class="md-icon-button" ng-click="$ctrl.selectMenuItem(3)">
             <md-icon md-svg-src="/images/icon_triple_fast.svg"></md-icon>
         </md-button>
     </div>
-    <div ng-if="ctrl.config('direction') == 'reverse'">
-        <md-button aria-label="1" class="md-icon-button" ng-click="ctrl.selectMenuItem(1)">
+    <div ng-if="$ctrl.config('direction') == 'reverse'">
+        <md-button aria-label="1" class="md-icon-button" ng-click="$ctrl.selectMenuItem(1)">
             <md-icon  class="rot180" md-font-set="material-icons">play_arrow</md-icon>
         </md-button>
-        <md-button aria-label="2" class="md-icon-button" ng-click="ctrl.selectMenuItem(2)">
+        <md-button aria-label="2" class="md-icon-button" ng-click="$ctrl.selectMenuItem(2)">
             <md-icon md-font-set="material-icons">fast_rewind</md-icon>
         </md-button>
-        <md-button aria-label="3" class="md-icon-button" ng-click="ctrl.selectMenuItem(3)">
+        <md-button aria-label="3" class="md-icon-button" ng-click="$ctrl.selectMenuItem(3)">
             <md-icon class="rot180" md-svg-src="/images/icon_triple_fast.svg"></md-icon>
         </md-button>
     </div>

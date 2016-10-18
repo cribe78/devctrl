@@ -2,6 +2,6 @@
      flex
      layout="row"
      layout-align="space-between center">
-    <label flex="initial" class="text-menu devctrl-ctrl-label">{{ctrl.ctrlName()}}</label>
-    <md-progress-linear flex md-mode="determinate" value="{{ctrl.normalizedValue()}}"></md-progress-linear>
+    <label flex="initial" class="text-menu devctrl-ctrl-label">{{$ctrl.name}}</label>
+    <md-progress-linear flex md-mode="determinate" value="{{$ctrl.normalizedValue()}}"></md-progress-linear>
 </div>

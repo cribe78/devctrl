@@ -61,16 +61,16 @@ var DCDataModel = (function () {
             }
             // Call indexForeignKeys if relevant tables have been updated
             if (add.endpoints || add.endpoint_types) {
-                this.indexForeignKeys(this.endpoints, Endpoint_1.Endpoint.foreignKeys);
+                this.indexForeignKeys(this.endpoints);
             }
             if (add.controls || add.control_templates) {
-                this.indexForeignKeys(this.controls, Control_1.Control.foreignKeys);
+                this.indexForeignKeys(this.controls);
             }
             if (add.panels || add.rooms) {
-                this.indexForeignKeys(this.panels, Panel_1.Panel.foreignKeys);
+                this.indexForeignKeys(this.panels);
             }
             if (add.controls || add.panels || add.panel_controls) {
-                this.indexForeignKeys(this.panel_controls, PanelControl_1.PanelControl.foreignKeys);
+                this.indexForeignKeys(this.panel_controls);
             }
         }
         if (data.delete) {
@@ -91,14 +91,13 @@ var DCDataModel = (function () {
      *  For data model objects that hold references to other data model objects,
      *  initialize those references
      *
-     *  TODO: set up "referenced" array
      */
-    DCDataModel.prototype.indexForeignKeys = function (objects, fks) {
-        for (var _i = 0, fks_1 = fks; _i < fks_1.length; _i++) {
-            var fkDef = fks_1[_i];
-            var fkObjs = this[fkDef.fkTable];
-            for (var id in objects) {
-                var obj = objects[id];
+    DCDataModel.prototype.indexForeignKeys = function (objects) {
+        for (var id in objects) {
+            var obj = objects[id];
+            for (var _i = 0, _a = obj.foreignKeys; _i < _a.length; _i++) {
+                var fkDef = _a[_i];
+                var fkObjs = this[fkDef.fkTable];
                 if (obj[fkDef.fkIdProp]) {
                     var fkId = obj[fkDef.fkIdProp]; // The the foreign key id value
                     if (!fkObjs[fkId]) {
@@ -129,6 +128,22 @@ var DCDataModel = (function () {
         }
         this[table][id] = new this.types[table](id);
         return this[table][id];
+    };
+    DCDataModel.prototype.getTableItem = function (id, table) {
+        switch (table) {
+            case Endpoint_1.Endpoint.tableStr:
+                return this.getItem(id, table);
+            case EndpointType_1.EndpointType.tableStr:
+                return this.getItem(id, table);
+            case Room_1.Room.tableStr:
+                return this.getItem(id, table);
+            case Panel_1.Panel.tableStr:
+                return this.getItem(id, table);
+            case PanelControl_1.PanelControl.tableStr:
+                return this.getItem(id, table);
+            case Control_1.Control.tableStr:
+                return this.getItem(id, table);
+        }
     };
     return DCDataModel;
 }());

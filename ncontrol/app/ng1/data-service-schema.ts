@@ -1,16 +1,17 @@
+let nameField = {
+    name: "name",
+    type: "string",
+    label: "Name"
+};
+
 export let dataServiceSchema = {
     endpoints: {
-        "pk": "control_endpoint_id",
         "foreign_keys": {
             "endpoint_type_id": "endpoint_types"
         },
         label: "Endpoints",
         fields: [
-            {
-                "name": "name",
-                "type": "string",
-                "label": "Endpoint Name"
-            },
+            nameField,
             {
                 "name": "endpoint_type_id",
                 "type": "fk",
@@ -19,7 +20,7 @@ export let dataServiceSchema = {
             {
                 "name": "ip",
                 "type": "string",
-                "label": "IP Address"
+                "label": "Address"
             },
             {
                 "name": "port",
@@ -39,7 +40,8 @@ export let dataServiceSchema = {
             }
         ]
     },
-    "control_log": {
+    /**
+    control_log: {
         "db": "mongo",
         "pk": "_id",
         "label": "Control Log",
@@ -74,8 +76,8 @@ export let dataServiceSchema = {
             }
         ]
     },
-    "controls": {
-        "pk": "_id",
+     **/
+    controls: {
         "label": "Controls",
         "foreign_keys": {
             "endpoint_id": "endpoints"
@@ -91,11 +93,7 @@ export let dataServiceSchema = {
                 "type": "string",
                 "label": "CTID"
             },
-            {
-                "name": "name",
-                "type": "string",
-                "label": "Name"
-            },
+            nameField,
             {
                 name: "usertype",
                 type: "select-static",
@@ -108,7 +106,8 @@ export let dataServiceSchema = {
                     { name: "Select (readonly)", value: "select-readonly"},
                     { name: "Slider", value: "slider"},
                     { name: "2D Slider", value: "slider2d"},
-                    { name: "Switch", value: "switch"}
+                    { name: "Switch", value: "switch"},
+                    { name: "button set", value: "button-set" }
                 ]
             },
             {
@@ -120,7 +119,8 @@ export let dataServiceSchema = {
                     { name: "int", value: "int"},
                     { name: "range", value: "range"},
                     { name: "rtlevel", value: "rtlevel"},
-                    { name: "string", value: "string"}
+                    { name: "string", value: "string"},
+                    { name: "object", value: "object"},
                 ]
             },
             {
@@ -140,15 +140,10 @@ export let dataServiceSchema = {
             }
         ]
     },
-    "endpoint_types": {
-        "pk": "endpoint_type_id",
+    endpoint_types: {
         "label": "Endpoint Types",
         "fields": [
-            {
-                "name": "name",
-                "type": "string",
-                "label": "Name"
-            },
+            nameField,
             {
                 "name": "communicatorClass",
                 "type": "string",
@@ -156,18 +151,13 @@ export let dataServiceSchema = {
             }
         ]
     },
-    "panels": {
-        "pk": "panel_id",
+    panels: {
         "foreign_keys": {
             "room_id": "rooms"
         },
         "label": "Panels",
         "fields": [
-            {
-                "name": "name",
-                "type": "string",
-                "label": "Name"
-            },
+            nameField,
             {
                 "name": "room_id",
                 "type": "fk",
@@ -194,23 +184,18 @@ export let dataServiceSchema = {
             }
         ]
     },
-    "panel_controls": {
-        "pk": "panel_control_id",
+    panel_controls: {
         "foreign_keys": {
             "control_id": "controls",
             "panel_id": "panels"
         },
-        "label": "Panel Controls",
-        "fields": [
+        label: "Panel Controls",
+        fields: [
+            nameField,
             {
                 "name": "control_id",
                 "type": "fk",
                 "label": "Control"
-            },
-            {
-                "name": "name",
-                "type": "string",
-                "label": "Name"
             },
             {
                 "name": "panel_id",
@@ -219,14 +204,50 @@ export let dataServiceSchema = {
             }
         ]
     },
-    "rooms": {
-        "pk": "room_id",
+    rooms: {
         "label": "Rooms",
         "fields": [
+            nameField,
+        ]
+    },
+    watcher_rules : {
+        label: "Watcher Rules",
+        foreign_keys: {
+            watched_control_id: "controls",
+            action_control_id: "controls"
+        },
+        fields : [
+            nameField,
             {
-                "name": "name",
-                "type": "string",
-                "label": "Name"
+                name: "watched_control_id",
+                type: "fk",
+                label: "Watched Control"
+            },
+            {
+                name: "value_test",
+                type: "select-static",
+                label: "Value Test",
+                options: [
+                    { name: "any", value: "any"},
+                    { name: "=", value: "="},
+                    { name: "<", value: "<"},
+                    { name: ">", value: ">"}
+                ]
+            },
+            {
+                name: "action_control_id",
+                type: "fk",
+                label: "Action Control"
+            },
+            {
+                name: "action_control_value",
+                type: "object",
+                label: "Action Value"
+            },
+            {
+                name: "enabled",
+                type: "boolean",
+                label: "Enabled?"
             }
         ]
     }

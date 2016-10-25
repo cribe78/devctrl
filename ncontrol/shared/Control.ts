@@ -10,7 +10,6 @@ import {Endpoint} from "./Endpoint";
 export interface ControlData extends DCSerializableData{
     endpoint_id: string;
     ctid: string;
-    name: string;
     usertype: string;
     control_type: string;
     poll: number;

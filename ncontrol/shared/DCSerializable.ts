@@ -21,7 +21,8 @@ export interface IDCDataUpdate {
 }
 
 export interface DCSerializableData {
-    _id: string
+    _id: string,
+    name: string
 }
 
 
@@ -43,7 +44,7 @@ export abstract class DCSerializable {
             [index: string] : DCSerializable
         }
     };
-    requiredProperties: string[] = ['name'];
+    requiredProperties: string[] = [];
     optionalProperties: string[] = [];
 
     constructor(public _id: string) {
@@ -70,6 +71,11 @@ export abstract class DCSerializable {
     }
 
     loadData(data: DCSerializableData) {
+        if (typeof data.name == 'undefined') {
+            throw new Error("Name must be defined for " +this.table + "obj " + data._id);
+        }
+        this.name = data.name;
+
         for (let prop of this.requiredProperties) {
             if (typeof data[prop] == 'undefined') {
                 throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this._id);
@@ -86,10 +92,12 @@ export abstract class DCSerializable {
     };
 
 
+
+
     abstract getDataObject() : DCSerializableData;
 
     static defaultDataObject(obj: DCSerializable) : DCSerializableData {
-        let data = { _id: obj._id };
+        let data = { _id: obj._id, name: obj.name };
 
         for (let prop of obj.requiredProperties) {
             data[prop] = obj[prop];
@@ -103,4 +111,5 @@ export abstract class DCSerializable {
             delete this.referenced[refObj.table][refObj._id];
         }
     }
+
  }

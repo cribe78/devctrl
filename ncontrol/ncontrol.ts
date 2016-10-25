@@ -2,7 +2,7 @@
 
 import * as io from "socket.io-client";
 import {DCDataModel} from "./shared/DCDataModel";
-import { EndpointCommunicator } from "./EndpointCommunicator";
+import { EndpointCommunicator } from "./Communicators/EndpointCommunicator";
 import {IDCDataRequest, IDCDataUpdate} from "./shared/DCSerializable";
 import * as debugMod from "debug"; // see https://www.npmjs.com/package/debug
 import {Control} from "./shared/Control";
@@ -39,6 +39,7 @@ class NControl {
     run(config: any) {
         let self = this;
         this.config = <NControlConfig>config;
+        debug(`connecting to ${config.wsUrl}`);
         this.io = io.connect(config.wsUrl);
 
         this.io.on('connect', function() {
@@ -46,8 +47,6 @@ class NControl {
 
             //Get endpoint data
             self.getEndpointConfig();
-
-            EndpointCommunicator.listCommunicators();
         });
 
         this.io.on('control-data', function(data) {
@@ -165,7 +164,13 @@ class NControl {
         let commClass =  this.endpoint.type.communicatorClass;
         let requirePath = "./Communicators/" + commClass;
 
+        debug(`instantiating communicator ${requirePath}`);
+
         this.communicator = require(requirePath);
+
+        if (typeof this.communicator.setConfig !== 'function') {
+            debug("it doesn't look like you have your communicator class exported properly");
+        }
 
         this.communicator.setConfig({
             endpoint: this.endpoint,
@@ -185,6 +190,7 @@ class NControl {
     pushControlUpdate(control: Control, value: any) {
         let update : ControlUpdateData = {
             _id : this.guid(),
+            name: control.name + " update",
             control_id: control._id,
             value: value,
             type: "device",

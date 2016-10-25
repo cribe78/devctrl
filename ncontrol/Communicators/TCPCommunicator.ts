@@ -1,4 +1,4 @@
-import {EndpointCommunicator, IEndpointCommunicatorConfig} from "../EndpointCommunicator";
+import {EndpointCommunicator, IEndpointCommunicatorConfig} from "./EndpointCommunicator";
 import { TCPCommand } from "./TCPCommand";
 import * as net from "net";
 import {Control} from "../shared/Control";

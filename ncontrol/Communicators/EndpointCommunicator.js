@@ -19,6 +19,11 @@ var EndpointCommunicator = (function () {
     EndpointCommunicator.prototype.getControlTemplates = function () {
         return {};
     };
+    /**
+     * Process a ControlUpdate, likely by sending a command to
+     * a device
+     * @param request
+     */
     EndpointCommunicator.prototype.handleControlUpdateRequest = function (request) {
     };
     EndpointCommunicator.prototype.setTemplates = function (controls) {
@@ -26,11 +31,6 @@ var EndpointCommunicator = (function () {
         for (var id in controls) {
             this.controlsByCtid[controls[id].ctid] = controls[id];
         }
-    };
-    EndpointCommunicator.listCommunicators = function () {
-        //for (let comm in communicators ) {
-        //console.log("Comm: " + comm);
-        //}
     };
     return EndpointCommunicator;
 }());

@@ -1,7 +1,6 @@
 import {DCSerializable, DCSerializableData} from "./DCSerializable";
 
 export interface EndpointTypeData extends DCSerializableData {
-    name: string;
     communicatorClass: string;
 }
 

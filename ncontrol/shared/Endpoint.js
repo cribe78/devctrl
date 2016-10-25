@@ -40,6 +40,16 @@ var Endpoint = (function (_super) {
             this.loadData(data);
         }
     }
+    Object.defineProperty(Endpoint.prototype, "address", {
+        get: function () {
+            return this.ip;
+        },
+        set: function (address) {
+            this.ip = address;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Endpoint.prototype, "type", {
         get: function () {
             return this._type;

@@ -17,6 +17,10 @@ export let ToolbarDirective  = ['$mdMedia', '$state', 'MenuService', 'DataServic
                 return ! DataService.isAdminAuthorized();
             };
 
+            this.adminLoggedIn = function() {
+                return DataService.isAdminAuthorized();
+            };
+
 
             this.pageTitle = function() {
                 if (angular.isDefined(self.title)) {

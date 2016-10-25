@@ -34,14 +34,12 @@ export class RecordController {
     }
 
     cloneRow() {
-        let newRow = this.dataService.getNewRowRef(this.obj.table);
+        let newValues = this.obj.getDataObject();
+        newValues['name'] = "";
+        let newRow = this.dataService.getNewRowRef(this.obj.table, newValues);
 
-
-        this.dataService.addRow(newRow, function(newRec) {
+        this.dataService.addRow(newRow, (newRec) => {
             this.obj = newRec;
-            if (angular.isDefined(this.obj.name)) {
-                this.obj.name = "";
-            }
         });
     }
 

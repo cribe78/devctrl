@@ -16,7 +16,6 @@ export enum EndpointStatus {
 export interface EndpointData extends DCSerializableData {
     endpoint_type_id: string;
     status: EndpointStatus;
-    name: string;
     ip: string;
     port: number;
     enabled: boolean;
@@ -57,6 +56,14 @@ export class Endpoint extends DCSerializable {
         if (data) {
             this.loadData(data);
         }
+    }
+
+    get address() : string {
+        return this.ip;
+    }
+
+    set address(address: string) {
+        this.ip = address;
     }
 
     get type(): EndpointType {

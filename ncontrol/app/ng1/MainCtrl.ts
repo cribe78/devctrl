@@ -2,17 +2,6 @@ import {DataService} from "../data.service";
 export let MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
     function($state, $mdMedia, DataService: DataService, MenuService) {
         this.msg = "Hello World!";
-        this.tiles = [
-            {
-                img: "/images/orc.png"
-            },
-            {
-                img: "/images/pict.png"
-            },
-            {
-                img: "/images/sage.png"
-            }
-        ];
 
         this.$state = $state;
         this.schema = DataService.schema;

@@ -36,18 +36,18 @@
                         Admin Login
                     </md-button>
                 </md-menu-item>
-                <md-menu-item ng-if="toolbar.user.admin">
+                <md-menu-item ng-if="toolbar.adminLoggedIn()">
                     <md-switch ng-model="toolbar.config.editEnabled"
                                ng-change="toolbar.updateConfig()">
                         Edit
                     </md-switch>
                 </md-menu-item>
-                <md-menu-item ng-if="toolbar.user.admin">
+                <md-menu-item ng-if="toolbar.adminLoggedIn()">
                     <md-button ng-click="toolbar.revokeAdmin()">
                         Admin Logout
                     </md-button>
                 </md-menu-item>
-                <md-menu-item ng-if="toolbar.user.admin">
+                <md-menu-item ng-if="toolbar.adminLoggedIn()">
                     <md-button ng-click="toolbar.editClient($event)">
                         Edit Client
                     </md-button>

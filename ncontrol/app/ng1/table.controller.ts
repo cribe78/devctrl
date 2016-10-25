@@ -6,7 +6,6 @@ export class TableController {
     data : IndexedDataSet<DCSerializable>;
     schema;
     newRow;
-    listed = [];
     sortColumn = 'id';
     sortReversed = false;
 
@@ -19,18 +18,14 @@ export class TableController {
         this.schema = this.dataService.getSchema(this.tableName);
 
         this.dataService.publishStatusUpdate("table " + this.tableName + " loaded");
-
-        this.listData();
     }
 
     addRow($event) {
         this.dataService.editRecord($event, '0', this.tableName);
-        this.listData();
     };
 
     deleteRow(row : DCSerializable) {
         this.dataService.deleteRow(row);
-        this.listData();
     }
 
     fkDisplayVal(field, row: DCSerializable) {
@@ -44,13 +39,6 @@ export class TableController {
             }
         }
     };
-
-    listData() {
-        this.listed.length = 0;
-        for (let id in this.data) {
-            this.listed.push(this.data[id]);
-        }
-    }
 
     openRecord($event, id) {
         this.dataService.editRecord($event, id, this.tableName);

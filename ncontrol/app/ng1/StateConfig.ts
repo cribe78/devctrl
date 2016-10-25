@@ -1,4 +1,3 @@
-import {TableResolve} from "./TableCtrl";
 import {CommonResolve} from "./CommonResolve";
 import {LogResolve} from "./LogCtrl";
 

@@ -2,7 +2,7 @@ import {dataServiceSchema} from "./ng1/data-service-schema";
 import {SocketService} from "./socket";
 import {UserSession} from "../shared/UserSession";
 import * as io from "socket.io-client";
-import {IDCDataRequest, IDCDataUpdate, DCSerializable} from "../shared/DCSerializable";
+import {IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData} from "../shared/DCSerializable";
 import {RecordController} from "./ng1/record.controller";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import IPromise = angular.IPromise;
@@ -14,7 +14,7 @@ export class DataService {
     schema;
     userSession : UserSession;
     private initialized = false;
-    private dataModel : any;
+    private dataModel : DCDataModel;
     pendingUpdates : IPromise<void>[] = [];
     tablePromises = {};
     config = {
@@ -70,22 +70,21 @@ export class DataService {
         }
     }
 
-    addRow(row, callback) {
+    addRow(row : DCSerializable, callback) {
         let req = {};
-        req[row.tableName] = [row.fields];
+        req[row.table] = [row.getDataObject()];
         this.socket.emit('add-data', req, (response) => {
             if (response.error) {
                 this.errorToast(response.error);
                 return;
             }
 
-            let newId = Object.keys(response.add[row.tableName])[0];
-            console.log("new record " + newId + "added to " + row.tableName);
+            let newId = Object.keys(response.add[row.table])[0];
+            console.log("new record " + newId + "added to " + row.table);
 
             this.loadData(response);
 
-            let record = this.dataModel[row.tableName][newId];
-
+            let record = this.dataModel[row.table][newId];
 
             if (angular.isFunction(callback)) {
                 callback(record);
@@ -93,11 +92,11 @@ export class DataService {
         });
     }
 
-    deleteRow(row) {
-        let resource = "api/data/" + row.tableName + "/" + row.id;
+    deleteRow(row : DCSerializable) {
+        let resource = "api/data/" + row.table + "/" + row._id;
 
         // Check for foreign key constraints
-        let referencedTable = false;
+        let referencedTable = "";
         angular.forEach(row.referenced, function(refs, refTable) {
             if (Object.keys(refs).length > 0) {
                 //TODO: cannot delete value due to foreign key constraint
@@ -106,7 +105,7 @@ export class DataService {
         });
 
         if (referencedTable) {
-            let msg = "Cannot delete " + row.tableName + " record due to foreign key constraint on " + referencedTable;
+            let msg = "Cannot delete " + row.table + " record due to foreign key constraint on " + referencedTable;
 
             this.errorToast({error: msg});
             return;
@@ -192,8 +191,7 @@ export class DataService {
             record = this.getRowRef(tableName, id);
         }
         else {
-            record = this.getNewRowRef(tableName);
-            angular.merge(record.fields, recordDefaults);
+            record = this.getNewRowRef(tableName, recordDefaults);
         }
 
         this.$mdDialog.show({
@@ -244,6 +242,7 @@ export class DataService {
 
     getLog() {
         //TODO: Needs re-implementation in messenger
+        /**
         return this.$http.get("log.php")
             .then(response => {
                 if (angular.isDefined(response.data.applog)) {
@@ -251,6 +250,7 @@ export class DataService {
                     angular.merge(this.dataModel.applog, response.data.applog);
                 }
             })
+        **/
     }
 
     // Get MongoDB data from the IO messenger
@@ -277,18 +277,11 @@ export class DataService {
         return getMProm;
     }
 
-    getNewRowRef(tableName: string) {
-        let newRow = {
-            id : '0',
-            referenced : {},
-            tableName : tableName,
-            fields : {}
-        };
-        let tSchema = this.getSchema(tableName);
+    getNewRowRef(tableName: string, newData = {}) {
+        let ctor = this.dataModel.types[tableName];
 
-        for (let field in tSchema.fields) {
-            newRow.fields[field] = '';
-        }
+        let newRow = new ctor("0");
+        angular.merge(newRow, newData);
 
         return newRow;
     }
@@ -407,6 +400,7 @@ export class DataService {
                 //Failure
                 response => {
                     console.log("get user session failed with response code:" + response.status);
+                    //TODO: we should prevent the user from using the application at this point
                 }
             );
     }
@@ -437,7 +431,7 @@ export class DataService {
         });
 
         this.socket.on('log-data', data => {
-            this.dataModel.applog.push(data);
+            //this.dataModel.applog.push(data);
         });
 
 
@@ -471,72 +465,6 @@ export class DataService {
         //catch (e) {
         //    console.error("loadData error: " + e.message);
         //}
-
-        /**
-        // Treat update as a synonym for add
-        if (data.update) {
-            if (data.add) {
-                angular.merge(data.add, data.update);
-            }
-            else {
-                data.add = data.update;
-            }
-        }
-
-        if (data.add) {
-            for (let table in data.add) {
-            //angular.forEach(data.add, function(tableData, tableName) {
-                let tschema = this.getSchema(table);
-                let fks = tschema['foreign_keys'] || {};
-                let tableData = data.add[table];
-
-                for (let key in tableData) {
-                //angular.forEach(tableData, function(value, key) {
-                    let row = this.getRowRef(table, key);
-                    angular.merge(row.fields, tableData[key]);
-                    row.loaded = true;
-
-                    // Set up foreign key object references
-                    for (let fkField in fks) {
-                    //angular.forEach(fks, function(fkTable, fkField) {
-                        let fkTable = fks[fkField];
-                        if (row.fields[fkField] && row.fields[fkField] !== null) {
-                            let fkRow = this.getRowRef(fkTable, row.fields[fkField]);
-                            if (! fkRow.referenced[table]) {
-                                fkRow.referenced[table] = {};
-                            }
-                            fkRow.referenced[table][row.id] = row;
-                            row.foreign[fkTable] = fkRow;
-                            row.foreign[fkField] = fkRow;
-                        }
-                        else {
-                            row.foreign[fkTable] = null;
-                            row.foreign[fkField] = null;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (angular.isDefined(data.delete)) {
-            // Remove references
-            let table = data.delete.table;
-            let key = data.delete._id;
-            let record = this.dataModel[table].indexed[key];
-
-            if (! angular.isDefined(record)) {
-                return;
-            }
-
-            angular.forEach(record.foreign, function(referenced, refID) {
-                if (angular.isDefined(referenced.referenced[table][key])) {
-                    delete referenced.referenced[table][key];
-                }
-            });
-
-            delete this.dataModel[table].indexed[key];
-        }
-        **/
     }
 
     revokeAdminAuth() {
@@ -581,18 +509,19 @@ export class DataService {
         }
     }
 
-    updateControlValue(control) {
-        if (this.pendingUpdates[control.id]) {
-            this.$timeout.cancel(this.pendingUpdates[control.id]);
+    updateControlValue(control : Control) {
+        if (this.pendingUpdates[control._id]) {
+            this.$timeout.cancel(this.pendingUpdates[control._id]);
         }
 
-        this.pendingUpdates[control.id] = this.$timeout(() => {
+        this.pendingUpdates[control._id] = this.$timeout(() => {
             let cuid = this.guid();
             let updates : ControlUpdateData[] = [
                 {
                     _id: cuid,
-                    control_id: control.id,
-                    value: control.fields.value,
+                    name: control.name + " update",
+                    control_id: control._id,
+                    value: control.value,
                     type: "user",
                     status: "requested",
                     source: this.userSession._id
@@ -605,11 +534,11 @@ export class DataService {
     }
 
 
-    updateRow(row) {
+    updateRow(row : DCSerializable) {
         let reqData : IDCDataUpdate = {
-            table: row.tableName,
-            _id : row.id,
-            "set" : row.fields
+            table: row.table,
+            _id : row._id,
+            "set" : row.getDataObject()
         };
 
         this.socket.emit('update-data', reqData, data => {

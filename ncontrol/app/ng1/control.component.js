@@ -69,11 +69,14 @@ var CtrlController = (function () {
         return normVal;
     };
     CtrlController.prototype.selectMenuItem = function (val) {
-        this.ctrl.value = val;
-        this.updateValue(val);
+        this.setValue(val);
     };
     CtrlController.prototype.selectOptions = function () {
         return !!this.ctrl.config.options ? this.ctrl.config.options : {};
+    };
+    CtrlController.prototype.setValue = function (val) {
+        this.ctrl.value = val;
+        this.updateValue(val);
     };
     CtrlController.prototype.selectValueName = function () {
         var opts = this.selectOptions();

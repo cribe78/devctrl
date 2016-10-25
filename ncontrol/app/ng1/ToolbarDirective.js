@@ -16,6 +16,9 @@ exports.ToolbarDirective = ['$mdMedia', '$state', 'MenuService', 'DataService',
                     // Show Admin login option if not currently admin authorized
                     return !DataService.isAdminAuthorized();
                 };
+                this.adminLoggedIn = function () {
+                    return DataService.isAdminAuthorized();
+                };
                 this.pageTitle = function () {
                     if (angular.isDefined(self.title)) {
                         return self.title;

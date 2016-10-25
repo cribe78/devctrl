@@ -92,12 +92,16 @@ class CtrlController {
 
 
     selectMenuItem(val) {
-        this.ctrl.value = val;
-        this.updateValue(val);
+        this.setValue(val);
     }
 
     selectOptions() {
         return !! this.ctrl.config.options ? this.ctrl.config.options : {};
+    }
+
+    setValue(val) {
+        this.ctrl.value = val;
+        this.updateValue(val);
     }
 
     selectValueName() {

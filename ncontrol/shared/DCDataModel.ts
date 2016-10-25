@@ -13,6 +13,7 @@ import {Endpoint, EndpointData} from "./Endpoint";
 import {EndpointType, EndpointTypeData} from "./EndpointType";
 import {Control, ControlData} from "./Control";
 import {DCSerializable, IDCForeignKeyDef, DCSerializableData, IDCDataDelete} from "./DCSerializable";
+import {WatcherRule, WatcherRuleData} from "./WatcherRule";
 
 
 export interface IndexedDataSet<T> {
@@ -26,15 +27,18 @@ export class DCDataModel {
     panels: IndexedDataSet<Panel> = {};
     panel_controls: IndexedDataSet<PanelControl> = {};
     rooms: IndexedDataSet<Room> = {};
+    watcher_rules: IndexedDataSet<WatcherRule> = {};
     debug: (message: any, ...args: any[]) => void;
 
     types = {
         endpoints : Endpoint,
-        endpoint_type : EndpointType,
+        endpoint_types : EndpointType,
         controls : Control,
         panels: Panel,
         panel_controls: PanelControl,
-        rooms: Room
+        rooms: Room,
+        watcher_rules: WatcherRule
+
     };
 
 
@@ -84,6 +88,11 @@ export class DCDataModel {
                     add.rooms, this.rooms, Room
                 );
             }
+            if (add.watcher_rules) {
+                this.loadTableData<WatcherRule, WatcherRuleData>(
+                    add.watcher_rules, this.watcher_rules, WatcherRule
+                );
+            }
 
 
 
@@ -100,7 +109,9 @@ export class DCDataModel {
             if (add.controls || add.panels || add.panel_controls) {
                 this.indexForeignKeys(this.panel_controls);
             }
-
+            if (add.controls || add.watcher_rules) {
+                this.indexForeignKeys(this.watcher_rules);
+            }
         }
 
         if (data.delete) {
@@ -114,7 +125,12 @@ export class DCDataModel {
                 for (let fkDef of deleteRec.foreignKeys) {
                     deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
                 }
+
+                //Delete the object
+                delete this[table][_id];
             }
+
+
         }
     }
 
@@ -186,6 +202,8 @@ export class DCDataModel {
                 return this.getItem<PanelControl>(id, table);
             case Control.tableStr:
                 return this.getItem<Control>(id, table);
+            case WatcherRule.tableStr:
+                return this.getItem<WatcherRule>(id, table);
         }
     }
 }

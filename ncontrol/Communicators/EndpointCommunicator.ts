@@ -1,8 +1,8 @@
 
-import {Control} from "./shared/Control";
-import {ControlUpdateData} from "./shared/ControlUpdate";
-import {EndpointStatus, Endpoint} from "./shared/Endpoint";
-import {IndexedDataSet} from "./shared/DCDataModel";
+import {Control} from "../shared/Control";
+import {ControlUpdateData} from "../shared/ControlUpdate";
+import {EndpointStatus, Endpoint} from "../shared/Endpoint";
+import {IndexedDataSet} from "../shared/DCDataModel";
 
 
 export interface IEndpointCommunicatorConfig {
@@ -34,6 +34,11 @@ export class EndpointCommunicator {
         return {};
     }
 
+    /**
+     * Process a ControlUpdate, likely by sending a command to
+     * a device
+     * @param request
+     */
     handleControlUpdateRequest(request: ControlUpdateData) {
 
     }
@@ -46,12 +51,4 @@ export class EndpointCommunicator {
         }
     }
 
-
-    static listCommunicators() {
-        //for (let comm in communicators ) {
-            //console.log("Comm: " + comm);
-        //}
-
-
-    }
 }

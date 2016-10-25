@@ -1,5 +1,5 @@
 import {DCSerializable, DCSerializableData} from "./DCSerializable";
-export type UpdateType = "device" | "user";
+export type UpdateType = "device" | "user" | "watcher";
 export type UpdateStatus = "requested" | "executed" | "observed";
 
 export interface ControlUpdateData extends DCSerializableData {
@@ -39,15 +39,7 @@ export class ControlUpdate extends DCSerializable {
 
 
     getDataObject() : ControlUpdateData {
-        return {
-            _id: this._id,
-            control_id: this.control_id,
-            value: this.value,
-            type: this.type,
-            status: this.status,
-            source: this.source
-
-        };
+        return (<ControlUpdateData>DCSerializable.defaultDataObject(this));
     }
 }
 

@@ -4,7 +4,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var EndpointCommunicator_1 = require("../EndpointCommunicator");
+var EndpointCommunicator_1 = require("./EndpointCommunicator");
 var net = require("net");
 var debugMod = require("debug");
 var Endpoint_1 = require("../shared/Endpoint");

@@ -1,7 +1,6 @@
 "use strict";
 var io = require("socket.io-client");
 var DCDataModel_1 = require("./shared/DCDataModel");
-var EndpointCommunicator_1 = require("./EndpointCommunicator");
 var debugMod = require("debug"); // see https://www.npmjs.com/package/debug
 var Control_1 = require("./shared/Control");
 var Endpoint_1 = require("./shared/Endpoint");
@@ -18,12 +17,12 @@ var NControl = (function () {
     NControl.prototype.run = function (config) {
         var self = this;
         this.config = config;
+        debug("connecting to " + config.wsUrl);
         this.io = io.connect(config.wsUrl);
         this.io.on('connect', function () {
             debug("websocket client connected");
             //Get endpoint data
             self.getEndpointConfig();
-            EndpointCommunicator_1.EndpointCommunicator.listCommunicators();
         });
         this.io.on('control-data', function (data) {
             self.dataModel.loadData(data);
@@ -117,7 +116,11 @@ var NControl = (function () {
         }
         var commClass = this.endpoint.type.communicatorClass;
         var requirePath = "./Communicators/" + commClass;
+        debug("instantiating communicator " + requirePath);
         this.communicator = require(requirePath);
+        if (typeof this.communicator.setConfig !== 'function') {
+            debug("it doesn't look like you have your communicator class exported properly");
+        }
         this.communicator.setConfig({
             endpoint: this.endpoint,
             controlUpdateCallback: function (control, value) {
@@ -133,6 +136,7 @@ var NControl = (function () {
     NControl.prototype.pushControlUpdate = function (control, value) {
         var update = {
             _id: this.guid(),
+            name: control.name + " update",
             control_id: control._id,
             value: value,
             type: "device",

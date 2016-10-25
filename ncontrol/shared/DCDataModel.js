@@ -11,6 +11,7 @@ var Room_1 = require("./Room");
 var Endpoint_1 = require("./Endpoint");
 var EndpointType_1 = require("./EndpointType");
 var Control_1 = require("./Control");
+var WatcherRule_1 = require("./WatcherRule");
 var DCDataModel = (function () {
     function DCDataModel() {
         this.endpoints = {};
@@ -19,13 +20,15 @@ var DCDataModel = (function () {
         this.panels = {};
         this.panel_controls = {};
         this.rooms = {};
+        this.watcher_rules = {};
         this.types = {
             endpoints: Endpoint_1.Endpoint,
-            endpoint_type: EndpointType_1.EndpointType,
+            endpoint_types: EndpointType_1.EndpointType,
             controls: Control_1.Control,
             panels: Panel_1.Panel,
             panel_controls: PanelControl_1.PanelControl,
-            rooms: Room_1.Room
+            rooms: Room_1.Room,
+            watcher_rules: WatcherRule_1.WatcherRule
         };
         this.debug = console.log;
     }
@@ -59,6 +62,9 @@ var DCDataModel = (function () {
             if (add.rooms) {
                 this.loadTableData(add.rooms, this.rooms, Room_1.Room);
             }
+            if (add.watcher_rules) {
+                this.loadTableData(add.watcher_rules, this.watcher_rules, WatcherRule_1.WatcherRule);
+            }
             // Call indexForeignKeys if relevant tables have been updated
             if (add.endpoints || add.endpoint_types) {
                 this.indexForeignKeys(this.endpoints);
@@ -72,6 +78,9 @@ var DCDataModel = (function () {
             if (add.controls || add.panels || add.panel_controls) {
                 this.indexForeignKeys(this.panel_controls);
             }
+            if (add.controls || add.watcher_rules) {
+                this.indexForeignKeys(this.watcher_rules);
+            }
         }
         if (data.delete) {
             var del = data.delete;
@@ -84,6 +93,8 @@ var DCDataModel = (function () {
                     var fkDef = _a[_i];
                     deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
                 }
+                //Delete the object
+                delete this[table][_id];
             }
         }
     };
@@ -142,6 +153,8 @@ var DCDataModel = (function () {
             case PanelControl_1.PanelControl.tableStr:
                 return this.getItem(id, table);
             case Control_1.Control.tableStr:
+                return this.getItem(id, table);
+            case WatcherRule_1.WatcherRule.tableStr:
                 return this.getItem(id, table);
         }
     };

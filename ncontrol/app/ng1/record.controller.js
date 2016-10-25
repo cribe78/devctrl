@@ -24,12 +24,12 @@ var RecordController = (function () {
         this.close(true);
     };
     RecordController.prototype.cloneRow = function () {
-        var newRow = this.dataService.getNewRowRef(this.obj.table);
+        var _this = this;
+        var newValues = this.obj.getDataObject();
+        newValues['name'] = "";
+        var newRow = this.dataService.getNewRowRef(this.obj.table, newValues);
         this.dataService.addRow(newRow, function (newRec) {
-            this.obj = newRec;
-            if (angular.isDefined(this.obj.name)) {
-                this.obj.name = "";
-            }
+            _this.obj = newRec;
         });
     };
     RecordController.prototype.close = function (popStack) {

@@ -18,6 +18,10 @@ var ExtronSWUSBCommunicator = (function (_super) {
     ExtronSWUSBCommunicator.prototype.buildCommandList = function () {
         var config = {
             cmdStr: "Input",
+            cmdQueryStr: "I",
+            cmdQueryResponseRE: /Chn(\d)/,
+            cmdUpdateTemplate: "{value}!",
+            cmdUpdateResponseTemplate: "Chn{value}",
             endpoint_id: this.config.endpoint._id,
             control_type: "string",
             usertype: "select",
@@ -36,6 +40,11 @@ var ExtronSWUSBCommunicator = (function (_super) {
     ExtronSWUSBCommunicator.prototype.connect = function () {
         debug("connecting to SWUSB-4");
         _super.prototype.connect.call(this);
+    };
+    ExtronSWUSBCommunicator.prototype.preprocessLine = function (line) {
+        if (line.match(/^ser2net port/)) {
+            return '';
+        }
     };
     return ExtronSWUSBCommunicator;
 }(TCPCommunicator_1.TCPCommunicator));

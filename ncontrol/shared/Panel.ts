@@ -2,7 +2,6 @@ import {DCSerializableData, DCSerializable} from "./DCSerializable";
 import {Room} from "./Room";
 
 export interface PanelData extends DCSerializableData {
-    name: string;
     room_id: string;
     grouping: string;
     type: string;

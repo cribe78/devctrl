@@ -22,14 +22,7 @@ var ControlUpdate = (function (_super) {
         }
     }
     ControlUpdate.prototype.getDataObject = function () {
-        return {
-            _id: this._id,
-            control_id: this.control_id,
-            value: this.value,
-            type: this.type,
-            status: this.status,
-            source: this.source
-        };
+        return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
     ControlUpdate.tableStr = "ControlUpdates";
     return ControlUpdate;

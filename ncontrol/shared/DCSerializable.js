@@ -7,7 +7,7 @@
 var DCSerializable = (function () {
     function DCSerializable(_id) {
         this._id = _id;
-        this.requiredProperties = ['name'];
+        this.requiredProperties = [];
         this.optionalProperties = [];
         this.dataLoaded = false;
         this.foreignKeys = [];
@@ -28,6 +28,10 @@ var DCSerializable = (function () {
         };
     };
     DCSerializable.prototype.loadData = function (data) {
+        if (typeof data.name == 'undefined') {
+            throw new Error("Name must be defined for " + this.table + "obj " + data._id);
+        }
+        this.name = data.name;
         for (var _i = 0, _a = this.requiredProperties; _i < _a.length; _i++) {
             var prop = _a[_i];
             if (typeof data[prop] == 'undefined') {
@@ -43,7 +47,7 @@ var DCSerializable = (function () {
     };
     ;
     DCSerializable.defaultDataObject = function (obj) {
-        var data = { _id: obj._id };
+        var data = { _id: obj._id, name: obj.name };
         for (var _i = 0, _a = obj.requiredProperties; _i < _a.length; _i++) {
             var prop = _a[_i];
             data[prop] = obj[prop];

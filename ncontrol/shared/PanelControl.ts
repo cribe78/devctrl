@@ -6,7 +6,6 @@ import {Endpoint} from "./Endpoint";
 export interface PanelControlData extends DCSerializableData {
     control_id: string;
     panel_id: string;
-    name: string;
 }
 
 export class PanelControl extends DCSerializable {

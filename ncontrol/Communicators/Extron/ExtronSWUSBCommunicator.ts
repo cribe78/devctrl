@@ -14,6 +14,10 @@ class ExtronSWUSBCommunicator extends TCPCommunicator {
     buildCommandList() {
         let config : ITCPCommandConfig = {
             cmdStr: "Input",
+            cmdQueryStr: "I",
+            cmdQueryResponseRE: /Chn(\d)/,
+            cmdUpdateTemplate: "{value}!",
+            cmdUpdateResponseTemplate: "Chn{value}",
             endpoint_id: this.config.endpoint._id,
             control_type: "string",
             usertype: "select",
@@ -34,6 +38,12 @@ class ExtronSWUSBCommunicator extends TCPCommunicator {
     connect() {
         debug("connecting to SWUSB-4");
         super.connect();
+    }
+
+    preprocessLine(line: string) {
+        if (line.match(/^ser2net port/)) {
+            return '';
+        }
     }
 }
 

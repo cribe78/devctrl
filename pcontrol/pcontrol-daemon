@@ -245,8 +245,8 @@ sub cleanup_commands {
 
 sub db_connect {
 	$dbh = 0;
-	$dbh = DBI->connect( "dbi:mysql:devctrl:127.0.0.1:3306",
-		"dwi-devctrl", "MMbpa75RT" );
+	$dbh = DBI->connect( "dbi:mysql:devctrl:10.227.110.54:3306",
+		"dwi-devctrl", "49YW5sC7vPVcaLwE" );
 
 	my $insert_daemon = $dbh->prepare(
 "update control_endpoints set daemon_pid = ?, daemon_port = 0 where control_endpoint_id = ?"

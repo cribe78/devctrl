@@ -160,6 +160,7 @@ export class TCPCommunicator extends EndpointCommunicator {
 
             if (line.search(<string>eresp[0]) > -1 ) {
                 debug(`${line} matched expected response "${eresp[0]}" at [${idx}]`);
+                //Execute expected response callback
                 eresp[1](line);
 
                 this.expectedResponses = this.expectedResponses.slice(idx + 1);

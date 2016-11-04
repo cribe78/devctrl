@@ -1,8 +1,9 @@
 import {DataService} from "../data.service";
 import {DCSerializable} from "../../shared/DCSerializable";
+import {DSTableDefinition} from "./data-service-schema";
 export class RecordController {
     newRow : boolean;
-    schema;
+    schema : DSTableDefinition;
     editStack = [];
     obj: DCSerializable;
     
@@ -51,5 +52,9 @@ export class RecordController {
         else {
             this.dataService.editRecordClose();
         }
+    }
+
+    objectUpdated(value, field) {
+        this.obj[field] = value;
     }
 }

@@ -21,6 +21,9 @@ var DCSerializable = (function () {
         }
         this.referenced[refObj.table][refObj._id] = refObj;
     };
+    DCSerializable.prototype.fkSelectName = function () {
+        return this.name;
+    };
     DCSerializable.prototype.itemRequestData = function () {
         return {
             table: this.table,
@@ -46,6 +49,16 @@ var DCSerializable = (function () {
         this.dataLoaded = true;
     };
     ;
+    DCSerializable.prototype.objectPropertyName = function (idProperty) {
+        for (var _i = 0, _a = this.foreignKeys; _i < _a.length; _i++) {
+            var fkDef = _a[_i];
+            if (fkDef.fkIdProp == idProperty) {
+                return fkDef.fkObjProp;
+            }
+        }
+        throw new Error("Failed to identify object property associated with " +
+            idProperty + " for " + this.table);
+    };
     DCSerializable.defaultDataObject = function (obj) {
         var data = { _id: obj._id, name: obj.name };
         for (var _i = 0, _a = obj.requiredProperties; _i < _a.length; _i++) {

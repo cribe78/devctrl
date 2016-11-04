@@ -1,4 +1,5 @@
 import {PanelControlSelectorCtrl} from "./PanelControlSelectorCtrl";
+import {PanelControl} from "../../shared/PanelControl";
 
 export let PanelDirective  = ['$mdDialog', 'MenuService', 'DataService', function($mdDialog, MenuService, DataService) : ng.IDirective {
     return {
@@ -12,10 +13,12 @@ export let PanelDirective  = ['$mdDialog', 'MenuService', 'DataService', functio
             this.menu = MenuService;
 
             this.addControl = function($event) {
+                DataService.editRecord($event, "0", PanelControl.tableStr, { panel_id: this.panelObj._id});
+                /**
                 $mdDialog.show({
                     targetEvent: $event,
                     locals: {
-                        panelId: this.panelObj.id
+                        panelId: this.panelObj._id
                     },
                     controller: PanelControlSelectorCtrl,
                     controllerAs: 'selector',
@@ -24,10 +27,11 @@ export let PanelDirective  = ['$mdDialog', 'MenuService', 'DataService', functio
                     clickOutsideToClose: true,
                     hasBackdrop : false
                 });
+                 **/
             };
 
             this.editPanel = function($event) {
-                DataService.editRecord($event, this.panelObj.id, this.panelObj.tableName);
+                DataService.editRecord($event, this.panelObj._id, this.panelObj.table);
             };
 
             this.setAllSwitches = function(val) {

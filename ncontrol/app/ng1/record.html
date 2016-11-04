@@ -18,11 +18,18 @@
                     <label>{{field.label}}</label>
                     <input  type="number" ng-model="record.obj[field.name]">
                 </md-input-container>
-               <fk-select ng-if="field.type == 'fk'"
+               <!-- <fk-select ng-if="field.type == 'fk'"
                            table="record.schema.foreign_keys[field.name]"
                            field="field"
                            select-model="record.obj">
-                </fk-select>
+                </fk-select> -->
+                <fk-autocomplete ng-if="field.type == 'fk'"
+                           table="record.schema.foreign_keys[field.name]"
+                           field="field"
+                           object-field="record.obj.objectPropertyName(field.name)"
+                           selected-item-id="record.obj[field.name]"
+                           on-update="record.objectUpdated(value, name)">
+                </fk-autocomplete>
                 <md-input-container ng-if="field.type == 'select-static'">
                     <label>{{field.label}}</label>
                     <md-select placeholder={{field.label}} ng-model="record.obj[field.name]">
@@ -43,7 +50,8 @@
                 </md-input-container>
                 <devctrl-object-editor ng-if="field.type == 'object'"
                                        object="record.obj[field.name]"
-                                       name="field.name">
+                                       name="field.name"
+                                       on-update="record.objectUpdated(object, name)">
                 </devctrl-object-editor>
             </md-list-item>
             <md-list-item>

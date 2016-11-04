@@ -14,13 +14,14 @@ var PanelDirective_1 = require("./ng1/PanelDirective");
 var PanelControlSelectorCtrl_1 = require("./ng1/PanelControlSelectorCtrl");
 var FkSelectDirective_1 = require("./ng1/FkSelectDirective");
 var Slider2dDirective_1 = require("./ng1/Slider2dDirective");
-var ObjectEditorDirective_1 = require("./ng1/ObjectEditorDirective");
+var object_editor_component_1 = require("./ng1/object-editor.component");
 var ToolbarDirective_1 = require("./ng1/ToolbarDirective");
 var MainCtrl_1 = require("./ng1/MainCtrl");
 var endpoint_controller_1 = require("./ng1/endpoint.controller");
 var room_controller_1 = require("./ng1/room.controller");
 var rooms_controller_1 = require("./ng1/rooms.controller");
 var data_service_1 = require("./data.service");
+var fk_autocomplete_component_1 = require("./ng1/fk-autocomplete.component");
 require("angular-animate");
 require("angular-aria");
 require("angular-material");
@@ -41,9 +42,10 @@ angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'an
     .directive('devctrlPanel', PanelDirective_1.PanelDirective)
     .directive('fkSelect', FkSelectDirective_1.FkSelectDirective)
     .directive('devctrlSlider2d', Slider2dDirective_1.Slider2dDirective)
-    .directive('devctrlObjectEditor', ObjectEditorDirective_1.ObjectEditorDirective)
+    .component('devctrlObjectEditor', object_editor_component_1.ObjectEditorComponent)
     .directive('devctrlAdminOnly', admin_only_directive_1.AdminOnlyDirective)
     .component('devctrlEndpointStatus', endpoint_status_component_1.EndpointStatusComponent)
+    .component('fkAutocomplete', fk_autocomplete_component_1.FkAutocompleteComponent)
     .directive('devctrlToolbar', ToolbarDirective_1.ToolbarDirective)
     .controller('MainCtrl', MainCtrl_1.MainCtrl)
     .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl_1.PanelControlSelectorCtrl)

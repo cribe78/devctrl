@@ -1,5 +1,5 @@
 "use strict";
-var PanelControlSelectorCtrl_1 = require("./PanelControlSelectorCtrl");
+var PanelControl_1 = require("../../shared/PanelControl");
 exports.PanelDirective = ['$mdDialog', 'MenuService', 'DataService', function ($mdDialog, MenuService, DataService) {
         return {
             scope: true,
@@ -11,21 +11,24 @@ exports.PanelDirective = ['$mdDialog', 'MenuService', 'DataService', function ($
                 this.fields = this.panelObj.fields;
                 this.menu = MenuService;
                 this.addControl = function ($event) {
+                    DataService.editRecord($event, "0", PanelControl_1.PanelControl.tableStr, { panel_id: this.panelObj._id });
+                    /**
                     $mdDialog.show({
                         targetEvent: $event,
                         locals: {
-                            panelId: this.panelObj.id
+                            panelId: this.panelObj._id
                         },
-                        controller: PanelControlSelectorCtrl_1.PanelControlSelectorCtrl,
+                        controller: PanelControlSelectorCtrl,
                         controllerAs: 'selector',
                         bindToController: true,
                         templateUrl: 'app/ng1/panel-control-selector.html',
                         clickOutsideToClose: true,
-                        hasBackdrop: false
+                        hasBackdrop : false
                     });
+                     **/
                 };
                 this.editPanel = function ($event) {
-                    DataService.editRecord($event, this.panelObj.id, this.panelObj.tableName);
+                    DataService.editRecord($event, this.panelObj._id, this.panelObj.table);
                 };
                 this.setAllSwitches = function (val) {
                     angular.forEach(self.panelObj.referenced.panel_controls, function (pcontrol) {

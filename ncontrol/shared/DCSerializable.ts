@@ -63,6 +63,11 @@ export abstract class DCSerializable {
         this.referenced[refObj.table][refObj._id] = refObj;
     }
 
+    fkSelectName() {
+        return this.name;
+    }
+
+
     itemRequestData(): IDCDataRequest {
         return {
             table: this.table,
@@ -91,7 +96,16 @@ export abstract class DCSerializable {
         this.dataLoaded = true;
     };
 
+    objectPropertyName(idProperty: string) {
+        for (let fkDef of this.foreignKeys) {
+            if (fkDef.fkIdProp == idProperty) {
+                return fkDef.fkObjProp;
+            }
+        }
 
+        throw new Error("Failed to identify object property associated with " +
+            idProperty + " for " + this.table);
+    }
 
 
     abstract getDataObject() : DCSerializableData;

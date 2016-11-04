@@ -1,10 +1,11 @@
 import {DataService} from "../data.service";
 import {IndexedDataSet} from "../../shared/DCDataModel";
 import {DCSerializable} from "../../shared/DCSerializable";
+import {DSTableDefinition} from "./data-service-schema";
 export class TableController {
     tableName;
     data : IndexedDataSet<DCSerializable>;
-    schema;
+    schema : DSTableDefinition;
     newRow;
     sortColumn = 'id';
     sortReversed = false;

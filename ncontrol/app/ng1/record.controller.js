@@ -41,6 +41,9 @@ var RecordController = (function () {
             this.dataService.editRecordClose();
         }
     };
+    RecordController.prototype.objectUpdated = function (value, field) {
+        this.obj[field] = value;
+    };
     RecordController.$inject = ['DataService'];
     return RecordController;
 }());

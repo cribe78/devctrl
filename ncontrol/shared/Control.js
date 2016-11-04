@@ -39,6 +39,9 @@ var Control = (function (_super) {
             this.loadData(data);
         }
     }
+    Control.prototype.fkSelectName = function () {
+        return this.endpoint.name + ": " + this.name;
+    };
     Control.prototype.getDataObject = function () {
         return {
             _id: this._id,

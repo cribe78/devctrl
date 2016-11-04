@@ -240,7 +240,7 @@ sub select_scaler_source {
     $ua->cookie_jar($cookie_jar);
     
 
-    my $resp = $ua->put("https://$controller_ip/control.php/$scaler_control", Content => "{'value':$source}");
+    my $resp = $ua->put("https://$controller_ip/control.php/$scaler_control", Content => "{'value':\"$source\"}");
     	
     if ($resp->code != 200) {
     	my $code = $resp->code;

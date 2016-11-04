@@ -79,10 +79,10 @@ exports.dataServiceSchema = {
      **/
     controls: {
         "label": "Controls",
-        "foreign_keys": {
+        foreign_keys: {
             "endpoint_id": "endpoints"
         },
-        "fields": [
+        fields: [
             {
                 "name": "endpoint_id",
                 "type": "fk",
@@ -224,6 +224,11 @@ exports.dataServiceSchema = {
                 label: "Watched Control"
             },
             {
+                name: "watch_value",
+                type: "string",
+                label: "Watch Value"
+            },
+            {
                 name: "value_test",
                 type: "select-static",
                 label: "Value Test",
@@ -246,7 +251,7 @@ exports.dataServiceSchema = {
             },
             {
                 name: "enabled",
-                type: "boolean",
+                type: "bool",
                 label: "Enabled?"
             }
         ]

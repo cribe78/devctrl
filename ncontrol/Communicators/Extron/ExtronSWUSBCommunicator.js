@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var debugMod = require("debug");
 var TCPCommunicator_1 = require("../TCPCommunicator");
-var ExtronSWUSBCommand_1 = require("./ExtronSWUSBCommand");
+var TCPCommand_1 = require("../TCPCommand");
 var debug = debugMod("comms");
 var ExtronSWUSBCommunicator = (function (_super) {
     __extends(ExtronSWUSBCommunicator, _super);
@@ -35,7 +35,7 @@ var ExtronSWUSBCommunicator = (function (_super) {
             },
             poll: 1
         };
-        this.commands[config.cmdStr] = new ExtronSWUSBCommand_1.ExtronSWUSBCommand(config);
+        this.commands[config.cmdStr] = new TCPCommand_1.TCPCommand(config);
     };
     ExtronSWUSBCommunicator.prototype.connect = function () {
         debug("connecting to SWUSB-4");
@@ -45,6 +45,7 @@ var ExtronSWUSBCommunicator = (function (_super) {
         if (line.match(/^ser2net port/)) {
             return '';
         }
+        return line;
     };
     return ExtronSWUSBCommunicator;
 }(TCPCommunicator_1.TCPCommunicator));

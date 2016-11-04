@@ -99,6 +99,7 @@ class Messenger {
 
     static addData(request: any, fn: any) {
         let resp = { add : {}};
+        let request_handled = false;
 
         for (let table in Messenger.dataModel.types) {
             if (request[table]) {
@@ -176,8 +177,16 @@ class Messenger {
                     });
                 }
 
+                request_handled = true;
                 break;
             }
+        }
+
+        if (! request_handled) {
+            let errmsg = "no valid data found in add request";
+            debug(errmsg);
+            fn({ error: errmsg});
+            return;
         }
     }
 

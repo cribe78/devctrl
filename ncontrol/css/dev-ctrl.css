@@ -38,6 +38,10 @@ md-list-item .table-header {
 
 }
 
+fk-autocomplete {
+    min-width: 300px;
+}
+
 
 coe-menu ul {
     list-style: none;

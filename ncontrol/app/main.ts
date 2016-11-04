@@ -15,13 +15,14 @@ import {PanelDirective} from "./ng1/PanelDirective";
 import {PanelControlSelectorCtrl} from "./ng1/PanelControlSelectorCtrl";
 import {FkSelectDirective} from "./ng1/FkSelectDirective";
 import {Slider2dDirective} from "./ng1/Slider2dDirective";
-import {ObjectEditorDirective} from "./ng1/ObjectEditorDirective";
+import {ObjectEditorComponent} from "./ng1/object-editor.component";
 import {ToolbarDirective} from "./ng1/ToolbarDirective";
 import {MainCtrl} from "./ng1/MainCtrl";
 import {EndpointController} from "./ng1/endpoint.controller";
 import {RoomController} from "./ng1/room.controller"
 import {RoomsController} from "./ng1/rooms.controller";
 import {DataService} from "./data.service";
+import {FkAutocompleteComponent} from "./ng1/fk-autocomplete.component";
 
 import "angular-animate";
 import "angular-aria";
@@ -47,9 +48,10 @@ angular.module('DevCtrlApp',
     .directive('devctrlPanel', PanelDirective)
     .directive('fkSelect', FkSelectDirective)
     .directive('devctrlSlider2d', Slider2dDirective)
-    .directive('devctrlObjectEditor', ObjectEditorDirective)
+    .component('devctrlObjectEditor', ObjectEditorComponent)
     .directive('devctrlAdminOnly', AdminOnlyDirective)
     .component('devctrlEndpointStatus', EndpointStatusComponent)
+    .component('fkAutocomplete', FkAutocompleteComponent)
     .directive('devctrlToolbar', ToolbarDirective)
     .controller('MainCtrl', MainCtrl)
     .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl)

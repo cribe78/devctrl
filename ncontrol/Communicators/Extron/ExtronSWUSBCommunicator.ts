@@ -1,7 +1,6 @@
 import * as debugMod from "debug";
 import {TCPCommunicator} from "../TCPCommunicator";
-import {ITCPCommandConfig} from "../TCPCommand";
-import {ExtronSWUSBCommand} from "./ExtronSWUSBCommand";
+import {ITCPCommandConfig, TCPCommand} from "../TCPCommand";
 
 
 let debug = debugMod("comms");
@@ -32,7 +31,7 @@ class ExtronSWUSBCommunicator extends TCPCommunicator {
             poll: 1
         };
 
-        this.commands[config.cmdStr] = new ExtronSWUSBCommand(config);
+        this.commands[config.cmdStr] = new TCPCommand(config);
     }
 
     connect() {
@@ -40,10 +39,12 @@ class ExtronSWUSBCommunicator extends TCPCommunicator {
         super.connect();
     }
 
-    preprocessLine(line: string) {
+    preprocessLine(line: string) : string {
         if (line.match(/^ser2net port/)) {
             return '';
         }
+
+        return line;
     }
 }
 

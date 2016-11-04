@@ -129,6 +129,7 @@ var TCPCommunicator = (function (_super) {
             var eresp = this.expectedResponses[idx];
             if (line.search(eresp[0]) > -1) {
                 debug(line + " matched expected response \"" + eresp[0] + "\" at [" + idx + "]");
+                //Execute expected response callback
                 eresp[1](line);
                 this.expectedResponses = this.expectedResponses.slice(idx + 1);
                 return true;

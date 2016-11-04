@@ -63,6 +63,9 @@ export class Control extends DCSerializable {
         }
     }
 
+    fkSelectName() {
+        return this.endpoint.name + ": " + this.name;
+    }
 
     getDataObject() : ControlData {
         return {

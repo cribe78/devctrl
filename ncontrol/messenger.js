@@ -69,6 +69,7 @@ var Messenger = (function () {
     };
     Messenger.addData = function (request, fn) {
         var resp = { add: {} };
+        var request_handled = false;
         var _loop_1 = function(table) {
             if (request[table]) {
                 var col = Messenger.mongodb.collection(table);
@@ -135,6 +136,7 @@ var Messenger = (function () {
                         fn(resp);
                     });
                 }
+                request_handled = true;
                 return "break";
             }
         };
@@ -142,6 +144,12 @@ var Messenger = (function () {
             var state_1 = _loop_1(table);
             if (typeof state_1 === "object") return state_1.value;
             if (state_1 === "break") break;
+        }
+        if (!request_handled) {
+            var errmsg = "no valid data found in add request";
+            debug(errmsg);
+            fn({ error: errmsg });
+            return;
         }
     };
     Messenger.broadcastControlValues = function (updates, fn) {

@@ -22,7 +22,7 @@
         <span flex class="title text-headline">{{toolbar.pageTitle()}}</span>
         <div layout="column">
             <div>{{toolbar.session.client_name}}</div>
-            <span>{{toolbar.session.username}}</span>
+            <span ng-if="toolbar.adminLoggedIn()">{{toolbar.session.username}}</span>
         </div>
 
 

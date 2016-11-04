@@ -1,10 +1,37 @@
-let nameField = {
+
+
+export type DSFieldType = "string" | "int" | "bool" | "select-static" | "fk" | "object";
+
+export interface DSFieldDefinition {
+    name: string;
+    type: DSFieldType;
+    label: string;
+    options?: {
+        name : string;
+        value : string;
+    }[],
+    input_disabled?: boolean;
+}
+
+export interface DSTableDefinition {
+    label: string;
+    foreign_keys? : {
+        [index: string] : string;
+    };
+    fields: DSFieldDefinition[]
+}
+
+export interface DSSchemaDefinition {
+    [index: string] : DSTableDefinition
+}
+
+let nameField : DSFieldDefinition = {
     name: "name",
     type: "string",
     label: "Name"
 };
 
-export let dataServiceSchema = {
+export let dataServiceSchema : DSSchemaDefinition = {
     endpoints: {
         "foreign_keys": {
             "endpoint_type_id": "endpoint_types"
@@ -79,10 +106,10 @@ export let dataServiceSchema = {
      **/
     controls: {
         "label": "Controls",
-        "foreign_keys": {
+        foreign_keys: {
             "endpoint_id": "endpoints"
         },
-        "fields": [
+        fields: [
             {
                 "name": "endpoint_id",
                 "type": "fk",
@@ -224,6 +251,11 @@ export let dataServiceSchema = {
                 label: "Watched Control"
             },
             {
+                name: "watch_value",
+                type: "string",
+                label: "Watch Value"
+            },
+            {
                 name: "value_test",
                 type: "select-static",
                 label: "Value Test",
@@ -246,7 +278,7 @@ export let dataServiceSchema = {
             },
             {
                 name: "enabled",
-                type: "boolean",
+                type: "bool",
                 label: "Enabled?"
             }
         ]

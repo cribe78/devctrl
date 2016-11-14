@@ -16,15 +16,35 @@ export class EndpointCommunicator {
     controlsByCtid: IndexedDataSet<Control> = {};
     controls: IndexedDataSet<Control> = {};
     config: IEndpointCommunicatorConfig;
+    protected _connected: boolean = false;
 
     constructor() {
     }
 
-    connect() {};
+
 
     get endpoint_id() : string {
         return this.config.endpoint._id;
     }
+
+    get connected() {
+        return this._connected;
+    }
+
+    set connected(val: boolean) {
+        this._connected = val;
+    }
+
+
+    connect() {
+        this._connected = true;
+    };
+
+    disconnect() {
+        this._connected = false;
+    };
+
+
 
     setConfig(config: IEndpointCommunicatorConfig) {
         this.config = config;

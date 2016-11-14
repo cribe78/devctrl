@@ -13,9 +13,10 @@
     "core-js": "registry:dt/core-js#0.0.0+20160914114559",
     "jasmine": "registry:dt/jasmine#2.2.0+20160621224255",
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
-    "node": "registry:env/node#4.0.0+20160813135048",
+    "node": "registry:dt/node#6.0.0+20161102143327",
     "serialport": "registry:dt/serialport#4.0.1+20160915134249",
     "socket.io": "registry:dt/socket.io#1.4.4+20160909205835",
-    "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654"
+    "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654",
+    "sprintf-js": "registry:dt/sprintf-js#0.0.0+20160317120654"
   }
 }

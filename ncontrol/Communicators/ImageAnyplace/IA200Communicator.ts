@@ -2,7 +2,6 @@ import * as debugMod from "debug";
 import {TCPCommunicator} from "../TCPCommunicator";
 import {ITCPCommandConfig, TCPCommand} from "../TCPCommand";
 import keys = require("core-js/fn/array/keys");
-import {IA200Command} from "./IA200Command";
 
 let debug = debugMod("comms");
 
@@ -15,7 +14,7 @@ class IA200Communicator extends TCPCommunicator {
         let fiveZeros = "00000";
         let inputConfig : ITCPCommandConfig = {
             cmdStr: "Video Input",
-            cmdUpdateTemplate: "A00WBA{value}" + nineZeros,
+            cmdUpdateTemplate: "A00WBA%04d" + nineZeros,
             cmdUpdateResponseTemplate: "K",
             endpoint_id: this.config.endpoint._id,
             control_type: "string",
@@ -31,16 +30,17 @@ class IA200Communicator extends TCPCommunicator {
                     G : "HDMI"
                 }
             },
-            poll: 0
+            poll: 0,
+            writeonly: true
         };
 
-        this.commands[inputConfig.cmdStr] = new IA200Command(inputConfig);
+        this.commands[inputConfig.cmdStr] = new TCPCommand(inputConfig);
 
         let keystoneConfig : ITCPCommandConfig = {
             cmdStr: "Keystone TL-X",
             cmdQueryStr: "A00RFAA",
             cmdQueryResponseRE: /V0(\d\d\d)/,
-            cmdUpdateTemplate: "A00WFAA{value}" + fiveZeros,
+            cmdUpdateTemplate: "A00WFAA%04d" + fiveZeros,
             cmdUpdateResponseTemplate: "K",
             endpoint_id: this.config.endpoint._id,
             control_type: "range",
@@ -52,13 +52,13 @@ class IA200Communicator extends TCPCommunicator {
             poll: 1
         };
 
-        this.commands[keystoneConfig.cmdStr] = new IA200Command(keystoneConfig);
+        this.commands[keystoneConfig.cmdStr] = new TCPCommand(keystoneConfig);
 
         keystoneConfig.cmdStr = "Keystone TL-V";
         keystoneConfig.cmdQueryStr = "A00RFAB";
-        keystoneConfig.cmdUpdateTemplate = "A00WFAB{value}" + fiveZeros;
+        keystoneConfig.cmdUpdateTemplate = "A00WFAB%04d" + fiveZeros;
 
-        this.commands[keystoneConfig.cmdStr] = new IA200Command(keystoneConfig);
+        this.commands[keystoneConfig.cmdStr] = new TCPCommand(keystoneConfig);
 
 
     }
@@ -67,6 +67,10 @@ class IA200Communicator extends TCPCommunicator {
     // Match one of the IA200 response codes and return it
     matchResponseCode() {
         let data = this.inputBuffer;
+
+        if (data.length == 0) {
+            return '';
+        }
 
         if (data.charAt(0) == "K") {
             // ACK

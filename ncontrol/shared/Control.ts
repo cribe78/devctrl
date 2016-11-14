@@ -33,6 +33,22 @@ export class Control extends DCSerializable {
     static tableStr = "controls";
     table: string;
 
+    // usertype and control_type values
+    static CONTROL_TYPE_BOOLEAN = "boolean";
+    static CONTROL_TYPE_STRING = "string";
+    static CONTROL_TYPE_RANGE = "range";
+    static CONTROL_TYPE_INT = "int";
+
+    static USERTYPE_BUTTON = "button";
+    static USERTYPE_BUTTON_SET = "button-set";
+    static USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
+    static USERTYPE_SLIDER_2D = "slider2d";
+    static USERTYPE_SWITCH = "switch";
+    static USERTYPE_SLIDER = "slider";
+    static USERTYPE_READONLY = "readonly";
+    static USERTYPE_LEVEL = "level";
+    static USERTYPE_SELECT = "select";
+    static USERTYPE_SELECT_READONLY = "select-readonly";
 
     constructor(_id: string, data?: ControlData) {
         super(_id);

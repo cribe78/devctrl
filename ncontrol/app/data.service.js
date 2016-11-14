@@ -4,6 +4,7 @@ var io = require("socket.io-client");
 var record_controller_1 = require("./ng1/record.controller");
 var CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
 var DCDataModel_1 = require("../shared/DCDataModel");
+var Endpoint_1 = require("../shared/Endpoint");
 var DataService = (function () {
     function DataService($window, $http, $mdToast, $timeout, $q, socket, $mdDialog, $location) {
         this.$window = $window;
@@ -93,8 +94,9 @@ var DataService = (function () {
     DataService.prototype.dialogClose = function () {
         this.$mdDialog.hide();
     };
-    DataService.prototype.doAdminLogon = function () {
+    DataService.prototype.doAdminLogon = function (allowExpiration) {
         var _this = this;
+        if (allowExpiration === void 0) { allowExpiration = false; }
         // First, check current login status
         if (this.userSession.login_expires > Date.now()) {
             var url = "/auth/admin_auth";
@@ -102,7 +104,20 @@ var DataService = (function () {
             //Success
             function (response) {
                 angular.merge(_this.userSession, response.data.session);
-                console.log("admin_auth successful");
+                // Refresh credentials before they expire
+                var retryDelay = (_this.userSession.admin_auth_expires - Date.now()) - 2000;
+                //let retryDelay = 60000;
+                var retryTime = new Date(Date.now() + retryDelay);
+                var retryTimeStr = retryTime.toTimeString().substr(0, 17);
+                if (retryDelay > 0) {
+                    _this.adminLogonTimeout = _this.$timeout(function () {
+                        _this.doAdminLogon(true);
+                    }, retryDelay);
+                    console.log("admin_auth successful, admin refresh scheduled for " + retryTimeStr);
+                }
+                else {
+                    console.log("admin_auth successful, negative retry delay, what the hell does that mean?");
+                }
             }, 
             //Failure
             function (response) {
@@ -112,8 +127,13 @@ var DataService = (function () {
                     _this.userSession.admin_auth_requested = false;
                 }
                 else if (response.status == -1) {
-                    console.log("XHR admin auth failed, attempting logon");
-                    _this.doLogon(true, true);
+                    if (!allowExpiration) {
+                        console.log("XHR admin auth failed, attempting logon");
+                        _this.doLogon(true, true);
+                    }
+                    else {
+                        console.log("XHR admin auth failed, dropping admin privileges");
+                    }
                 }
                 else {
                     _this.errorToast("Admin auth error: " + response.status);
@@ -131,7 +151,7 @@ var DataService = (function () {
             // Circuit breaker for login loops
             if (this.config.lastLogonAttempt) {
                 var timeSinceLogon = Date.now() - this.config.lastLogonAttempt;
-                if (timeSinceLogon < 10) {
+                if (timeSinceLogon < 10000) {
                     this.errorToast("Login loop detected.  Not processing logon request");
                     return;
                 }
@@ -210,10 +230,21 @@ var DataService = (function () {
     };
     // Get MongoDB data from the IO messenger
     DataService.prototype.getMData = function (table, params) {
+        /**
+        if (! this.userSession._id) {
+            console.log("chaining getMData to getUserInfo");
+            this.userInfoPromise = this.getUserInfo().then(() => {
+                    this.getMData(table, params);
+                }
+            );
+
+            return this.userInfoPromise;
+        }
+         **/
         var _this = this;
         var req = {
             table: table,
-            params: params
+            params: params,
         };
         var getMProm = this.$q(function (resolve, reject) {
             _this.socket.emit('get-data', req, function (data) {
@@ -313,27 +344,34 @@ var DataService = (function () {
     DataService.prototype.getUserInfo = function () {
         var _this = this;
         var userInfoUrl = "/auth/user_session";
-        return this.$http.get(userInfoUrl)
-            .then(
-        //Success
-        function (response) {
-            angular.merge(_this.userSession, response.data.session);
-            // If we are logged in, check for admin auth
-            if (_this.userSession.admin_auth_requested) {
-                console.log("getUserInfo doAdminLogon");
-                _this.doAdminLogon();
-            }
-            else if (!_this.userSession.auth) {
-                // User is not authorized application and should be directed to log on
-                console.log("getUserInfo doLogon");
-                _this.doLogon();
-            }
-        }, 
-        //Failure
-        function (response) {
-            console.log("get user session failed with response code:" + response.status);
-            //TODO: we should prevent the user from using the application at this point
-        });
+        if (typeof this.userInfoPromise == 'undefined') {
+            this.userInfoPromise = this.$http.get(userInfoUrl)
+                .then(
+            //Success
+            function (response) {
+                angular.merge(_this.userSession, response.data.session);
+                // If we are logged in, check for admin auth
+                if (_this.userSession.admin_auth_requested) {
+                    console.log("getUserInfo doAdminLogon");
+                    _this.doAdminLogon();
+                }
+                else if (!_this.userSession.auth) {
+                    // User is not authorized application and should be directed to log on
+                    console.log("getUserInfo doLogon");
+                    _this.doLogon();
+                }
+                else if (_this.isAdminAuthorized()) {
+                    // Setup periodic checks to renew admin auth
+                    _this.doAdminLogon(true);
+                }
+            }, 
+            //Failure
+            function (response) {
+                console.log("get user session failed with response code:" + response.status);
+                //TODO: we should prevent the user from using the application at this point
+            });
+        }
+        return this.userInfoPromise;
     };
     DataService.prototype.guid = function () {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -347,7 +385,11 @@ var DataService = (function () {
         if (this.initialized) {
             return;
         }
-        var ioSocket = io(this.$location.protocol() + "://" + this.$location.host());
+        var ioSocket = io(this.$location.protocol() + "://" + this.$location.host(), {
+            //path: "/socket-dev.io",
+            path: "/socket.io",
+            transports: ["websocket"]
+        });
         this.socket.init({ ioSocket: ioSocket });
         this.socket.on('control-data', function (data) {
             _this.loadData(data);
@@ -358,6 +400,10 @@ var DataService = (function () {
         });
         this.socket.on('log-data', function (data) {
             //this.dataModel.applog.push(data);
+        });
+        this.socket.on('reconnect', function () {
+            // Refresh endpoints, as they may have been disconnected from the messenger
+            _this.getMData(Endpoint_1.Endpoint.tableStr, {});
         });
         console.log("dataService2 initialized");
         this.initialized = true;
@@ -387,9 +433,24 @@ var DataService = (function () {
         //}
     };
     DataService.prototype.revokeAdminAuth = function () {
+        var _this = this;
         //TODO: this doesn't do anything unless the Apache auth session credentials
         // are also revoke
         this.userSession.admin_auth_expires = Date.now();
+        if (this.adminLogonTimeout) {
+            this.$timeout.cancel(this.adminLogonTimeout);
+        }
+        var url = "/auth/revoke_admin";
+        this.$http.get(url).then(
+        //Success
+        function (response) {
+            angular.merge(_this.userSession, response.data.session);
+            console.log("revoke admin auth successful");
+        }, 
+        //Failure
+        function (response) {
+            _this.errorToast("Revoke Admin auth error: " + response.status);
+        });
     };
     DataService.prototype.showControlLog = function ($event, ctrl) {
         var _this = this;

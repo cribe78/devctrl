@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-var auth = require("./auth");
 var config = require("./config");
+var app = require(config.app);
 
-
-auth.run(config);
+app.run(config);

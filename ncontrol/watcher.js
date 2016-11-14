@@ -34,7 +34,12 @@ var Watcher = (function () {
     Watcher.prototype.run = function (config) {
         var _this = this;
         this.config = config;
-        this.io = io.connect(config.wsUrl);
+        var connectOpts = {
+            transports: ['websocket'],
+            path: config.ioPath
+        };
+        connectOpts['extraHeaders'] = { 'ncontrol-auth-id': config.authId };
+        this.io = io.connect(config.wsUrl, connectOpts);
         this.io.on('connect', function () {
             debug("websocket client connected");
             var reqData = { table: WatcherRule_1.WatcherRule.tableStr, params: {} };

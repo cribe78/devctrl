@@ -7,14 +7,13 @@ import * as debugMod from "debug";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import {EndpointStatus} from "../shared/Endpoint";
 import {IndexedDataSet} from "../shared/DCDataModel";
-let debug = debugMod("comms");
-
+//let debug = debugMod("comms");
+let debug = console.log;
 
 export class TCPCommunicator extends EndpointCommunicator {
     host: string;
     port : number;
     socket: net.Socket;
-    connected: boolean = false;
     commands: IndexedDataSet<TCPCommand> = {};
     commandsByTemplate: IndexedDataSet<TCPCommand> = {};
     inputLineTerminator = '\r\n';
@@ -75,6 +74,12 @@ export class TCPCommunicator extends EndpointCommunicator {
         this.backoffTime = 1000;
     }
 
+    disconnect() {
+        this.socket.end();
+        this.connected = false;
+        this.config.statusUpdateCallback(EndpointStatus.Offline);
+    }
+
     doDeviceLogon() {
         this.connected = true;
         this.config.statusUpdateCallback(EndpointStatus.Online);
@@ -86,6 +91,7 @@ export class TCPCommunicator extends EndpointCommunicator {
             return;
         }
 
+        let self = this;
         let queryStr = cmd.queryString();
         debug("sending query: " + queryStr);
         this.socket.write(queryStr + this.outputLineTerminator);
@@ -93,13 +99,13 @@ export class TCPCommunicator extends EndpointCommunicator {
             cmd.queryResponseMatchString(),
             (line) => {
                 for (let ctid of cmd.ctidList) {
-                    let control = this.controlsByCtid[ctid];
+                    let control = self.controlsByCtid[ctid];
 
                     let val = cmd.parseQueryResponse(control, line);
-                    this.setControlValue(control, val);
+                    self.setControlValue(control, val);
                 }
 
-                this.connectionConfirmed();
+                self.connectionConfirmed();
             }
         ]);
     }
@@ -154,6 +160,11 @@ export class TCPCommunicator extends EndpointCommunicator {
         return false;
     }
 
+    matchLineToError(line: string) : boolean {
+
+        return false;
+    }
+
     matchLineToExpectedResponse(line: string) : boolean {
         for (let idx = 0; idx < this.expectedResponses.length; idx++) {
             let eresp = this.expectedResponses[idx];
@@ -189,18 +200,27 @@ export class TCPCommunicator extends EndpointCommunicator {
 
     onEnd() {
         let self = this;
-        debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
-        this.connected = false;
+        if (this.config.endpoint.enabled) {
+            debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
+            this.connected = false;
 
-        this.config.statusUpdateCallback(EndpointStatus.Offline);
+            this.config.statusUpdateCallback(EndpointStatus.Offline);
 
+            if (! this.socket["destroyed"]) {  // socket.destroyed is missing from Typings file
+                debug("destroying socket");
+                this.socket.destroy();
+            }
 
-        setTimeout(function() {
-            self.connect();
-        }, this.backoffTime);
+            setTimeout(function () {
+                self.connect();
+            }, this.backoffTime);
 
-        if (this.backoffTime < 20000) {
-            this.backoffTime = this.backoffTime * 2;
+            if (this.backoffTime < 20000) {
+                this.backoffTime = this.backoffTime * 2;
+            }
+        }
+        else {
+            debug("successfully disconnected from " + this.host);
         }
     }
 
@@ -245,6 +265,10 @@ export class TCPCommunicator extends EndpointCommunicator {
         //Ignore empty lines
         if (line == '') return;
 
+        if (this.matchLineToError(line)) {
+            return;
+        }
+
         // Check line against expected responses
         if (this.matchLineToExpectedResponse(line)) {
             return;
@@ -252,7 +276,7 @@ export class TCPCommunicator extends EndpointCommunicator {
 
         // Match line to a command
         let match = this.matchLineToCommand(line);
-        //TODO: match error strings
+
 
         if (match) {
             let cmd = <TCPCommand>match;
@@ -279,7 +303,9 @@ export class TCPCommunicator extends EndpointCommunicator {
 
     queryAll() {
         for (let cmdStr in this.commands) {
-            this.executeCommandQuery(this.commands[cmdStr]);
+            if (! this.commands[cmdStr].writeonly) {
+                this.executeCommandQuery(this.commands[cmdStr]);
+            }
         }
     }
 

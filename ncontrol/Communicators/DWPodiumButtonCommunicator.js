@@ -8,6 +8,7 @@ var EndpointCommunicator_1 = require("./EndpointCommunicator");
 var SerialPort = require("serialport");
 var Control_1 = require("../shared/Control");
 var debugMod = require("debug");
+var Endpoint_1 = require("../shared/Endpoint");
 var debug = debugMod("comms");
 var DWPodiumButtonCommunicator = (function (_super) {
     __extends(DWPodiumButtonCommunicator, _super);
@@ -17,6 +18,7 @@ var DWPodiumButtonCommunicator = (function (_super) {
     }
     DWPodiumButtonCommunicator.prototype.connect = function () {
         this.port = new SerialPort(this.config.endpoint.address, { baudRate: 9600 });
+        this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
         //this.port.open();
     };
     DWPodiumButtonCommunicator.prototype.getControlTemplates = function () {

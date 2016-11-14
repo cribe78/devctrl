@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var debugMod = require("debug");
 var TCPCommunicator_1 = require("../TCPCommunicator");
-var IA200Command_1 = require("./IA200Command");
+var TCPCommand_1 = require("../TCPCommand");
 var debug = debugMod("comms");
 var IA200Communicator = (function (_super) {
     __extends(IA200Communicator, _super);
@@ -20,7 +20,7 @@ var IA200Communicator = (function (_super) {
         var fiveZeros = "00000";
         var inputConfig = {
             cmdStr: "Video Input",
-            cmdUpdateTemplate: "A00WBA{value}" + nineZeros,
+            cmdUpdateTemplate: "A00WBA%04d" + nineZeros,
             cmdUpdateResponseTemplate: "K",
             endpoint_id: this.config.endpoint._id,
             control_type: "string",
@@ -36,14 +36,15 @@ var IA200Communicator = (function (_super) {
                     G: "HDMI"
                 }
             },
-            poll: 0
+            poll: 0,
+            writeonly: true
         };
-        this.commands[inputConfig.cmdStr] = new IA200Command_1.IA200Command(inputConfig);
+        this.commands[inputConfig.cmdStr] = new TCPCommand_1.TCPCommand(inputConfig);
         var keystoneConfig = {
             cmdStr: "Keystone TL-X",
             cmdQueryStr: "A00RFAA",
             cmdQueryResponseRE: /V0(\d\d\d)/,
-            cmdUpdateTemplate: "A00WFAA{value}" + fiveZeros,
+            cmdUpdateTemplate: "A00WFAA%04d" + fiveZeros,
             cmdUpdateResponseTemplate: "K",
             endpoint_id: this.config.endpoint._id,
             control_type: "range",
@@ -54,15 +55,18 @@ var IA200Communicator = (function (_super) {
             },
             poll: 1
         };
-        this.commands[keystoneConfig.cmdStr] = new IA200Command_1.IA200Command(keystoneConfig);
+        this.commands[keystoneConfig.cmdStr] = new TCPCommand_1.TCPCommand(keystoneConfig);
         keystoneConfig.cmdStr = "Keystone TL-V";
         keystoneConfig.cmdQueryStr = "A00RFAB";
-        keystoneConfig.cmdUpdateTemplate = "A00WFAB{value}" + fiveZeros;
-        this.commands[keystoneConfig.cmdStr] = new IA200Command_1.IA200Command(keystoneConfig);
+        keystoneConfig.cmdUpdateTemplate = "A00WFAB%04d" + fiveZeros;
+        this.commands[keystoneConfig.cmdStr] = new TCPCommand_1.TCPCommand(keystoneConfig);
     };
     // Match one of the IA200 response codes and return it
     IA200Communicator.prototype.matchResponseCode = function () {
         var data = this.inputBuffer;
+        if (data.length == 0) {
+            return '';
+        }
         if (data.charAt(0) == "K") {
             // ACK
             return "K";

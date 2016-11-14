@@ -1,5 +1,8 @@
 "use strict";
 var Control_1 = require("../shared/Control");
+var sprintf_js_1 = require("sprintf-js");
+//let debug = debugMod("comms");
+var debug = console.log;
 var TCPCommand = (function () {
     function TCPCommand(config) {
         this.cmdQueryResponseRE = /^$a/; // RE to match the response to a device poll, default matches nothing
@@ -35,11 +38,19 @@ var TCPCommand = (function () {
                 this.cmdReportRE = config.cmdReportRE;
             }
         }
+        this.readonly = !!config.readonly;
+        this.writeonly = !!config.writeonly;
     }
     TCPCommand.prototype.expandTemplate = function (template, value) {
-        // Substitute value placeholder
-        var re = /\{value}/g;
-        var res = template.replace(re, value);
+        // Use sprintf to expand the template
+        var res = '';
+        try {
+            res = sprintf_js_1.sprintf(template, value);
+        }
+        catch (e) {
+            debug("Error expanding template " + template);
+            debug(e.message);
+        }
         return res;
     };
     TCPCommand.prototype.getControlTemplates = function () {
@@ -67,22 +78,47 @@ var TCPCommand = (function () {
         var matches = devStr.match(this.cmdReportRE);
         return !!matches;
     };
+    // Override this function in a custom Command class if necessary
+    TCPCommand.prototype.parseBoolean = function (value) {
+        // Add string representations of 0 and false to standard list of falsey values
+        if (typeof value == "string") {
+            if (value.toLowerCase() == "false") {
+                return false;
+            }
+            if (parseInt(value) == 0) {
+                return false;
+            }
+        }
+        return !!value;
+    };
     TCPCommand.prototype.parseReportValue = function (control, line) {
         if (!this.cmdReportRE) {
             return line;
         }
         var matches = line.match(this.cmdReportRE);
         if (matches && matches.length > 1) {
-            return matches[this.cmdReportREMatchIdx];
+            return this.parseValue([this.cmdReportREMatchIdx]);
         }
         return '';
     };
     TCPCommand.prototype.parseQueryResponse = function (control, line) {
         var matches = line.match(this.cmdQueryResponseRE);
         if (matches) {
-            return matches[1];
+            return this.parseValue(matches[1]);
         }
         return '';
+    };
+    TCPCommand.prototype.parseValue = function (value) {
+        if (this.control_type == Control_1.Control.CONTROL_TYPE_RANGE) {
+            return parseFloat(value);
+        }
+        else if (this.control_type == Control_1.Control.CONTROL_TYPE_INT) {
+            return parseInt(value);
+        }
+        else if (this.control_type == Control_1.Control.CONTROL_TYPE_BOOLEAN) {
+            return this.parseBoolean(value);
+        }
+        return value;
     };
     TCPCommand.prototype.queryString = function () {
         if (this.cmdQueryStr) {

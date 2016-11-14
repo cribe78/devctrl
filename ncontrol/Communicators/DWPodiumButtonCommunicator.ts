@@ -4,6 +4,7 @@ import {IndexedDataSet} from "../shared/DCDataModel";
 import {Control, ControlData} from "../shared/Control";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import * as debugMod from "debug";
+import {EndpointStatus} from "../shared/Endpoint";
 
 let debug = debugMod("comms");
 
@@ -20,6 +21,7 @@ export class DWPodiumButtonCommunicator extends EndpointCommunicator {
 
     connect() {
         this.port = new SerialPort(this.config.endpoint.address, { baudRate : 9600 });
+        this.config.statusUpdateCallback(EndpointStatus.Online);
         //this.port.open();
     }
 

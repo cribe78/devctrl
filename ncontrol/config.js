@@ -8,9 +8,11 @@ var config = {
   "mongoPort" : 27017,
   "mongoDB" : "devctrl-dev",
   "ioPort" : 2880,
+  ioPath: "/socket.io",
   "authPort" : 2992,
-  "updatePort" : 2881,
-  "endpointPassword" : "DWCONTROL"
+  "endpointPassword" : "DWCONTROL",
+  app: "./ncontrol",
+  authId: "overrideme"
 };
 
 var customConfig = {};

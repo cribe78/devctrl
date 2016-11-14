@@ -22,6 +22,7 @@ interface NControlConfig {
 class NControl {
     io: SocketIOClient.Socket;
     endpoint: Endpoint;
+    oldEndpoint: Endpoint;
     dataModel: DCDataModel;
     config: NControlConfig;
     communicator: EndpointCommunicator;
@@ -39,18 +40,43 @@ class NControl {
     run(config: any) {
         let self = this;
         this.config = <NControlConfig>config;
-        debug(`connecting to ${config.wsUrl}`);
-        this.io = io.connect(config.wsUrl);
+        debug(`connecting to ${config.wsUrl}${config.ioPath}`);
+        let connectOpts = {
+            transports: ['websocket'],
+            path : config.ioPath
+        };
+
+        connectOpts['extraHeaders'] = { 'ncontrol-auth-id' : config.authId }
+
+        this.io = io.connect(config.wsUrl, connectOpts);
 
         this.io.on('connect', function() {
             debug("websocket client connected");
 
             //Get endpoint data
             self.getEndpointConfig();
+            self.registerEndpoint();
+        });
+
+        this.io.on('connect_error', (err) => {
+            debug(`io connection error: ${err}`);
+        });
+
+        this.io.on('reconnect', () => {
+            this.registerEndpoint();
+            if (this.endpoint) {
+                this.pushEndpointStatusUpdate(this.endpoint.status);
+            }
+        });
+
+        this.io.on('error', function(obj) {
+            debug(`websocket connection error: ${obj}`);
         });
 
         this.io.on('control-data', function(data) {
+            self.oldEndpoint = new Endpoint(self.endpoint._id, self.endpoint.getDataObject());
             self.dataModel.loadData(data);
+            self.checkData();
         });
 
         this.io.on('control-updates', function(data) {
@@ -58,6 +84,26 @@ class NControl {
         });
 
         debug("testString is " + config.testString );
+    }
+
+    checkData() {
+        // Check endpoint for configuration changes
+        if (this.oldEndpoint.enabled != this.endpoint.enabled) {
+            if (this.endpoint.enabled) {
+                debug("Endpoint enabled. Connecting");
+                this.communicator.connect();
+            }
+            else {
+                debug("Endpoint disabled.  Disconnecting");
+                this.communicator.disconnect();
+            }
+        }
+        else if (this.oldEndpoint.ip != this.endpoint.ip ||
+                this.oldEndpoint.port != this.endpoint.port ) {
+            debug("ip/port change. resetting communicator");
+            this.communicator.disconnect();
+            this.communicator.connect();
+        }
     }
 
 
@@ -131,6 +177,9 @@ class NControl {
             return;
         }
 
+        this.registerEndpoint();
+
+
         this.getData(this.endpoint.type.itemRequestData(), this.getControls);
     }
 
@@ -161,30 +210,42 @@ class NControl {
             debug("endpointType data is missing");
         }
 
-        let commClass =  this.endpoint.type.communicatorClass;
-        let requirePath = "./Communicators/" + commClass;
+        if (! this.communicator) {
+            let commClass = this.endpoint.type.communicatorClass;
+            let requirePath = "./Communicators/" + commClass;
 
-        debug(`instantiating communicator ${requirePath}`);
+            debug(`instantiating communicator ${requirePath}`);
 
-        this.communicator = require(requirePath);
+            this.communicator = require(requirePath);
 
-        if (typeof this.communicator.setConfig !== 'function') {
-            debug("it doesn't look like you have your communicator class exported properly");
-        }
-
-        this.communicator.setConfig({
-            endpoint: this.endpoint,
-            controlUpdateCallback: function(control, value) {
-                self.pushControlUpdate(control, value);
-            },
-            statusUpdateCallback: function(status) {
-                self.pushEndpointStatusUpdate(status);
+            if (typeof this.communicator.setConfig !== 'function') {
+                debug("it doesn't look like you have your communicator class exported properly");
             }
-        });
+
+            this.communicator.setConfig({
+                endpoint: this.endpoint,
+                controlUpdateCallback: function (control, value) {
+                    self.pushControlUpdate(control, value);
+                },
+                statusUpdateCallback: function (status) {
+                    self.pushEndpointStatusUpdate(status);
+                }
+            });
+        }
 
         this.syncControls();
 
-        this.communicator.connect();
+        if (this.endpoint.enabled) {
+            if (! this.communicator.connected) {
+                this.communicator.connect();
+            }
+            else {
+                debug("communicator already connected");
+            }
+        }
+        else {
+            debug("endpoint not enabled, not connecting");
+        }
     }
 
     pushControlUpdate(control: Control, value: any) {
@@ -203,6 +264,7 @@ class NControl {
     }
 
     pushEndpointStatusUpdate(status: EndpointStatus) {
+        this.endpoint.status = status;
         let update : IDCDataUpdate = {
             table: Endpoint.tableStr,
             _id: this.endpoint._id,
@@ -210,6 +272,10 @@ class NControl {
         };
 
         this.updateData(update, () => {});
+    }
+
+    registerEndpoint() {
+        this.io.emit('register-endpoint', { endpoint_id : this.config.endpointId});
     }
 
     syncControls() {

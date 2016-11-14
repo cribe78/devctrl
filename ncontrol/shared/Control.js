@@ -56,6 +56,21 @@ var Control = (function (_super) {
         };
     };
     Control.tableStr = "controls";
+    // usertype and control_type values
+    Control.CONTROL_TYPE_BOOLEAN = "boolean";
+    Control.CONTROL_TYPE_STRING = "string";
+    Control.CONTROL_TYPE_RANGE = "range";
+    Control.CONTROL_TYPE_INT = "int";
+    Control.USERTYPE_BUTTON = "button";
+    Control.USERTYPE_BUTTON_SET = "button-set";
+    Control.USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
+    Control.USERTYPE_SLIDER_2D = "slider2d";
+    Control.USERTYPE_SWITCH = "switch";
+    Control.USERTYPE_SLIDER = "slider";
+    Control.USERTYPE_READONLY = "readonly";
+    Control.USERTYPE_LEVEL = "level";
+    Control.USERTYPE_SELECT = "select";
+    Control.USERTYPE_SELECT_READONLY = "select-readonly";
     return Control;
 }(DCSerializable_1.DCSerializable));
 exports.Control = Control;

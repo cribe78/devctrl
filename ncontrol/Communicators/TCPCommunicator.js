@@ -6,14 +6,13 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var EndpointCommunicator_1 = require("./EndpointCommunicator");
 var net = require("net");
-var debugMod = require("debug");
 var Endpoint_1 = require("../shared/Endpoint");
-var debug = debugMod("comms");
+//let debug = debugMod("comms");
+var debug = console.log;
 var TCPCommunicator = (function (_super) {
     __extends(TCPCommunicator, _super);
     function TCPCommunicator() {
         _super.call(this);
-        this.connected = false;
         this.commands = {};
         this.commandsByTemplate = {};
         this.inputLineTerminator = '\r\n';
@@ -57,6 +56,11 @@ var TCPCommunicator = (function (_super) {
     TCPCommunicator.prototype.connectionConfirmed = function () {
         this.backoffTime = 1000;
     };
+    TCPCommunicator.prototype.disconnect = function () {
+        this.socket.end();
+        this.connected = false;
+        this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Offline);
+    };
     TCPCommunicator.prototype.doDeviceLogon = function () {
         this.connected = true;
         this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
@@ -64,10 +68,10 @@ var TCPCommunicator = (function (_super) {
     };
     ;
     TCPCommunicator.prototype.executeCommandQuery = function (cmd) {
-        var _this = this;
         if (!cmd.queryString()) {
             return;
         }
+        var self = this;
         var queryStr = cmd.queryString();
         debug("sending query: " + queryStr);
         this.socket.write(queryStr + this.outputLineTerminator);
@@ -76,11 +80,11 @@ var TCPCommunicator = (function (_super) {
             function (line) {
                 for (var _i = 0, _a = cmd.ctidList; _i < _a.length; _i++) {
                     var ctid = _a[_i];
-                    var control = _this.controlsByCtid[ctid];
+                    var control = self.controlsByCtid[ctid];
                     var val = cmd.parseQueryResponse(control, line);
-                    _this.setControlValue(control, val);
+                    self.setControlValue(control, val);
                 }
-                _this.connectionConfirmed();
+                self.connectionConfirmed();
             }
         ]);
     };
@@ -124,6 +128,9 @@ var TCPCommunicator = (function (_super) {
         }
         return false;
     };
+    TCPCommunicator.prototype.matchLineToError = function (line) {
+        return false;
+    };
     TCPCommunicator.prototype.matchLineToExpectedResponse = function (line) {
         for (var idx = 0; idx < this.expectedResponses.length; idx++) {
             var eresp = this.expectedResponses[idx];
@@ -150,14 +157,23 @@ var TCPCommunicator = (function (_super) {
     };
     TCPCommunicator.prototype.onEnd = function () {
         var self = this;
-        debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
-        this.connected = false;
-        this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Offline);
-        setTimeout(function () {
-            self.connect();
-        }, this.backoffTime);
-        if (this.backoffTime < 20000) {
-            this.backoffTime = this.backoffTime * 2;
+        if (this.config.endpoint.enabled) {
+            debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
+            this.connected = false;
+            this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Offline);
+            if (!this.socket["destroyed"]) {
+                debug("destroying socket");
+                this.socket.destroy();
+            }
+            setTimeout(function () {
+                self.connect();
+            }, this.backoffTime);
+            if (this.backoffTime < 20000) {
+                this.backoffTime = this.backoffTime * 2;
+            }
+        }
+        else {
+            debug("successfully disconnected from " + this.host);
         }
     };
     /**
@@ -192,13 +208,15 @@ var TCPCommunicator = (function (_super) {
         //Ignore empty lines
         if (line == '')
             return;
+        if (this.matchLineToError(line)) {
+            return;
+        }
         // Check line against expected responses
         if (this.matchLineToExpectedResponse(line)) {
             return;
         }
         // Match line to a command
         var match = this.matchLineToCommand(line);
-        //TODO: match error strings
         if (match) {
             var cmd = match;
             for (var _i = 0, _a = cmd.ctidList; _i < _a.length; _i++) {
@@ -220,7 +238,9 @@ var TCPCommunicator = (function (_super) {
      */
     TCPCommunicator.prototype.queryAll = function () {
         for (var cmdStr in this.commands) {
-            this.executeCommandQuery(this.commands[cmdStr]);
+            if (!this.commands[cmdStr].writeonly) {
+                this.executeCommandQuery(this.commands[cmdStr]);
+            }
         }
     };
     TCPCommunicator.prototype.setControlValue = function (control, val) {

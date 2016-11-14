@@ -10,12 +10,14 @@ import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "./shared/DCSerializa
 import {DCDataModel} from "./shared/DCDataModel";
 import {ControlUpdateData} from "./shared/ControlUpdate";
 import {Control} from "./shared/Control";
+import {UserSession} from "./shared/UserSession";
+import {Endpoint, EndpointStatus} from "./shared/Endpoint";
 
 let debug = debugMod("messenger");
 let mongoDebug = debugMod("mongodb");
 
 let app = http.createServer(handler);
-let io :SocketIO.Server = ioMod(app);
+let io :SocketIO.Server;
 
 function handler(req: any, res: any) {
 
@@ -89,11 +91,39 @@ class Messenger {
         mongo.MongoClient.connect( mongoConnStr, function(err, db) {
             debug("mongodb connected");
             Messenger.mongodb = db;
+            Messenger.setEndpointsDisconnected();
         });
 
         app.listen(config.ioPort);
-
+        io = ioMod(app, { path: config.ioPath});
+        debug(`socket.io listening at ${config.ioPath} on port ${config.ioPort}`);
         io.on('connection', Messenger.ioConnection);
+
+        // Set authorization function
+        io.use((socket,next) => {
+            let id = Messenger.socketAuthId(socket);
+            //debug("authenticating user " + id);
+            if (id) {
+                let col = Messenger.mongodb.collection("sessions");
+                col.findOne({_id : id}, function(err, res) {
+                    if (err) {
+                        debug(`mongodb error during auth for ${id}: ${err.message}`);
+                        next(new Error("Authentication error"));
+                        return;
+                    }
+
+                    if (res && res.auth) {
+                        debug(`user ${id} authenticated`);
+                        socket["session"] = res;
+                        next();
+                        return;
+                    }
+
+                    debug("connection attempt from unauthorized user " + id);
+                    next(new Error("Unauthorized"));
+                });
+            }
+        });
     }
 
 
@@ -190,6 +220,53 @@ class Messenger {
         }
     }
 
+    static adminAuthCheck(socket : SocketIO.Socket) {
+        let authCheckPromise = new Promise((resolve, reject) => {
+            let session = socket["session"];
+
+            if (! session.admin_auth) {
+                debug(`unauthorized update request from ${session._id} (${session.client_name})`);
+                reject({error: "unauthorized"});
+                return;
+            }
+
+            if (session.admin_auth_expires > Date.now() || session.admin_auth_expires == -1) {
+                debug(`admin authorization granted for ${session._id} (${session.client_name})`);
+                resolve(true);
+                return;
+            }
+
+            // Check for updated session info
+            let col = Messenger.mongodb.collection("sessions");
+
+            col.findOne({_id : session._id}, (err, res) => {
+                if (err) {
+                    debug(`mongodb error during auth for ${session._id}: ${err.message}`);
+                    reject({error: err.message});
+                    return;
+                }
+
+                if (res) {
+                    this["session"] = res;
+
+                    if (res.admin_auth && res.admin_auth_expires > Date.now() || res.admin_auth_expires == -1) {
+                        resolve(true);
+                        return;
+                    }
+
+                    debug(`unauthorized update request from ${session._id} (${session.client_name})`);
+                    reject({error: "unauthorized"});
+                    return;
+                }
+
+                debug("authCheck: session no found " + session._id);
+                reject({error: "session not found"});
+            });
+        });
+
+        return authCheckPromise;
+    }
+
 
     static broadcastControlValues(updates: ControlUpdateData[], fn: any) {
         io.emit('control-updates', updates);
@@ -239,6 +316,47 @@ class Messenger {
     }
 
 
+    static disconnectSocket(socket : SocketIO.Socket) {
+        if (socket["endpoint_id"]) {
+            let _id = socket["endpoint_id"];
+
+            debug(`client disconnected: setting endpoint ${_id} to offline`);
+            let col = Messenger.mongodb.collection(Endpoint.tableStr);
+
+            col.updateOne({ _id : _id }, { '$set' : { status : EndpointStatus.Offline }},
+                (err, r) => {
+                    if (err) {
+                        mongoDebug(`update { request.table } error: { err.message }`);
+                        return;
+                    }
+
+                    // Get the updated object and broadcast the changes.
+                    let table = {};
+                    col.findOne({_id: _id}, (err, doc) => {
+                        if (err) {
+                            mongoDebug(`update { request.table } error: { err.message }`);
+                            return;
+                        }
+
+                        table[doc._id] = doc;
+                        let data = {add: {}};
+                        data.add[Endpoint.tableStr] = table;
+                        io.emit('control-data', data);
+                    });
+                }
+            );
+        }
+        else {
+            let session = socket["session"];
+            if (session) {
+                debug(`client ${session._id} (${session.client_name} disconnected`);
+            }
+            else {
+                debug("unidentified client disconnected");
+            }
+        }
+    }
+
     static getData(request: IDCDataRequest, fn: any) {
 
         debug("data requested from " + request.table);
@@ -265,10 +383,89 @@ class Messenger {
 
         debug('a user connected from ' + clientIp);
         socket.on('get-data', Messenger.getData);
-        socket.on('add-data', Messenger.addData);
-        socket.on('update-data', Messenger.updateData);
+        socket.on('add-data', (req, fn) => {
+            Messenger.adminAuthCheck(socket)
+                .then(() => {
+                    Messenger.addData(req, fn);
+                })
+                .catch((msg) => { fn(msg) });
+        });
+        socket.on('update-data', (req, fn) => {
+            Messenger.adminAuthCheck(socket)
+                .then(() => {
+                    Messenger.updateData(req, fn);
+                })
+                .catch((msg) => { fn(msg) });
+        });
         socket.on('control-updates', Messenger.broadcastControlValues);
+        socket.on('register-endpoint', (req, fn) => {
+            Messenger.adminAuthCheck(socket)
+                .then(() => {
+                    Messenger.registerEndpoint(req, fn, socket);
+                })
+                .catch((msg) => { fn(msg) });
+        });
+
+        socket.on('disconnect', () => {
+            Messenger.disconnectSocket(socket);
+        });
     }
+
+    /**
+     * Register endpoint associates and endpoint id with the socket held by
+     * the ncontrol instance communicating with that endpoint.  If the socket
+     * is disconnected, we can update the endpoint status accordingly.
+     *
+     * @param request
+     * @param fn
+     * @socket socket SocketIO.Socket the socket this message was sent on
+     */
+
+    static registerEndpoint(request, fn : any, socket : SocketIO.Socket) {
+        if (! request.endpoint_id) {
+            debug('register endpoint: endpoint_id not specified');
+            fn({ error: "endpoint_id not specified"});
+            return;
+        }
+
+        debug(`endpoint ${request.endpoint_id} registered on socket ${socket.id}`);
+        socket["endpoint_id"] = request.endpoint_id;
+    }
+
+    /**
+     * At startup, set all endpoints to a disconnected status
+     */
+
+    static setEndpointsDisconnected() {
+        let col = Messenger.mongodb.collection(Endpoint.tableStr);
+        return col.updateMany({}, { '$set' : { status : EndpointStatus.Offline}});
+    }
+
+    static socketAuthId(socket) {
+
+        if (socket.handshake && socket.handshake.headers['cookie']) {
+            let cookies = {};
+
+            let cstrs = socket.handshake.headers['cookie'].split(';');
+
+            for (let cstr of cstrs) {
+                let [name, value] = cstr.split("=");
+                cookies[name.trim()] = value;
+            }
+
+
+            if (cookies["identifier"]) {
+                return cookies["identifier"];
+            }
+        }
+
+        if (socket.handshake && socket.handshake.headers['ncontrol-auth-id']) {
+            return socket.handshake.headers['ncontrol-auth-id'];
+        }
+
+        return '';
+    }
+
 
     static updateData(request: IDCDataUpdate, fn: any) {
         let col = Messenger.mongodb.collection(request.table);

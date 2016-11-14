@@ -1,6 +1,11 @@
 
 import {ControlUpdate, ControlUpdateData} from "../shared/ControlUpdate";
 import {Control, ControlData} from "../shared/Control";
+import {sprintf} from "sprintf-js";
+import * as debugMod from "debug";
+
+//let debug = debugMod("comms");
+let debug = console.log;
 
 export interface ITCPCommandConfig {
     cmdStr: string;
@@ -16,13 +21,15 @@ export interface ITCPCommandConfig {
     templateConfig: ITCPTemplateConfig;
     poll?: number;
     ephemeral?: boolean;
+    readonly?: boolean; // Don't bother trying to set this value
+    writeonly?: boolean; // Don't bother trying to read this value
 }
 
 export interface ITCPTemplateConfig {
     min?: number;
     max?: number;
     options?: any;
-
+    direction?: string;
 }
 
 
@@ -41,7 +48,9 @@ export class TCPCommand {
     templateConfig: ITCPTemplateConfig;
     ctidList: string[];
     poll: number = 0;
-    ephemeral: boolean;
+    ephemeral: boolean; // Command value will not be persisted in the database
+    readonly: boolean; // Command value cannot be sent to device.  Defaults to false
+    writeonly: boolean;  // Command value cannot be read from device. Defaults to false
 
 
     constructor(config: ITCPCommandConfig) {
@@ -79,12 +88,22 @@ export class TCPCommand {
                 this.cmdReportRE = <RegExp>config.cmdReportRE;
             }
         }
+
+        this.readonly = !!config.readonly;
+        this.writeonly = !!config.writeonly;
     }
 
     expandTemplate(template: string, value: any) : string {
-        // Substitute value placeholder
-        let re = /\{value}/g;
-        let res = template.replace(re, value);
+        // Use sprintf to expand the template
+        let res = '';
+
+        try {
+            res = sprintf(template, value);
+        }
+        catch(e) {
+            debug("Error expanding template " + template);
+            debug(e.message);
+        }
 
         return res;
     }
@@ -120,6 +139,20 @@ export class TCPCommand {
         return !!matches;
     }
 
+    // Override this function in a custom Command class if necessary
+    parseBoolean(value) : boolean {
+        // Add string representations of 0 and false to standard list of falsey values
+        if (typeof value == "string") {
+            if (value.toLowerCase() == "false") {
+                return false;
+            }
+            if (parseInt(value) == 0) {
+                return false;
+            }
+        }
+
+        return !!value;
+    }
 
     parseReportValue(control: Control, line: string) : any {
         if (! this.cmdReportRE) {
@@ -129,7 +162,7 @@ export class TCPCommand {
         let matches = line.match(this.cmdReportRE);
 
         if (matches && matches.length > 1) {
-            return matches[this.cmdReportREMatchIdx];
+            return this.parseValue([this.cmdReportREMatchIdx]);
         }
 
         return '';
@@ -139,10 +172,24 @@ export class TCPCommand {
         let matches = line.match(this.cmdQueryResponseRE);
 
         if (matches) {
-            return matches[1];
+            return this.parseValue(matches[1]);
         }
 
         return '';
+    }
+
+    parseValue(value) : any {
+        if (this.control_type == Control.CONTROL_TYPE_RANGE) {
+            return parseFloat(value);
+        }
+        else if (this.control_type == Control.CONTROL_TYPE_INT) {
+            return parseInt(value);
+        }
+        else if (this.control_type == Control.CONTROL_TYPE_BOOLEAN) {
+            return this.parseBoolean(value);
+        }
+
+        return value;
     }
 
 

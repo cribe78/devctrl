@@ -52,8 +52,14 @@ class Watcher {
 
     run(config: any) {
         this.config = config;
+        let connectOpts = {
+            transports: ['websocket'],
+            path : config.ioPath
+        };
 
-        this.io = io.connect(config.wsUrl);
+        connectOpts['extraHeaders'] = { 'ncontrol-auth-id' : config.authId };
+
+        this.io = io.connect(config.wsUrl, connectOpts);
 
         this.io.on('connect', () => {
             debug("websocket client connected");

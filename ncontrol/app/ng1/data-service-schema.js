@@ -1,4 +1,5 @@
 "use strict";
+var Control_1 = require("../../shared/Control");
 var nameField = {
     name: "name",
     type: "string",
@@ -99,15 +100,16 @@ exports.dataServiceSchema = {
                 type: "select-static",
                 label: "UI Type",
                 options: [
-                    { name: "button", value: "button" },
-                    { name: "F32 Multibutton", value: "f32-multibutton" },
-                    { name: "Level Meter", value: "level" },
-                    { name: "Select", value: "select" },
-                    { name: "Select (readonly)", value: "select-readonly" },
-                    { name: "Slider", value: "slider" },
-                    { name: "2D Slider", value: "slider2d" },
-                    { name: "Switch", value: "switch" },
-                    { name: "button set", value: "button-set" }
+                    { name: "button", value: Control_1.Control.USERTYPE_BUTTON },
+                    { name: "F32 Multibutton", value: Control_1.Control.USERTYPE_F32_MULTIBUTTON },
+                    { name: "Level Meter", value: Control_1.Control.USERTYPE_LEVEL },
+                    { name: "Text (readonly)", value: Control_1.Control.USERTYPE_READONLY },
+                    { name: "Select", value: Control_1.Control.USERTYPE_SELECT },
+                    { name: "Select (readonly)", value: Control_1.Control.USERTYPE_SELECT_READONLY },
+                    { name: "Slider", value: Control_1.Control.USERTYPE_SLIDER },
+                    { name: "2D Slider", value: Control_1.Control.USERTYPE_SLIDER_2D },
+                    { name: "Switch", value: Control_1.Control.USERTYPE_SWITCH },
+                    { name: "button set", value: Control_1.Control.USERTYPE_BUTTON_SET }
                 ]
             },
             {

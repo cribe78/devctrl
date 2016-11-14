@@ -15,8 +15,8 @@ class ExtronSWUSBCommunicator extends TCPCommunicator {
             cmdStr: "Input",
             cmdQueryStr: "I",
             cmdQueryResponseRE: /Chn(\d)/,
-            cmdUpdateTemplate: "{value}!",
-            cmdUpdateResponseTemplate: "Chn{value}",
+            cmdUpdateTemplate: "%d!",
+            cmdUpdateResponseTemplate: "Chn%d",
             endpoint_id: this.config.endpoint._id,
             control_type: "string",
             usertype: "select",
@@ -34,10 +34,6 @@ class ExtronSWUSBCommunicator extends TCPCommunicator {
         this.commands[config.cmdStr] = new TCPCommand(config);
     }
 
-    connect() {
-        debug("connecting to SWUSB-4");
-        super.connect();
-    }
 
     preprocessLine(line: string) : string {
         if (line.match(/^ser2net port/)) {

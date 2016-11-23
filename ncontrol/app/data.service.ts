@@ -137,8 +137,15 @@ export class DataService {
                     // Refresh credentials before they expire
                     let retryDelay = (this.userSession.admin_auth_expires - Date.now()) - 2000;
                     //let retryDelay = 60000;
-                    let retryTime = new Date(Date.now() + retryDelay);
+                    let retryMilli = Date.now() + retryDelay;
+                    let retryTime = new Date(retryMilli);
                     let retryTimeStr = retryTime.toTimeString().substr(0, 17);
+
+
+                    if (retryMilli > this.userSession.login_expires) {
+                        console.log("not scheduling admin refresh, user session will be expired");
+                        return;
+                    }
 
                     if (retryDelay > 0) {
                         this.adminLogonTimeout = this.$timeout(() => {
@@ -254,7 +261,6 @@ export class DataService {
 
         //$mdToast.show($mdToast.simple().content(errorText));
         this.$mdToast.show({
-            templateUrl: "app/ng1/error-toast.html",
             locals: {
                 message: errorText
             },
@@ -262,9 +268,44 @@ export class DataService {
             controller: 'RoomsCtrl',
             bindToController: true,
             position: 'top right',
-            hideDelay: 3000
+            hideDelay: 0,
+            template: `
+<md-toast>
+    {{toast.message}}
+    <md-button ng-click="toast.hideToast()">OK</md-button>
+</md-toast>`
         });
     }
+
+    generateEndpointConfig($event, endpointId : string) {
+        let endpoint = this.getRowRef(Endpoint.tableStr, endpointId);
+        let endpointName = endpoint.name.toLowerCase();
+        endpointName = endpointName.replace(/ /g, '-');
+
+        let url = `/auth/create_endpoint_session?${endpointName}`;
+        this.$http.get(url).then(
+            //Success
+            response => {
+                let alert = `
+module.exports = {
+    endpointId: "${endpointId}",
+    authId: "${response.data.session._id}"
+}               
+`;
+                this.$mdDialog.show(
+                    this.$mdDialog.alert()
+                        .title(`${endpointName}.js`)
+                        .textContent(alert)
+                        .targetEvent($event)
+                        .ok("Got it!")
+                );
+            },
+            response => {
+                this.errorToast("Unable to retrieve endpoint ncontrol config");
+            }
+        );
+    }
+
 
     getLog() {
         //TODO: Needs re-implementation in messenger
@@ -458,6 +499,10 @@ export class DataService {
             let v = c == 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
         });
+    }
+
+    hideToast() {
+        this.$mdToast.hide();
     }
 
     init() {

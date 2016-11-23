@@ -1,6 +1,9 @@
 "use strict";
 var CommonResolve_1 = require("./CommonResolve");
 var LogCtrl_1 = require("./LogCtrl");
+var table_controller_1 = require("./table.controller");
+var endpoints_controller_1 = require("./endpoints.controller");
+var endpoint_controller_1 = require("./endpoint.controller");
 exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvider',
     function ($stateProvider, $locationProvider, $urlRouterProvider) {
         $stateProvider
@@ -27,7 +30,9 @@ exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvide
         })
             .state('endpoints', {
             url: '/devices',
-            templateUrl: 'app/ng1/endpoints.html',
+            template: endpoints_controller_1.EndpointsController.template,
+            controller: endpoints_controller_1.EndpointsController,
+            controllerAs: '$ctrl',
             resolve: CommonResolve_1.CommonResolve,
             data: {
                 title: 'Devices'
@@ -35,9 +40,9 @@ exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvide
         })
             .state('endpoints.endpoint', {
             url: '/:id',
-            templateUrl: 'app/ng1/endpoint.html',
-            controller: 'EndpointCtrl',
-            controllerAs: 'endpoint',
+            template: endpoint_controller_1.EndpointController.template,
+            controller: endpoint_controller_1.EndpointController,
+            controllerAs: '$ctrl',
             data: {
                 listByName: 'endpoints',
                 title: false
@@ -71,11 +76,12 @@ exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvide
         })
             .state('config.data.table', {
             url: '/:name',
-            templateUrl: 'app/ng1/tableeditor.html',
-            controller: 'TableCtrl',
-            controllerAs: 'table',
+            template: table_controller_1.TableController.template,
+            controller: table_controller_1.TableController,
+            controllerAs: '$ctrl',
             data: {
-                title: "Table Editor"
+                title: "Table Editor",
+                cardClasses: "card-wide"
             }
         });
         $urlRouterProvider

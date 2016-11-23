@@ -6,6 +6,7 @@
 
 import {DCSerializableData, DCSerializable} from "./DCSerializable";
 import {Endpoint} from "./Endpoint";
+import {OptionSet} from "./OptionSet";
 
 export interface ControlData extends DCSerializableData{
     endpoint_id: string;
@@ -15,13 +16,14 @@ export interface ControlData extends DCSerializableData{
     poll: number;
     config: any;
     value: any;
+    option_set_id?: string;
     ephemeral?: boolean;
 }
 
 
 export class Control extends DCSerializable {
     endpoint_id: string;
-    endpoint: Endpoint;
+    private _endpoint: Endpoint;
     ctid: string;
     usertype: string;
     control_type: string;
@@ -29,9 +31,25 @@ export class Control extends DCSerializable {
     config: any;
     value: any;
     ephemeral: boolean = false;
+    option_set_id: string;
+    private _option_set: OptionSet;
+
+    foreignKeys = [
+        {
+            type: Endpoint,
+            fkObjProp: "endpoint",
+            fkIdProp: "endpoint_id",
+            fkTable: Endpoint.tableStr
+        },
+        {
+            type: OptionSet,
+            fkObjProp: "option_set",
+            fkIdProp: "option_set_id",
+            fkTable: OptionSet.tableStr
+        }
+    ];
 
     static tableStr = "controls";
-    table: string;
 
     // usertype and control_type values
     static CONTROL_TYPE_BOOLEAN = "boolean";
@@ -63,38 +81,41 @@ export class Control extends DCSerializable {
             'value'
         ]);
 
-        this.foreignKeys = [
-            {
-                type: Endpoint,
-                fkObjProp: "endpoint",
-                fkIdProp: "endpoint_id",
-                fkTable: Endpoint.tableStr
-            }
-        ];
-
-        this.optionalProperties = ['ephemeral'];
+        this.optionalProperties = ['ephemeral', 'option_set_id'];
 
         if (data) {
             this.loadData(data);
         }
     }
 
+    get endpoint() {
+        return this._endpoint;
+    }
+
+    set endpoint(endpoint : Endpoint) {
+        this._endpoint = endpoint;
+        this.endpoint_id = endpoint._id;
+    }
+
+    get option_set() {
+        return this._option_set;
+    }
+
+    set option_set(option_set : OptionSet) {
+        this._option_set = option_set;
+        this.option_set_id = option_set._id;
+    }
+
+
     fkSelectName() {
-        return this.endpoint.name + ": " + this.name;
+        if (this._endpoint) {
+            return this._endpoint.name + ": " + this.name;
+        }
+        return this.name;
     }
 
     getDataObject() : ControlData {
-        return {
-            _id: this._id,
-            endpoint_id: this.endpoint_id,
-            ctid: this.ctid,
-            name: this.name,
-            usertype: this.usertype,
-            control_type: this.control_type,
-            poll: this.poll,
-            config: this.config,
-            value: this.value
-        }
+        return (<ControlData>DCSerializable.defaultDataObject(this));
     }
 }
 

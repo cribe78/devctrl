@@ -111,6 +111,11 @@ coe-menu li {
     background-color: #ffffff;
 }
 
+
+.devctrl-main-card.card-wide {
+    width: 1800px;
+}
+
 .devctrl-main-content-wide {
 
 }

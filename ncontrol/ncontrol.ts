@@ -9,8 +9,8 @@ import {Control} from "./shared/Control";
 import {ControlUpdateData} from "./shared/ControlUpdate";
 import {Endpoint, EndpointStatus} from "./shared/Endpoint";
 
-let debug = debugMod('ncontrol');
-
+//let debug = debugMod('ncontrol');
+let debug = console.log;
 
 interface NControlConfig {
     wsUrl: string;
@@ -73,8 +73,23 @@ class NControl {
             debug(`websocket connection error: ${obj}`);
         });
 
-        this.io.on('control-data', function(data) {
+        this.io.on('control-data', data => {
             self.oldEndpoint = new Endpoint(self.endpoint._id, self.endpoint.getDataObject());
+
+            // Discard control data not related to this endpoint
+            if (data.add && data.add.controls) {
+                let deleteIds = [];
+                for (let id in data.add.controls) {
+                    if (data.add.controls[id].endpoint_id !== self.endpoint._id) {
+                        deleteIds.push(id);
+                    }
+                }
+
+                for (let id of deleteIds) {
+                    delete data.add.controls[id];
+                }
+            }
+
             self.dataModel.loadData(data);
             self.checkData();
         });
@@ -177,9 +192,6 @@ class NControl {
             return;
         }
 
-        this.registerEndpoint();
-
-
         this.getData(this.endpoint.type.itemRequestData(), this.getControls);
     }
 
@@ -275,6 +287,7 @@ class NControl {
     }
 
     registerEndpoint() {
+        //TODO: multiple register messages are being sent on reconnect
         this.io.emit('register-endpoint', { endpoint_id : this.config.endpointId});
     }
 

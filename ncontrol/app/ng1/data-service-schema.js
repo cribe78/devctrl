@@ -1,5 +1,7 @@
 "use strict";
 var Control_1 = require("../../shared/Control");
+var Endpoint_1 = require("../../shared/Endpoint");
+var OptionSet_1 = require("../../shared/OptionSet");
 var nameField = {
     name: "name",
     type: "string",
@@ -81,7 +83,8 @@ exports.dataServiceSchema = {
     controls: {
         "label": "Controls",
         foreign_keys: {
-            "endpoint_id": "endpoints"
+            "endpoint_id": Endpoint_1.Endpoint.tableStr,
+            "option_set_id": OptionSet_1.OptionSet.tableStr
         },
         fields: [
             {
@@ -136,6 +139,11 @@ exports.dataServiceSchema = {
                 "label": "Default Config"
             },
             {
+                name: "option_set_id",
+                type: "fk",
+                label: "Option Set"
+            },
+            {
                 "name": "value",
                 "type": "string",
                 "label": "Value"
@@ -150,6 +158,17 @@ exports.dataServiceSchema = {
                 "name": "communicatorClass",
                 "type": "string",
                 "label": "Communicator Class"
+            }
+        ]
+    },
+    option_sets: {
+        label: "Option Sets",
+        fields: [
+            nameField,
+            {
+                name: "options",
+                type: "object",
+                label: "Options"
             }
         ]
     },

@@ -1,5 +1,6 @@
 "use strict";
 var Control_1 = require("../../shared/Control");
+var WatcherRule_1 = require("../../shared/WatcherRule");
 var CtrlController = (function () {
     function CtrlController(dataService, menuService) {
         this.dataService = dataService;
@@ -37,6 +38,9 @@ var CtrlController = (function () {
         enumerable: true,
         configurable: true
     });
+    CtrlController.prototype.addWatcherRule = function ($event) {
+        this.dataService.editRecord($event, '0', WatcherRule_1.WatcherRule.tableStr, { watched_control_id: this.ctrl._id });
+    };
     CtrlController.prototype.config = function (key) {
         if (angular.isObject(this.ctrl.config) && this.ctrl.config[key]) {
             return this.ctrl.config[key];
@@ -48,6 +52,12 @@ var CtrlController = (function () {
     };
     CtrlController.prototype.editOptions = function ($event) {
         // Not currently implemented, enums removed from application
+        if (this.ctrl.option_set) {
+            this.dataService.editRecord($event, this.ctrl.option_set_id, this.ctrl.option_set.table);
+        }
+        else {
+            this.dataService.editRecord($event, this.ctrl._id, this.ctrl.table);
+        }
     };
     CtrlController.prototype.editPanelControl = function ($event) {
         this.dataService.editRecord($event, this.panelControl._id, this.panelControl.table);
@@ -72,6 +82,9 @@ var CtrlController = (function () {
         this.setValue(val);
     };
     CtrlController.prototype.selectOptions = function () {
+        if (this.ctrl.option_set) {
+            return this.ctrl.option_set.options;
+        }
         return !!this.ctrl.config.options ? this.ctrl.config.options : {};
     };
     CtrlController.prototype.setValue = function (val) {

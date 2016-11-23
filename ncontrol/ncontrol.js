@@ -4,7 +4,8 @@ var DCDataModel_1 = require("./shared/DCDataModel");
 var debugMod = require("debug"); // see https://www.npmjs.com/package/debug
 var Control_1 = require("./shared/Control");
 var Endpoint_1 = require("./shared/Endpoint");
-var debug = debugMod('ncontrol');
+//let debug = debugMod('ncontrol');
+var debug = console.log;
 var NControl = (function () {
     function NControl() {
         this.syncControlsPassNumber = 0;
@@ -45,6 +46,19 @@ var NControl = (function () {
         });
         this.io.on('control-data', function (data) {
             self.oldEndpoint = new Endpoint_1.Endpoint(self.endpoint._id, self.endpoint.getDataObject());
+            // Discard control data not related to this endpoint
+            if (data.add && data.add.controls) {
+                var deleteIds = [];
+                for (var id in data.add.controls) {
+                    if (data.add.controls[id].endpoint_id !== self.endpoint._id) {
+                        deleteIds.push(id);
+                    }
+                }
+                for (var _i = 0, deleteIds_1 = deleteIds; _i < deleteIds_1.length; _i++) {
+                    var id = deleteIds_1[_i];
+                    delete data.add.controls[id];
+                }
+            }
             self.dataModel.loadData(data);
             self.checkData();
         });
@@ -128,7 +142,6 @@ var NControl = (function () {
             debug("endpoint data is missing");
             return;
         }
-        this.registerEndpoint();
         this.getData(this.endpoint.type.itemRequestData(), this.getControls);
     };
     NControl.prototype.guid = function () {
@@ -209,6 +222,7 @@ var NControl = (function () {
         this.updateData(update, function () { });
     };
     NControl.prototype.registerEndpoint = function () {
+        //TODO: multiple register messages are being sent on reconnect
         this.io.emit('register-endpoint', { endpoint_id: this.config.endpointId });
     };
     NControl.prototype.syncControls = function () {

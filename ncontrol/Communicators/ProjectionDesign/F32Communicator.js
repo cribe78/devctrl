@@ -7,8 +7,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var TCPCommunicator_1 = require("../TCPCommunicator");
 var TCPCommand_1 = require("../TCPCommand");
 var Control_1 = require("../../shared/Control");
-var debugMod = require("debug");
-var debug = debugMod("comms");
+//let debug = debugMod("comms");
+var debug = console.log;
 var F32Communicator = (function (_super) {
     __extends(F32Communicator, _super);
     function F32Communicator() {
@@ -336,6 +336,11 @@ var F32Communicator = (function (_super) {
         }
     };
     F32Communicator.prototype.preprocessLine = function (line) {
+        if (line.indexOf("(Not Available)") !== -1) {
+            // This is the continuation of an error which should be handled with
+            // the previous line
+            return '';
+        }
         // Lines have extra carriage returns that screw up debug printing
         return line.replace(/\r/g, '');
     };

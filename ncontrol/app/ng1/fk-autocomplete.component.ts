@@ -24,11 +24,20 @@ class FkAutocompleteController {
     getMatches(searchText) {
         let matches = [];
         let stLower = angular.lowercase(searchText);
+        let stLowerParts = stLower.split(' ');
         for (let id in this.dataTable) {
             let item : DCSerializable = this.dataTable[id];
             let fkNameLower = angular.lowercase(item.fkSelectName());
 
-            if (fkNameLower.indexOf(stLower) > -1) {
+            let matched = true;
+            for (let part of stLowerParts) {
+                if (fkNameLower.indexOf(part) == -1) {
+                    matched = false;
+                    break;
+                }
+            }
+
+            if (matched) {
                 matches.push(item);
             }
         }

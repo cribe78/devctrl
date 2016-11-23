@@ -68,7 +68,7 @@ import * as mongo from "mongodb";
 import * as querystring from "querystring";
 import {UserSession} from "./shared/UserSession";
 
-let debug = debugMod("auth");
+let debug = console.log; //debugMod("auth");
 
 class Auth {
     app : http.Server;
@@ -220,6 +220,10 @@ class Auth {
         debug("do_logon, admin_auth_requested = " + admin_auth_requested);
 
         let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+        let loginExpiresTime = new Date(loginExpires);
+        let nowDate = new Date();
+        let nowTimeStr = nowDate.toTimeString().substr(0, 17);
+        debug(`loginExpires: ${loginExpiresTime.toTimeString().substr(0, 17)}, Now: ${nowTimeStr}`);
 
         this.sessions.findOneAndUpdate({ _id: identifier},
             { '$set' : {

@@ -1,6 +1,8 @@
 
 
 import {Control} from "../../shared/Control";
+import {Endpoint} from "../../shared/Endpoint";
+import {OptionSet} from "../../shared/OptionSet";
 export type DSFieldType = "string" | "int" | "bool" | "select-static" | "fk" | "object";
 
 export interface DSFieldDefinition {
@@ -108,7 +110,8 @@ export let dataServiceSchema : DSSchemaDefinition = {
     controls: {
         "label": "Controls",
         foreign_keys: {
-            "endpoint_id": "endpoints"
+            "endpoint_id": Endpoint.tableStr,
+            "option_set_id" : OptionSet.tableStr
         },
         fields: [
             {
@@ -163,6 +166,11 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "label": "Default Config"
             },
             {
+                name: "option_set_id",
+                type: "fk",
+                label: "Option Set"
+            },
+            {
                 "name": "value",
                 "type": "string",
                 "label": "Value"
@@ -177,6 +185,17 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "name": "communicatorClass",
                 "type": "string",
                 "label": "Communicator Class"
+            }
+        ]
+    },
+    option_sets : {
+        label: "Option Sets",
+        fields : [
+            nameField,
+            {
+                name: "options",
+                type: "object",
+                label: "Options"
             }
         ]
     },

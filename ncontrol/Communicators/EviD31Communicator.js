@@ -5,6 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var TCPCommunicator_1 = require("./TCPCommunicator");
+//TODO: Implement EviD31Communicator
 var EviD31Communicator = (function (_super) {
     __extends(EviD31Communicator, _super);
     function EviD31Communicator() {

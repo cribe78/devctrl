@@ -107,8 +107,13 @@ var DataService = (function () {
                 // Refresh credentials before they expire
                 var retryDelay = (_this.userSession.admin_auth_expires - Date.now()) - 2000;
                 //let retryDelay = 60000;
-                var retryTime = new Date(Date.now() + retryDelay);
+                var retryMilli = Date.now() + retryDelay;
+                var retryTime = new Date(retryMilli);
                 var retryTimeStr = retryTime.toTimeString().substr(0, 17);
+                if (retryMilli > _this.userSession.login_expires) {
+                    console.log("not scheduling admin refresh, user session will be expired");
+                    return;
+                }
                 if (retryDelay > 0) {
                     _this.adminLogonTimeout = _this.$timeout(function () {
                         _this.doAdminLogon(true);
@@ -205,7 +210,6 @@ var DataService = (function () {
         console.log(errorText);
         //$mdToast.show($mdToast.simple().content(errorText));
         this.$mdToast.show({
-            templateUrl: "app/ng1/error-toast.html",
             locals: {
                 message: errorText
             },
@@ -213,7 +217,27 @@ var DataService = (function () {
             controller: 'RoomsCtrl',
             bindToController: true,
             position: 'top right',
-            hideDelay: 3000
+            hideDelay: 0,
+            template: "\n<md-toast>\n    {{toast.message}}\n    <md-button ng-click=\"toast.hideToast()\">OK</md-button>\n</md-toast>"
+        });
+    };
+    DataService.prototype.generateEndpointConfig = function ($event, endpointId) {
+        var _this = this;
+        var endpoint = this.getRowRef(Endpoint_1.Endpoint.tableStr, endpointId);
+        var endpointName = endpoint.name.toLowerCase();
+        endpointName = endpointName.replace(/ /g, '-');
+        var url = "/auth/create_endpoint_session?" + endpointName;
+        this.$http.get(url).then(
+        //Success
+        function (response) {
+            var alert = "\nmodule.exports = {\n    endpointId: \"" + endpointId + "\",\n    authId: \"" + response.data.session._id + "\"\n}               \n";
+            _this.$mdDialog.show(_this.$mdDialog.alert()
+                .title(endpointName + ".js")
+                .textContent(alert)
+                .targetEvent($event)
+                .ok("Got it!"));
+        }, function (response) {
+            _this.errorToast("Unable to retrieve endpoint ncontrol config");
         });
     };
     DataService.prototype.getLog = function () {
@@ -379,6 +403,9 @@ var DataService = (function () {
             var v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
+    };
+    DataService.prototype.hideToast = function () {
+        this.$mdToast.hide();
     };
     DataService.prototype.init = function () {
         var _this = this;

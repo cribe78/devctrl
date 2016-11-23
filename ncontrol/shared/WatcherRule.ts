@@ -24,12 +24,12 @@ export interface WatcherActionValue {
 export class WatcherRule extends DCSerializable {
     watched_control_id: string;
     _watched_control: Control;
-    watch_value: any;
+    watch_value: any = '';
     value_test: string;
     action_control_id: string;
     _action_control: Control;
     action_control_value: WatcherActionValue;
-    enabled: boolean;
+    enabled: boolean = false;
 
     static tableStr = "watcher_rules";
     static VALUE_TEST_EQUALS = "=";

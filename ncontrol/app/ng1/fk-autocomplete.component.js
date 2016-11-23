@@ -12,10 +12,19 @@ var FkAutocompleteController = (function () {
     FkAutocompleteController.prototype.getMatches = function (searchText) {
         var matches = [];
         var stLower = angular.lowercase(searchText);
+        var stLowerParts = stLower.split(' ');
         for (var id in this.dataTable) {
             var item = this.dataTable[id];
             var fkNameLower = angular.lowercase(item.fkSelectName());
-            if (fkNameLower.indexOf(stLower) > -1) {
+            var matched = true;
+            for (var _i = 0, stLowerParts_1 = stLowerParts; _i < stLowerParts_1.length; _i++) {
+                var part = stLowerParts_1[_i];
+                if (fkNameLower.indexOf(part) == -1) {
+                    matched = false;
+                    break;
+                }
+            }
+            if (matched) {
                 matches.push(item);
             }
         }

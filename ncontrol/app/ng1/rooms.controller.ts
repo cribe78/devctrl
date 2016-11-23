@@ -12,6 +12,9 @@ export class RoomsController {
         this.list = <IndexedDataSet<Room>>this.dataService.getTable(Room.tableStr);
     }
 
+    hideToast() {
+        this.dataService.hideToast();
+    }
 
     imageUrl(room) {
         return `/images/${room.name}.png`;

@@ -3,13 +3,14 @@
 var ioMod = require("socket.io");
 var http = require("http");
 var url = require("url");
-var debugMod = require("debug");
 var mongo = require("mongodb");
 var DCDataModel_1 = require("./shared/DCDataModel");
 var Control_1 = require("./shared/Control");
 var Endpoint_1 = require("./shared/Endpoint");
-var debug = debugMod("messenger");
-var mongoDebug = debugMod("mongodb");
+//let debug = debugMod("messenger");
+var debug = console.log;
+//let mongoDebug = debugMod("mongodb");
+var mongoDebug = console.log;
 var app = http.createServer(handler);
 var io;
 function handler(req, res) {
@@ -159,6 +160,8 @@ var Messenger = (function () {
                         }
                         mongoDebug("record added to " + table);
                         resp.add[table][request[table]._id] = request[table];
+                        // Keep local dataModel in sync
+                        Messenger.dataModel.loadData(resp);
                         io.emit('control-data', resp);
                         fn(resp);
                     });
@@ -184,7 +187,7 @@ var Messenger = (function () {
         var authCheckPromise = new Promise(function (resolve, reject) {
             var session = socket["session"];
             if (!session.admin_auth) {
-                debug("unauthorized update request from " + session._id + " (" + session.client_name + ")");
+                debug("no admin. unauthorized update request from " + session._id + " (" + session.client_name + ")");
                 reject({ error: "unauthorized" });
                 return;
             }
@@ -208,6 +211,7 @@ var Messenger = (function () {
                         return;
                     }
                     debug("unauthorized update request from " + session._id + " (" + session.client_name + ")");
+                    debug("auth = " + res.admin_auth + ", expires = " + res.admin_auth_expires + ", now = " + Date.now());
                     reject({ error: "unauthorized" });
                     return;
                 }
@@ -217,16 +221,32 @@ var Messenger = (function () {
         });
         return authCheckPromise;
     };
-    Messenger.broadcastControlValues = function (updates, fn) {
-        io.emit('control-updates', updates);
-        var controls = Messenger.mongodb.collection(Control_1.Control.tableStr);
+    Messenger.broadcastControlValues = function (updates, fn, socket) {
+        var controlsCollection = Messenger.mongodb.collection(Control_1.Control.tableStr);
+        var controls = Messenger.dataModel.controls;
         // Commit value to database for non-ephemeral controls
+        var _loop_2 = function(update) {
+            if (!controls[update.control_id]) {
+                debug("dropping update of invalid control_id " + update.control_id + " from " + socket["session"].client_name);
+                return { value: void 0 };
+            }
+            if (update.status == "observed" && !update.ephemeral) {
+                controlsCollection.updateOne({ _id: update.control_id }, { '$set': { value: update.value } }, function (err, r) {
+                    if (err) {
+                        mongoDebug("control value update error: " + err.message);
+                        return;
+                    }
+                    // update the data model
+                    controls[update.control_id].value = update.value;
+                });
+            }
+        };
         for (var _i = 0, updates_1 = updates; _i < updates_1.length; _i++) {
             var update = updates_1[_i];
-            if (update.status == "observed" && !update.ephemeral) {
-                controls.updateOne({ _id: update.control_id }, { '$set': { value: update.value } });
-            }
+            var state_2 = _loop_2(update);
+            if (typeof state_2 === "object") return state_2.value;
         }
+        io.emit('control-updates', updates);
     };
     Messenger.deleteData = function (data, fn) {
         debug("delete " + data._id + " from " + data.table);
@@ -253,6 +273,7 @@ var Messenger = (function () {
             var resp = { "delete": data };
             fn(resp);
             io.emit("control-data", resp);
+            Messenger.dataModel.loadData(resp);
         });
     };
     Messenger.disconnectSocket = function (socket) {
@@ -299,6 +320,7 @@ var Messenger = (function () {
             var data = { add: {} };
             data.add[request.table] = table;
             fn(data);
+            Messenger.dataModel.loadData(data);
         });
     };
     Messenger.ioConnection = function (socket) {
@@ -322,7 +344,9 @@ var Messenger = (function () {
             })
                 .catch(function (msg) { fn(msg); });
         });
-        socket.on('control-updates', Messenger.broadcastControlValues);
+        socket.on('control-updates', function (req, fn) {
+            Messenger.broadcastControlValues(req, fn, socket);
+        });
         socket.on('register-endpoint', function (req, fn) {
             Messenger.adminAuthCheck(socket)
                 .then(function () {
@@ -397,6 +421,7 @@ var Messenger = (function () {
                 data.add[request.table] = table;
                 io.emit('control-data', data);
                 fn(data);
+                Messenger.dataModel.loadData(data);
             });
         });
     };

@@ -162,7 +162,7 @@ export class TCPCommand {
         let matches = line.match(this.cmdReportRE);
 
         if (matches && matches.length > 1) {
-            return this.parseValue([this.cmdReportREMatchIdx]);
+            return this.parseValue(matches[this.cmdReportREMatchIdx]);
         }
 
         return '';

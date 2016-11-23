@@ -22,6 +22,7 @@ var ExtronSWUSBCommunicator = (function (_super) {
             cmdQueryResponseRE: /Chn(\d)/,
             cmdUpdateTemplate: "%d!",
             cmdUpdateResponseTemplate: "Chn%d",
+            cmdReportRE: /Chn(\d)/,
             endpoint_id: this.config.endpoint._id,
             control_type: "string",
             usertype: "select",
@@ -30,7 +31,7 @@ var ExtronSWUSBCommunicator = (function (_super) {
                     1: "Input 1",
                     2: "Input 2",
                     3: "Input 3",
-                    4: "Input 3"
+                    4: "Input 4"
                 }
             },
             poll: 1

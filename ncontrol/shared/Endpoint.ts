@@ -76,14 +76,6 @@ export class Endpoint extends DCSerializable {
     }
 
     getDataObject() : EndpointData {
-        return {
-            _id: this._id,
-            endpoint_type_id: this.endpoint_type_id,
-            status: this.status,
-            name: this.name,
-            ip: this.ip,
-            port: this.port,
-            enabled: this.enabled
-        }
+        return (<EndpointData>DCSerializable.defaultDataObject(this));
     }
 }

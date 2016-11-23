@@ -34,6 +34,21 @@ var RoomController = (function () {
         }
         this.roomConfig = this.config.rooms[this.obj._id];
     };
+    Object.defineProperty(RoomController.prototype, "selectedGroup", {
+        get: function () {
+            if (typeof this.roomConfig['selectedGroup'] == 'undefined') {
+                this.roomConfig['selectedGroup'] = 0;
+                this.dataService.updateConfig();
+            }
+            return this.roomConfig['selectedGroup'];
+        },
+        set: function (value) {
+            this.roomConfig['selectedGroup'] = value;
+            this.dataService.updateConfig();
+        },
+        enumerable: true,
+        configurable: true
+    });
     RoomController.prototype.addPanel = function ($event) {
         this.dataService.editRecord($event, '0', 'panels', {
             'room_id': this.obj._id
@@ -74,6 +89,9 @@ var RoomController = (function () {
             }
         }
         return roomEndpoints;
+    };
+    RoomController.prototype.groupSelected = function (group) {
+        console.log("tab " + group + " selected");
     };
     RoomController.prototype.panelControls = function (panel) {
         if (panel.referenced[PanelControl_1.PanelControl.tableStr]) {

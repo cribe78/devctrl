@@ -14,6 +14,7 @@ import {EndpointType, EndpointTypeData} from "./EndpointType";
 import {Control, ControlData} from "./Control";
 import {DCSerializable, IDCForeignKeyDef, DCSerializableData, IDCDataDelete} from "./DCSerializable";
 import {WatcherRule, WatcherRuleData} from "./WatcherRule";
+import {OptionSet, OptionSetData} from "./OptionSet";
 
 
 export interface IndexedDataSet<T> {
@@ -28,12 +29,14 @@ export class DCDataModel {
     panel_controls: IndexedDataSet<PanelControl> = {};
     rooms: IndexedDataSet<Room> = {};
     watcher_rules: IndexedDataSet<WatcherRule> = {};
+    option_sets: IndexedDataSet<OptionSet> = {};
     debug: (message: any, ...args: any[]) => void;
 
     types = {
         endpoints : Endpoint,
         endpoint_types : EndpointType,
         controls : Control,
+        option_sets: OptionSet,
         panels: Panel,
         panel_controls: PanelControl,
         rooms: Room,
@@ -73,6 +76,11 @@ export class DCDataModel {
                 this.loadTableData<Control,ControlData>(
                     add.controls, this.controls, Control);
             }
+            if (add.option_sets) {
+                this.loadTableData<OptionSet, OptionSetData>(
+                    add.option_sets, this.option_sets, OptionSet
+                );
+            }
             if (add.panels) {
                 this.loadTableData<Panel, PanelData>(
                     add.panels, this.panels, Panel
@@ -100,7 +108,7 @@ export class DCDataModel {
             if (add.endpoints || add.endpoint_types) {
                 this.indexForeignKeys(this.endpoints);
             }
-            if (add.controls || add.control_templates) {
+            if (add.controls || add.control_templates || add.option_sets) {
                 this.indexForeignKeys(this.controls);
             }
             if (add.panels || add.rooms) {
@@ -196,6 +204,8 @@ export class DCDataModel {
                 return this.getItem<EndpointType>(id, table);
             case Room.tableStr:
                 return this.getItem<Room>(id, table);
+            case OptionSet.tableStr:
+                return this.getItem<OptionSet>(id, table);
             case Panel.tableStr:
                 return this.getItem<Panel>(id, table);
             case PanelControl.tableStr:

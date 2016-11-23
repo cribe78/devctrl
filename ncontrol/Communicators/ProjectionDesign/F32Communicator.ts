@@ -2,7 +2,8 @@ import {TCPCommunicator} from "../TCPCommunicator";
 import {ITCPCommandConfig, TCPCommand} from "../TCPCommand";
 import {Control} from "../../shared/Control";
 import * as debugMod from "debug";
-let debug = debugMod("comms");
+//let debug = debugMod("comms");
+let debug = console.log;
 
 class F32Communicator extends TCPCommunicator {
     buildCommandList() {
@@ -354,6 +355,12 @@ class F32Communicator extends TCPCommunicator {
     }
 
     preprocessLine(line) {
+        if (line.indexOf("(Not Available)") !== -1) {
+            // This is the continuation of an error which should be handled with
+            // the previous line
+            return '';
+        }
+
         // Lines have extra carriage returns that screw up debug printing
         return line.replace(/\r/g,'');
     }

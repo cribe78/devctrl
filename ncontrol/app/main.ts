@@ -32,6 +32,7 @@ import "./socket";
 import "./ng1/toArrayFilter";
 import {EndpointStatusComponent} from "./ng1/endpoint-status.component";
 import {ControlComponent} from "./ng1/control.component";
+import {EndpointsController} from "./ng1/endpoints.controller";
 
 /**
 *const platform = platformBrowserDynamic();
@@ -62,6 +63,7 @@ angular.module('DevCtrlApp',
     .controller('RecordController', RecordController)
     .controller('RoomCtrl', RoomController)
     .controller('RoomsCtrl', RoomsController)
+    .controller('EndpointsCtrl', EndpointsController)
     .config(StateConfig)
     //state change debugging
     .run (['$rootScope', function($rootScope) {

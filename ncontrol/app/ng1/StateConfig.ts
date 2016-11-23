@@ -1,5 +1,8 @@
 import {CommonResolve} from "./CommonResolve";
 import {LogResolve} from "./LogCtrl";
+import {TableController} from "./table.controller";
+import {EndpointsController} from "./endpoints.controller";
+import {EndpointController} from "./endpoint.controller";
 
 export let StateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterProvider',
     function ($stateProvider, $locationProvider, $urlRouterProvider) {
@@ -27,7 +30,9 @@ export let StateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterPro
             })
             .state('endpoints', {
                 url: '/devices',
-                templateUrl : 'app/ng1/endpoints.html',
+                template : EndpointsController.template,
+                controller : EndpointsController,
+                controllerAs : '$ctrl',
                 resolve: CommonResolve,
                 data : {
                     title : 'Devices'
@@ -35,9 +40,9 @@ export let StateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterPro
             })
             .state('endpoints.endpoint', {
                 url: '/:id',
-                templateUrl : 'app/ng1/endpoint.html',
-                controller: 'EndpointCtrl',
-                controllerAs: 'endpoint',
+                template : EndpointController.template,
+                controller: EndpointController,
+                controllerAs: '$ctrl',
                 data : {
                     listByName : 'endpoints',
                     title : false
@@ -71,11 +76,12 @@ export let StateConfig = ['$stateProvider', '$locationProvider' , '$urlRouterPro
             })
             .state('config.data.table', {
                 url: '/:name',
-                templateUrl: 'app/ng1/tableeditor.html',
-                controller: 'TableCtrl',
-                controllerAs: 'table',
+                template: TableController.template,
+                controller: TableController,
+                controllerAs: '$ctrl',
                 data : {
-                    title : "Table Editor"
+                    title : "Table Editor",
+                    cardClasses : "card-wide"
                 }
             });
 

@@ -94,7 +94,8 @@ var TCPCommunicator = (function (_super) {
             var templateList = this.commands[cmd].getControlTemplates();
             for (var _i = 0, templateList_1 = templateList; _i < templateList_1.length; _i++) {
                 var tpl = templateList_1[_i];
-                this.controls[tpl._id] = tpl;
+                // Don't mess with this.controls.  That belongs to the data model
+                //this.controls[tpl._id] = tpl;
                 this.controlsByCtid[tpl.ctid] = tpl;
                 this.commandsByTemplate[tpl.ctid] = this.commands[cmd];
             }
@@ -255,9 +256,6 @@ var TCPCommunicator = (function (_super) {
             this.config.controlUpdateCallback(control, val);
             control.value = val;
         }
-    };
-    TCPCommunicator.prototype.setTemplates = function (templates) {
-        _super.prototype.setTemplates.call(this, templates);
     };
     return TCPCommunicator;
 }(EndpointCommunicator_1.EndpointCommunicator));

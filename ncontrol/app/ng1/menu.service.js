@@ -22,6 +22,12 @@ var MenuService = (function () {
         }
         return {};
     };
+    MenuService.prototype.cardClasses = function () {
+        if (this.$state.current.data && this.$state.current.data.cardClasses) {
+            return this.$state.current.data.cardClasses;
+        }
+        return '';
+    };
     MenuService.prototype.go = function (state) {
         if (angular.isString(state)) {
             this.$state.go(state);

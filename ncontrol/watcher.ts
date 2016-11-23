@@ -9,8 +9,8 @@ import {ControlUpdateData, ControlUpdate} from "./shared/ControlUpdate";
 import {Endpoint, EndpointStatus} from "./shared/Endpoint";
 import {WatcherRule} from "./shared/WatcherRule";
 
-let debug = debugMod('watcher');
-
+//let debug = debugMod('watcher');
+let debug = console.log;
 
 let watchConfig = {
 
@@ -29,7 +29,8 @@ class Watcher {
 
     constructor() {
         this.dataModel = new DCDataModel();
-        this.dataModel.debug = debugMod("dataModel");
+        //this.dataModel.debug = debugMod("dataModel");
+        this.dataModel.debug = debug;
     }
     static bootstrap() {
         return new Watcher();

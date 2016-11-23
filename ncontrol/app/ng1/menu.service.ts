@@ -26,6 +26,14 @@ export class MenuService {
         return {};
     }
 
+    cardClasses() : string {
+        if (this.$state.current.data && this.$state.current.data.cardClasses) {
+            return this.$state.current.data.cardClasses;
+        }
+
+        return '';
+    }
+
     go(state) {
         if (angular.isString(state)) {
             this.$state.go(state);

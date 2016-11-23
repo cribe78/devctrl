@@ -13,8 +13,10 @@ import {Control} from "./shared/Control";
 import {UserSession} from "./shared/UserSession";
 import {Endpoint, EndpointStatus} from "./shared/Endpoint";
 
-let debug = debugMod("messenger");
-let mongoDebug = debugMod("mongodb");
+//let debug = debugMod("messenger");
+let debug = console.log;
+//let mongoDebug = debugMod("mongodb");
+let mongoDebug = console.log;
 
 let app = http.createServer(handler);
 let io :SocketIO.Server;
@@ -202,6 +204,8 @@ class Messenger {
                         mongoDebug("record added to " + table);
                         resp.add[table][request[table]._id] = request[table];
 
+                        // Keep local dataModel in sync
+                        Messenger.dataModel.loadData(resp);
                         io.emit('control-data', resp);
                         fn(resp);
                     });
@@ -225,7 +229,7 @@ class Messenger {
             let session = socket["session"];
 
             if (! session.admin_auth) {
-                debug(`unauthorized update request from ${session._id} (${session.client_name})`);
+                debug(`no admin. unauthorized update request from ${session._id} (${session.client_name})`);
                 reject({error: "unauthorized"});
                 return;
             }
@@ -255,6 +259,7 @@ class Messenger {
                     }
 
                     debug(`unauthorized update request from ${session._id} (${session.client_name})`);
+                    debug(`auth = ${res.admin_auth}, expires = ${res.admin_auth_expires}, now = ${Date.now()}`);
                     reject({error: "unauthorized"});
                     return;
                 }
@@ -268,17 +273,32 @@ class Messenger {
     }
 
 
-    static broadcastControlValues(updates: ControlUpdateData[], fn: any) {
-        io.emit('control-updates', updates);
-
-        let controls = Messenger.mongodb.collection(Control.tableStr);
+    static broadcastControlValues(updates: ControlUpdateData[], fn: any, socket : SocketIO.Socket) {
+        let controlsCollection = Messenger.mongodb.collection(Control.tableStr);
+        let controls = Messenger.dataModel.controls;
 
         // Commit value to database for non-ephemeral controls
         for (let update of updates) {
+            if (! controls[update.control_id]) {
+                debug(`dropping update of invalid control_id ${update.control_id} from ${socket["session"].client_name}`);
+                return;
+            }
             if (update.status == "observed" && ! update.ephemeral) {
-                controls.updateOne({ _id: update.control_id}, { '$set' : { value: update.value}});
+                controlsCollection.updateOne({ _id: update.control_id},
+                    { '$set' : { value: update.value}},
+                    (err, r) => {
+                        if (err) {
+                            mongoDebug(`control value update error: ${err.message}`);
+                            return;
+                        }
+
+                        // update the data model
+                        controls[update.control_id].value = update.value;
+                    });
             }
         }
+
+        io.emit('control-updates', updates);
     }
 
     static deleteData(data: IDCDataDelete, fn: any) {
@@ -311,6 +331,7 @@ class Messenger {
             let resp = { "delete": data }
             fn(resp);
             io.emit("control-data", resp);
+            Messenger.dataModel.loadData(resp);
         });
 
     }
@@ -371,6 +392,7 @@ class Messenger {
                 let data = { add : {} };
                 data.add[request.table] = table;
                 fn(data);
+                Messenger.dataModel.loadData(data);
             }
         );
     }
@@ -397,7 +419,9 @@ class Messenger {
                 })
                 .catch((msg) => { fn(msg) });
         });
-        socket.on('control-updates', Messenger.broadcastControlValues);
+        socket.on('control-updates', (req, fn) => {
+            Messenger.broadcastControlValues(req, fn, socket);
+        });
         socket.on('register-endpoint', (req, fn) => {
             Messenger.adminAuthCheck(socket)
                 .then(() => {
@@ -494,6 +518,7 @@ class Messenger {
                         data.add[request.table] = table;
                         io.emit('control-data', data);
                         fn(data);
+                        Messenger.dataModel.loadData(data);
                     }
                 );
             }

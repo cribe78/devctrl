@@ -62,15 +62,7 @@ var Endpoint = (function (_super) {
         configurable: true
     });
     Endpoint.prototype.getDataObject = function () {
-        return {
-            _id: this._id,
-            endpoint_type_id: this.endpoint_type_id,
-            status: this.status,
-            name: this.name,
-            ip: this.ip,
-            port: this.port,
-            enabled: this.enabled
-        };
+        return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
     Endpoint.tableStr = "endpoints";
     return Endpoint;

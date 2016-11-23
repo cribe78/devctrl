@@ -1,17 +1,18 @@
 "use strict";
 var io = require("socket.io-client");
 var DCDataModel_1 = require("./shared/DCDataModel");
-var debugMod = require("debug"); // see https://www.npmjs.com/package/debug
 var ControlUpdate_1 = require("./shared/ControlUpdate");
 var WatcherRule_1 = require("./shared/WatcherRule");
-var debug = debugMod('watcher');
+//let debug = debugMod('watcher');
+var debug = console.log;
 var watchConfig = {};
 var Watcher = (function () {
     function Watcher() {
         // watcherRules is the set of WatcherRules, indexed by watched_control_id
         this.watcherRules = {};
         this.dataModel = new DCDataModel_1.DCDataModel();
-        this.dataModel.debug = debugMod("dataModel");
+        //this.dataModel.debug = debugMod("dataModel");
+        this.dataModel.debug = debug;
     }
     Watcher.bootstrap = function () {
         return new Watcher();

@@ -38,7 +38,7 @@ var DCSerializable = (function () {
         for (var _i = 0, _a = this.requiredProperties; _i < _a.length; _i++) {
             var prop = _a[_i];
             if (typeof data[prop] == 'undefined') {
-                throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this._id);
+                throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this.name);
             }
             this[prop] = data[prop];
         }
@@ -64,6 +64,12 @@ var DCSerializable = (function () {
         for (var _i = 0, _a = obj.requiredProperties; _i < _a.length; _i++) {
             var prop = _a[_i];
             data[prop] = obj[prop];
+        }
+        for (var _b = 0, _c = obj.optionalProperties; _b < _c.length; _b++) {
+            var prop = _c[_b];
+            if (typeof obj[prop] !== 'undefined') {
+                data[prop] = obj[prop];
+            }
         }
         return data;
     };

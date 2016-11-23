@@ -10,6 +10,8 @@ var WatcherRule = (function (_super) {
     __extends(WatcherRule, _super);
     function WatcherRule(_id, data) {
         _super.call(this, _id);
+        this.watch_value = '';
+        this.enabled = false;
         this.table = WatcherRule.tableStr;
         this.requiredProperties = [
             'watched_control_id',

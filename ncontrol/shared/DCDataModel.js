@@ -12,6 +12,7 @@ var Endpoint_1 = require("./Endpoint");
 var EndpointType_1 = require("./EndpointType");
 var Control_1 = require("./Control");
 var WatcherRule_1 = require("./WatcherRule");
+var OptionSet_1 = require("./OptionSet");
 var DCDataModel = (function () {
     function DCDataModel() {
         this.endpoints = {};
@@ -21,10 +22,12 @@ var DCDataModel = (function () {
         this.panel_controls = {};
         this.rooms = {};
         this.watcher_rules = {};
+        this.option_sets = {};
         this.types = {
             endpoints: Endpoint_1.Endpoint,
             endpoint_types: EndpointType_1.EndpointType,
             controls: Control_1.Control,
+            option_sets: OptionSet_1.OptionSet,
             panels: Panel_1.Panel,
             panel_controls: PanelControl_1.PanelControl,
             rooms: Room_1.Room,
@@ -53,6 +56,9 @@ var DCDataModel = (function () {
             if (add.controls) {
                 this.loadTableData(add.controls, this.controls, Control_1.Control);
             }
+            if (add.option_sets) {
+                this.loadTableData(add.option_sets, this.option_sets, OptionSet_1.OptionSet);
+            }
             if (add.panels) {
                 this.loadTableData(add.panels, this.panels, Panel_1.Panel);
             }
@@ -69,7 +75,7 @@ var DCDataModel = (function () {
             if (add.endpoints || add.endpoint_types) {
                 this.indexForeignKeys(this.endpoints);
             }
-            if (add.controls || add.control_templates) {
+            if (add.controls || add.control_templates || add.option_sets) {
                 this.indexForeignKeys(this.controls);
             }
             if (add.panels || add.rooms) {
@@ -147,6 +153,8 @@ var DCDataModel = (function () {
             case EndpointType_1.EndpointType.tableStr:
                 return this.getItem(id, table);
             case Room_1.Room.tableStr:
+                return this.getItem(id, table);
+            case OptionSet_1.OptionSet.tableStr:
                 return this.getItem(id, table);
             case Panel_1.Panel.tableStr:
                 return this.getItem(id, table);

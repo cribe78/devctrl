@@ -48,4 +48,27 @@ export class EndpointController {
     editEndpoint($event) {
         this.dataService.editRecord($event, this.endpointId, 'endpoints');
     }
+
+    generateConfig($event) {
+        this.dataService.generateEndpointConfig($event, this.endpointId);
+    }
+
+    static template = `
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <md-button devctrl-admin-only ng-click="$ctrl.addControl($event)">Add Control</md-button>
+        <md-button devctrl-admin-only ng-click="$ctrl.editEndpoint($event)">Edit Device</md-button>
+        <md-button devctrl-admin-only ng-click="$ctrl.generateConfig($event)">Generate Config</md-button>
+        <span flex></span>
+        <devctrl-endpoint-status endpoint-id="$ctrl.obj._id"></devctrl-endpoint-status>
+    </div>
+</md-toolbar>
+
+<md-list>
+    <md-list-item ng-repeat-start="(key, control) in $ctrl.controls">
+        <ctrl flex control-id="key"></ctrl>
+    </md-list-item>
+    <md-divider ng-repeat-end></md-divider>
+</md-list>
+`
 }

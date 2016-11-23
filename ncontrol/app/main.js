@@ -30,6 +30,7 @@ require("./socket");
 require("./ng1/toArrayFilter");
 var endpoint_status_component_1 = require("./ng1/endpoint-status.component");
 var control_component_1 = require("./ng1/control.component");
+var endpoints_controller_1 = require("./ng1/endpoints.controller");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
@@ -56,6 +57,7 @@ angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'an
     .controller('RecordController', record_controller_1.RecordController)
     .controller('RoomCtrl', room_controller_1.RoomController)
     .controller('RoomsCtrl', rooms_controller_1.RoomsController)
+    .controller('EndpointsCtrl', endpoints_controller_1.EndpointsController)
     .config(StateConfig_1.StateConfig)
     .run(['$rootScope', function ($rootScope) {
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {

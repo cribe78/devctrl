@@ -83,7 +83,7 @@ export abstract class DCSerializable {
 
         for (let prop of this.requiredProperties) {
             if (typeof data[prop] == 'undefined') {
-                throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this._id);
+                throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this.name);
             }
 
             this[prop] = data[prop];
@@ -115,6 +115,12 @@ export abstract class DCSerializable {
 
         for (let prop of obj.requiredProperties) {
             data[prop] = obj[prop];
+        }
+
+        for (let prop of obj.optionalProperties) {
+            if (typeof obj[prop] !== 'undefined') {
+                data[prop] = obj[prop];
+            }
         }
 
         return data;

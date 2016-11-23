@@ -61,10 +61,9 @@
  */
 var http = require("http");
 var url = require("url");
-var debugMod = require("debug");
 var mongo = require("mongodb");
 var querystring = require("querystring");
-var debug = debugMod("auth");
+var debug = console.log; //debugMod("auth");
 var Auth = (function () {
     function Auth() {
     }
@@ -182,6 +181,10 @@ var Auth = (function () {
         }
         debug("do_logon, admin_auth_requested = " + admin_auth_requested);
         var loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+        var loginExpiresTime = new Date(loginExpires);
+        var nowDate = new Date();
+        var nowTimeStr = nowDate.toTimeString().substr(0, 17);
+        debug("loginExpires: " + loginExpiresTime.toTimeString().substr(0, 17) + ", Now: " + nowTimeStr);
         this.sessions.findOneAndUpdate({ _id: identifier }, { '$set': {
                 login_expires: loginExpires,
                 auth: true,

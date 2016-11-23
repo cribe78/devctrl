@@ -50,6 +50,19 @@ export class RoomController {
         this.roomConfig = this.config.rooms[this.obj._id];
     }
 
+    get selectedGroup() {
+        if (typeof this.roomConfig['selectedGroup'] == 'undefined') {
+            this.roomConfig['selectedGroup'] = 0;
+            this.dataService.updateConfig();
+        }
+        return this.roomConfig['selectedGroup'];
+    }
+
+    set selectedGroup(value) {
+        this.roomConfig['selectedGroup'] = value;
+        this.dataService.updateConfig();
+    }
+
     addPanel($event) {
         this.dataService.editRecord($event, '0', 'panels',
             {
@@ -102,6 +115,10 @@ export class RoomController {
         }
 
         return roomEndpoints;
+    }
+
+    groupSelected(group) {
+        console.log(`tab ${group} selected`);
     }
 
     panelControls(panel: Panel) {

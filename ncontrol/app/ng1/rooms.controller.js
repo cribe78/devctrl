@@ -7,6 +7,9 @@ var RoomsController = (function () {
     RoomsController.prototype.$onInit = function () {
         this.list = this.dataService.getTable(Room_1.Room.tableStr);
     };
+    RoomsController.prototype.hideToast = function () {
+        this.dataService.hideToast();
+    };
     RoomsController.prototype.imageUrl = function (room) {
         return "/images/" + room.name + ".png";
     };

@@ -117,7 +117,8 @@ export class TCPCommunicator extends EndpointCommunicator {
             let templateList = this.commands[cmd].getControlTemplates();
 
             for (let tpl of templateList) {
-                this.controls[tpl._id] = tpl;
+                // Don't mess with this.controls.  That belongs to the data model
+                //this.controls[tpl._id] = tpl;
                 this.controlsByCtid[tpl.ctid] = tpl;
                 this.commandsByTemplate[tpl.ctid] = this.commands[cmd];
             }
@@ -322,10 +323,6 @@ export class TCPCommunicator extends EndpointCommunicator {
             this.config.controlUpdateCallback(control, val);
             control.value = val;
         }
-    }
-
-    setTemplates(templates: IndexedDataSet<Control>) {
-        super.setTemplates(templates);
     }
 
 }

@@ -2,6 +2,7 @@ import {DataService} from "../data.service";
 import {Control} from "../../shared/Control";
 import {PanelControl} from "../../shared/PanelControl";
 import IComponentOptions = angular.IComponentOptions;
+import {WatcherRule} from "../../shared/WatcherRule";
 
 class CtrlController {
     menu;
@@ -48,6 +49,11 @@ class CtrlController {
     }
 
 
+    addWatcherRule($event) {
+        this.dataService.editRecord($event, '0', WatcherRule.tableStr,
+            { watched_control_id : this.ctrl._id});
+    }
+
     config(key) {
         if (angular.isObject(this.ctrl.config) && this.ctrl.config[key]) {
             return this.ctrl.config[key];
@@ -62,6 +68,19 @@ class CtrlController {
 
     editOptions($event) {
         // Not currently implemented, enums removed from application
+        if (this.ctrl.option_set) {
+            this.dataService.editRecord(
+                $event,
+                this.ctrl.option_set_id,
+                this.ctrl.option_set.table);
+        }
+        else {
+            this.dataService.editRecord(
+                $event,
+                this.ctrl._id,
+                this.ctrl.table
+            );
+        }
     }
 
     editPanelControl($event) {
@@ -96,6 +115,9 @@ class CtrlController {
     }
 
     selectOptions() {
+        if (this.ctrl.option_set) {
+            return this.ctrl.option_set.options;
+        }
         return !! this.ctrl.config.options ? this.ctrl.config.options : {};
     }
 

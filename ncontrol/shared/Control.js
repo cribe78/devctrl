@@ -11,11 +11,26 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DCSerializable_1 = require("./DCSerializable");
 var Endpoint_1 = require("./Endpoint");
+var OptionSet_1 = require("./OptionSet");
 var Control = (function (_super) {
     __extends(Control, _super);
     function Control(_id, data) {
         _super.call(this, _id);
         this.ephemeral = false;
+        this.foreignKeys = [
+            {
+                type: Endpoint_1.Endpoint,
+                fkObjProp: "endpoint",
+                fkIdProp: "endpoint_id",
+                fkTable: Endpoint_1.Endpoint.tableStr
+            },
+            {
+                type: OptionSet_1.OptionSet,
+                fkObjProp: "option_set",
+                fkIdProp: "option_set_id",
+                fkTable: OptionSet_1.OptionSet.tableStr
+            }
+        ];
         this.table = Control.tableStr;
         this.requiredProperties = this.requiredProperties.concat([
             'endpoint_id',
@@ -26,34 +41,41 @@ var Control = (function (_super) {
             'config',
             'value'
         ]);
-        this.foreignKeys = [
-            {
-                type: Endpoint_1.Endpoint,
-                fkObjProp: "endpoint",
-                fkIdProp: "endpoint_id",
-                fkTable: Endpoint_1.Endpoint.tableStr
-            }
-        ];
-        this.optionalProperties = ['ephemeral'];
+        this.optionalProperties = ['ephemeral', 'option_set_id'];
         if (data) {
             this.loadData(data);
         }
     }
+    Object.defineProperty(Control.prototype, "endpoint", {
+        get: function () {
+            return this._endpoint;
+        },
+        set: function (endpoint) {
+            this._endpoint = endpoint;
+            this.endpoint_id = endpoint._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Control.prototype, "option_set", {
+        get: function () {
+            return this._option_set;
+        },
+        set: function (option_set) {
+            this._option_set = option_set;
+            this.option_set_id = option_set._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Control.prototype.fkSelectName = function () {
-        return this.endpoint.name + ": " + this.name;
+        if (this._endpoint) {
+            return this._endpoint.name + ": " + this.name;
+        }
+        return this.name;
     };
     Control.prototype.getDataObject = function () {
-        return {
-            _id: this._id,
-            endpoint_id: this.endpoint_id,
-            ctid: this.ctid,
-            name: this.name,
-            usertype: this.usertype,
-            control_type: this.control_type,
-            poll: this.poll,
-            config: this.config,
-            value: this.value
-        };
+        return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
     Control.tableStr = "controls";
     // usertype and control_type values

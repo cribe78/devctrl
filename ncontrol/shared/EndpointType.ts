@@ -7,7 +7,6 @@ export interface EndpointTypeData extends DCSerializableData {
 export class EndpointType extends DCSerializable {
     communicatorClass: string;
     static tableStr = "endpoint_types";
-    table: string;
 
     constructor(_id: string, data?: EndpointTypeData) {
         super(_id);

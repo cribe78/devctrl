@@ -1,1 +1,0 @@
-module.exports = { endpointId: "5834c0892df2e94eb2efac00", authId: "5834c3177fef946f69377b51" }

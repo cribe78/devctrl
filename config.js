@@ -33,10 +33,10 @@ if (typeof process.argv[2] !== 'undefined') {
 
   console.log("arg 2 is " + process.argv[2]);
   var configArg = process.argv[2];
-  var configPath = "./config/" + configArg + ".js";
+  var configPath = "./conf/" + configArg + ".js";
 
   if (fs.existsSync(configPath)) {
-    customConfig = require("./config/" + configArg);
+    customConfig = require("./conf/" + configArg);
   }
 }
 

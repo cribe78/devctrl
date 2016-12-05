@@ -32,11 +32,15 @@ export class TableController {
     fkDisplayVal(field, row: DCSerializable) {
         for (let fkDef of row.foreignKeys) {
             if (fkDef.fkIdProp == field.name ) {
-                if (row[fkDef.fkObjProp].name) {
+                if (row[fkDef.fkObjProp] && row[fkDef.fkObjProp].name) {
                     return row[fkDef.fkObjProp].name;
                 }
 
-                return row[field.name];
+                if (row[field.name]) {
+                    return row[field.name];
+                }
+
+                return "unknown object " + field._id;
             }
         }
     }

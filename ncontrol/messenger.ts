@@ -57,6 +57,11 @@ function handler(req: any, res: any) {
                 return;
             }
         }
+        else if (endpoint == "test") {
+            res.writeHead(200);
+            res.end("yeah, I'm alive");
+            return;
+        }
         else {
             res.writeHead(400);
             res.end("api endpoint not recognized");
@@ -79,12 +84,14 @@ function handler(req: any, res: any) {
 class Messenger {
     static mongodb: mongo.Db;
     static dataModel: DCDataModel;
+    config : any;
 
     constructor() {
     }
 
     run(config: any) {
         Messenger.dataModel = new DCDataModel();
+        this.config = config;
 
         // Connect to mongodb
         let mongoConnStr = "mongodb://" + config.mongoHost + ":" + config.mongoPort
@@ -103,7 +110,7 @@ class Messenger {
 
         // Set authorization function
         io.use((socket,next) => {
-            let id = Messenger.socketAuthId(socket);
+            let id = this.socketAuthId(socket);
             //debug("authenticating user " + id);
             if (id) {
                 let col = Messenger.mongodb.collection("sessions");
@@ -465,7 +472,7 @@ class Messenger {
         return col.updateMany({}, { '$set' : { status : EndpointStatus.Offline}});
     }
 
-    static socketAuthId(socket) {
+    socketAuthId(socket) {
 
         if (socket.handshake && socket.handshake.headers['cookie']) {
             let cookies = {};
@@ -478,8 +485,8 @@ class Messenger {
             }
 
 
-            if (cookies["identifier"]) {
-                return cookies["identifier"];
+            if (cookies[this.config.identifierName]) {
+                return cookies[this.config.identifierName];
             }
         }
 
@@ -507,6 +514,7 @@ class Messenger {
                     return;
                 }
 
+                debug(`data updated on ${request.table}.${request._id}`);
                 // Get the updated object and broadcast the changes.
                 let table = {};
                 col.find({_id: request._id}).forEach(

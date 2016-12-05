@@ -1,7 +1,7 @@
 <md-subheader>
     {{panel.fields.name}}
-    <md-button class="md-primary"  ng-click="panel.setAllSwitches(1)">All On</md-button>
-    <md-button class="md-warn" ng-click="panel.setAllSwitches(0)">All Off</md-button>
+    <md-button class="md-primary"  ng-click="panel.setAllSwitches(true)">All On</md-button>
+    <md-button class="md-warn" ng-click="panel.setAllSwitches(false)">All Off</md-button>
     <md-button devctrl-admin-only
                ng-click="panel.addControl($event)"
                class="md-primary">

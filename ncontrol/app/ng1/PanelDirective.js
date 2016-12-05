@@ -1,5 +1,6 @@
 "use strict";
 var PanelControl_1 = require("../../shared/PanelControl");
+var Control_1 = require("../../shared/Control");
 exports.PanelDirective = ['$mdDialog', 'MenuService', 'DataService', function ($mdDialog, MenuService, DataService) {
         return {
             scope: true,
@@ -32,9 +33,9 @@ exports.PanelDirective = ['$mdDialog', 'MenuService', 'DataService', function ($
                 };
                 this.setAllSwitches = function (val) {
                     angular.forEach(self.panelObj.referenced.panel_controls, function (pcontrol) {
-                        var control = pcontrol.foreign.controls;
-                        if (control.fields.usertype == 'switch') {
-                            control.fields.value = val;
+                        var control = pcontrol.control;
+                        if (control.usertype == Control_1.Control.USERTYPE_SWITCH) {
+                            control.value = val;
                             DataService.updateControlValue(control);
                         }
                     });

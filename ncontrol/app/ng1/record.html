@@ -73,7 +73,7 @@
             <md-subheader>References</md-subheader>
             <div ng-repeat="fkDef in record.obj.foreignKeys">
                 <md-list-item>
-                    <md-button ng-click="record.editOtherRow(record[fkDef.fkObjProp])">{{fkDef.fkTable}}[{{record[fkDef.fkObjProp].name}}]</md-button>
+                    <md-button ng-click="record.editOtherRow(record.obj[fkDef.fkObjProp])">{{fkDef.fkTable}}[{{record.obj[fkDef.fkObjProp].name}}]</md-button>
                 </md-list-item>
             </div>
         </md-list>

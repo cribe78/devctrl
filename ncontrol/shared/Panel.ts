@@ -38,6 +38,10 @@ export class Panel extends DCSerializable {
             'panel_index'
         ]);
 
+        this.defaultProperties = {
+            panel_index : "1"
+        };
+
         if (data) {
             this.loadData(data);
         }

@@ -97,6 +97,11 @@ export class TCPCommand {
         // Use sprintf to expand the template
         let res = '';
 
+        if (this.control_type == Control.CONTROL_TYPE_BOOLEAN) {
+            //sprintf does nothing useful with boolean values, use 1 and 0 instead
+            value = value ? 1 : 0;
+        }
+
         try {
             res = sprintf(template, value);
         }

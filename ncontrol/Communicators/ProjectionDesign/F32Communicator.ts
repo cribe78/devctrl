@@ -313,6 +313,20 @@ class F32Communicator extends TCPCommunicator {
         };
         this.commands[name] = new TCPCommand(command);
 
+        name = "OK";
+        cmd = "NVOK";
+        command = {
+            cmdStr: name,
+            cmdUpdateTemplate: ":" + cmd,
+            cmdUpdateResponseTemplate: "%%001 " + cmd + " 000001",
+            endpoint_id : this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_STRING,
+            usertype: Control.USERTYPE_BUTTON,
+            templateConfig : {},
+            poll: 0,
+            writeonly : true
+        };
+        this.commands[name] = new TCPCommand(command);
 
         name = "Shutter";
         cmd = "SHUT";

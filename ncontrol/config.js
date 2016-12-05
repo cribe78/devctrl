@@ -1,19 +1,31 @@
 var fs = require('fs');
 
 var config = {
-  "wsUrl" : "https://devctrl.dwi.ufl.edu/",
-  "testString" : "default",
-  "endpointId" : "57ee8aaaad74d31275995a75",
-  "mongoHost" : "localhost",
-  "mongoPort" : 27017,
-  "mongoDB" : "devctrl-dev",
-  "ioPort" : 2880,
+  wsUrl : "https://devctrl.dwi.ufl.edu/",
+  testString : "default",
+  endpointId : "overrideme",
+  mongoHost : "localhost",
+  mongoPort : 27017,
+  mongoDB : "devctrl",
+  ioPort : 2880,
   ioPath: "/socket.io",
-  "authPort" : 2992,
+  authPort : 2992,
   "endpointPassword" : "DWCONTROL",
   app: "./ncontrol",
-  authId: "overrideme"
+  authId: "overrideme",
+  identifierName : "identifier"
 };
+
+var localConfig = {};
+var localPath = "./config.local.js";
+
+if (fs.existsSync(localPath)) {
+  localConfig = require("./config.local");
+}
+
+for (var opt in localConfig) {
+  config[opt] = localConfig[opt];
+}
 
 var customConfig = {};
 
@@ -23,14 +35,12 @@ if (typeof process.argv[2] !== 'undefined') {
   var configArg = process.argv[2];
   var configPath = "./config/" + configArg + ".js";
 
-  var stats = fs.statSync(configPath);
-
-  if (stats.isFile()) {
+  if (fs.existsSync(configPath)) {
     customConfig = require("./config/" + configArg);
   }
 }
 
-for (var opt in customConfig) {
+for (opt in customConfig) {
     config[opt] = customConfig[opt];
 }
 

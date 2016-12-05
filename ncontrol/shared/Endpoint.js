@@ -36,6 +36,12 @@ var Endpoint = (function (_super) {
             'port',
             'enabled'
         ]);
+        this.defaultProperties = {
+            status: EndpointStatus.Offline,
+            ip: "",
+            port: 0,
+            enabled: false
+        };
         if (data) {
             this.loadData(data);
         }

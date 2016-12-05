@@ -23,10 +23,10 @@ export class RecordController {
         this.close(true);
     }
     
-    editOtherRow(row) {
+    editOtherRow(row : DCSerializable) {
         this.editStack.push(this.obj);
         this.obj = row;
-        this.schema = this.dataService.getSchema(row.tableName);
+        this.schema = this.dataService.getSchema(row.table);
     }
 
     updateRow() {

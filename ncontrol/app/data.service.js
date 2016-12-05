@@ -146,6 +146,12 @@ var DataService = (function () {
             });
         }
         else {
+            var expireStr = (new Date(this.userSession.login_expires)).toTimeString().substr(0, 17);
+            console.log("user session expired at " + expireStr + ", referring to doLogon");
+            if (this.config.lastLogonAttempt) {
+                var lastLogonStr = (new Date(this.config.lastLogonAttempt)).toTimeString().substr(0, 17);
+                console.log("last logon attempt was at " + lastLogonStr);
+            }
             this.doLogon(true);
         }
     };
@@ -180,6 +186,11 @@ var DataService = (function () {
             record = this.getRowRef(tableName, id);
         }
         else {
+            // Set the name as an empty string, otherwise it will resolve
+            // as "unknown [tablename]"
+            if (!recordDefaults["name"]) {
+                recordDefaults["name"] = '';
+            }
             record = this.getNewRowRef(tableName, recordDefaults);
         }
         this.$mdDialog.show({

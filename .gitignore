@@ -6,3 +6,4 @@ npm-debug.log
 sub/config.local.php
 vendor/
 /ncontrol/config/
+/ncontrol/config.local.js

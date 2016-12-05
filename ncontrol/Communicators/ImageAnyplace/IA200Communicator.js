@@ -20,7 +20,7 @@ var IA200Communicator = (function (_super) {
         var fiveZeros = "00000";
         var inputConfig = {
             cmdStr: "Video Input",
-            cmdUpdateTemplate: "A00WBA%04d" + nineZeros,
+            cmdUpdateTemplate: "A00WBA%s" + nineZeros,
             cmdUpdateResponseTemplate: "K",
             endpoint_id: this.config.endpoint._id,
             control_type: "string",

@@ -9,12 +9,26 @@ var DCSerializable = (function () {
         this._id = _id;
         this.requiredProperties = [];
         this.optionalProperties = [];
+        this.defaultProperties = {};
         this.dataLoaded = false;
         this.foreignKeys = [];
         this.fields = this;
         this.referenced = {};
     }
     ;
+    Object.defineProperty(DCSerializable.prototype, "name", {
+        get: function () {
+            if (typeof this._name !== 'undefined') {
+                return this._name;
+            }
+            return "unknown " + this.table;
+        },
+        set: function (val) {
+            this._name = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
     DCSerializable.prototype.addReference = function (refObj) {
         if (!this.referenced[refObj.table]) {
             this.referenced[refObj.table] = {};
@@ -63,7 +77,12 @@ var DCSerializable = (function () {
         var data = { _id: obj._id, name: obj.name };
         for (var _i = 0, _a = obj.requiredProperties; _i < _a.length; _i++) {
             var prop = _a[_i];
-            data[prop] = obj[prop];
+            if (typeof obj[prop] !== 'undefined') {
+                data[prop] = obj[prop];
+            }
+            else if (typeof obj.defaultProperties[prop] !== 'undefined') {
+                data[prop] = obj.defaultProperties[prop];
+            }
         }
         for (var _b = 0, _c = obj.optionalProperties; _b < _c.length; _b++) {
             var prop = _c[_b];

@@ -1,5 +1,6 @@
 import {PanelControlSelectorCtrl} from "./PanelControlSelectorCtrl";
 import {PanelControl} from "../../shared/PanelControl";
+import {Control} from "../../shared/Control";
 
 export let PanelDirective  = ['$mdDialog', 'MenuService', 'DataService', function($mdDialog, MenuService, DataService) : ng.IDirective {
     return {
@@ -35,11 +36,11 @@ export let PanelDirective  = ['$mdDialog', 'MenuService', 'DataService', functio
             };
 
             this.setAllSwitches = function(val) {
-                angular.forEach(self.panelObj.referenced.panel_controls, function(pcontrol) {
-                    var control = pcontrol.foreign.controls;
+                angular.forEach(self.panelObj.referenced.panel_controls, function(pcontrol : PanelControl) {
+                    let control = pcontrol.control;
 
-                    if (control.fields.usertype == 'switch') {
-                        control.fields.value = val;
+                    if (control.usertype == Control.USERTYPE_SWITCH) {
+                        control.value = val;
                         DataService.updateControlValue(control);
                     }
                 });

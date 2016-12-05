@@ -53,6 +53,13 @@ export class Endpoint extends DCSerializable {
             'enabled'
         ]);
 
+        this.defaultProperties = {
+            status : EndpointStatus.Offline,
+            ip : "",
+            port : 0,
+            enabled : false
+        };
+
         if (data) {
             this.loadData(data);
         }

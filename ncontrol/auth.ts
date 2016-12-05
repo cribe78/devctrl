@@ -105,7 +105,7 @@ class Auth {
 
     }
 
-    static getIdentifier(req: http.IncomingMessage) : string {
+    getIdentifier(req: http.IncomingMessage) : string {
         let cookies = {};
 
         if (req.headers['cookie']) {
@@ -117,8 +117,8 @@ class Auth {
             }
         }
 
-        if (cookies["identifier"]) {
-            return cookies["identifier"];
+        if (cookies[this.config.identifierName]) {
+            return cookies[this.config.identifierName];
         }
 
         return '';
@@ -269,7 +269,7 @@ class Auth {
             return;
         }
 
-        let identifier = Auth.getIdentifier(req);
+        let identifier = this.getIdentifier(req);
 
 
         if (parts.pathname == '/admin_auth') {
@@ -419,7 +419,7 @@ class Auth {
                 let oneYear = 1000 * 3600 * 24 * 365;
                 let cookieExpire = new Date(Date.now() + oneYear);
                 let expStr = cookieExpire.toUTCString();
-                let idCookie = `identifier=${identifier};expires=${expStr};path=/`;
+                let idCookie = `${this.config.identifierName}=${identifier};expires=${expStr};path=/`;
 
                 response.setHeader('Set-Cookie', [idCookie]);
                 response.writeHead(200);

@@ -31,7 +31,7 @@ var DCDataModel = (function () {
             panels: Panel_1.Panel,
             panel_controls: PanelControl_1.PanelControl,
             rooms: Room_1.Room,
-            watcher_rules: WatcherRule_1.WatcherRule
+            watcher_rules: WatcherRule_1.WatcherRule,
         };
         this.debug = console.log;
     }

@@ -39,6 +39,11 @@ function handler(req, res) {
                 return;
             }
         }
+        else if (endpoint == "test") {
+            res.writeHead(200);
+            res.end("yeah, I'm alive");
+            return;
+        }
         else {
             res.writeHead(400);
             res.end("api endpoint not recognized");
@@ -58,7 +63,9 @@ var Messenger = (function () {
     function Messenger() {
     }
     Messenger.prototype.run = function (config) {
+        var _this = this;
         Messenger.dataModel = new DCDataModel_1.DCDataModel();
+        this.config = config;
         // Connect to mongodb
         var mongoConnStr = "mongodb://" + config.mongoHost + ":" + config.mongoPort
             + "/" + config.mongoDB;
@@ -73,7 +80,7 @@ var Messenger = (function () {
         io.on('connection', Messenger.ioConnection);
         // Set authorization function
         io.use(function (socket, next) {
-            var id = Messenger.socketAuthId(socket);
+            var id = _this.socketAuthId(socket);
             //debug("authenticating user " + id);
             if (id) {
                 var col = Messenger.mongodb.collection("sessions");
@@ -383,7 +390,7 @@ var Messenger = (function () {
         var col = Messenger.mongodb.collection(Endpoint_1.Endpoint.tableStr);
         return col.updateMany({}, { '$set': { status: Endpoint_1.EndpointStatus.Offline } });
     };
-    Messenger.socketAuthId = function (socket) {
+    Messenger.prototype.socketAuthId = function (socket) {
         if (socket.handshake && socket.handshake.headers['cookie']) {
             var cookies = {};
             var cstrs = socket.handshake.headers['cookie'].split(';');
@@ -392,8 +399,8 @@ var Messenger = (function () {
                 var _a = cstr.split("="), name_1 = _a[0], value = _a[1];
                 cookies[name_1.trim()] = value;
             }
-            if (cookies["identifier"]) {
-                return cookies["identifier"];
+            if (cookies[this.config.identifierName]) {
+                return cookies[this.config.identifierName];
             }
         }
         if (socket.handshake && socket.handshake.headers['ncontrol-auth-id']) {
@@ -412,6 +419,7 @@ var Messenger = (function () {
                 fn({ error: err.message });
                 return;
             }
+            debug("data updated on " + request.table + "." + request._id);
             // Get the updated object and broadcast the changes.
             var table = {};
             col.find({ _id: request._id }).forEach(function (doc) {

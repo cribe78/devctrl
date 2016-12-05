@@ -34,7 +34,7 @@ export interface IDCForeignKeyDef {
 }
 
 export abstract class DCSerializable {
-    name: string;
+    _name: string;
     dataLoaded: boolean;
     table : string;
     fields: DCSerializable;  // This is a hack while we work through all the references to "fields"
@@ -46,6 +46,9 @@ export abstract class DCSerializable {
     };
     requiredProperties: string[] = [];
     optionalProperties: string[] = [];
+    defaultProperties : {
+        [index: string] : any
+    } = {};
 
     constructor(public _id: string) {
         this.dataLoaded = false;
@@ -54,6 +57,17 @@ export abstract class DCSerializable {
         this.referenced = {};
     };
 
+    get name() {
+        if (typeof this._name !== 'undefined') {
+            return this._name;
+        }
+
+        return `unknown ${this.table}`;
+    }
+
+    set name(val) {
+        this._name = val;
+    }
 
     addReference(refObj: DCSerializable) {
         if (! this.referenced[refObj.table]) {
@@ -114,7 +128,12 @@ export abstract class DCSerializable {
         let data = { _id: obj._id, name: obj.name };
 
         for (let prop of obj.requiredProperties) {
-            data[prop] = obj[prop];
+            if (typeof obj[prop] !== 'undefined') {
+                data[prop] = obj[prop];
+            }
+            else if (typeof obj.defaultProperties[prop] !== 'undefined') {
+                data[prop] = obj.defaultProperties[prop];
+            }
         }
 
         for (let prop of obj.optionalProperties) {

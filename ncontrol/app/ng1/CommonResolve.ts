@@ -12,6 +12,10 @@ export let CommonResolve = {
         return DataService.getTablePromise('rooms');
     },
 
+    loadOptionSets : function(DataService) {
+        return DataService.getTablePromise('option_sets');
+    },
+
     loadPanels : function(DataService) {
         return DataService.getTablePromise('panels');
     },
@@ -27,6 +31,8 @@ export let CommonResolve = {
     loadControlEndpoints : function(DataService) {
         return DataService.getTablePromise('endpoints');
     },
+
+
 
     loadUserInfo : function(DataService) {
         return DataService.getUserInfo();

@@ -17,7 +17,7 @@ var RecordController = (function () {
     RecordController.prototype.editOtherRow = function (row) {
         this.editStack.push(this.obj);
         this.obj = row;
-        this.schema = this.dataService.getSchema(row.tableName);
+        this.schema = this.dataService.getSchema(row.table);
     };
     RecordController.prototype.updateRow = function () {
         this.dataService.updateRow(this.obj);

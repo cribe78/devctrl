@@ -40,8 +40,7 @@ export class DCDataModel {
         panels: Panel,
         panel_controls: PanelControl,
         rooms: Room,
-        watcher_rules: WatcherRule
-
+        watcher_rules: WatcherRule,
     };
 
 

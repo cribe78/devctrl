@@ -44,6 +44,10 @@ var TCPCommand = (function () {
     TCPCommand.prototype.expandTemplate = function (template, value) {
         // Use sprintf to expand the template
         var res = '';
+        if (this.control_type == Control_1.Control.CONTROL_TYPE_BOOLEAN) {
+            //sprintf does nothing useful with boolean values, use 1 and 0 instead
+            value = value ? 1 : 0;
+        }
         try {
             res = sprintf_js_1.sprintf(template, value);
         }

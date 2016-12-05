@@ -23,10 +23,13 @@ var TableController = (function () {
         for (var _i = 0, _a = row.foreignKeys; _i < _a.length; _i++) {
             var fkDef = _a[_i];
             if (fkDef.fkIdProp == field.name) {
-                if (row[fkDef.fkObjProp].name) {
+                if (row[fkDef.fkObjProp] && row[fkDef.fkObjProp].name) {
                     return row[fkDef.fkObjProp].name;
                 }
-                return row[field.name];
+                if (row[field.name]) {
+                    return row[field.name];
+                }
+                return "unknown object " + field._id;
             }
         }
     };

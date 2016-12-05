@@ -10,6 +10,9 @@ exports.CommonResolve = {
     loadRooms: function (DataService) {
         return DataService.getTablePromise('rooms');
     },
+    loadOptionSets: function (DataService) {
+        return DataService.getTablePromise('option_sets');
+    },
     loadPanels: function (DataService) {
         return DataService.getTablePromise('panels');
     },

@@ -91,7 +91,7 @@ var Auth = (function () {
         });
         this.app.listen(config.ioPort);
     };
-    Auth.getIdentifier = function (req) {
+    Auth.prototype.getIdentifier = function (req) {
         var cookies = {};
         if (req.headers['cookie']) {
             var cstrs = req.headers['cookie'].split(';');
@@ -101,8 +101,8 @@ var Auth = (function () {
                 cookies[name_1.trim()] = value;
             }
         }
-        if (cookies["identifier"]) {
-            return cookies["identifier"];
+        if (cookies[this.config.identifierName]) {
+            return cookies[this.config.identifierName];
         }
         return '';
     };
@@ -220,7 +220,7 @@ var Auth = (function () {
             this.errorResponse(response, 405, req.method + " not supported");
             return;
         }
-        var identifier = Auth.getIdentifier(req);
+        var identifier = this.getIdentifier(req);
         if (parts.pathname == '/admin_auth') {
             /**
              * admin_auth location should be protected by the proxying webserver
@@ -345,7 +345,7 @@ var Auth = (function () {
                 var oneYear = 1000 * 3600 * 24 * 365;
                 var cookieExpire = new Date(Date.now() + oneYear);
                 var expStr = cookieExpire.toUTCString();
-                var idCookie = "identifier=" + identifier + ";expires=" + expStr + ";path=/";
+                var idCookie = _this.config.identifierName + "=" + identifier + ";expires=" + expStr + ";path=/";
                 response.setHeader('Set-Cookie', [idCookie]);
                 response.writeHead(200);
                 response.end(JSON.stringify({ session: session_1 }));

@@ -14,7 +14,7 @@ class IA200Communicator extends TCPCommunicator {
         let fiveZeros = "00000";
         let inputConfig : ITCPCommandConfig = {
             cmdStr: "Video Input",
-            cmdUpdateTemplate: "A00WBA%04d" + nineZeros,
+            cmdUpdateTemplate: "A00WBA%s" + nineZeros,
             cmdUpdateResponseTemplate: "K",
             endpoint_id: this.config.endpoint._id,
             control_type: "string",

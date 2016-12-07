@@ -97,7 +97,9 @@ var DCDataModel = (function () {
                 var deleteRec = this[table][_id];
                 for (var _i = 0, _a = deleteRec.foreignKeys; _i < _a.length; _i++) {
                     var fkDef = _a[_i];
-                    deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
+                    if (deleteRec[fkDef.fkObjProp]) {
+                        deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
+                    }
                 }
                 //Delete the object
                 delete this[table][_id];

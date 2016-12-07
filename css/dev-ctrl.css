@@ -98,6 +98,10 @@ coe-menu li {
     margin-bottom: 12px;
 }
 
+.devctrl-ctrl-video {
+    height: 490px;
+}
+
 .devctrl-id-text {
     font-size: 10px;
 }

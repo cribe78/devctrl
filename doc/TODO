@@ -4,11 +4,7 @@ TODO: add log view
 TODO: save settings sets
 TODO: roll back data model changes on error
 TODO: hyperlink control type
-TODO: auth on node messenger
-TODO: intermittent blank page title issue
 TODO: reorder device controls
-TODO: store selected tab in local storage
-TODO: initialize database with required enums and enum_values
 TODO: Add login page for unauthenticated or unauthorized users
 
 

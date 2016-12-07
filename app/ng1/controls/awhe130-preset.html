@@ -1,0 +1,20 @@
+<div class="devctrl-ctrl devctrl-ctrl-video"
+    layout="column"
+    flex="none">
+    <label flex class="text-menu devctrl-ctrl-label">{{$ctrl.ctrl.endpoint.name}} Presets</label>
+    <div flex layout="row">
+        <md-button aria-label="Home" ng-click="$ctrl.selectMenuItem(-1)">Home</md-button>
+        <md-button aria-label="Preset 1" ng-click="$ctrl.selectMenuItem(0)">Preset 1</md-button>
+        <md-button aria-label="Preset 2" ng-click="$ctrl.selectMenuItem(1)">Preset 2</md-button>
+        <md-button aria-label="Preset 3" ng-click="$ctrl.selectMenuItem(2)">Preset 3</md-button>
+        <md-button aria-label="Preset 4" ng-click="$ctrl.selectMenuItem(3)">Preset 4</md-button>
+    </div>
+    <img flex="none" ng-src="http://{{$ctrl.ctrl.endpoint.address}}/{{$ctrl.config('liveViewPath')}}" width="640" height="360" />
+    <div flex layout="row">
+        <md-button aria-label="Preset 5" ng-click="$ctrl.selectMenuItem(4)">Preset 5</md-button>
+        <md-button aria-label="Preset 6" ng-click="$ctrl.selectMenuItem(5)">Preset 6</md-button>
+        <md-button aria-label="Preset 7" ng-click="$ctrl.selectMenuItem(6)">Preset 7</md-button>
+        <md-button aria-label="Preset 8" ng-click="$ctrl.selectMenuItem(7)">Preset 8</md-button>
+        <md-button aria-label="Preset 9" ng-click="$ctrl.selectMenuItem(8)">Preset 9</md-button>
+    </div>
+</div>

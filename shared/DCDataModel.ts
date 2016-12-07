@@ -130,7 +130,9 @@ export class DCDataModel {
             if (this[table][_id]) {
                 let deleteRec = (<DCSerializable>this[table][_id]);
                 for (let fkDef of deleteRec.foreignKeys) {
-                    deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
+                    if (deleteRec[fkDef.fkObjProp]) {
+                        deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
+                    }
                 }
 
                 //Delete the object

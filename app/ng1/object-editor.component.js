@@ -1,10 +1,9 @@
 "use strict";
-var ObjectEditorController = (function () {
-    function ObjectEditorController() {
-    }
-    ObjectEditorController.prototype.addItem = function () {
+class ObjectEditorController {
+    constructor() { }
+    addItem() {
         if (this.newKey && this.newVal) {
-            var tempVal = '';
+            let tempVal = '';
             try {
                 tempVal = JSON.parse(this.newVal);
             }
@@ -20,20 +19,20 @@ var ObjectEditorController = (function () {
         this.newVal = undefined;
         angular.element(document).find('#oe-new-key').focus();
         this.onUpdate({ object: this.object, name: this.name });
-    };
-    ObjectEditorController.prototype.deleteValue = function (key) {
+    }
+    deleteValue(key) {
         delete this.object[key];
         this.onUpdate({ object: this.object, name: this.name });
-    };
-    ObjectEditorController.prototype.onUpdate = function (args) { };
-    ObjectEditorController.prototype.valueType = function (value) {
+    }
+    onUpdate(args) { }
+    valueType(value) {
         if (angular.isArray(value)) {
             return "array";
         }
         return typeof value;
-    };
-    ObjectEditorController.prototype.updateValue = function ($event, key) {
-        var tempVal = '';
+    }
+    updateValue($event, key) {
+        let tempVal = '';
         try {
             tempVal = JSON.parse(this.object[key]);
         }
@@ -41,9 +40,8 @@ var ObjectEditorController = (function () {
             tempVal = this.object[key];
         }
         this.object[key] = tempVal;
-    };
-    return ObjectEditorController;
-}());
+    }
+}
 ObjectEditorController.$inject = [];
 exports.ObjectEditorComponent = {
     templateUrl: 'app/ng1/object-editor.html',

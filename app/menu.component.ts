@@ -8,14 +8,13 @@ declare var angular: angular.IAngularStatic;
     template: `
 <md-nav-list>
     <template ngFor let-item [ngForOf]="menuService.menuItems()" [ngForTrackBy]="trackByName">
-        <a md-list-item href="#" (click)="go(item)">
+        <a md-list-item (click)="go(item)">
             <a md-button>{{item.title}}</a>
             <span class="toggle-icon" [class.toggled]="item.isOpened">
                 <md-icon md-font-set="material-icons" >expand_more</md-icon>
             </span>
         </a>
-        <a md-list-item href="#" 
-                        [hidden]="! item.isOpened"
+        <a md-list-item [hidden]="! item.isOpened"
                         *ngFor="let subitem of item.substates" 
                         (click)="go(subitem)">
             <span flex="5"></span>

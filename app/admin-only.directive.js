@@ -11,18 +11,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var core_1 = require("@angular/core");
-var data_service_1 = require("./data.service");
-var AdminOnlyDirective = (function () {
-    function AdminOnlyDirective(_template, _viewContainer, dataService) {
+const core_1 = require("@angular/core");
+const data_service_1 = require("./data.service");
+let AdminOnlyDirective = class AdminOnlyDirective {
+    constructor(_template, _viewContainer, dataService) {
         this._template = _template;
         this._viewContainer = _viewContainer;
         this.dataService = dataService;
         this._hasView = false;
         this._inverted = false;
     }
-    AdminOnlyDirective.prototype.ngDoCheck = function () {
-        var test = this.dataService.isAdminAuthorized() != this._inverted;
+    ngDoCheck() {
+        let test = this.dataService.isAdminAuthorized() != this._inverted;
         if (test && !this._hasView) {
             this._hasView = true;
             this._viewContainer.createEmbeddedView(this._template);
@@ -31,16 +31,11 @@ var AdminOnlyDirective = (function () {
             this._hasView = false;
             this._viewContainer.clear();
         }
-    };
-    Object.defineProperty(AdminOnlyDirective.prototype, "invert", {
-        set: function (invertVal) {
-            this._inverted = !!invertVal;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return AdminOnlyDirective;
-}());
+    }
+    set invert(invertVal) {
+        this._inverted = !!invertVal;
+    }
+};
 __decorate([
     core_1.Input(),
     __metadata("design:type", Object),

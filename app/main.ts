@@ -42,7 +42,7 @@ import { downgradeComponent, downgradeInjectable } from '@angular/upgrade/static
 
 angular.module('DevCtrlApp',
     ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
-    .service('DataService', DataService)
+    .factory('DataService', downgradeInjectable(DataService))
     .factory('MenuService', downgradeInjectable(MenuService))
     .component('ctrl', ControlComponent)
     .directive('devctrlMenu',

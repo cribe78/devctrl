@@ -1,44 +1,44 @@
 "use strict";
 require("angular");
-var platform_browser_dynamic_1 = require("@angular/platform-browser-dynamic");
-var app_module_1 = require("./app.module");
-var static_1 = require("@angular/upgrade/static");
-var admin_only_directive_1 = require("./ng1/admin-only.directive");
-var menu_service_1 = require("./menu.service");
-var StateConfig_1 = require("./ng1/StateConfig");
-var table_controller_1 = require("./ng1/table.controller");
-var LogCtrl_1 = require("./ng1/LogCtrl");
-var record_controller_1 = require("./ng1/record.controller");
-var CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
-var PanelControlSelectorCtrl_1 = require("./ng1/PanelControlSelectorCtrl");
-var FkSelectDirective_1 = require("./ng1/FkSelectDirective");
-var Slider2dDirective_1 = require("./ng1/Slider2dDirective");
-var object_editor_component_1 = require("./ng1/object-editor.component");
-var MainCtrl_1 = require("./ng1/MainCtrl");
-var endpoint_controller_1 = require("./ng1/endpoint.controller");
-var room_controller_1 = require("./ng1/room.controller");
-var rooms_controller_1 = require("./ng1/rooms.controller");
-var data_service_1 = require("./data.service");
-var fk_autocomplete_component_1 = require("./ng1/fk-autocomplete.component");
+const platform_browser_dynamic_1 = require("@angular/platform-browser-dynamic");
+const app_module_1 = require("./app.module");
+const static_1 = require("@angular/upgrade/static");
+const admin_only_directive_1 = require("./ng1/admin-only.directive");
+const menu_service_1 = require("./menu.service");
+const StateConfig_1 = require("./ng1/StateConfig");
+const table_controller_1 = require("./ng1/table.controller");
+const LogCtrl_1 = require("./ng1/LogCtrl");
+const record_controller_1 = require("./ng1/record.controller");
+const CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
+const PanelControlSelectorCtrl_1 = require("./ng1/PanelControlSelectorCtrl");
+const FkSelectDirective_1 = require("./ng1/FkSelectDirective");
+const Slider2dDirective_1 = require("./ng1/Slider2dDirective");
+const object_editor_component_1 = require("./ng1/object-editor.component");
+const MainCtrl_1 = require("./ng1/MainCtrl");
+const endpoint_controller_1 = require("./ng1/endpoint.controller");
+const room_controller_1 = require("./ng1/room.controller");
+const rooms_controller_1 = require("./ng1/rooms.controller");
+const data_service_1 = require("./data.service");
+const fk_autocomplete_component_1 = require("./ng1/fk-autocomplete.component");
 require("angular-animate");
 require("angular-aria");
 require("angular-material");
 require("angular-ui-router");
 require("./socket");
 require("./ng1/toArrayFilter");
-var endpoint_status_component_1 = require("./ng1/endpoint-status.component");
-var control_component_1 = require("./ng1/control.component");
-var endpoints_controller_1 = require("./ng1/endpoints.controller");
-var panel_component_1 = require("./ng1/panel.component");
-var menu_component_1 = require("./menu.component");
-var toolbar_component_1 = require("./ng1/toolbar.component");
-var static_2 = require("@angular/upgrade/static");
+const endpoint_status_component_1 = require("./ng1/endpoint-status.component");
+const control_component_1 = require("./ng1/control.component");
+const endpoints_controller_1 = require("./ng1/endpoints.controller");
+const panel_component_1 = require("./ng1/panel.component");
+const menu_component_1 = require("./menu.component");
+const toolbar_component_1 = require("./ng1/toolbar.component");
+const static_2 = require("@angular/upgrade/static");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
  * */
 angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
-    .service('DataService', data_service_1.DataService)
+    .factory('DataService', static_2.downgradeInjectable(data_service_1.DataService))
     .factory('MenuService', static_2.downgradeInjectable(menu_service_1.MenuService))
     .component('ctrl', control_component_1.ControlComponent)
     .directive('devctrlMenu', static_2.downgradeComponent({ component: menu_component_1.MenuComponent }))
@@ -82,8 +82,8 @@ angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'an
     }]);
 //export const upgradeAdapter = new UpgradeAdapter(AppModule);
 //upgradeAdapter.bootstrap(document.documentElement, ['DevCtrlApp']);
-platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule).then(function (platformRef) {
-    var upgrade = platformRef.injector.get(static_1.UpgradeModule);
+platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule).then(platformRef => {
+    const upgrade = platformRef.injector.get(static_1.UpgradeModule);
     upgrade.bootstrap(document.documentElement, ['DevCtrlApp'], { strictDi: true });
 });
 //# sourceMappingURL=main.js.map

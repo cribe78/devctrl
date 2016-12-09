@@ -9,7 +9,7 @@ export class MenuService {
     toolbarSelect;
 
     //static $inject = ['$state', '$mdSidenav', '$mdMedia', 'DataService'];
-    constructor(@Inject('$state') public $state, @Inject('DataService') private dataService: DataService) {
+    constructor(@Inject('$state') public $state, private dataService: DataService) {
         this.menuConfig = dataService.config.menu;
         this.items = [];
         this.itemsObj = {};

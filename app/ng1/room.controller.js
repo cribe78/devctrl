@@ -1,22 +1,22 @@
 "use strict";
-var Room_1 = require("../../shared/Room");
-var Panel_1 = require("../../shared/Panel");
-var PanelControl_1 = require("../../shared/PanelControl");
-var RoomController = (function () {
-    function RoomController($stateParams, dataService, menuService) {
+const Room_1 = require("../../shared/Room");
+const Panel_1 = require("../../shared/Panel");
+const PanelControl_1 = require("../../shared/PanelControl");
+class RoomController {
+    constructor($stateParams, dataService, menuService) {
         this.$stateParams = $stateParams;
         this.dataService = dataService;
         this.menuService = menuService;
         this.menu = menuService;
     }
-    RoomController.prototype.$onInit = function () {
+    $onInit() {
         this.rooms = this.dataService.getTable(Room_1.Room.tableStr);
         if (this.rooms[this.$stateParams.id]) {
             this.obj = this.rooms[this.$stateParams.id];
             this.$stateParams.name = this.obj.name;
         }
         else {
-            for (var id in this.rooms) {
+            for (let id in this.rooms) {
                 if (this.rooms[id].name == this.$stateParams.name) {
                     this.obj = this.rooms[id];
                     break;
@@ -33,55 +33,51 @@ var RoomController = (function () {
             this.config.rooms[this.obj._id] = { groups: {} };
         }
         this.roomConfig = this.config.rooms[this.obj._id];
-    };
-    Object.defineProperty(RoomController.prototype, "selectedGroup", {
-        get: function () {
-            if (typeof this.roomConfig['selectedGroup'] == 'undefined') {
-                this.roomConfig['selectedGroup'] = 0;
-                this.dataService.updateConfig();
-            }
-            return this.roomConfig['selectedGroup'];
-        },
-        set: function (value) {
-            this.roomConfig['selectedGroup'] = value;
+    }
+    get selectedGroup() {
+        if (typeof this.roomConfig['selectedGroup'] == 'undefined') {
+            this.roomConfig['selectedGroup'] = 0;
             this.dataService.updateConfig();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    RoomController.prototype.addPanel = function ($event) {
+        }
+        return this.roomConfig['selectedGroup'];
+    }
+    set selectedGroup(value) {
+        this.roomConfig['selectedGroup'] = value;
+        this.dataService.updateConfig();
+    }
+    addPanel($event) {
         this.dataService.editRecord($event, '0', 'panels', {
             'room_id': this.obj._id
         });
-    };
-    RoomController.prototype.getGroups = function () {
-        var deleteGroups = {};
-        for (var groupName in this.roomConfig.groups) {
+    }
+    getGroups() {
+        let deleteGroups = {};
+        for (let groupName in this.roomConfig.groups) {
             deleteGroups[groupName] = true;
         }
-        for (var panelId in this.panels) {
-            var panel = this.panels[panelId];
+        for (let panelId in this.panels) {
+            let panel = this.panels[panelId];
             if (!this.roomConfig.groups[panel.grouping]) {
                 this.roomConfig.groups[panel.grouping] = { opened: false };
             }
             deleteGroups[panel.grouping] = false;
         }
-        for (var grouping in deleteGroups) {
+        for (let grouping in deleteGroups) {
             if (deleteGroups[grouping]) {
                 delete this.roomConfig.groups[grouping];
             }
         }
         return this.roomConfig.groups;
-    };
-    RoomController.prototype.getRoomEndpoints = function (grouping) {
-        var roomEndpoints = {};
-        var ignoreGrouping = !grouping;
-        for (var panelId in this.panels) {
-            var panel = this.panels[panelId];
+    }
+    getRoomEndpoints(grouping) {
+        let roomEndpoints = {};
+        let ignoreGrouping = !grouping;
+        for (let panelId in this.panels) {
+            let panel = this.panels[panelId];
             if (ignoreGrouping || panel.grouping == grouping) {
-                var panelControls = panel.referenced[PanelControl_1.PanelControl.tableStr];
-                for (var panelControlId in panelControls) {
-                    var endpoint = panelControls[panelControlId].endpoint;
+                let panelControls = panel.referenced[PanelControl_1.PanelControl.tableStr];
+                for (let panelControlId in panelControls) {
+                    let endpoint = panelControls[panelControlId].endpoint;
                     if (endpoint && !roomEndpoints[endpoint._id]) {
                         roomEndpoints[endpoint._id] = endpoint;
                     }
@@ -89,21 +85,20 @@ var RoomController = (function () {
             }
         }
         return roomEndpoints;
-    };
-    RoomController.prototype.groupSelected = function (group) {
-        console.log("tab " + group + " selected");
-    };
-    RoomController.prototype.panelControls = function (panel) {
+    }
+    groupSelected(group) {
+        console.log(`tab ${group} selected`);
+    }
+    panelControls(panel) {
         if (panel.referenced[PanelControl_1.PanelControl.tableStr]) {
             return panel.referenced[PanelControl_1.PanelControl.tableStr];
         }
-    };
-    RoomController.prototype.toggleGroup = function (group) {
+    }
+    toggleGroup(group) {
         group.opened = !group.opened;
         this.dataService.updateConfig();
-    };
-    return RoomController;
-}());
+    }
+}
 RoomController.$inject = ['$stateParams', 'DataService', 'MenuService'];
 exports.RoomController = RoomController;
 //# sourceMappingURL=room.controller.js.map

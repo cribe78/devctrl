@@ -11,33 +11,50 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var menu_service_1 = require("./menu.service");
-var core_1 = require("@angular/core");
-var MenuComponent = (function () {
+const menu_service_1 = require("./menu.service");
+const core_1 = require("@angular/core");
+let MenuComponent = class MenuComponent {
     //static $inject = ['MenuService', '$state'];
-    function MenuComponent(menuService, $state) {
+    constructor(menuService, $state) {
         this.menuService = menuService;
         this.$state = $state;
         console.log("MenuComponent created");
     }
-    MenuComponent.prototype.go = function (state) {
+    go(state) {
         if (angular.isString(state)) {
             this.$state.go(state);
         }
         else {
             this.$state.go(state.name, state.params);
         }
-    };
-    MenuComponent.prototype.trackByName = function (index, state) {
+    }
+    trackByName(index, state) {
         return state.name;
-    };
-    return MenuComponent;
-}());
+    }
+};
 MenuComponent = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'devctrl-menu',
-        template: "\n<md-nav-list>\n    <template ngFor let-item [ngForOf]=\"menuService.menuItems()\" [ngForTrackBy]=\"trackByName\">\n        <a md-list-item href=\"#\" (click)=\"go(item)\">\n            <a md-button>{{item.title}}</a>\n            <span class=\"toggle-icon\" [class.toggled]=\"item.isOpened\">\n                <md-icon md-font-set=\"material-icons\" >expand_more</md-icon>\n            </span>\n        </a>\n        <a md-list-item href=\"#\" \n                        [hidden]=\"! item.isOpened\"\n                        *ngFor=\"let subitem of item.substates\" \n                        (click)=\"go(subitem)\">\n            <span flex=\"5\"></span>\n            <p>{{subitem.title}}</p>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-nav-list>\n"
+        template: `
+<md-nav-list>
+    <template ngFor let-item [ngForOf]="menuService.menuItems()" [ngForTrackBy]="trackByName">
+        <a md-list-item (click)="go(item)">
+            <a md-button>{{item.title}}</a>
+            <span class="toggle-icon" [class.toggled]="item.isOpened">
+                <md-icon md-font-set="material-icons" >expand_more</md-icon>
+            </span>
+        </a>
+        <a md-list-item [hidden]="! item.isOpened"
+                        *ngFor="let subitem of item.substates" 
+                        (click)="go(subitem)">
+            <span flex="5"></span>
+            <p>{{subitem.title}}</p>
+        </a>
+        <md-divider></md-divider>
+    </template>
+</md-nav-list>
+`
     }),
     __param(1, core_1.Inject('$state')),
     __metadata("design:paramtypes", [menu_service_1.MenuService, Object])

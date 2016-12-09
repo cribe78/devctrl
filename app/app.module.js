@@ -8,41 +8,47 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require("@angular/core");
-var platform_browser_1 = require("@angular/platform-browser");
-var material_1 = require("@angular/material");
-var static_1 = require("@angular/upgrade/static");
-var menu_component_1 = require("./menu.component");
-var menu_service_1 = require("./menu.service");
+const core_1 = require("@angular/core");
+const platform_browser_1 = require("@angular/platform-browser");
+const material_1 = require("@angular/material");
+const http_1 = require("@angular/http");
+const static_1 = require("@angular/upgrade/static");
+const menu_component_1 = require("./menu.component");
+const menu_service_1 = require("./menu.service");
 //import {ToolbarComponent} from "./toolbar.component";
-var admin_only_directive_1 = require("./admin-only.directive");
-var AppModule = (function () {
-    function AppModule() {
-    }
-    AppModule.prototype.ngDoBootstrap = function () { };
-    return AppModule;
-}());
+const admin_only_directive_1 = require("./admin-only.directive");
+const data_service_1 = require("./data.service");
+let AppModule = class AppModule {
+    ngDoBootstrap() { }
+};
 AppModule = __decorate([
     core_1.NgModule({
         imports: [
             platform_browser_1.BrowserModule,
             static_1.UpgradeModule,
-            material_1.MaterialModule.forRoot()
+            material_1.MaterialModule.forRoot(),
+            http_1.HttpModule
         ],
         declarations: [menu_component_1.MenuComponent, admin_only_directive_1.AdminOnlyDirective],
         entryComponents: [menu_component_1.MenuComponent],
         providers: [
+            data_service_1.DataService,
             menu_service_1.MenuService,
             {
-                provide: 'DataService',
-                useFactory: function (i) { return i.get('DataService'); },
+                provide: '$state',
+                useFactory: i => i.get('$state'),
                 deps: ['$injector']
             },
             {
-                provide: '$state',
-                useFactory: function (i) { return i.get('$state'); },
+                provide: '$mdToast',
+                useFactory: i => i.get('$mdToast'),
                 deps: ['$injector']
-            }
+            },
+            {
+                provide: '$mdDialog',
+                useFactory: i => i.get('$mdDialog'),
+                deps: ['$injector']
+            },
         ],
     }),
     __metadata("design:paramtypes", [])

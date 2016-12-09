@@ -1,20 +1,19 @@
 "use strict";
-var Room_1 = require("../../shared/Room");
-var RoomsController = (function () {
-    function RoomsController(dataService) {
+const Room_1 = require("../../shared/Room");
+class RoomsController {
+    constructor(dataService) {
         this.dataService = dataService;
     }
-    RoomsController.prototype.$onInit = function () {
+    $onInit() {
         this.list = this.dataService.getTable(Room_1.Room.tableStr);
-    };
-    RoomsController.prototype.hideToast = function () {
+    }
+    hideToast() {
         this.dataService.hideToast();
-    };
-    RoomsController.prototype.imageUrl = function (room) {
-        return "/images/" + room.name + ".png";
-    };
-    return RoomsController;
-}());
+    }
+    imageUrl(room) {
+        return `/images/${room.name}.png`;
+    }
+}
 RoomsController.$inject = ['DataService'];
 exports.RoomsController = RoomsController;
 //# sourceMappingURL=rooms.controller.js.map

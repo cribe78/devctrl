@@ -1,55 +1,46 @@
 "use strict";
-var EndpointCommunicator = (function () {
-    function EndpointCommunicator() {
+class EndpointCommunicator {
+    constructor() {
         this.controlsByCtid = {};
         this.controls = {};
         this._connected = false;
     }
-    Object.defineProperty(EndpointCommunicator.prototype, "endpoint_id", {
-        get: function () {
-            return this.config.endpoint._id;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(EndpointCommunicator.prototype, "connected", {
-        get: function () {
-            return this._connected;
-        },
-        set: function (val) {
-            this._connected = val;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    EndpointCommunicator.prototype.connect = function () {
+    get endpoint_id() {
+        return this.config.endpoint._id;
+    }
+    get connected() {
+        return this._connected;
+    }
+    set connected(val) {
+        this._connected = val;
+    }
+    connect() {
         this._connected = true;
-    };
+    }
     ;
-    EndpointCommunicator.prototype.disconnect = function () {
+    disconnect() {
         this._connected = false;
-    };
+    }
     ;
-    EndpointCommunicator.prototype.setConfig = function (config) {
+    setConfig(config) {
         this.config = config;
-    };
-    EndpointCommunicator.prototype.getControlTemplates = function () {
+    }
+    getControlTemplates() {
         return {};
-    };
+    }
     /**
      * Process a ControlUpdate, likely by sending a command to
      * a device
      * @param request
      */
-    EndpointCommunicator.prototype.handleControlUpdateRequest = function (request) {
-    };
-    EndpointCommunicator.prototype.setTemplates = function (controls) {
+    handleControlUpdateRequest(request) {
+    }
+    setTemplates(controls) {
         this.controls = controls;
-        for (var id in controls) {
+        for (let id in controls) {
             this.controlsByCtid[controls[id].ctid] = controls[id];
         }
-    };
-    return EndpointCommunicator;
-}());
+    }
+}
 exports.EndpointCommunicator = EndpointCommunicator;
 //# sourceMappingURL=EndpointCommunicator.js.map

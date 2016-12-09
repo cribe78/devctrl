@@ -1,24 +1,23 @@
 "use strict";
-var FkAutocompleteController = (function () {
-    function FkAutocompleteController(dataService) {
+class FkAutocompleteController {
+    constructor(dataService) {
         this.dataService = dataService;
         this.searchText = "";
     }
-    FkAutocompleteController.prototype.$onInit = function () {
+    $onInit() {
         this.dataTable = this.dataService.getTable(this.table);
         this.label = this.field.label;
         this.selectedItem = this.dataTable[this.selectedItemId];
-    };
-    FkAutocompleteController.prototype.getMatches = function (searchText) {
-        var matches = [];
-        var stLower = angular.lowercase(searchText);
-        var stLowerParts = stLower.split(' ');
-        for (var id in this.dataTable) {
-            var item = this.dataTable[id];
-            var fkNameLower = angular.lowercase(item.fkSelectName());
-            var matched = true;
-            for (var _i = 0, stLowerParts_1 = stLowerParts; _i < stLowerParts_1.length; _i++) {
-                var part = stLowerParts_1[_i];
+    }
+    getMatches(searchText) {
+        let matches = [];
+        let stLower = angular.lowercase(searchText);
+        let stLowerParts = stLower.split(' ');
+        for (let id in this.dataTable) {
+            let item = this.dataTable[id];
+            let fkNameLower = angular.lowercase(item.fkSelectName());
+            let matched = true;
+            for (let part of stLowerParts) {
                 if (fkNameLower.indexOf(part) == -1) {
                     matched = false;
                     break;
@@ -29,13 +28,12 @@ var FkAutocompleteController = (function () {
             }
         }
         return matches;
-    };
-    FkAutocompleteController.prototype.onUpdate = function (data) { };
-    FkAutocompleteController.prototype.selectedUpdated = function () {
+    }
+    onUpdate(data) { }
+    selectedUpdated() {
         this.onUpdate({ value: this.selectedItem, name: this.objectField });
-    };
-    return FkAutocompleteController;
-}());
+    }
+}
 FkAutocompleteController.$inject = ['DataService'];
 exports.FkAutocompleteComponent = {
     controller: FkAutocompleteController,
@@ -46,6 +44,18 @@ exports.FkAutocompleteComponent = {
         selectedItemId: '<',
         onUpdate: '&'
     },
-    template: "\n    \n    <md-autocomplete\n        md-selected-item=\"$ctrl.selectedItem\"\n        md-search-text=\"$ctrl.searchText\"\n        md-items=\"item in $ctrl.getMatches($ctrl.searchText)\"\n        md-item-text=\"item.fkSelectName()\"\n        md-min-length=\"0\"\n        md-floating-label=\"{{$ctrl.label}}\"\n        md-selected-item-change=\"$ctrl.selectedUpdated()\">\n        <span md-highlight-text=\"searchText\">{{item.fkSelectName()}}</span>\n    </md-autocomplete>\n"
+    template: `
+    
+    <md-autocomplete
+        md-selected-item="$ctrl.selectedItem"
+        md-search-text="$ctrl.searchText"
+        md-items="item in $ctrl.getMatches($ctrl.searchText)"
+        md-item-text="item.fkSelectName()"
+        md-min-length="0"
+        md-floating-label="{{$ctrl.label}}"
+        md-selected-item-change="$ctrl.selectedUpdated()">
+        <span md-highlight-text="searchText">{{item.fkSelectName()}}</span>
+    </md-autocomplete>
+`
 };
 //# sourceMappingURL=fk-autocomplete.component.js.map

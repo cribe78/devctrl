@@ -1,59 +1,51 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var TCPCommand_1 = require("../TCPCommand");
-var ClearOneCommand = (function (_super) {
-    __extends(ClearOneCommand, _super);
-    function ClearOneCommand(config) {
-        var _this = _super.call(this, config) || this;
-        _this.channelName = '';
-        _this.updateTerminator = '';
+const TCPCommand_1 = require("../TCPCommand");
+class ClearOneCommand extends TCPCommand_1.TCPCommand {
+    constructor(config) {
+        super(config);
+        this.channelName = '';
+        this.updateTerminator = '';
         if (config.channel) {
-            _this.channel = config.channel;
-            _this.cmdStr = config.cmdStr + " " + config.channel;
-            _this.channelName = config.channelName;
-            _this.name = config.cmdStr + " " + config.channelName;
+            this.channel = config.channel;
+            this.cmdStr = config.cmdStr + " " + config.channel;
+            this.channelName = config.channelName;
+            this.name = config.cmdStr + " " + config.channelName;
         }
         if (config.updateTerminator) {
-            _this.updateTerminator = config.updateTerminator;
+            this.updateTerminator = config.updateTerminator;
         }
-        _this.device = config.device;
-        return _this;
+        this.device = config.device;
     }
-    ClearOneCommand.prototype.matchesReport = function (devStr) {
-        var matchStr = this.queryString();
-        var matchLen = matchStr.length;
+    matchesReport(devStr) {
+        let matchStr = this.queryString();
+        let matchLen = matchStr.length;
         return devStr.substring(0, matchLen) == matchStr;
-    };
-    ClearOneCommand.prototype.queryString = function () {
-        return this.device + " " + this.cmdStr;
-    };
-    ClearOneCommand.prototype.queryResponseMatchString = function () {
+    }
+    queryString() {
+        return `${this.device} ${this.cmdStr}`;
+    }
+    queryResponseMatchString() {
         return this.queryString + '.*';
-    };
-    ClearOneCommand.prototype.updateString = function (control, update) {
+    }
+    updateString(control, update) {
         return this.updateResponseMatchString(update);
-    };
-    ClearOneCommand.prototype.updateResponseMatchString = function (update) {
-        return this.device + " " + this.cmdStr + " " + update.value + " " + this.updateTerminator;
-    };
-    ClearOneCommand.prototype.parseQueryResponse = function (control, line) {
+    }
+    updateResponseMatchString(update) {
+        return `${this.device} ${this.cmdStr} ${update.value} ${this.updateTerminator}`;
+    }
+    parseQueryResponse(control, line) {
         return this.parseReportValue(control, line);
-    };
-    ClearOneCommand.prototype.parseReportValue = function (control, line) {
-        var qStr = this.queryString();
-        var val = line.slice(qStr.length);
+    }
+    parseReportValue(control, line) {
+        let qStr = this.queryString();
+        let val = line.slice(qStr.length);
         // String a trailing " A", indicating an absolute level
         if (val.substring(val.length - 2) == " A") {
             val = val.substring(0, val.length - 2);
         }
-        var ret = parseInt(val);
+        let ret = parseInt(val);
         return ret;
-    };
-    return ClearOneCommand;
-}(TCPCommand_1.TCPCommand));
+    }
+}
 exports.ClearOneCommand = ClearOneCommand;
 //# sourceMappingURL=ClearOneCommand.js.map

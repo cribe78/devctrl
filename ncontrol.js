@@ -1,26 +1,25 @@
 "use strict";
-var io = require("socket.io-client");
-var DCDataModel_1 = require("./shared/DCDataModel");
-var debugMod = require("debug"); // see https://www.npmjs.com/package/debug
-var Control_1 = require("./shared/Control");
-var Endpoint_1 = require("./shared/Endpoint");
+const io = require("socket.io-client");
+const DCDataModel_1 = require("./shared/DCDataModel");
+const debugMod = require("debug"); // see https://www.npmjs.com/package/debug
+const Control_1 = require("./shared/Control");
+const Endpoint_1 = require("./shared/Endpoint");
 //let debug = debugMod('ncontrol');
-var debug = console.log;
-var NControl = (function () {
-    function NControl() {
+let debug = console.log;
+class NControl {
+    constructor() {
         this.syncControlsPassNumber = 0;
         this.dataModel = new DCDataModel_1.DCDataModel();
         this.dataModel.debug = debugMod("dataModel");
     }
-    NControl.bootstrap = function () {
+    static bootstrap() {
         return new NControl();
-    };
-    NControl.prototype.run = function (config) {
-        var _this = this;
-        var self = this;
+    }
+    run(config) {
+        let self = this;
         this.config = config;
-        debug("connecting to " + config.wsUrl + config.ioPath);
-        var connectOpts = {
+        debug(`connecting to ${config.wsUrl}${config.ioPath}`);
+        let connectOpts = {
             transports: ['websocket'],
             path: config.ioPath
         };
@@ -32,30 +31,29 @@ var NControl = (function () {
             self.getEndpointConfig();
             self.registerEndpoint();
         });
-        this.io.on('connect_error', function (err) {
-            debug("io connection error: " + err);
+        this.io.on('connect_error', (err) => {
+            debug(`io connection error: ${err}`);
         });
-        this.io.on('reconnect', function () {
-            _this.registerEndpoint();
-            if (_this.endpoint) {
-                _this.pushEndpointStatusUpdate(_this.endpoint.status);
+        this.io.on('reconnect', () => {
+            this.registerEndpoint();
+            if (this.endpoint) {
+                this.pushEndpointStatusUpdate(this.endpoint.status);
             }
         });
         this.io.on('error', function (obj) {
-            debug("websocket connection error: " + obj);
+            debug(`websocket connection error: ${obj}`);
         });
-        this.io.on('control-data', function (data) {
+        this.io.on('control-data', data => {
             self.oldEndpoint = new Endpoint_1.Endpoint(self.endpoint._id, self.endpoint.getDataObject());
             // Discard control data not related to this endpoint
             if (data.add && data.add.controls) {
-                var deleteIds = [];
-                for (var id in data.add.controls) {
+                let deleteIds = [];
+                for (let id in data.add.controls) {
                     if (data.add.controls[id].endpoint_id !== self.endpoint._id) {
                         deleteIds.push(id);
                     }
                 }
-                for (var _i = 0, deleteIds_1 = deleteIds; _i < deleteIds_1.length; _i++) {
-                    var id = deleteIds_1[_i];
+                for (let id of deleteIds) {
                     delete data.add.controls[id];
                 }
             }
@@ -66,8 +64,8 @@ var NControl = (function () {
             self.handleControlUpdates(data);
         });
         debug("testString is " + config.testString);
-    };
-    NControl.prototype.checkData = function () {
+    }
+    checkData() {
         // Check endpoint for configuration changes
         if (this.oldEndpoint.enabled != this.endpoint.enabled) {
             if (this.endpoint.enabled) {
@@ -85,17 +83,17 @@ var NControl = (function () {
             this.communicator.disconnect();
             this.communicator.connect();
         }
-    };
-    NControl.prototype.getControls = function () {
-        var reqData = {
+    }
+    getControls() {
+        let reqData = {
             table: Control_1.Control.tableStr,
             params: {
                 endpoint_id: this.endpoint._id
             }
         };
         this.getData(reqData, this.launchCommunicator);
-    };
-    NControl.prototype.addData = function (reqData, then) {
+    }
+    addData(reqData, then) {
         var self = this;
         this.io.emit('add-data', reqData, function (data) {
             if (data.error) {
@@ -106,8 +104,8 @@ var NControl = (function () {
             }
             then.call(self); // If the callback doesn't belong to this class, this could get weird
         });
-    };
-    NControl.prototype.getData = function (reqData, then) {
+    }
+    getData(reqData, then) {
         var self = this;
         this.io.emit('get-data', reqData, function (data) {
             if (data.error) {
@@ -118,8 +116,8 @@ var NControl = (function () {
             }
             then.call(self); // If the callback doesn't belong to this class, this could get weird
         });
-    };
-    NControl.prototype.updateData = function (reqData, then) {
+    }
+    updateData(reqData, then) {
         var self = this;
         this.io.emit('update-data', reqData, function (data) {
             if (data.error) {
@@ -130,48 +128,47 @@ var NControl = (function () {
             }
             then.call(self); // If the callback doesn't belong to this class, this could get weird
         });
-    };
-    NControl.prototype.getEndpointConfig = function () {
-        var self = this;
+    }
+    getEndpointConfig() {
+        let self = this;
         self.endpoint = self.dataModel.getItem(self.config.endpointId, Endpoint_1.Endpoint.tableStr);
-        var reqData = self.endpoint.itemRequestData();
+        let reqData = self.endpoint.itemRequestData();
         self.getData(reqData, self.getEndpointTypeConfig);
-    };
-    NControl.prototype.getEndpointTypeConfig = function () {
+    }
+    getEndpointTypeConfig() {
         if (!this.endpoint.dataLoaded) {
             debug("endpoint data is missing");
             return;
         }
         this.getData(this.endpoint.type.itemRequestData(), this.getControls);
-    };
-    NControl.prototype.guid = function () {
+    }
+    guid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
-    };
-    NControl.prototype.handleControlUpdates = function (data) {
-        for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-            var update = data_1[_i];
+    }
+    handleControlUpdates(data) {
+        for (let update of data) {
             if (this.dataModel.controls[update.control_id]) {
-                var control = this.dataModel.controls[update.control_id];
+                let control = this.dataModel.controls[update.control_id];
                 if (control.endpoint_id && control.endpoint_id == this.endpoint._id
                     && update.status == "requested") {
-                    debug("control update: " + control.name + " : " + update.value);
+                    debug(`control update: ${control.name} : ${update.value}`);
                     this.communicator.handleControlUpdateRequest(update);
                 }
             }
         }
-    };
-    NControl.prototype.launchCommunicator = function () {
-        var self = this;
+    }
+    launchCommunicator() {
+        let self = this;
         if (!this.endpoint.type.dataLoaded) {
             debug("endpointType data is missing");
         }
         if (!this.communicator) {
-            var commClass = this.endpoint.type.communicatorClass;
-            var requirePath = "./Communicators/" + commClass;
-            debug("instantiating communicator " + requirePath);
+            let commClass = this.endpoint.type.communicatorClass;
+            let requirePath = "./Communicators/" + commClass;
+            debug(`instantiating communicator ${requirePath}`);
             this.communicator = require(requirePath);
             if (typeof this.communicator.setConfig !== 'function') {
                 debug("it doesn't look like you have your communicator class exported properly");
@@ -198,9 +195,9 @@ var NControl = (function () {
         else {
             debug("endpoint not enabled, not connecting");
         }
-    };
-    NControl.prototype.pushControlUpdate = function (control, value) {
-        var update = {
+    }
+    pushControlUpdate(control, value) {
+        let update = {
             _id: this.guid(),
             name: control.name + " update",
             control_id: control._id,
@@ -211,35 +208,35 @@ var NControl = (function () {
             ephemeral: control.ephemeral
         };
         this.io.emit('control-updates', [update]);
-    };
-    NControl.prototype.pushEndpointStatusUpdate = function (status) {
+    }
+    pushEndpointStatusUpdate(status) {
         this.endpoint.status = status;
-        var update = {
+        let update = {
             table: Endpoint_1.Endpoint.tableStr,
             _id: this.endpoint._id,
             "set": { status: status }
         };
-        this.updateData(update, function () { });
-    };
-    NControl.prototype.registerEndpoint = function () {
+        this.updateData(update, () => { });
+    }
+    registerEndpoint() {
         //TODO: multiple register messages are being sent on reconnect
         this.io.emit('register-endpoint', { endpoint_id: this.config.endpointId });
-    };
-    NControl.prototype.syncControls = function () {
+    }
+    syncControls() {
         this.syncControlsPassNumber++;
         if (this.syncControlsPassNumber > 2) {
             throw new Error("failed to sync control templates");
         }
         // Get ControlTemplates from communicator
-        var controlTemplates = this.communicator.getControlTemplates();
-        var newControls = [];
-        var ctByCtid = {};
-        for (var id in this.dataModel.controls) {
-            var ct = this.dataModel.controls[id];
+        let controlTemplates = this.communicator.getControlTemplates();
+        let newControls = [];
+        let ctByCtid = {};
+        for (let id in this.dataModel.controls) {
+            let ct = this.dataModel.controls[id];
             ctByCtid[ct.ctid] = ct;
         }
         // Match communicator control templates to server control templates by ctid
-        for (var ctid in controlTemplates) {
+        for (let ctid in controlTemplates) {
             if (!ctByCtid[ctid]) {
                 newControls.push(controlTemplates[ctid].getDataObject());
             }
@@ -254,9 +251,8 @@ var NControl = (function () {
         debug("controls successfully synced!");
         // Pass completed ControlTemplate set to communicator
         this.communicator.setTemplates(this.dataModel.controls);
-    };
-    return NControl;
-}());
-var ncontrol = NControl.bootstrap();
+    }
+}
+let ncontrol = NControl.bootstrap();
 module.exports = ncontrol;
 //# sourceMappingURL=ncontrol.js.map

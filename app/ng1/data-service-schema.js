@@ -1,8 +1,8 @@
 "use strict";
-var Control_1 = require("../../shared/Control");
-var Endpoint_1 = require("../../shared/Endpoint");
-var OptionSet_1 = require("../../shared/OptionSet");
-var nameField = {
+const Control_1 = require("../../shared/Control");
+const Endpoint_1 = require("../../shared/Endpoint");
+const OptionSet_1 = require("../../shared/OptionSet");
+let nameField = {
     name: "name",
     type: "string",
     label: "Name"

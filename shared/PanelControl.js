@@ -1,18 +1,12 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var DCSerializable_1 = require("./DCSerializable");
-var Control_1 = require("./Control");
-var Panel_1 = require("./Panel");
-var PanelControl = (function (_super) {
-    __extends(PanelControl, _super);
-    function PanelControl(_id, data) {
-        var _this = _super.call(this, _id) || this;
-        _this.table = PanelControl.tableStr;
-        _this.foreignKeys = [
+const DCSerializable_1 = require("./DCSerializable");
+const Control_1 = require("./Control");
+const Panel_1 = require("./Panel");
+class PanelControl extends DCSerializable_1.DCSerializable {
+    constructor(_id, data) {
+        super(_id);
+        this.table = PanelControl.tableStr;
+        this.foreignKeys = [
             {
                 type: Control_1.Control,
                 fkObjProp: "control",
@@ -26,49 +20,35 @@ var PanelControl = (function (_super) {
                 fkTable: Panel_1.Panel.tableStr
             }
         ];
-        _this.requiredProperties = _this.requiredProperties.concat([
+        this.requiredProperties = this.requiredProperties.concat([
             'control_id',
             'panel_id'
         ]);
         if (data) {
-            _this.loadData(data);
+            this.loadData(data);
         }
-        return _this;
     }
-    Object.defineProperty(PanelControl.prototype, "control", {
-        get: function () {
-            return this._control;
-        },
-        set: function (control) {
-            this._control = control;
-            this.control_id = control._id;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PanelControl.prototype, "endpoint", {
-        get: function () {
-            return this._control.endpoint;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(PanelControl.prototype, "panel", {
-        get: function () {
-            return this._panel;
-        },
-        set: function (panel) {
-            this._panel = panel;
-            this.panel_id = panel._id;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    PanelControl.prototype.getDataObject = function () {
+    get control() {
+        return this._control;
+    }
+    set control(control) {
+        this._control = control;
+        this.control_id = control._id;
+    }
+    get endpoint() {
+        return this._control.endpoint;
+    }
+    get panel() {
+        return this._panel;
+    }
+    set panel(panel) {
+        this._panel = panel;
+        this.panel_id = panel._id;
+    }
+    getDataObject() {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
-    };
-    return PanelControl;
-}(DCSerializable_1.DCSerializable));
+    }
+}
 PanelControl.tableStr = "panel_controls";
 exports.PanelControl = PanelControl;
 //# sourceMappingURL=PanelControl.js.map

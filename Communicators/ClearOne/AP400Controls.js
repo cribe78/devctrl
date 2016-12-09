@@ -1,6 +1,6 @@
 "use strict";
-var ClearOneCommand_1 = require("./ClearOneCommand");
-var AP400GateCommand_1 = require("./AP400GateCommand");
+const ClearOneCommand_1 = require("./ClearOneCommand");
+const AP400GateCommand_1 = require("./AP400GateCommand");
 exports.chWchannels = {
     "1 I": "Mic 1",
     "2 I": "Mic 2",

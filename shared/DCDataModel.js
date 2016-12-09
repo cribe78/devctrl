@@ -5,16 +5,16 @@ The data model shared by the various DevCtrl components
 
  */
 "use strict";
-var Panel_1 = require("./Panel");
-var PanelControl_1 = require("./PanelControl");
-var Room_1 = require("./Room");
-var Endpoint_1 = require("./Endpoint");
-var EndpointType_1 = require("./EndpointType");
-var Control_1 = require("./Control");
-var WatcherRule_1 = require("./WatcherRule");
-var OptionSet_1 = require("./OptionSet");
-var DCDataModel = (function () {
-    function DCDataModel() {
+const Panel_1 = require("./Panel");
+const PanelControl_1 = require("./PanelControl");
+const Room_1 = require("./Room");
+const Endpoint_1 = require("./Endpoint");
+const EndpointType_1 = require("./EndpointType");
+const Control_1 = require("./Control");
+const WatcherRule_1 = require("./WatcherRule");
+const OptionSet_1 = require("./OptionSet");
+class DCDataModel {
+    constructor() {
         this.endpoints = {};
         this.endpoint_types = {};
         this.controls = {};
@@ -36,14 +36,14 @@ var DCDataModel = (function () {
         this.debug = console.log;
     }
     ;
-    DCDataModel.prototype.loadData = function (data) {
+    loadData(data) {
         if (data.add) {
-            var add = data.add;
-            var addTables = [];
-            for (var t in add) {
+            let add = data.add;
+            let addTables = [];
+            for (let t in add) {
                 addTables.push(t);
             }
-            var tableStr = addTables.join(", ");
+            let tableStr = addTables.join(", ");
             this.debug("loadData from " + tableStr);
             // There is some boilerplate here that is necessary to allow typescript
             // to perform its type checking magic.
@@ -89,14 +89,13 @@ var DCDataModel = (function () {
             }
         }
         if (data.delete) {
-            var del = data.delete;
-            var table = del.table;
-            var _id = del._id;
+            let del = data.delete;
+            let table = del.table;
+            let _id = del._id;
             // Remove references from foreign key objects
             if (this[table][_id]) {
-                var deleteRec = this[table][_id];
-                for (var _i = 0, _a = deleteRec.foreignKeys; _i < _a.length; _i++) {
-                    var fkDef = _a[_i];
+                let deleteRec = this[table][_id];
+                for (let fkDef of deleteRec.foreignKeys) {
                     if (deleteRec[fkDef.fkObjProp]) {
                         deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
                     }
@@ -105,20 +104,19 @@ var DCDataModel = (function () {
                 delete this[table][_id];
             }
         }
-    };
+    }
     /**
      *  For data model objects that hold references to other data model objects,
      *  initialize those references
      *
      */
-    DCDataModel.prototype.indexForeignKeys = function (objects) {
-        for (var id in objects) {
-            var obj = objects[id];
-            for (var _i = 0, _a = obj.foreignKeys; _i < _a.length; _i++) {
-                var fkDef = _a[_i];
-                var fkObjs = this[fkDef.fkTable];
+    indexForeignKeys(objects) {
+        for (let id in objects) {
+            let obj = objects[id];
+            for (let fkDef of obj.foreignKeys) {
+                let fkObjs = this[fkDef.fkTable];
                 if (obj[fkDef.fkIdProp]) {
-                    var fkId = obj[fkDef.fkIdProp]; // The the foreign key id value
+                    let fkId = obj[fkDef.fkIdProp]; // The the foreign key id value
                     if (!fkObjs[fkId]) {
                         // Create a new object if necessary
                         fkObjs[fkId] = new fkDef.type(fkId);
@@ -130,9 +128,9 @@ var DCDataModel = (function () {
                 }
             }
         }
-    };
-    DCDataModel.prototype.loadTableData = function (newData, modelData, ctor) {
-        for (var id in newData) {
+    }
+    loadTableData(newData, modelData, ctor) {
+        for (let id in newData) {
             if (modelData[id]) {
                 modelData[id].loadData(newData[id]);
             }
@@ -140,15 +138,15 @@ var DCDataModel = (function () {
                 modelData[id] = new ctor(id, newData[id]);
             }
         }
-    };
-    DCDataModel.prototype.getItem = function (id, table) {
+    }
+    getItem(id, table) {
         if (this[table][id]) {
             return this[table][id];
         }
         this[table][id] = new this.types[table](id);
         return this[table][id];
-    };
-    DCDataModel.prototype.getTableItem = function (id, table) {
+    }
+    getTableItem(id, table) {
         switch (table) {
             case Endpoint_1.Endpoint.tableStr:
                 return this.getItem(id, table);
@@ -167,8 +165,7 @@ var DCDataModel = (function () {
             case WatcherRule_1.WatcherRule.tableStr:
                 return this.getItem(id, table);
         }
-    };
-    return DCDataModel;
-}());
+    }
+}
 exports.DCDataModel = DCDataModel;
 //# sourceMappingURL=DCDataModel.js.map

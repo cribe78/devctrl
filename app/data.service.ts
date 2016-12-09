@@ -1,22 +1,25 @@
 import {dataServiceSchema} from "./ng1/data-service-schema";
-import {SocketService} from "./socket";
 import {UserSession} from "../shared/UserSession";
 import * as io from "socket.io-client";
 import {IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData} from "../shared/DCSerializable";
 import {RecordController} from "./ng1/record.controller";
 import {ControlUpdateData} from "../shared/ControlUpdate";
-import IPromise = angular.IPromise;
 import {CtrlLogCtrl} from "./ng1/CtrlLogCtrl";
 import {DCDataModel, IndexedDataSet} from "../shared/DCDataModel";
 import {Control} from "../shared/Control";
 import {Endpoint} from "../shared/Endpoint";
+import { Injectable, Inject } from "@angular/core";
+import { Headers, Http } from '@angular/http';
+import 'rxjs/add/operator/toPromise';
 
+@Injectable()
 export class DataService {
+    socket: SocketIOClient.Socket;
     schema;
     userSession : UserSession;
     private initialized = false;
     private dataModel : DCDataModel;
-    pendingUpdates : IPromise<void>[] = [];
+    pendingUpdates : Promise<void>[] = [];
     userInfoPromise;
     adminLogonTimeout;
     tablePromises = {};
@@ -28,16 +31,12 @@ export class DataService {
         }
     };
 
-    static $inject = ['$window', '$http', '$mdToast',  '$timeout', '$q', 'socket', '$mdDialog', '$location'];
+    //static $inject = ['$window', '$http', '$mdToast',  '$timeout',
+    //    '$q', 'socket', '$mdDialog', '$location'];
 
-    constructor(private $window,
-                private $http,
-                private $mdToast,
-                private $timeout,
-                private $q,
-                private socket : SocketService,
-                private $mdDialog,
-                private $location) {
+    constructor(private http : Http,
+                @Inject('$mdToast') private $mdToast,
+                @Inject('$mdDialog') private $mdDialog) {
         this.schema = dataServiceSchema;
 
         for (let table in this.schema) {
@@ -62,14 +61,17 @@ export class DataService {
 
         this.dataModel = new DCDataModel();
 
-        if (typeof($window.localStorage) !== 'undefined') {
-            var localConfig = $window.localStorage.config;
+        if (typeof(window.localStorage) !== 'undefined') {
+            var localConfig = window.localStorage['config'];
             if (angular.isString(localConfig)) {
                 this.config = JSON.parse(localConfig);
             }
             else {
-                $window.localStorage.config = JSON.stringify(this.config);
+                window.localStorage['config'] = JSON.stringify(this.config);
             }
+        }
+        else {
+            console.log("window.localStorage not available");
         }
     }
 
@@ -100,12 +102,11 @@ export class DataService {
 
         // Check for foreign key constraints
         let referencedTable = "";
-        angular.forEach(row.referenced, function(refs, refTable) {
-            if (Object.keys(refs).length > 0) {
-                //TODO: cannot delete value due to foreign key constraint
-                referencedTable = refTable;
+        for(let ref in row.referenced) {
+            if (Object.keys(row.referenced[ref]).length > 0) {
+                referencedTable = ref;
             }
-        });
+        }
 
         if (referencedTable) {
             let msg = "Cannot delete " + row.table + " record due to foreign key constraint on " + referencedTable;
@@ -114,10 +115,10 @@ export class DataService {
             return;
         }
 
-        this.$http.delete(resource)
+        this.http.delete(resource).toPromise()
             .then(
-                data => { this.loadData(data) },
-                data => { this.errorToast(data) }
+                data => { this.loadData(data.json()) },
+                data => { this.errorToast(data.json()) }
             );
     }
 
@@ -129,10 +130,10 @@ export class DataService {
         // First, check current login status
         if (this.userSession.login_expires > Date.now()) {
             let url = "/auth/admin_auth";
-            this.$http.get(url).then(
+            this.http.get(url).toPromise().then(
                 //Success
                 response => {
-                    angular.merge(this.userSession, response.data.session);
+                    angular.merge(this.userSession, response.json().session);
 
                     // Refresh credentials before they expire
                     let retryDelay = (this.userSession.admin_auth_expires - Date.now()) - 2000;
@@ -148,7 +149,7 @@ export class DataService {
                     }
 
                     if (retryDelay > 0) {
-                        this.adminLogonTimeout = this.$timeout(() => {
+                        this.adminLogonTimeout = setTimeout(() => {
                                 this.doAdminLogon(true);
                             },
                             retryDelay
@@ -209,7 +210,7 @@ export class DataService {
             this.config.lastLogonAttempt = Date.now();
             this.updateConfig();
 
-            let location = this.$location.path();
+            let location = window.location.pathname;
             let newLocation = "/auth/do_logon?";
 
             if (admin_auth_check) {
@@ -296,16 +297,16 @@ export class DataService {
         endpointName = endpointName.replace(/ /g, '-');
 
         let url = `/auth/create_endpoint_session?${endpointName}`;
-        this.$http.get(url).then(
+        this.http.get(url).toPromise().then(
             //Success
             response => {
                 let alert = `
 module.exports = {
     endpointId: "${endpointId}",
-    authId: "${response.data.session._id}"
+    authId: "${response.json().session._id}"
 }               
 `;
-                /**
+
                 this.$mdDialog.show(
                     this.$mdDialog.alert()
                         .title(`${endpointName}.js`)
@@ -313,7 +314,6 @@ module.exports = {
                         .targetEvent($event)
                         .ok("Got it!")
                 );
-                 **/
             },
             response => {
                 this.errorToast("Unable to retrieve endpoint ncontrol config");
@@ -355,7 +355,7 @@ module.exports = {
             params: params,
         };
 
-        let getMProm =  this.$q((resolve, reject) => {
+        let getMProm =  new Promise((resolve, reject) => {
             this.socket.emit('get-data', req, (data) => {
                 console.log("data received:" + data);
 
@@ -464,11 +464,11 @@ module.exports = {
     getUserInfo() {
         let userInfoUrl = "/auth/user_session";
         if (typeof this.userInfoPromise == 'undefined') {
-            this.userInfoPromise = this.$http.get(userInfoUrl)
+            this.userInfoPromise = this.http.get(userInfoUrl).toPromise()
                 .then(
                     //Success
                     response => {
-                        angular.merge(this.userSession, response.data.session);
+                        angular.merge(this.userSession, response.json().session);
 
                         // If we are logged in, check for admin auth
                         if (this.userSession.admin_auth_requested) {
@@ -513,15 +513,13 @@ module.exports = {
             return;
         }
 
-        let ioSocket = io(this.$location.protocol() + "://" + this.$location.host(),
+        this.socket = io.connect(window.location.protocol + "//" + window.location.host,
             {
                 //path: "/socket-dev.io",
                 path: "/socket.io",
                 transports: ["websocket"]
-
             }
         );
-        this.socket.init({ ioSocket: ioSocket});
 
         this.socket.on('control-data', data => {
             this.loadData(data);
@@ -580,14 +578,14 @@ module.exports = {
         this.userSession.admin_auth_expires = Date.now();
 
         if (this.adminLogonTimeout) {
-            this.$timeout.cancel(this.adminLogonTimeout);
+            clearTimeout(this.adminLogonTimeout);
         }
 
         let url = "/auth/revoke_admin";
-        this.$http.get(url).then(
+        this.http.get(url).toPromise().then(
             //Success
             response => {
-                angular.merge(this.userSession, response.data.session);
+                angular.merge(this.userSession, response.json().session);
                 console.log("revoke admin auth successful");
             },
             //Failure
@@ -629,17 +627,17 @@ module.exports = {
     }
 
     updateConfig() {
-        if (typeof(this.$window.localStorage) !== 'undefined') {
-            this.$window.localStorage.config = JSON.stringify(this.config);
+        if (typeof(window.localStorage) !== 'undefined') {
+            window.localStorage['config'] = JSON.stringify(this.config);
         }
     }
 
     updateControlValue(control : Control) {
         if (this.pendingUpdates[control._id]) {
-            this.$timeout.cancel(this.pendingUpdates[control._id]);
+            clearTimeout(this.pendingUpdates[control._id]);
         }
 
-        this.pendingUpdates[control._id] = this.$timeout(() => {
+        this.pendingUpdates[control._id] = setTimeout(() => {
             let cuid = this.guid();
             let updates : ControlUpdateData[] = [
                 {

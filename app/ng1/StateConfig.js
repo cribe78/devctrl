@@ -1,9 +1,9 @@
 "use strict";
-var CommonResolve_1 = require("./CommonResolve");
-var LogCtrl_1 = require("./LogCtrl");
-var table_controller_1 = require("./table.controller");
-var endpoints_controller_1 = require("./endpoints.controller");
-var endpoint_controller_1 = require("./endpoint.controller");
+const CommonResolve_1 = require("./CommonResolve");
+const LogCtrl_1 = require("./LogCtrl");
+const table_controller_1 = require("./table.controller");
+const endpoints_controller_1 = require("./endpoints.controller");
+const endpoint_controller_1 = require("./endpoint.controller");
 exports.StateConfig = ['$stateProvider', '$locationProvider', '$urlRouterProvider',
     function ($stateProvider, $locationProvider, $urlRouterProvider) {
         $stateProvider

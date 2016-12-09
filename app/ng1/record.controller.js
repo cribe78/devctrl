@@ -44,8 +44,8 @@ var RecordController = (function () {
     RecordController.prototype.objectUpdated = function (value, field) {
         this.obj[field] = value;
     };
-    RecordController.$inject = ['DataService'];
     return RecordController;
 }());
+RecordController.$inject = ['DataService'];
 exports.RecordController = RecordController;
 //# sourceMappingURL=record.controller.js.map

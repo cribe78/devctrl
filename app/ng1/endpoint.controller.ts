@@ -2,7 +2,7 @@ import {DataService} from "../data.service";
 import {IndexedDataSet} from "../../shared/DCDataModel";
 import {Endpoint} from "../../shared/Endpoint";
 import {Control} from "../../shared/Control";
-import {MenuService} from "./menu.service";
+import {MenuService} from "../menu.service";
 export class EndpointController {
     endpointId: string;
     endpoints: IndexedDataSet<Endpoint>;

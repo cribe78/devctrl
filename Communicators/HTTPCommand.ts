@@ -53,7 +53,7 @@ export class HTTPCommand {
 
     matchResponse(resp : string) {
         let matches = resp.match(this.cmdResponseRE);
-        if (matches.length) {
+        if (matches) {
             return true;
         }
         return false;

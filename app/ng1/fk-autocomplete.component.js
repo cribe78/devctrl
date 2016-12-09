@@ -34,9 +34,9 @@ var FkAutocompleteController = (function () {
     FkAutocompleteController.prototype.selectedUpdated = function () {
         this.onUpdate({ value: this.selectedItem, name: this.objectField });
     };
-    FkAutocompleteController.$inject = ['DataService'];
     return FkAutocompleteController;
 }());
+FkAutocompleteController.$inject = ['DataService'];
 exports.FkAutocompleteComponent = {
     controller: FkAutocompleteController,
     bindings: {

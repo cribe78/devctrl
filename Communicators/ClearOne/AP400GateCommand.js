@@ -9,7 +9,7 @@ var Control_1 = require("../../shared/Control");
 var AP400GateCommand = (function (_super) {
     __extends(AP400GateCommand, _super);
     function AP400GateCommand() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     AP400GateCommand.prototype.getControlTemplates = function () {
         var templates = [];

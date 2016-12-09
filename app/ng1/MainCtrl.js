@@ -1,11 +1,11 @@
 "use strict";
-exports.MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
-    function ($state, $mdMedia, DataService, MenuService) {
+exports.MainCtrl = ['$state', 'DataService', 'MenuService',
+    function ($state, DataService, MenuService) {
         this.msg = "Hello World!";
         this.$state = $state;
         this.schema = DataService.schema;
         this.menu = MenuService;
-        this.$mdMedia = $mdMedia;
+        //this.$mdMedia = $mdMedia;
         this.endpoints = DataService.getTable('endpoints');
         this.config = DataService.config;
         this.updateConfig = function () {

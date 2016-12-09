@@ -8,9 +8,10 @@ var TCPCommand_1 = require("../TCPCommand");
 var ExtronDXPCommand = (function (_super) {
     __extends(ExtronDXPCommand, _super);
     function ExtronDXPCommand(config) {
-        _super.call(this, config);
-        this.dxpCmdType = config.dxpCmdType;
-        this.channelNum = config.channelNum;
+        var _this = _super.call(this, config) || this;
+        _this.dxpCmdType = config.dxpCmdType;
+        _this.channelNum = config.channelNum;
+        return _this;
     }
     ExtronDXPCommand.prototype.parseReportValue = function (control, line) {
         if (this.dxpCmdType == 'status') {
@@ -28,10 +29,10 @@ var ExtronDXPCommand = (function (_super) {
         }
         return '';
     };
-    ExtronDXPCommand.tieResponseRE = /^Out(\d) In(\d) (Aud|Vid|All)/;
-    ExtronDXPCommand.muteResponseRE = /^(Vmt|Amt)(\d)\*(0|1)/;
-    ExtronDXPCommand.statusResponseRE = /^([\d.]+) ([\d.]+) \+([\d.]+) (\d+)/;
     return ExtronDXPCommand;
 }(TCPCommand_1.TCPCommand));
+ExtronDXPCommand.tieResponseRE = /^Out(\d) In(\d) (Aud|Vid|All)/;
+ExtronDXPCommand.muteResponseRE = /^(Vmt|Amt)(\d)\*(0|1)/;
+ExtronDXPCommand.statusResponseRE = /^([\d.]+) ([\d.]+) \+([\d.]+) (\d+)/;
 exports.ExtronDXPCommand = ExtronDXPCommand;
 //# sourceMappingURL=ExtronDXPCommand.js.map

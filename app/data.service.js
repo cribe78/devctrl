@@ -242,11 +242,15 @@ var DataService = (function () {
         //Success
         function (response) {
             var alert = "\nmodule.exports = {\n    endpointId: \"" + endpointId + "\",\n    authId: \"" + response.data.session._id + "\"\n}               \n";
-            _this.$mdDialog.show(_this.$mdDialog.alert()
-                .title(endpointName + ".js")
-                .textContent(alert)
-                .targetEvent($event)
-                .ok("Got it!"));
+            /**
+            this.$mdDialog.show(
+                this.$mdDialog.alert()
+                    .title(`${endpointName}.js`)
+                    .textContent(alert)
+                    .targetEvent($event)
+                    .ok("Got it!")
+            );
+             **/
         }, function (response) {
             _this.errorToast("Unable to retrieve endpoint ncontrol config");
         });
@@ -316,18 +320,6 @@ var DataService = (function () {
         if (!angular.isDefined(key) || key === null) {
             throw new Error("error looking up " + tableName + " record for undefined key");
         }
-        /**
-        if (! table.indexed[key]) {
-            table.indexed[key] = {
-                fields : {},
-                foreign: {},
-                id: key,
-                loaded: false,
-                referenced: {},
-                tableName: tableName
-            };
-        }
-         **/
         return this.dataModel.getTableItem(key, tableName);
     };
     DataService.prototype.getSchema = function (table) {
@@ -416,7 +408,7 @@ var DataService = (function () {
         });
     };
     DataService.prototype.hideToast = function () {
-        this.$mdToast.hide();
+        //this.$mdToast.hide();
     };
     DataService.prototype.init = function () {
         var _this = this;
@@ -554,8 +546,8 @@ var DataService = (function () {
             _this.loadData(data);
         });
     };
-    DataService.$inject = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socket', '$mdDialog', '$location'];
     return DataService;
 }());
+DataService.$inject = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socket', '$mdDialog', '$location'];
 exports.DataService = DataService;
 //# sourceMappingURL=data.service.js.map

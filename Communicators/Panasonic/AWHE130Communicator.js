@@ -14,7 +14,7 @@ var AWHE130Communicator = (function (_super) {
     // response: s14
     // /cgi-bin/mjpeg?resolution=1920x1080&quality=1
     function AWHE130Communicator() {
-        _super.call(this);
+        return _super.call(this) || this;
     }
     AWHE130Communicator.prototype.buildCommandList = function () {
         var ctid = this.endpoint_id + "-preset";
@@ -40,8 +40,8 @@ var AWHE130Communicator = (function (_super) {
         this.commands[ctid] = new HTTPCommand_1.HTTPCommand(presetConfig);
         ctid = this.endpoint_id + "-power";
         var powerConfig = {
-            cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%230%d&res=1",
-            cmdResponseRE: "s(\\d)",
+            cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23O%d&res=1",
+            cmdResponseRE: "p(\\d)",
             controlData: {
                 _id: ctid,
                 ctid: ctid,

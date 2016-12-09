@@ -1,21 +1,19 @@
 "use strict";
 require("angular");
-var app_module_1 = require('./app.module');
-var upgrade_1 = require('@angular/upgrade');
+var platform_browser_dynamic_1 = require("@angular/platform-browser-dynamic");
+var app_module_1 = require("./app.module");
+var static_1 = require("@angular/upgrade/static");
 var admin_only_directive_1 = require("./ng1/admin-only.directive");
-var menu_service_1 = require("./ng1/menu.service");
+var menu_service_1 = require("./menu.service");
 var StateConfig_1 = require("./ng1/StateConfig");
 var table_controller_1 = require("./ng1/table.controller");
 var LogCtrl_1 = require("./ng1/LogCtrl");
 var record_controller_1 = require("./ng1/record.controller");
 var CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
-var MenuDirective_1 = require("./ng1/MenuDirective");
-var PanelDirective_1 = require("./ng1/PanelDirective");
 var PanelControlSelectorCtrl_1 = require("./ng1/PanelControlSelectorCtrl");
 var FkSelectDirective_1 = require("./ng1/FkSelectDirective");
 var Slider2dDirective_1 = require("./ng1/Slider2dDirective");
 var object_editor_component_1 = require("./ng1/object-editor.component");
-var ToolbarDirective_1 = require("./ng1/ToolbarDirective");
 var MainCtrl_1 = require("./ng1/MainCtrl");
 var endpoint_controller_1 = require("./ng1/endpoint.controller");
 var room_controller_1 = require("./ng1/room.controller");
@@ -31,23 +29,27 @@ require("./ng1/toArrayFilter");
 var endpoint_status_component_1 = require("./ng1/endpoint-status.component");
 var control_component_1 = require("./ng1/control.component");
 var endpoints_controller_1 = require("./ng1/endpoints.controller");
+var panel_component_1 = require("./ng1/panel.component");
+var menu_component_1 = require("./menu.component");
+var toolbar_component_1 = require("./ng1/toolbar.component");
+var static_2 = require("@angular/upgrade/static");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
  * */
 angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'angular-toArrayFilter'])
     .service('DataService', data_service_1.DataService)
-    .service('MenuService', menu_service_1.MenuService)
+    .factory('MenuService', static_2.downgradeInjectable(menu_service_1.MenuService))
     .component('ctrl', control_component_1.ControlComponent)
-    .directive('coeMenu', MenuDirective_1.MenuDirective)
-    .directive('devctrlPanel', PanelDirective_1.PanelDirective)
+    .directive('devctrlMenu', static_2.downgradeComponent({ component: menu_component_1.MenuComponent }))
+    .component('devctrlToolbar', toolbar_component_1.ToolbarComponent)
+    .component('devctrlPanel', panel_component_1.PanelComponent)
     .directive('fkSelect', FkSelectDirective_1.FkSelectDirective)
     .directive('devctrlSlider2d', Slider2dDirective_1.Slider2dDirective)
     .component('devctrlObjectEditor', object_editor_component_1.ObjectEditorComponent)
     .directive('devctrlAdminOnly', admin_only_directive_1.AdminOnlyDirective)
     .component('devctrlEndpointStatus', endpoint_status_component_1.EndpointStatusComponent)
     .component('fkAutocomplete', fk_autocomplete_component_1.FkAutocompleteComponent)
-    .directive('devctrlToolbar', ToolbarDirective_1.ToolbarDirective)
     .controller('MainCtrl', MainCtrl_1.MainCtrl)
     .controller('PanelControlSelectorCtrl', PanelControlSelectorCtrl_1.PanelControlSelectorCtrl)
     .controller('EndpointCtrl', endpoint_controller_1.EndpointController)
@@ -78,6 +80,10 @@ angular.module('DevCtrlApp', ['ui.router', 'ngMaterial', 'btford.socket-io', 'an
             console.log(unfoundState, fromState, fromParams);
         });
     }]);
-exports.upgradeAdapter = new upgrade_1.UpgradeAdapter(app_module_1.AppModule);
-exports.upgradeAdapter.bootstrap(document.documentElement, ['DevCtrlApp']);
+//export const upgradeAdapter = new UpgradeAdapter(AppModule);
+//upgradeAdapter.bootstrap(document.documentElement, ['DevCtrlApp']);
+platform_browser_dynamic_1.platformBrowserDynamic().bootstrapModule(app_module_1.AppModule).then(function (platformRef) {
+    var upgrade = platformRef.injector.get(static_1.UpgradeModule);
+    upgrade.bootstrap(document.documentElement, ['DevCtrlApp'], { strictDi: true });
+});
 //# sourceMappingURL=main.js.map

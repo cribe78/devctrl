@@ -28,7 +28,7 @@ export class DataService {
         }
     };
 
-    static $inject = ['$window', '$http', '$mdToast', '$timeout', '$q', 'socket', '$mdDialog', '$location'];
+    static $inject = ['$window', '$http', '$mdToast',  '$timeout', '$q', 'socket', '$mdDialog', '$location'];
 
     constructor(private $window,
                 private $http,
@@ -272,6 +272,7 @@ export class DataService {
         console.log(errorText);
 
         //$mdToast.show($mdToast.simple().content(errorText));
+
         this.$mdToast.show({
             locals: {
                 message: errorText
@@ -304,6 +305,7 @@ module.exports = {
     authId: "${response.data.session._id}"
 }               
 `;
+                /**
                 this.$mdDialog.show(
                     this.$mdDialog.alert()
                         .title(`${endpointName}.js`)
@@ -311,6 +313,7 @@ module.exports = {
                         .targetEvent($event)
                         .ok("Got it!")
                 );
+                 **/
             },
             response => {
                 this.errorToast("Unable to retrieve endpoint ncontrol config");
@@ -396,18 +399,6 @@ module.exports = {
             throw new Error(`error looking up ${tableName} record for undefined key`);
         }
 
-        /**
-        if (! table.indexed[key]) {
-            table.indexed[key] = {
-                fields : {},
-                foreign: {},
-                id: key,
-                loaded: false,
-                referenced: {},
-                tableName: tableName
-            };
-        }
-         **/
         return this.dataModel.getTableItem(key, tableName);
     }
 
@@ -514,7 +505,7 @@ module.exports = {
     }
 
     hideToast() {
-        this.$mdToast.hide();
+        //this.$mdToast.hide();
     }
 
     init() {

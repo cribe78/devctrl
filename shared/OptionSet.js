@@ -8,20 +8,21 @@ var DCSerializable_1 = require("./DCSerializable");
 var OptionSet = (function (_super) {
     __extends(OptionSet, _super);
     function OptionSet(_id, data) {
-        _super.call(this, _id);
-        this.table = OptionSet.tableStr;
-        this.requiredProperties = this.requiredProperties.concat([
+        var _this = _super.call(this, _id) || this;
+        _this.table = OptionSet.tableStr;
+        _this.requiredProperties = _this.requiredProperties.concat([
             'options'
         ]);
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     OptionSet.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    OptionSet.tableStr = "option_sets";
     return OptionSet;
 }(DCSerializable_1.DCSerializable));
+OptionSet.tableStr = "option_sets";
 exports.OptionSet = OptionSet;
 //# sourceMappingURL=OptionSet.js.map

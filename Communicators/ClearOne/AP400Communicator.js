@@ -11,8 +11,9 @@ var debug = debugMod("comms");
 var AP400Communicator = (function (_super) {
     __extends(AP400Communicator, _super);
     function AP400Communicator() {
-        _super.call(this);
-        this.device = "#30";
+        var _this = _super.call(this) || this;
+        _this.device = "#30";
+        return _this;
     }
     AP400Communicator.prototype.connect = function () {
         debug("connecting to AP 400");

@@ -11,8 +11,9 @@ var debug = console.log;
 var HTTPCommunicator = (function (_super) {
     __extends(HTTPCommunicator, _super);
     function HTTPCommunicator() {
-        _super.call(this);
-        this.commands = {};
+        var _this = _super.call(this) || this;
+        _this.commands = {};
+        return _this;
     }
     HTTPCommunicator.prototype.buildCommandList = function () { };
     HTTPCommunicator.prototype.connect = function () {

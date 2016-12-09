@@ -11,9 +11,10 @@ var debug = debugMod("comms");
 var IA200Communicator = (function (_super) {
     __extends(IA200Communicator, _super);
     function IA200Communicator() {
-        _super.apply(this, arguments);
-        this.inputLineTerminator = '';
-        this.outputLineTerminator = '\n';
+        var _this = _super.apply(this, arguments) || this;
+        _this.inputLineTerminator = '';
+        _this.outputLineTerminator = '\n';
+        return _this;
     }
     IA200Communicator.prototype.buildCommandList = function () {
         var nineZeros = "000000000";

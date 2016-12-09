@@ -85,9 +85,9 @@ var SocketService = (function () {
             self.socket.on(eventName, forwardBroadcast);
         });
     };
-    SocketService.$inject = ['$rootScope', '$timeout'];
     return SocketService;
 }());
+SocketService.$inject = ['$rootScope', '$timeout'];
 exports.SocketService = SocketService;
 angular.module('btford.socket-io', []).
     service('socket', SocketService);

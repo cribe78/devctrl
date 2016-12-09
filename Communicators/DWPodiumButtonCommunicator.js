@@ -13,8 +13,9 @@ var debug = debugMod("comms");
 var DWPodiumButtonCommunicator = (function (_super) {
     __extends(DWPodiumButtonCommunicator, _super);
     function DWPodiumButtonCommunicator() {
-        _super.call(this);
-        this.value = [false, false, false, false];
+        var _this = _super.call(this) || this;
+        _this.value = [false, false, false, false];
+        return _this;
     }
     DWPodiumButtonCommunicator.prototype.connect = function () {
         this.port = new SerialPort(this.config.endpoint.address, { baudRate: 9600 });

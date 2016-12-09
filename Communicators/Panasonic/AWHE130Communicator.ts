@@ -42,8 +42,8 @@ class AWHE130Communicator extends HTTPCommunicator {
 
         ctid = this.endpoint_id + "-power";
         let powerConfig : IHTTPCommandConfig = {
-            cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%230%d&res=1",
-            cmdResponseRE: "s(\\d)",
+            cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23O%d&res=1",
+            cmdResponseRE: "p(\\d)",
             controlData: {
                 _id : ctid,
                 ctid: ctid,

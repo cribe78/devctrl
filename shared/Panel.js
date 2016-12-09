@@ -9,9 +9,9 @@ var Room_1 = require("./Room");
 var Panel = (function (_super) {
     __extends(Panel, _super);
     function Panel(_id, data) {
-        _super.call(this, _id);
-        this.table = Panel.tableStr;
-        this.foreignKeys = [
+        var _this = _super.call(this, _id) || this;
+        _this.table = Panel.tableStr;
+        _this.foreignKeys = [
             {
                 type: Room_1.Room,
                 fkObjProp: "room",
@@ -19,18 +19,19 @@ var Panel = (function (_super) {
                 fkTable: Room_1.Room.tableStr
             }
         ];
-        this.requiredProperties = this.requiredProperties.concat([
+        _this.requiredProperties = _this.requiredProperties.concat([
             'room_id',
             'grouping',
             'type',
             'panel_index'
         ]);
-        this.defaultProperties = {
+        _this.defaultProperties = {
             panel_index: "1"
         };
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     Object.defineProperty(Panel.prototype, "room", {
         get: function () {
@@ -46,8 +47,8 @@ var Panel = (function (_super) {
     Panel.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    Panel.tableStr = "panels";
     return Panel;
 }(DCSerializable_1.DCSerializable));
+Panel.tableStr = "panels";
 exports.Panel = Panel;
 //# sourceMappingURL=Panel.js.map

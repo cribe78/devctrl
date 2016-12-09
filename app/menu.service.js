@@ -1,12 +1,26 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+var data_service_1 = require("./data.service");
+var core_1 = require("@angular/core");
 var MenuService = (function () {
-    function MenuService($state, $mdSidenav, $mdMedia, dataService) {
+    //static $inject = ['$state', '$mdSidenav', '$mdMedia', 'DataService'];
+    function MenuService($state, dataService) {
         this.$state = $state;
-        this.$mdSidenav = $mdSidenav;
-        this.$mdMedia = $mdMedia;
         this.dataService = dataService;
         this.menuConfig = dataService.config.menu;
-        this.items = {};
+        this.items = [];
+        this.itemsObj = {};
         this.toolbarSelect = {
             enabled: false,
             options: null,
@@ -60,9 +74,9 @@ var MenuService = (function () {
             state.isOpened = this.$state.includes(state);
             var parent_1 = this.$state.get('^', state);
             if (parent_1.name == "") {
-                this.items[state.name] = state;
+                this.itemsObj[state.name] = state;
                 if (!angular.isDefined(state.substates)) {
-                    state.substates = {};
+                    state.substatesObj = {};
                 }
             }
             if (angular.isDefined(state.data.title)) {
@@ -77,13 +91,13 @@ var MenuService = (function () {
                 continue;
             }
             var parent_2 = this.$state.get('^', state);
-            if (angular.isDefined(this.items[parent_2.name])) {
+            if (angular.isDefined(this.itemsObj[parent_2.name])) {
                 if (angular.isDefined(state.data.listByName)) {
                     var records = this.dataService.getTable(state.data.listByName);
                     for (var id in records) {
                         var record = records[id];
-                        if (!angular.isDefined(parent_2.substates[record._id])) {
-                            parent_2.substates[record._id] = {
+                        if (!angular.isDefined(parent_2.substatesObj[record._id])) {
+                            parent_2.substatesObj[record._id] = {
                                 name: state.name,
                                 params: {
                                     name: record.name,
@@ -93,20 +107,32 @@ var MenuService = (function () {
                             };
                         }
                         else {
-                            parent_2.substates[record._id].params.name = record.name;
-                            parent_2.substates[record._id].title = record.name;
+                            parent_2.substatesObj[record._id].params.name = record.name;
+                            parent_2.substatesObj[record._id].title = record.name;
                         }
                     }
                 }
                 else {
-                    this.items[parent_2.name].substates[state.name] = state;
+                    this.itemsObj[parent_2.name].substatesObj[state.name] = state;
+                }
+            }
+        }
+        this.items = [];
+        for (var state in this.itemsObj) {
+            var stateObj = this.itemsObj[state];
+            this.items.push(stateObj);
+            if (stateObj.substatesObj) {
+                stateObj.substates = [];
+                for (var substate in stateObj.substatesObj) {
+                    stateObj.substates.push(stateObj.substatesObj[substate]);
                 }
             }
         }
         return this.items;
     };
     MenuService.prototype.narrowMode = function () {
-        return this.$mdMedia('max-width: 1000px');
+        return false;
+        //return this.$mdMedia('max-width: 1000px');
     };
     MenuService.prototype.pageTitle = function () {
         return this.$state.current.title || this.$state.params.name;
@@ -121,7 +147,6 @@ var MenuService = (function () {
         this.menuConfig.sidenavOpen = !this.menuConfig.sidenavOpen;
         this.dataService.updateConfig();
         if (this.narrowMode()) {
-            this.$mdSidenav(position).toggle();
         }
     };
     MenuService.prototype.toolbarSelectTable = function (tableName, destState, selectedId) {
@@ -145,8 +170,12 @@ var MenuService = (function () {
             }
         });
     };
-    MenuService.$inject = ['$state', '$mdSidenav', '$mdMedia', 'DataService'];
     return MenuService;
 }());
+MenuService = __decorate([
+    core_1.Injectable(),
+    __param(0, core_1.Inject('$state')), __param(1, core_1.Inject('DataService')),
+    __metadata("design:paramtypes", [Object, data_service_1.DataService])
+], MenuService);
 exports.MenuService = MenuService;
 //# sourceMappingURL=menu.service.js.map

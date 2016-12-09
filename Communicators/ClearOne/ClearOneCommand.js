@@ -8,19 +8,20 @@ var TCPCommand_1 = require("../TCPCommand");
 var ClearOneCommand = (function (_super) {
     __extends(ClearOneCommand, _super);
     function ClearOneCommand(config) {
-        _super.call(this, config);
-        this.channelName = '';
-        this.updateTerminator = '';
+        var _this = _super.call(this, config) || this;
+        _this.channelName = '';
+        _this.updateTerminator = '';
         if (config.channel) {
-            this.channel = config.channel;
-            this.cmdStr = config.cmdStr + " " + config.channel;
-            this.channelName = config.channelName;
-            this.name = config.cmdStr + " " + config.channelName;
+            _this.channel = config.channel;
+            _this.cmdStr = config.cmdStr + " " + config.channel;
+            _this.channelName = config.channelName;
+            _this.name = config.cmdStr + " " + config.channelName;
         }
         if (config.updateTerminator) {
-            this.updateTerminator = config.updateTerminator;
+            _this.updateTerminator = config.updateTerminator;
         }
-        this.device = config.device;
+        _this.device = config.device;
+        return _this;
     }
     ClearOneCommand.prototype.matchesReport = function (devStr) {
         var matchStr = this.queryString();

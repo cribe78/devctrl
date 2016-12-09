@@ -7,6 +7,7 @@
 
     <base href="/" />
     <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css">
+    <link rel="stylesheet" href="/node_modules/@angular/material/core/theming/prebuilt/indigo-pink.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="/css/dev-ctrl.css">
@@ -38,7 +39,7 @@
         <span flex class="text-display-1 md-accent md-hue-1">DevCtrl BETA</span>
     </md-toolbar>
     <md-content flex role="navigation" class="md-accent md-hue-1">
-        <coe-menu items="main.menu.items"></coe-menu>
+        <devctrl-menu></devctrl-menu>
     </md-content>
 </div>
 <md-sidenav ng-if="main.menu.narrowMode()"
@@ -52,7 +53,7 @@
         <span flex class="text-display-1 md-accent md-hue-1">DWI DevCtrl</span>
     </md-toolbar>
     <md-content flex role="navigation" class="md-accent md-hue-1">
-        <coe-menu items="main.menu.items"></coe-menu>
+        <devctrl-menu></devctrl-menu>
     </md-content>
 </md-sidenav>
 <div layout="column" flex>

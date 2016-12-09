@@ -36,9 +36,9 @@ var EndpointStatusController = (function () {
         }
         return "md-primary md-hue-2";
     };
-    EndpointStatusController.$inject = ['DataService'];
     return EndpointStatusController;
 }());
+EndpointStatusController.$inject = ['DataService'];
 exports.EndpointStatusComponent = {
     templateUrl: 'app/ng1/endpoint-status.html',
     controller: EndpointStatusController,

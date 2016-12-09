@@ -4,7 +4,7 @@ import {DataService} from "../data.service";
 import {Panel} from "../../shared/Panel";
 import {PanelControl} from "../../shared/PanelControl";
 import {Endpoint} from "../../shared/Endpoint";
-import {MenuService} from "./menu.service";
+import {MenuService} from "../menu.service";
 export class RoomController {
     menu;
     rooms : IndexedDataSet<Room>;

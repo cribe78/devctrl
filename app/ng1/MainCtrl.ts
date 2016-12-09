@@ -1,12 +1,12 @@
 import {DataService} from "../data.service";
-export let MainCtrl = ['$state', '$mdMedia', 'DataService', 'MenuService',
-    function($state, $mdMedia, DataService: DataService, MenuService) {
+export let MainCtrl = ['$state', 'DataService', 'MenuService',
+    function($state, DataService: DataService, MenuService) {
         this.msg = "Hello World!";
 
         this.$state = $state;
         this.schema = DataService.schema;
         this.menu = MenuService;
-        this.$mdMedia = $mdMedia;
+        //this.$mdMedia = $mdMedia;
         this.endpoints = DataService.getTable('endpoints');
         this.config = DataService.config;
 

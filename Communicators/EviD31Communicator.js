@@ -9,7 +9,7 @@ var TCPCommunicator_1 = require("./TCPCommunicator");
 var EviD31Communicator = (function (_super) {
     __extends(EviD31Communicator, _super);
     function EviD31Communicator() {
-        _super.call(this);
+        return _super.call(this) || this;
     }
     EviD31Communicator.prototype.buildCommandList = function () {
     };

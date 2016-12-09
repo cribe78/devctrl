@@ -11,9 +11,10 @@ var debug = debugMod("comms");
 var ExtronSWUSBCommunicator = (function (_super) {
     __extends(ExtronSWUSBCommunicator, _super);
     function ExtronSWUSBCommunicator() {
-        _super.apply(this, arguments);
-        this.inputLineTerminator = '\r\n';
-        this.outputLineTerminator = '';
+        var _this = _super.apply(this, arguments) || this;
+        _this.inputLineTerminator = '\r\n';
+        _this.outputLineTerminator = '';
+        return _this;
     }
     ExtronSWUSBCommunicator.prototype.buildCommandList = function () {
         var config = {

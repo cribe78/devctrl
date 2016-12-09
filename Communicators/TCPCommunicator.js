@@ -12,16 +12,17 @@ var debug = console.log;
 var TCPCommunicator = (function (_super) {
     __extends(TCPCommunicator, _super);
     function TCPCommunicator() {
-        _super.call(this);
-        this.commands = {};
-        this.commandsByTemplate = {};
-        this.inputLineTerminator = '\r\n';
-        this.outputLineTerminator = '\r\n';
-        this.socketEncoding = 'utf8';
-        this.inputBuffer = '';
-        this.pollTimer = 0;
-        this.backoffTime = 1000;
-        this.expectedResponses = [];
+        var _this = _super.call(this) || this;
+        _this.commands = {};
+        _this.commandsByTemplate = {};
+        _this.inputLineTerminator = '\r\n';
+        _this.outputLineTerminator = '\r\n';
+        _this.socketEncoding = 'utf8';
+        _this.inputBuffer = '';
+        _this.pollTimer = 0;
+        _this.backoffTime = 1000;
+        _this.expectedResponses = [];
+        return _this;
     }
     TCPCommunicator.prototype.buildCommandList = function () {
     };

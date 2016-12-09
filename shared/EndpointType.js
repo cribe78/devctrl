@@ -8,14 +8,15 @@ var DCSerializable_1 = require("./DCSerializable");
 var EndpointType = (function (_super) {
     __extends(EndpointType, _super);
     function EndpointType(_id, data) {
-        _super.call(this, _id);
-        this.table = EndpointType.tableStr;
-        this.requiredProperties = this.requiredProperties.concat([
+        var _this = _super.call(this, _id) || this;
+        _this.table = EndpointType.tableStr;
+        _this.requiredProperties = _this.requiredProperties.concat([
             'communicatorClass'
         ]);
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     EndpointType.prototype.getDataObject = function () {
         return {
@@ -24,8 +25,8 @@ var EndpointType = (function (_super) {
             communicatorClass: this.communicatorClass
         };
     };
-    EndpointType.tableStr = "endpoint_types";
     return EndpointType;
 }(DCSerializable_1.DCSerializable));
+EndpointType.tableStr = "endpoint_types";
 exports.EndpointType = EndpointType;
 //# sourceMappingURL=EndpointType.js.map

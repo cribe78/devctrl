@@ -42,9 +42,9 @@ var ObjectEditorController = (function () {
         }
         this.object[key] = tempVal;
     };
-    ObjectEditorController.$inject = [];
     return ObjectEditorController;
 }());
+ObjectEditorController.$inject = [];
 exports.ObjectEditorComponent = {
     templateUrl: 'app/ng1/object-editor.html',
     controller: ObjectEditorController,

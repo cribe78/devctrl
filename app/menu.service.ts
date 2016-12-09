@@ -1,13 +1,18 @@
-import {DataService} from "../data.service";
+import {DataService} from "./data.service";
+import { Injectable, Inject } from '@angular/core';
+
+@Injectable()
 export class MenuService {
-    items;
+    items : any[];
+    itemsObj : { [index: string] : any};
     menuConfig;
     toolbarSelect;
 
-    static $inject = ['$state', '$mdSidenav', '$mdMedia', 'DataService'];
-    constructor(public $state, public $mdSidenav, public $mdMedia, private dataService: DataService) {
+    //static $inject = ['$state', '$mdSidenav', '$mdMedia', 'DataService'];
+    constructor(@Inject('$state') public $state, @Inject('DataService') private dataService: DataService) {
         this.menuConfig = dataService.config.menu;
-        this.items = {};
+        this.items = [];
+        this.itemsObj = {};
         this.toolbarSelect = {
             enabled : false,
             options: null,
@@ -64,7 +69,7 @@ export class MenuService {
 
         // Loop through once to identify top level states
         for (let key in states) {
-        //angular.forEach(states, function(state, key) {
+            //angular.forEach(states, function(state, key) {
             let state = states[key];
             if (state.name == "") {
                 continue;
@@ -74,9 +79,9 @@ export class MenuService {
             let parent = this.$state.get('^', state);
 
             if (parent.name == "") {
-                this.items[state.name] = state;
+                this.itemsObj[state.name] = state;
                 if (! angular.isDefined(state.substates)) {
-                    state.substates = {};
+                    state.substatesObj = {};
                 }
             }
 
@@ -87,22 +92,22 @@ export class MenuService {
 
         // Populate second level states
         for (let key in states) {
-        //angular.forEach(states, function(state, key) {
+            //angular.forEach(states, function(state, key) {
             let state = states[key];
             if (state.name == "") {
                 continue;
             }
 
             let parent = this.$state.get('^', state);
-            if (angular.isDefined(this.items[parent.name])) {
+            if (angular.isDefined(this.itemsObj[parent.name])) {
                 if (angular.isDefined(state.data.listByName)) {
                     let records = this.dataService.getTable(state.data.listByName);
 
                     for (let id in records) {
                         let record = records[id];
 
-                        if (! angular.isDefined(parent.substates[record._id])) {
-                            parent.substates[record._id] = {
+                        if (! angular.isDefined(parent.substatesObj[record._id])) {
+                            parent.substatesObj[record._id] = {
                                 name: state.name,
                                 params: {
                                     name: record.name,
@@ -112,13 +117,25 @@ export class MenuService {
                             };
                         }
                         else {
-                            parent.substates[record._id].params.name  = record.name;
-                            parent.substates[record._id].title = record.name;
+                            parent.substatesObj[record._id].params.name  = record.name;
+                            parent.substatesObj[record._id].title = record.name;
                         }
                     }
                 }
                 else {
-                    this.items[parent.name].substates[state.name] = state;
+                    this.itemsObj[parent.name].substatesObj[state.name] = state;
+                }
+            }
+        }
+
+        this.items = [];
+        for (let state in this.itemsObj) {
+            let stateObj = this.itemsObj[state];
+            this.items.push(stateObj);
+            if (stateObj.substatesObj) {
+                stateObj.substates = [];
+                for (let substate in stateObj.substatesObj) {
+                    stateObj.substates.push(stateObj.substatesObj[substate]);
                 }
             }
         }
@@ -127,7 +144,8 @@ export class MenuService {
     }
 
     narrowMode() {
-        return this.$mdMedia('max-width: 1000px');
+        return false;
+        //return this.$mdMedia('max-width: 1000px');
     }
 
     pageTitle() {
@@ -148,7 +166,7 @@ export class MenuService {
         this.dataService.updateConfig();
 
         if (this.narrowMode()) {
-            this.$mdSidenav(position).toggle();
+            //this.$mdSidenav(position).toggle();
         }
     }
 
@@ -176,6 +194,4 @@ export class MenuService {
             }
         });
     }
-
-
 }

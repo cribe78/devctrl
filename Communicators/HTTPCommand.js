@@ -29,7 +29,7 @@ var HTTPCommand = (function () {
     };
     HTTPCommand.prototype.matchResponse = function (resp) {
         var matches = resp.match(this.cmdResponseRE);
-        if (matches.length) {
+        if (matches) {
             return true;
         }
         return false;

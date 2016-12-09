@@ -9,11 +9,11 @@ var Control_1 = require("./Control");
 var WatcherRule = (function (_super) {
     __extends(WatcherRule, _super);
     function WatcherRule(_id, data) {
-        _super.call(this, _id);
-        this.watch_value = '';
-        this.enabled = false;
-        this.table = WatcherRule.tableStr;
-        this.requiredProperties = [
+        var _this = _super.call(this, _id) || this;
+        _this.watch_value = '';
+        _this.enabled = false;
+        _this.table = WatcherRule.tableStr;
+        _this.requiredProperties = [
             'watched_control_id',
             'watch_value',
             'value_test',
@@ -21,7 +21,7 @@ var WatcherRule = (function (_super) {
             'action_control_value',
             'enabled'
         ];
-        this.foreignKeys = [
+        _this.foreignKeys = [
             {
                 type: Control_1.Control,
                 fkObjProp: "watched_control",
@@ -36,8 +36,9 @@ var WatcherRule = (function (_super) {
             }
         ];
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     Object.defineProperty(WatcherRule.prototype, "action_control", {
         get: function () {
@@ -115,12 +116,12 @@ var WatcherRule = (function (_super) {
         };
         return outputUpdateData;
     };
-    WatcherRule.tableStr = "watcher_rules";
-    WatcherRule.VALUE_TEST_EQUALS = "=";
-    WatcherRule.VALUE_TEST_LESS_THAN = "<";
-    WatcherRule.VALUE_TEST_GREATER_THAN = ">";
-    WatcherRule.VALUE_TEST_ANY = "any";
     return WatcherRule;
 }(DCSerializable_1.DCSerializable));
+WatcherRule.tableStr = "watcher_rules";
+WatcherRule.VALUE_TEST_EQUALS = "=";
+WatcherRule.VALUE_TEST_LESS_THAN = "<";
+WatcherRule.VALUE_TEST_GREATER_THAN = ">";
+WatcherRule.VALUE_TEST_ANY = "any";
 exports.WatcherRule = WatcherRule;
 //# sourceMappingURL=WatcherRule.js.map

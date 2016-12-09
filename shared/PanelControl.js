@@ -10,9 +10,9 @@ var Panel_1 = require("./Panel");
 var PanelControl = (function (_super) {
     __extends(PanelControl, _super);
     function PanelControl(_id, data) {
-        _super.call(this, _id);
-        this.table = PanelControl.tableStr;
-        this.foreignKeys = [
+        var _this = _super.call(this, _id) || this;
+        _this.table = PanelControl.tableStr;
+        _this.foreignKeys = [
             {
                 type: Control_1.Control,
                 fkObjProp: "control",
@@ -26,13 +26,14 @@ var PanelControl = (function (_super) {
                 fkTable: Panel_1.Panel.tableStr
             }
         ];
-        this.requiredProperties = this.requiredProperties.concat([
+        _this.requiredProperties = _this.requiredProperties.concat([
             'control_id',
             'panel_id'
         ]);
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     Object.defineProperty(PanelControl.prototype, "control", {
         get: function () {
@@ -66,8 +67,8 @@ var PanelControl = (function (_super) {
     PanelControl.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    PanelControl.tableStr = "panel_controls";
     return PanelControl;
 }(DCSerializable_1.DCSerializable));
+PanelControl.tableStr = "panel_controls";
 exports.PanelControl = PanelControl;
 //# sourceMappingURL=PanelControl.js.map

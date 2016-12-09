@@ -107,9 +107,9 @@ var CtrlController = (function () {
     CtrlController.prototype.updateValue = function (val) {
         this.dataService.updateControlValue(this.ctrl);
     };
-    CtrlController.$inject = ['DataService', 'MenuService'];
     return CtrlController;
 }());
+CtrlController.$inject = ['DataService', 'MenuService'];
 exports.ControlComponent = {
     templateUrl: 'app/ng1/ctrl.html',
     controller: CtrlController,

@@ -102,8 +102,8 @@ var RoomController = (function () {
         group.opened = !group.opened;
         this.dataService.updateConfig();
     };
-    RoomController.$inject = ['$stateParams', 'DataService', 'MenuService'];
     return RoomController;
 }());
+RoomController.$inject = ['$stateParams', 'DataService', 'MenuService'];
 exports.RoomController = RoomController;
 //# sourceMappingURL=room.controller.js.map

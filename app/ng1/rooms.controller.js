@@ -13,8 +13,8 @@ var RoomsController = (function () {
     RoomsController.prototype.imageUrl = function (room) {
         return "/images/" + room.name + ".png";
     };
-    RoomsController.$inject = ['DataService'];
     return RoomsController;
 }());
+RoomsController.$inject = ['DataService'];
 exports.RoomsController = RoomsController;
 //# sourceMappingURL=rooms.controller.js.map

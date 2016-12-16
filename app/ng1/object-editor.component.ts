@@ -1,7 +1,15 @@
 import IComponentOptions = angular.IComponentOptions;
+import { Directive,
+    ElementRef,
+    Injector,
+    Input,
+    Output,
+    EventEmitter } from '@angular/core';
+import { UpgradeComponent } from '@angular/upgrade/static';
+
 class ObjectEditorController {
     object;
-    name : string;
+    fname : string;
     newKey;
     newVal;
 
@@ -30,12 +38,12 @@ class ObjectEditorController {
         this.newVal = undefined;
         angular.element(document).find('#oe-new-key').focus();
 
-        this.onUpdate({object: this.object, name: this.name});
+        this.onUpdate({object: this.object, name: this.fname});
     }
 
     deleteValue(key) {
         delete this.object[key];
-        this.onUpdate({object: this.object, name: this.name});
+        this.onUpdate({object: this.object, name: this.fname});
     }
 
 
@@ -68,7 +76,20 @@ export let ObjectEditorComponent : IComponentOptions = {
     controller: ObjectEditorController,
     bindings: {
         object: '<',
-        name: '<',
+        fname: '<',
         onUpdate: '&'
     }
 };
+
+@Directive({
+    selector: 'devctrl-object-editor'
+})
+export class ObjectEditorComponentNg2 extends UpgradeComponent {
+    @Input() object;
+    @Input() fname;
+    @Output() onUpdate = new EventEmitter();
+
+    constructor(elementRef: ElementRef, injector: Injector) {
+        super('devctrlObjectEditor', elementRef, injector);
+    }
+}

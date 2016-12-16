@@ -4,14 +4,20 @@
  * on a device (Endpoint).  The frontend provides an interface for users to view and change the values of controls.
  */
 "use strict";
-const DCSerializable_1 = require("./DCSerializable");
-const Endpoint_1 = require("./Endpoint");
-const OptionSet_1 = require("./OptionSet");
-class Control extends DCSerializable_1.DCSerializable {
-    constructor(_id, data) {
-        super(_id);
-        this.ephemeral = false;
-        this.foreignKeys = [
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var DCSerializable_1 = require("./DCSerializable");
+var Endpoint_1 = require("./Endpoint");
+var OptionSet_1 = require("./OptionSet");
+var Control = (function (_super) {
+    __extends(Control, _super);
+    function Control(_id, data) {
+        var _this = _super.call(this, _id) || this;
+        _this.ephemeral = false;
+        _this.foreignKeys = [
             {
                 type: Endpoint_1.Endpoint,
                 fkObjProp: "endpoint",
@@ -25,8 +31,8 @@ class Control extends DCSerializable_1.DCSerializable {
                 fkTable: OptionSet_1.OptionSet.tableStr
             }
         ];
-        this.table = Control.tableStr;
-        this.requiredProperties = this.requiredProperties.concat([
+        _this.table = Control.tableStr;
+        _this.requiredProperties = _this.requiredProperties.concat([
             'endpoint_id',
             'ctid',
             'usertype',
@@ -35,35 +41,45 @@ class Control extends DCSerializable_1.DCSerializable {
             'config',
             'value'
         ]);
-        this.optionalProperties = ['ephemeral', 'option_set_id'];
+        _this.optionalProperties = ['ephemeral', 'option_set_id'];
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
-    get endpoint() {
-        return this._endpoint;
-    }
-    set endpoint(endpoint) {
-        this._endpoint = endpoint;
-        this.endpoint_id = endpoint._id;
-    }
-    get option_set() {
-        return this._option_set;
-    }
-    set option_set(option_set) {
-        this._option_set = option_set;
-        this.option_set_id = option_set._id;
-    }
-    fkSelectName() {
+    Object.defineProperty(Control.prototype, "endpoint", {
+        get: function () {
+            return this._endpoint;
+        },
+        set: function (endpoint) {
+            this._endpoint = endpoint;
+            this.endpoint_id = endpoint._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Control.prototype, "option_set", {
+        get: function () {
+            return this._option_set;
+        },
+        set: function (option_set) {
+            this._option_set = option_set;
+            this.option_set_id = option_set._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Control.prototype.fkSelectName = function () {
         if (this._endpoint) {
             return this._endpoint.name + ": " + this.name;
         }
         return this.name;
-    }
-    getDataObject() {
+    };
+    Control.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
-    }
-}
+    };
+    return Control;
+}(DCSerializable_1.DCSerializable));
 Control.tableStr = "controls";
 // usertype and control_type values
 Control.CONTROL_TYPE_BOOLEAN = "boolean";

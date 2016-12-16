@@ -2,6 +2,14 @@ import {DCSerializable} from "../../shared/DCSerializable";
 import IComponentOptions = angular.IComponentOptions;
 import {DataService} from "../data.service";
 import {IndexedDataSet} from "../../shared/DCDataModel";
+import { Directive,
+    ElementRef,
+    Injector,
+    Input,
+    Output,
+    EventEmitter } from '@angular/core';
+import { UpgradeComponent } from '@angular/upgrade/static';
+
 class FkAutocompleteController {
     selectedItem : DCSerializable;
     selectedItemId : string;
@@ -77,4 +85,19 @@ export let FkAutocompleteComponent : IComponentOptions = {
         <span md-highlight-text="searchText">{{item.fkSelectName()}}</span>
     </md-autocomplete>
 `
+}
+
+@Directive({
+    selector: 'fk-autocomplete'
+})
+export class FkAutocompleteComponentNg2 extends UpgradeComponent {
+    @Input() table;
+    @Input() field;
+    @Input() objectField;
+    @Input() selectedItemId;
+    @Output() onUpdate = new EventEmitter();
+
+    constructor(elementRef: ElementRef, injector: Injector) {
+        super('fkAutocomplete', elementRef, injector);
+    }
 }

@@ -1,20 +1,29 @@
 "use strict";
-const TCPCommunicator_1 = require("../TCPCommunicator");
-const TCPCommand_1 = require("../TCPCommand");
-const Control_1 = require("../../shared/Control");
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var TCPCommunicator_1 = require("../TCPCommunicator");
+var TCPCommand_1 = require("../TCPCommand");
+var Control_1 = require("../../shared/Control");
 //let debug = debugMod("comms");
-let debug = console.log;
-class F32Communicator extends TCPCommunicator_1.TCPCommunicator {
-    buildCommandList() {
-        let f32Mnemonics = {
+var debug = console.log;
+var F32Communicator = (function (_super) {
+    __extends(F32Communicator, _super);
+    function F32Communicator() {
+        return _super.apply(this, arguments) || this;
+    }
+    F32Communicator.prototype.buildCommandList = function () {
+        var f32Mnemonics = {
             Power: "POWR",
             Brightness: "BRIG",
             Shutter: "SHUT"
         };
         // Commands, as defined in pw392_communication_protocol.pdf
-        let name = "Power";
-        let cmd = "POWR";
-        let command = {
+        var name = "Power";
+        var cmd = "POWR";
+        var command = {
             cmdStr: name,
             cmdQueryStr: ":" + cmd + "?",
             cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
@@ -318,9 +327,9 @@ class F32Communicator extends TCPCommunicator_1.TCPCommunicator {
             poll: 1
         };
         this.commands[name] = new TCPCommand_1.TCPCommand(command);
-    }
-    matchLineToError(line) {
-        let matches = line.match(/(\w{4}) !0000(\d)/);
+    };
+    F32Communicator.prototype.matchLineToError = function (line) {
+        var matches = line.match(/(\w{4}) !0000(\d)/);
         if (matches) {
             if (matches[2] == "1") {
                 debug("Error: Access Denied for command " + matches[1]);
@@ -339,8 +348,8 @@ class F32Communicator extends TCPCommunicator_1.TCPCommunicator {
                 return true;
             }
         }
-    }
-    preprocessLine(line) {
+    };
+    F32Communicator.prototype.preprocessLine = function (line) {
         if (line.indexOf("(Not Available)") !== -1) {
             // This is the continuation of an error which should be handled with
             // the previous line
@@ -348,8 +357,9 @@ class F32Communicator extends TCPCommunicator_1.TCPCommunicator {
         }
         // Lines have extra carriage returns that screw up debug printing
         return line.replace(/\r/g, '');
-    }
-}
-let communicator = new F32Communicator();
+    };
+    return F32Communicator;
+}(TCPCommunicator_1.TCPCommunicator));
+var communicator = new F32Communicator();
 module.exports = communicator;
 //# sourceMappingURL=F32Communicator.js.map

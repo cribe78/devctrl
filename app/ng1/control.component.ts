@@ -3,6 +3,9 @@ import {Control} from "../../shared/Control";
 import {PanelControl} from "../../shared/PanelControl";
 import IComponentOptions = angular.IComponentOptions;
 import {WatcherRule} from "../../shared/WatcherRule";
+import { Directive, ElementRef, Injector, Input } from '@angular/core';
+import { UpgradeComponent } from '@angular/upgrade/static';
+import {RecordEditorService} from "../record-editor.service";
 
 class CtrlController {
     menu;
@@ -13,8 +16,9 @@ class CtrlController {
     appConfig;
     type: string;
 
-    static $inject = ['DataService', 'MenuService'];
-    constructor(private dataService : DataService, private menuService) {
+    static $inject = ['DataService', 'MenuService', 'RecordEditorService'];
+    constructor(private dataService : DataService, private menuService,
+        private recordService : RecordEditorService) {
         this.menu = menuService;
     }
 
@@ -50,7 +54,7 @@ class CtrlController {
 
 
     addWatcherRule($event) {
-        this.dataService.editRecord($event, '0', WatcherRule.tableStr,
+        this.recordService.editRecord($event, '0', WatcherRule.tableStr,
             { watched_control_id : this.ctrl._id});
     }
 
@@ -63,19 +67,19 @@ class CtrlController {
     }
 
     editControl($event) {
-        this.dataService.editRecord($event, this.ctrl._id, this.ctrl.table);
+        this.recordService.editRecord($event, this.ctrl._id, this.ctrl.table);
     }
 
     editOptions($event) {
         // Not currently implemented, enums removed from application
         if (this.ctrl.option_set) {
-            this.dataService.editRecord(
+            this.recordService.editRecord(
                 $event,
                 this.ctrl.option_set_id,
                 this.ctrl.option_set.table);
         }
         else {
-            this.dataService.editRecord(
+            this.recordService.editRecord(
                 $event,
                 this.ctrl._id,
                 this.ctrl.table
@@ -84,7 +88,7 @@ class CtrlController {
     }
 
     editPanelControl($event) {
-        this.dataService.editRecord($event, this.panelControl._id, this.panelControl.table);
+        this.recordService.editRecord($event, this.panelControl._id, this.panelControl.table);
     }
 
     intConfig(key) {
@@ -157,3 +161,13 @@ export let ControlComponent : IComponentOptions = {
         controlId: '<'
     }
 };
+
+@Directive({
+    selector: 'ctrl'
+})
+export class ControlComponentNg2 extends UpgradeComponent {
+    @Input() controlId;
+    constructor(elementRef: ElementRef, injector: Injector) {
+        super('ctrl', elementRef, injector);
+    }
+}

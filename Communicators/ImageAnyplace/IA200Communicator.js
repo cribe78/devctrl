@@ -1,18 +1,25 @@
 "use strict";
-const debugMod = require("debug");
-const TCPCommunicator_1 = require("../TCPCommunicator");
-const TCPCommand_1 = require("../TCPCommand");
-let debug = debugMod("comms");
-class IA200Communicator extends TCPCommunicator_1.TCPCommunicator {
-    constructor() {
-        super(...arguments);
-        this.inputLineTerminator = '';
-        this.outputLineTerminator = '\n';
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var debugMod = require("debug");
+var TCPCommunicator_1 = require("../TCPCommunicator");
+var TCPCommand_1 = require("../TCPCommand");
+var debug = debugMod("comms");
+var IA200Communicator = (function (_super) {
+    __extends(IA200Communicator, _super);
+    function IA200Communicator() {
+        var _this = _super.apply(this, arguments) || this;
+        _this.inputLineTerminator = '';
+        _this.outputLineTerminator = '\n';
+        return _this;
     }
-    buildCommandList() {
-        let nineZeros = "000000000";
-        let fiveZeros = "00000";
-        let inputConfig = {
+    IA200Communicator.prototype.buildCommandList = function () {
+        var nineZeros = "000000000";
+        var fiveZeros = "00000";
+        var inputConfig = {
             cmdStr: "Video Input",
             cmdUpdateTemplate: "A00WBA%s" + nineZeros,
             cmdUpdateResponseTemplate: "K",
@@ -34,7 +41,7 @@ class IA200Communicator extends TCPCommunicator_1.TCPCommunicator {
             writeonly: true
         };
         this.commands[inputConfig.cmdStr] = new TCPCommand_1.TCPCommand(inputConfig);
-        let keystoneConfig = {
+        var keystoneConfig = {
             cmdStr: "Keystone TL-X",
             cmdQueryStr: "A00RFAA",
             cmdQueryResponseRE: /V0(\d\d\d)/,
@@ -54,10 +61,10 @@ class IA200Communicator extends TCPCommunicator_1.TCPCommunicator {
         keystoneConfig.cmdQueryStr = "A00RFAB";
         keystoneConfig.cmdUpdateTemplate = "A00WFAB%04d" + fiveZeros;
         this.commands[keystoneConfig.cmdStr] = new TCPCommand_1.TCPCommand(keystoneConfig);
-    }
+    };
     // Match one of the IA200 response codes and return it
-    matchResponseCode() {
-        let data = this.inputBuffer;
+    IA200Communicator.prototype.matchResponseCode = function () {
+        var data = this.inputBuffer;
         if (data.length == 0) {
             return '';
         }
@@ -79,25 +86,26 @@ class IA200Communicator extends TCPCommunicator_1.TCPCommunicator {
                 // An incomplete string, wait for more
                 return "";
             }
-            let str = data.slice(0, data.search("\r") + 1);
+            var str = data.slice(0, data.search("\r") + 1);
             return str;
         }
         debug("Error: unmatched IA200 start char:" + data);
         this.inputBuffer = this.inputBuffer.slice(1);
         return '';
-    }
+    };
     // The IA200 doesn't delineate between responses. Handle all potential responses in
     // custom onData handler
-    onData(data) {
-        let strData = String(data);
+    IA200Communicator.prototype.onData = function (data) {
+        var strData = String(data);
         this.inputBuffer += strData;
-        let resp;
+        var resp;
         while ((resp = this.matchResponseCode())) {
             this.processLine(resp);
             this.inputBuffer = this.inputBuffer.slice(resp.length);
         }
-    }
-}
-let communicator = new IA200Communicator();
+    };
+    return IA200Communicator;
+}(TCPCommunicator_1.TCPCommunicator));
+var communicator = new IA200Communicator();
 module.exports = communicator;
 //# sourceMappingURL=IA200Communicator.js.map

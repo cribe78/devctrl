@@ -143,6 +143,10 @@ section.devctrl-main-card {
     width: 60px;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 .lightPurple {
     background: #8c9eff; }
 .menuBtn {

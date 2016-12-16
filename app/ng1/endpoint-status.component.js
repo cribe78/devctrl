@@ -1,19 +1,19 @@
 "use strict";
-const Endpoint_1 = require("../../shared/Endpoint");
-class EndpointStatusController {
-    constructor(DataService) {
+var Endpoint_1 = require("../../shared/Endpoint");
+var EndpointStatusController = (function () {
+    function EndpointStatusController(DataService) {
         this.DataService = DataService;
     }
-    $onInit() {
+    EndpointStatusController.prototype.$onInit = function () {
         this.endpoint = this.DataService.getRowRef('endpoints', this.endpointId);
-    }
-    status() {
+    };
+    EndpointStatusController.prototype.status = function () {
         if (!this.endpoint.fields.enabled) {
             return Endpoint_1.EndpointStatus.Disabled;
         }
         return this.endpoint.fields.status;
-    }
-    statusIcon() {
+    };
+    EndpointStatusController.prototype.statusIcon = function () {
         var status = this.status();
         if (status == Endpoint_1.EndpointStatus.Online) {
             return "sync";
@@ -25,9 +25,9 @@ class EndpointStatusController {
             return "sync_disabled";
         }
         return "help";
-    }
-    statusIconClasses() {
-        let status = this.status();
+    };
+    EndpointStatusController.prototype.statusIconClasses = function () {
+        var status = this.status();
         if (status == Endpoint_1.EndpointStatus.Disabled) {
             return "md-disabled";
         }
@@ -35,8 +35,9 @@ class EndpointStatusController {
             return "md-warn";
         }
         return "md-primary md-hue-2";
-    }
-}
+    };
+    return EndpointStatusController;
+}());
 EndpointStatusController.$inject = ['DataService'];
 exports.EndpointStatusComponent = {
     templateUrl: 'app/ng1/endpoint-status.html',

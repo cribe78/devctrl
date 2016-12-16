@@ -1,23 +1,30 @@
 "use strict";
-const EndpointCommunicator_1 = require("./EndpointCommunicator");
-const SerialPort = require("serialport");
-const Control_1 = require("../shared/Control");
-const debugMod = require("debug");
-const Endpoint_1 = require("../shared/Endpoint");
-let debug = debugMod("comms");
-class DWPodiumButtonCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
-    constructor() {
-        super();
-        this.value = [false, false, false, false];
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EndpointCommunicator_1 = require("./EndpointCommunicator");
+var SerialPort = require("serialport");
+var Control_1 = require("../shared/Control");
+var debugMod = require("debug");
+var Endpoint_1 = require("../shared/Endpoint");
+var debug = debugMod("comms");
+var DWPodiumButtonCommunicator = (function (_super) {
+    __extends(DWPodiumButtonCommunicator, _super);
+    function DWPodiumButtonCommunicator() {
+        var _this = _super.call(this) || this;
+        _this.value = [false, false, false, false];
+        return _this;
     }
-    connect() {
+    DWPodiumButtonCommunicator.prototype.connect = function () {
         this.port = new SerialPort(this.config.endpoint.address, { baudRate: 9600 });
         this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
         //this.port.open();
-    }
-    getControlTemplates() {
+    };
+    DWPodiumButtonCommunicator.prototype.getControlTemplates = function () {
         this.ctid = this.endpoint_id + "-state";
-        let templateData = {
+        var templateData = {
             _id: this.ctid,
             ctid: this.ctid,
             endpoint_id: this.endpoint_id,
@@ -29,40 +36,41 @@ class DWPodiumButtonCommunicator extends EndpointCommunicator_1.EndpointCommunic
             config: {},
             value: this.value
         };
-        let control = new Control_1.Control(this.ctid, templateData);
-        let ret = {};
+        var control = new Control_1.Control(this.ctid, templateData);
+        var ret = {};
         ret[this.ctid] = control;
         return ret;
-    }
-    handleControlUpdateRequest(request) {
+    };
+    DWPodiumButtonCommunicator.prototype.handleControlUpdateRequest = function (request) {
         if (this.port.isOpen) {
-            let outChar = this.valueToChar(request.value);
+            var outChar = this.valueToChar(request.value);
             this.port.write(outChar);
-            debug(`char ${outChar} sent to button controller`);
-            let control = this.controls[request.control_id];
+            debug("char " + outChar + " sent to button controller");
+            var control = this.controls[request.control_id];
             this.config.controlUpdateCallback(control, request.value);
             control.value = request.value;
         }
         else {
             this.port.open();
         }
-    }
-    valueToChar(value) {
+    };
+    DWPodiumButtonCommunicator.prototype.valueToChar = function (value) {
         // Update value is a list of boolean values.  Convert
         // them into a hex value with bits corresponding to the
         // booleans.  Add 65 to this value to put the resulting
         // hex value in the ASCII range
-        let outVal = 65;
-        for (let i = 0; i < this.value.length; i++) {
+        var outVal = 65;
+        for (var i = 0; i < this.value.length; i++) {
             if (value[i]) {
                 outVal += (1 << i);
             }
         }
-        let outChar = String.fromCharCode(outVal);
+        var outChar = String.fromCharCode(outVal);
         return outChar;
-    }
-}
+    };
+    return DWPodiumButtonCommunicator;
+}(EndpointCommunicator_1.EndpointCommunicator));
 exports.DWPodiumButtonCommunicator = DWPodiumButtonCommunicator;
-let communicator = new DWPodiumButtonCommunicator();
+var communicator = new DWPodiumButtonCommunicator();
 module.exports = communicator;
 //# sourceMappingURL=DWPodiumButtonCommunicator.js.map

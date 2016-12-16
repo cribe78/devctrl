@@ -5,16 +5,16 @@ The data model shared by the various DevCtrl components
 
  */
 "use strict";
-const Panel_1 = require("./Panel");
-const PanelControl_1 = require("./PanelControl");
-const Room_1 = require("./Room");
-const Endpoint_1 = require("./Endpoint");
-const EndpointType_1 = require("./EndpointType");
-const Control_1 = require("./Control");
-const WatcherRule_1 = require("./WatcherRule");
-const OptionSet_1 = require("./OptionSet");
-class DCDataModel {
-    constructor() {
+var Panel_1 = require("./Panel");
+var PanelControl_1 = require("./PanelControl");
+var Room_1 = require("./Room");
+var Endpoint_1 = require("./Endpoint");
+var EndpointType_1 = require("./EndpointType");
+var Control_1 = require("./Control");
+var WatcherRule_1 = require("./WatcherRule");
+var OptionSet_1 = require("./OptionSet");
+var DCDataModel = (function () {
+    function DCDataModel() {
         this.endpoints = {};
         this.endpoint_types = {};
         this.controls = {};
@@ -23,6 +23,7 @@ class DCDataModel {
         this.rooms = {};
         this.watcher_rules = {};
         this.option_sets = {};
+        this.sortedArrays = {};
         this.types = {
             endpoints: Endpoint_1.Endpoint,
             endpoint_types: EndpointType_1.EndpointType,
@@ -36,14 +37,14 @@ class DCDataModel {
         this.debug = console.log;
     }
     ;
-    loadData(data) {
+    DCDataModel.prototype.loadData = function (data) {
         if (data.add) {
-            let add = data.add;
-            let addTables = [];
-            for (let t in add) {
+            var add = data.add;
+            var addTables = [];
+            for (var t in add) {
                 addTables.push(t);
             }
-            let tableStr = addTables.join(", ");
+            var tableStr = addTables.join(", ");
             this.debug("loadData from " + tableStr);
             // There is some boilerplate here that is necessary to allow typescript
             // to perform its type checking magic.
@@ -89,13 +90,14 @@ class DCDataModel {
             }
         }
         if (data.delete) {
-            let del = data.delete;
-            let table = del.table;
-            let _id = del._id;
+            var del = data.delete;
+            var table = del.table;
+            var _id = del._id;
             // Remove references from foreign key objects
             if (this[table][_id]) {
-                let deleteRec = this[table][_id];
-                for (let fkDef of deleteRec.foreignKeys) {
+                var deleteRec = this[table][_id];
+                for (var _i = 0, _a = deleteRec.foreignKeys; _i < _a.length; _i++) {
+                    var fkDef = _a[_i];
                     if (deleteRec[fkDef.fkObjProp]) {
                         deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
                     }
@@ -104,19 +106,20 @@ class DCDataModel {
                 delete this[table][_id];
             }
         }
-    }
+    };
     /**
      *  For data model objects that hold references to other data model objects,
      *  initialize those references
      *
      */
-    indexForeignKeys(objects) {
-        for (let id in objects) {
-            let obj = objects[id];
-            for (let fkDef of obj.foreignKeys) {
-                let fkObjs = this[fkDef.fkTable];
+    DCDataModel.prototype.indexForeignKeys = function (objects) {
+        for (var id in objects) {
+            var obj = objects[id];
+            for (var _i = 0, _a = obj.foreignKeys; _i < _a.length; _i++) {
+                var fkDef = _a[_i];
+                var fkObjs = this[fkDef.fkTable];
                 if (obj[fkDef.fkIdProp]) {
-                    let fkId = obj[fkDef.fkIdProp]; // The the foreign key id value
+                    var fkId = obj[fkDef.fkIdProp]; // The the foreign key id value
                     if (!fkObjs[fkId]) {
                         // Create a new object if necessary
                         fkObjs[fkId] = new fkDef.type(fkId);
@@ -128,25 +131,32 @@ class DCDataModel {
                 }
             }
         }
-    }
-    loadTableData(newData, modelData, ctor) {
-        for (let id in newData) {
+    };
+    DCDataModel.prototype.loadTableData = function (newData, modelData, ctor) {
+        var table = '';
+        for (var id in newData) {
             if (modelData[id]) {
                 modelData[id].loadData(newData[id]);
             }
             else {
                 modelData[id] = new ctor(id, newData[id]);
             }
+            if (!table) {
+                table = modelData[id].table;
+            }
         }
-    }
-    getItem(id, table) {
+        if (table) {
+            this.sortArrays(table);
+        }
+    };
+    DCDataModel.prototype.getItem = function (id, table) {
         if (this[table][id]) {
             return this[table][id];
         }
         this[table][id] = new this.types[table](id);
         return this[table][id];
-    }
-    getTableItem(id, table) {
+    };
+    DCDataModel.prototype.getTableItem = function (id, table) {
         switch (table) {
             case Endpoint_1.Endpoint.tableStr:
                 return this.getItem(id, table);
@@ -165,7 +175,59 @@ class DCDataModel {
             case WatcherRule_1.WatcherRule.tableStr:
                 return this.getItem(id, table);
         }
-    }
-}
+    };
+    DCDataModel.prototype.sortArrays = function (table) {
+        if (this.sortedArrays[table]) {
+            for (var prop in this.sortedArrays[table]) {
+                this.sortArray(table, prop);
+            }
+        }
+    };
+    DCDataModel.prototype.sortArray = function (table, sortProp) {
+        if (this.sortedArrays[table] && this.sortedArrays[table][sortProp]) {
+            this.sortedArrays[table][sortProp].length = 0;
+            var keys = Object.keys(this[table]);
+            for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                var key = keys_1[_i];
+                this.sortedArrays[table][sortProp].push(this[table][key]);
+            }
+            this.sortedArrays[table][sortProp].sort(function (a, b) {
+                if (a[sortProp] < b[sortProp]) {
+                    return -1;
+                }
+                if (a[sortProp] > b[sortProp]) {
+                    return 1;
+                }
+                return 0;
+            });
+        }
+    };
+    /**
+     * sortedArray
+     *
+     * The data model maintains a set of sorted object arrays per request.  Return the
+     * specified one
+     * @param table
+     * @param sortProp
+     * @returns DCSerializable[]
+     */
+    DCDataModel.prototype.sortedArray = function (table, sortProp) {
+        if (sortProp === void 0) { sortProp = '_id'; }
+        if (!this.sortedArrays[table]) {
+            this.sortedArrays[table] = {};
+        }
+        var sorted = this.sortedArrays[table][sortProp];
+        if (sorted) {
+            return sorted;
+        }
+        if (!this[table]) {
+            throw new Error("Request for invalid table array");
+        }
+        this.sortedArrays[table][sortProp] = [];
+        this.sortArray(table, sortProp);
+        return this.sortedArrays[table][sortProp];
+    };
+    return DCDataModel;
+}());
 exports.DCDataModel = DCDataModel;
 //# sourceMappingURL=DCDataModel.js.map

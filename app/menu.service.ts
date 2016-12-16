@@ -1,15 +1,53 @@
 import {DataService} from "./data.service";
 import { Injectable, Inject } from '@angular/core';
+import {  Router, ActivatedRoute, Params, UrlSegment } from '@angular/router';
+import { appRoutes } from "./app-router.module";
+import {IndexedDataSet} from "../shared/DCDataModel";
+import {Endpoint} from "../shared/Endpoint";
+import {Room} from "../shared/Room";
 
 @Injectable()
 export class MenuService {
     items : any[];
     itemsObj : { [index: string] : any};
+    private _pageTitle;
     menuConfig;
     toolbarSelect;
+    endpoints : IndexedDataSet<Endpoint>;
+    rooms : IndexedDataSet<Room>;
+    menuObj = {
+        "rooms" : {
+            name: "Locations",
+            route: ['rooms'],
+            isOpened: false,
+            children: []
+        },
+        "devices" : {
+            name: "Devices",
+            route: ['devices'],
+            isOpened: false,
+            children: []
+        },
+        "config" : {
+            name: "Config",
+            route: ['config'],
+            isOpened: false,
+            children: [
+                {
+                    name: "Data Tables",
+                    route: ['config', 'data']
+                }
+            ]
+        }
+    };
+    menuList = [this.menuObj['rooms'], this.menuObj['devices'], this.menuObj['config']];
+    routeUrl : UrlSegment[];
+    routeData;
+    routeParams;
 
-    //static $inject = ['$state', '$mdSidenav', '$mdMedia', 'DataService'];
-    constructor(@Inject('$state') public $state, private dataService: DataService) {
+    constructor(private route : ActivatedRoute,
+                private router : Router,
+                private dataService: DataService) {
         this.menuConfig = dataService.config.menu;
         this.items = [];
         this.itemsObj = {};
@@ -20,31 +58,44 @@ export class MenuService {
             selected: null,
             destState: null
         };
+
+        this.endpoints = this.dataService.getTable(Endpoint.tableStr) as IndexedDataSet<Endpoint>;
+        this.rooms = this.dataService.getTable(Room.tableStr) as IndexedDataSet<Room>;
+
+        route.url.subscribe((url) => {
+            this.routeUrl = url;
+
+            console.log(`route changed: ${url[0].path}`);
+        });
+
+        route.data.subscribe((data) => {
+            this.routeData = data;
+        });
+
+        route.params.subscribe((params) => {
+            this.routeParams = params;
+        });
+
     }
 
 
     backgroundImageStyle() : any {
-        if (this.$state.current.name && this.$state.params.name) {
-            var img = "url(/images/backgrounds/" + this.$state.current.name + "/" + this.$state.params.name + ".jpg)";
-            return {'background-image': img};
-        }
+        //let path = (<string[]>this.route.url).join("/");
+        //    var img = "url(/images/backgrounds/" + this.$state.current.name + "/" + this.$state.params.name + ".jpg)";
+        //    return {'background-image': img};
+        //}
         return {};
-    }
-
-    cardClasses() : string {
-        if (this.$state.current.data && this.$state.current.data.cardClasses) {
-            return this.$state.current.data.cardClasses;
-        }
-
-        return '';
     }
 
     go(state) {
         if (angular.isString(state)) {
-            this.$state.go(state);
+            this.router.navigate([state]);
+        }
+        else if (angular.isArray(state)) {
+            this.router.navigate(state);
         }
         else {
-            this.$state.go(state.name, state.params);
+            this.router.navigate([state.name, state.params]);
         }
     }
 
@@ -56,7 +107,7 @@ export class MenuService {
     }
 
     isFirstLevel() {
-        return this.$state.current.name === "" || this.$state.get('^').name === "";
+        //return this.route.url.length == 1;
     }
 
 
@@ -65,82 +116,38 @@ export class MenuService {
     }
 
     menuItems() {
-        let states = this.$state.get();
 
-        // Loop through once to identify top level states
-        for (let key in states) {
-            //angular.forEach(states, function(state, key) {
-            let state = states[key];
-            if (state.name == "") {
-                continue;
-            }
-
-            state.isOpened = this.$state.includes(state);
-            let parent = this.$state.get('^', state);
-
-            if (parent.name == "") {
-                this.itemsObj[state.name] = state;
-                if (! angular.isDefined(state.substates)) {
-                    state.substatesObj = {};
-                }
-            }
-
-            if (angular.isDefined(state.data.title)) {
-                state.title = state.data.title;
-            }
+        for (let item of this.menuList) {
+            item.isOpened = false;
         }
 
-        // Populate second level states
-        for (let key in states) {
-            //angular.forEach(states, function(state, key) {
-            let state = states[key];
-            if (state.name == "") {
-                continue;
-            }
+        let levelOne = this.routeUrl[0].path;
 
-            let parent = this.$state.get('^', state);
-            if (angular.isDefined(this.itemsObj[parent.name])) {
-                if (angular.isDefined(state.data.listByName)) {
-                    let records = this.dataService.getTable(state.data.listByName);
-
-                    for (let id in records) {
-                        let record = records[id];
-
-                        if (! angular.isDefined(parent.substatesObj[record._id])) {
-                            parent.substatesObj[record._id] = {
-                                name: state.name,
-                                params: {
-                                    name: record.name,
-                                    id : record._id
-                                },
-                                title: record.name
-                            };
-                        }
-                        else {
-                            parent.substatesObj[record._id].params.name  = record.name;
-                            parent.substatesObj[record._id].title = record.name;
-                        }
-                    }
-                }
-                else {
-                    this.itemsObj[parent.name].substatesObj[state.name] = state;
-                }
-            }
+        if (this.menuObj[levelOne]) {
+            this.menuObj[levelOne]['isOpened'] = true;
         }
 
-        this.items = [];
-        for (let state in this.itemsObj) {
-            let stateObj = this.itemsObj[state];
-            this.items.push(stateObj);
-            if (stateObj.substatesObj) {
-                stateObj.substates = [];
-                for (let substate in stateObj.substatesObj) {
-                    stateObj.substates.push(stateObj.substatesObj[substate]);
-                }
-            }
+        this.menuObj.rooms.children = [];
+        for (let roomId in this.rooms) {
+            let roomMenu = {
+                name: this.rooms[roomId].name,
+                route: ['rooms', { name: this.rooms[roomId].name }]
+            };
+
+            this.menuObj.rooms.children.push(roomMenu);
         }
 
-        return this.items;
+        this.menuObj.devices.children = [];
+        for (let eId in this.endpoints) {
+            let endpointMenu = {
+                name: this.endpoints[eId].name,
+                route: ['rooms', { id: eId}]
+            };
+
+            this.menuObj.devices.children.push(endpointMenu);
+        };
+
+        return this.menuList;
     }
 
     narrowMode() {
@@ -148,18 +155,13 @@ export class MenuService {
         //return this.$mdMedia('max-width: 1000px');
     }
 
-    pageTitle() {
-        return this.$state.current.title || this.$state.params.name;
+    get pageTitle() {
+        return this._pageTitle;
     }
 
-    parentState() {
-        return this.$state.get('^');
+    set pageTitle(val) {
+        this._pageTitle = val;
     }
-
-    states() {
-        return this.$state.get();
-    }
-
 
     toggleSidenav(position) {
         this.menuConfig.sidenavOpen = ! this.menuConfig.sidenavOpen;

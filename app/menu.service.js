@@ -8,16 +8,43 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-const data_service_1 = require("./data.service");
-const core_1 = require("@angular/core");
-let MenuService = class MenuService {
-    //static $inject = ['$state', '$mdSidenav', '$mdMedia', 'DataService'];
-    constructor($state, dataService) {
-        this.$state = $state;
+var data_service_1 = require("./data.service");
+var core_1 = require("@angular/core");
+var router_1 = require("@angular/router");
+var Endpoint_1 = require("../shared/Endpoint");
+var Room_1 = require("../shared/Room");
+var MenuService = (function () {
+    function MenuService(route, router, dataService) {
+        var _this = this;
+        this.route = route;
+        this.router = router;
         this.dataService = dataService;
+        this.menuObj = {
+            "rooms": {
+                name: "Locations",
+                route: ['rooms'],
+                isOpened: false,
+                children: []
+            },
+            "devices": {
+                name: "Devices",
+                route: ['devices'],
+                isOpened: false,
+                children: []
+            },
+            "config": {
+                name: "Config",
+                route: ['config'],
+                isOpened: false,
+                children: [
+                    {
+                        name: "Data Tables",
+                        route: ['config', 'data']
+                    }
+                ]
+            }
+        };
+        this.menuList = [this.menuObj['rooms'], this.menuObj['devices'], this.menuObj['config']];
         this.menuConfig = dataService.config.menu;
         this.items = [];
         this.itemsObj = {};
@@ -28,140 +55,110 @@ let MenuService = class MenuService {
             selected: null,
             destState: null
         };
+        this.endpoints = this.dataService.getTable(Endpoint_1.Endpoint.tableStr);
+        this.rooms = this.dataService.getTable(Room_1.Room.tableStr);
+        route.url.subscribe(function (url) {
+            _this.routeUrl = url;
+            console.log("route changed: " + url[0].path);
+        });
+        route.data.subscribe(function (data) {
+            _this.routeData = data;
+        });
+        route.params.subscribe(function (params) {
+            _this.routeParams = params;
+        });
     }
-    backgroundImageStyle() {
-        if (this.$state.current.name && this.$state.params.name) {
-            var img = "url(/images/backgrounds/" + this.$state.current.name + "/" + this.$state.params.name + ".jpg)";
-            return { 'background-image': img };
-        }
+    MenuService.prototype.backgroundImageStyle = function () {
+        //let path = (<string[]>this.route.url).join("/");
+        //    var img = "url(/images/backgrounds/" + this.$state.current.name + "/" + this.$state.params.name + ".jpg)";
+        //    return {'background-image': img};
+        //}
         return {};
-    }
-    cardClasses() {
-        if (this.$state.current.data && this.$state.current.data.cardClasses) {
-            return this.$state.current.data.cardClasses;
-        }
-        return '';
-    }
-    go(state) {
+    };
+    MenuService.prototype.go = function (state) {
         if (angular.isString(state)) {
-            this.$state.go(state);
+            this.router.navigate([state]);
+        }
+        else if (angular.isArray(state)) {
+            this.router.navigate(state);
         }
         else {
-            this.$state.go(state.name, state.params);
+            this.router.navigate([state.name, state.params]);
         }
-    }
-    hideSidenavButtons() {
+    };
+    MenuService.prototype.hideSidenavButtons = function () {
         if (this.narrowMode()) {
             return false;
         }
         return this.menuConfig.sidenavOpen;
-    }
-    isFirstLevel() {
-        return this.$state.current.name === "" || this.$state.get('^').name === "";
-    }
-    isSidenavOpen() {
+    };
+    MenuService.prototype.isFirstLevel = function () {
+        //return this.route.url.length == 1;
+    };
+    MenuService.prototype.isSidenavOpen = function () {
         return this.menuConfig.sidenavOpen;
-    }
-    menuItems() {
-        let states = this.$state.get();
-        // Loop through once to identify top level states
-        for (let key in states) {
-            //angular.forEach(states, function(state, key) {
-            let state = states[key];
-            if (state.name == "") {
-                continue;
-            }
-            state.isOpened = this.$state.includes(state);
-            let parent = this.$state.get('^', state);
-            if (parent.name == "") {
-                this.itemsObj[state.name] = state;
-                if (!angular.isDefined(state.substates)) {
-                    state.substatesObj = {};
-                }
-            }
-            if (angular.isDefined(state.data.title)) {
-                state.title = state.data.title;
-            }
+    };
+    MenuService.prototype.menuItems = function () {
+        for (var _i = 0, _a = this.menuList; _i < _a.length; _i++) {
+            var item = _a[_i];
+            item.isOpened = false;
         }
-        // Populate second level states
-        for (let key in states) {
-            //angular.forEach(states, function(state, key) {
-            let state = states[key];
-            if (state.name == "") {
-                continue;
-            }
-            let parent = this.$state.get('^', state);
-            if (angular.isDefined(this.itemsObj[parent.name])) {
-                if (angular.isDefined(state.data.listByName)) {
-                    let records = this.dataService.getTable(state.data.listByName);
-                    for (let id in records) {
-                        let record = records[id];
-                        if (!angular.isDefined(parent.substatesObj[record._id])) {
-                            parent.substatesObj[record._id] = {
-                                name: state.name,
-                                params: {
-                                    name: record.name,
-                                    id: record._id
-                                },
-                                title: record.name
-                            };
-                        }
-                        else {
-                            parent.substatesObj[record._id].params.name = record.name;
-                            parent.substatesObj[record._id].title = record.name;
-                        }
-                    }
-                }
-                else {
-                    this.itemsObj[parent.name].substatesObj[state.name] = state;
-                }
-            }
+        var levelOne = this.routeUrl[0].path;
+        if (this.menuObj[levelOne]) {
+            this.menuObj[levelOne]['isOpened'] = true;
         }
-        this.items = [];
-        for (let state in this.itemsObj) {
-            let stateObj = this.itemsObj[state];
-            this.items.push(stateObj);
-            if (stateObj.substatesObj) {
-                stateObj.substates = [];
-                for (let substate in stateObj.substatesObj) {
-                    stateObj.substates.push(stateObj.substatesObj[substate]);
-                }
-            }
+        this.menuObj.rooms.children = [];
+        for (var roomId in this.rooms) {
+            var roomMenu = {
+                name: this.rooms[roomId].name,
+                route: ['rooms', { name: this.rooms[roomId].name }]
+            };
+            this.menuObj.rooms.children.push(roomMenu);
         }
-        return this.items;
-    }
-    narrowMode() {
+        this.menuObj.devices.children = [];
+        for (var eId in this.endpoints) {
+            var endpointMenu = {
+                name: this.endpoints[eId].name,
+                route: ['rooms', { id: eId }]
+            };
+            this.menuObj.devices.children.push(endpointMenu);
+        }
+        ;
+        return this.menuList;
+    };
+    MenuService.prototype.narrowMode = function () {
         return false;
         //return this.$mdMedia('max-width: 1000px');
-    }
-    pageTitle() {
-        return this.$state.current.title || this.$state.params.name;
-    }
-    parentState() {
-        return this.$state.get('^');
-    }
-    states() {
-        return this.$state.get();
-    }
-    toggleSidenav(position) {
+    };
+    Object.defineProperty(MenuService.prototype, "pageTitle", {
+        get: function () {
+            return this._pageTitle;
+        },
+        set: function (val) {
+            this._pageTitle = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MenuService.prototype.toggleSidenav = function (position) {
         this.menuConfig.sidenavOpen = !this.menuConfig.sidenavOpen;
         this.dataService.updateConfig();
         if (this.narrowMode()) {
         }
-    }
-    toolbarSelectTable(tableName, destState, selectedId) {
-        let table = this.dataService.getTable(tableName);
+    };
+    MenuService.prototype.toolbarSelectTable = function (tableName, destState, selectedId) {
+        var table = this.dataService.getTable(tableName);
         this.toolbarSelect.options = [];
-        for (let id in table) {
+        for (var id in table) {
             this.toolbarSelect.options.push({ id: id, name: table[id].name });
         }
         this.toolbarSelect.tableName = tableName;
         this.toolbarSelect.destState = destState;
         this.toolbarSelect.selected = selectedId;
         this.toolbarSelect.enabled = true;
-    }
-    toolbarSelectUpdate() {
-        let row = this.dataService.getRowRef(this.toolbarSelect.tableName, this.toolbarSelect.selected);
+    };
+    MenuService.prototype.toolbarSelectUpdate = function () {
+        var row = this.dataService.getRowRef(this.toolbarSelect.tableName, this.toolbarSelect.selected);
         this.go({
             name: this.toolbarSelect.destState,
             params: {
@@ -169,12 +166,14 @@ let MenuService = class MenuService {
                 name: row.name
             }
         });
-    }
-};
+    };
+    return MenuService;
+}());
 MenuService = __decorate([
     core_1.Injectable(),
-    __param(0, core_1.Inject('$state')),
-    __metadata("design:paramtypes", [Object, data_service_1.DataService])
+    __metadata("design:paramtypes", [router_1.ActivatedRoute,
+        router_1.Router,
+        data_service_1.DataService])
 ], MenuService);
 exports.MenuService = MenuService;
 //# sourceMappingURL=menu.service.js.map

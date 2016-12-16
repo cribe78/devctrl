@@ -1,19 +1,20 @@
 import {UserSession} from "../../shared/UserSession";
 import {MenuService} from "../menu.service";
 import {DataService} from "../data.service";
+import { Directive, ElementRef, Injector } from '@angular/core';
+import { UpgradeComponent } from '@angular/upgrade/static';
+
 class ToolbarController {
     menu;
     session : UserSession;
     $state;
     menuService;
 
-    static $inject = [ '$state', 'MenuService', 'DataService'];
-    constructor($state,
-                menuService : MenuService,
+    static $inject = ['MenuService', 'DataService'];
+    constructor(menuService : MenuService,
                 private dataService : DataService) {
         this.menu = menuService;
         this.menuService = menuService;
-        this.$state = $state;
         this.session = this.dataService['userSession'];
         console.log("Toolbar Component created");
 
@@ -27,11 +28,6 @@ class ToolbarController {
     adminLogin() {
         this.dataService.doAdminLogon();
     };
-
-    pageTitle() {
-        return this.$state.current.title || this.$state.params.name;
-    };
-
 
     editClient($event) {
         //this.dataService.editRecord($event, self.user.client_id, "clients");
@@ -63,7 +59,7 @@ export let ToolbarComponent : angular.IComponentOptions = {
         </md-button>
         <md-select ng-if="$ctrl.menu.toolbarSelect.enabled"
                     aria-label="Select Page"
-                   placeholder="{{$ctrl.pageTitle()}}"
+                   placeholder="{{$ctrl.menu.pageTitle}}"
                    ng-model="$ctrl.menu.toolbarSelect.selected"
                    ng-change="$ctrl.menu.toolbarSelectUpdate()">
             <md-option class="text-headline"
@@ -72,7 +68,7 @@ export let ToolbarComponent : angular.IComponentOptions = {
                 {{option.name}}
             </md-option>
         </md-select>
-        <span flex class="title text-headline">{{$ctrl.pageTitle()}}</span>
+        <span flex class="title text-headline">{{$ctrl.menu.pageTitle}}</span>
         <div layout="column">
             <div>{{$ctrl.session.client_name}}</div>
             <span ng-if="$ctrl.adminLoggedIn()">{{$ctrl.session.username}}</span>
@@ -110,4 +106,13 @@ export let ToolbarComponent : angular.IComponentOptions = {
     </div>
 </md-toolbar>
 `
+}
+
+@Directive({
+    selector: 'devctrl-toolbar'
+})
+export class ToolbarComponentNg2 extends UpgradeComponent {
+    constructor(elementRef: ElementRef, injector: Injector) {
+        super('devctrlToolbar', elementRef, injector);
+    }
 }

@@ -1,13 +1,30 @@
 "use strict";
-const Control_1 = require("../../shared/Control");
-const WatcherRule_1 = require("../../shared/WatcherRule");
-class CtrlController {
-    constructor(dataService, menuService) {
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var Control_1 = require("../../shared/Control");
+var WatcherRule_1 = require("../../shared/WatcherRule");
+var core_1 = require("@angular/core");
+var static_1 = require("@angular/upgrade/static");
+var CtrlController = (function () {
+    function CtrlController(dataService, menuService, recordService) {
         this.dataService = dataService;
         this.menuService = menuService;
+        this.recordService = recordService;
         this.menu = menuService;
     }
-    $onInit() {
+    CtrlController.prototype.$onInit = function () {
         this.panelContext = !!this.panelControl;
         if (this.panelContext) {
             this.ctrl = this.panelControl.control;
@@ -17,90 +34,99 @@ class CtrlController {
         }
         this.appConfig = this.dataService.config;
         this.type = this.ctrl.usertype;
-    }
-    get name() {
-        if (this.panelContext && this.panelControl.name) {
-            return this.panelControl.name;
-        }
-        return this.ctrl.name;
-    }
-    get value() {
-        return this.ctrl.value;
-    }
-    set value(val) {
-        this.ctrl.value = val;
-    }
-    addWatcherRule($event) {
-        this.dataService.editRecord($event, '0', WatcherRule_1.WatcherRule.tableStr, { watched_control_id: this.ctrl._id });
-    }
-    config(key) {
+    };
+    Object.defineProperty(CtrlController.prototype, "name", {
+        get: function () {
+            if (this.panelContext && this.panelControl.name) {
+                return this.panelControl.name;
+            }
+            return this.ctrl.name;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CtrlController.prototype, "value", {
+        get: function () {
+            return this.ctrl.value;
+        },
+        set: function (val) {
+            this.ctrl.value = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CtrlController.prototype.addWatcherRule = function ($event) {
+        this.recordService.editRecord($event, '0', WatcherRule_1.WatcherRule.tableStr, { watched_control_id: this.ctrl._id });
+    };
+    CtrlController.prototype.config = function (key) {
         if (angular.isObject(this.ctrl.config) && this.ctrl.config[key]) {
             return this.ctrl.config[key];
         }
         return '';
-    }
-    editControl($event) {
-        this.dataService.editRecord($event, this.ctrl._id, this.ctrl.table);
-    }
-    editOptions($event) {
+    };
+    CtrlController.prototype.editControl = function ($event) {
+        this.recordService.editRecord($event, this.ctrl._id, this.ctrl.table);
+    };
+    CtrlController.prototype.editOptions = function ($event) {
         // Not currently implemented, enums removed from application
         if (this.ctrl.option_set) {
-            this.dataService.editRecord($event, this.ctrl.option_set_id, this.ctrl.option_set.table);
+            this.recordService.editRecord($event, this.ctrl.option_set_id, this.ctrl.option_set.table);
         }
         else {
-            this.dataService.editRecord($event, this.ctrl._id, this.ctrl.table);
+            this.recordService.editRecord($event, this.ctrl._id, this.ctrl.table);
         }
-    }
-    editPanelControl($event) {
-        this.dataService.editRecord($event, this.panelControl._id, this.panelControl.table);
-    }
-    intConfig(key) {
+    };
+    CtrlController.prototype.editPanelControl = function ($event) {
+        this.recordService.editRecord($event, this.panelControl._id, this.panelControl.table);
+    };
+    CtrlController.prototype.intConfig = function (key) {
         if (this.config(key)) {
             return parseInt(this.config(key));
         }
         return 0;
-    }
-    normalizedValue() {
+    };
+    CtrlController.prototype.normalizedValue = function () {
         // Normalize a numeric value to a scale of 0 - 100
-        let rawVal = this.ctrl.value;
-        let max = this.intConfig('max');
-        let min = this.intConfig('min');
+        var rawVal = this.ctrl.value;
+        var max = this.intConfig('max');
+        var min = this.intConfig('min');
         rawVal = rawVal < min ? min : rawVal;
         rawVal = rawVal > max ? max : rawVal;
-        let normVal = (rawVal + (0 - min)) * (max - min) / (100 - 0);
+        var normVal = (rawVal + (0 - min)) * (max - min) / (100 - 0);
         return normVal;
-    }
-    selectMenuItem(val) {
+    };
+    CtrlController.prototype.selectMenuItem = function (val) {
         this.setValue(val);
-    }
-    selectOptions() {
+    };
+    CtrlController.prototype.selectOptions = function () {
         if (this.ctrl.option_set) {
             return this.ctrl.option_set.options;
         }
         return !!this.ctrl.config.options ? this.ctrl.config.options : {};
-    }
-    setValue(val) {
+    };
+    CtrlController.prototype.setValue = function (val) {
         this.ctrl.value = val;
         this.updateValue(val);
-    }
-    selectValueName() {
-        let opts = this.selectOptions();
-        let value = this.ctrl.value;
-        for (let val in opts) {
+    };
+    CtrlController.prototype.selectValueName = function () {
+        var opts = this.selectOptions();
+        var value = this.ctrl.value;
+        for (var val in opts) {
             if (val == value) {
                 return opts[val];
             }
         }
         return value;
-    }
-    showLog($event) {
+    };
+    CtrlController.prototype.showLog = function ($event) {
         this.dataService.showControlLog($event, this.ctrl);
-    }
-    updateValue(val) {
+    };
+    CtrlController.prototype.updateValue = function (val) {
         this.dataService.updateControlValue(this.ctrl);
-    }
-}
-CtrlController.$inject = ['DataService', 'MenuService'];
+    };
+    return CtrlController;
+}());
+CtrlController.$inject = ['DataService', 'MenuService', 'RecordEditorService'];
 exports.ControlComponent = {
     templateUrl: 'app/ng1/ctrl.html',
     controller: CtrlController,
@@ -109,4 +135,22 @@ exports.ControlComponent = {
         controlId: '<'
     }
 };
+var ControlComponentNg2 = (function (_super) {
+    __extends(ControlComponentNg2, _super);
+    function ControlComponentNg2(elementRef, injector) {
+        return _super.call(this, 'ctrl', elementRef, injector) || this;
+    }
+    return ControlComponentNg2;
+}(static_1.UpgradeComponent));
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], ControlComponentNg2.prototype, "controlId", void 0);
+ControlComponentNg2 = __decorate([
+    core_1.Directive({
+        selector: 'ctrl'
+    }),
+    __metadata("design:paramtypes", [core_1.ElementRef, core_1.Injector])
+], ControlComponentNg2);
+exports.ControlComponentNg2 = ControlComponentNg2;
 //# sourceMappingURL=control.component.js.map

@@ -1,29 +1,36 @@
 "use strict";
-const EndpointCommunicator_1 = require("./EndpointCommunicator");
-const net = require("net");
-const Endpoint_1 = require("../shared/Endpoint");
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EndpointCommunicator_1 = require("./EndpointCommunicator");
+var net = require("net");
+var Endpoint_1 = require("../shared/Endpoint");
 //let debug = debugMod("comms");
-let debug = console.log;
-class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
-    constructor() {
-        super();
-        this.commands = {};
-        this.commandsByTemplate = {};
-        this.inputLineTerminator = '\r\n';
-        this.outputLineTerminator = '\r\n';
-        this.socketEncoding = 'utf8';
-        this.inputBuffer = '';
-        this.pollTimer = 0;
-        this.backoffTime = 1000;
-        this.expectedResponses = [];
+var debug = console.log;
+var TCPCommunicator = (function (_super) {
+    __extends(TCPCommunicator, _super);
+    function TCPCommunicator() {
+        var _this = _super.call(this) || this;
+        _this.commands = {};
+        _this.commandsByTemplate = {};
+        _this.inputLineTerminator = '\r\n';
+        _this.outputLineTerminator = '\r\n';
+        _this.socketEncoding = 'utf8';
+        _this.inputBuffer = '';
+        _this.pollTimer = 0;
+        _this.backoffTime = 1000;
+        _this.expectedResponses = [];
+        return _this;
     }
-    buildCommandList() {
-    }
-    connect() {
-        let self = this;
+    TCPCommunicator.prototype.buildCommandList = function () {
+    };
+    TCPCommunicator.prototype.connect = function () {
+        var self = this;
         this.host = this.config.endpoint.ip;
         this.port = this.config.endpoint.port;
-        let connectOpts = {
+        var connectOpts = {
             port: this.config.endpoint.port,
             host: this.config.endpoint.ip
         };
@@ -46,46 +53,48 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
                 self.poll();
             }, 10000);
         }
-    }
-    connectionConfirmed() {
+    };
+    TCPCommunicator.prototype.connectionConfirmed = function () {
         this.backoffTime = 1000;
-    }
-    disconnect() {
+    };
+    TCPCommunicator.prototype.disconnect = function () {
         this.socket.end();
         this.connected = false;
         this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Offline);
-    }
-    doDeviceLogon() {
+    };
+    TCPCommunicator.prototype.doDeviceLogon = function () {
         this.connected = true;
         this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
         this.online();
-    }
+    };
     ;
-    executeCommandQuery(cmd) {
+    TCPCommunicator.prototype.executeCommandQuery = function (cmd) {
         if (!cmd.queryString()) {
             return;
         }
-        let self = this;
-        let queryStr = cmd.queryString();
+        var self = this;
+        var queryStr = cmd.queryString();
         debug("sending query: " + queryStr);
         this.socket.write(queryStr + this.outputLineTerminator);
         this.expectedResponses.push([
             cmd.queryResponseMatchString(),
-            (line) => {
-                for (let ctid of cmd.ctidList) {
-                    let control = self.controlsByCtid[ctid];
-                    let val = cmd.parseQueryResponse(control, line);
+            function (line) {
+                for (var _i = 0, _a = cmd.ctidList; _i < _a.length; _i++) {
+                    var ctid = _a[_i];
+                    var control = self.controlsByCtid[ctid];
+                    var val = cmd.parseQueryResponse(control, line);
                     self.setControlValue(control, val);
                 }
                 self.connectionConfirmed();
             }
         ]);
-    }
-    getControlTemplates() {
+    };
+    TCPCommunicator.prototype.getControlTemplates = function () {
         this.buildCommandList();
-        for (let cmd in this.commands) {
-            let templateList = this.commands[cmd].getControlTemplates();
-            for (let tpl of templateList) {
+        for (var cmd in this.commands) {
+            var templateList = this.commands[cmd].getControlTemplates();
+            for (var _i = 0, templateList_1 = templateList; _i < templateList_1.length; _i++) {
+                var tpl = templateList_1[_i];
                 // Don't mess with this.controls.  That belongs to the data model
                 //this.controls[tpl._id] = tpl;
                 this.controlsByCtid[tpl.ctid] = tpl;
@@ -93,41 +102,42 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
             }
         }
         return this.controlsByCtid;
-    }
-    handleControlUpdateRequest(request) {
+    };
+    TCPCommunicator.prototype.handleControlUpdateRequest = function (request) {
+        var _this = this;
         if (!this.connected) {
             return;
         }
-        let control = this.controls[request.control_id];
-        let command = this.commandsByTemplate[control.ctid];
-        let updateStr = command.updateString(control, request);
+        var control = this.controls[request.control_id];
+        var command = this.commandsByTemplate[control.ctid];
+        var updateStr = command.updateString(control, request);
         debug("sending update: " + updateStr);
         this.socket.write(updateStr + this.outputLineTerminator);
         this.expectedResponses.push([
             command.updateResponseMatchString(request),
-            (line) => {
-                this.setControlValue(control, request.value);
+            function (line) {
+                _this.setControlValue(control, request.value);
             }
         ]);
-    }
-    matchLineToCommand(line) {
-        for (let cmdStr in this.commands) {
-            let cmd = this.commands[cmdStr];
+    };
+    TCPCommunicator.prototype.matchLineToCommand = function (line) {
+        for (var cmdStr in this.commands) {
+            var cmd = this.commands[cmdStr];
             if (cmd.matchesReport(line)) {
                 debug("read: " + line + ", matches cmd " + cmd.name);
                 return cmd;
             }
         }
         return false;
-    }
-    matchLineToError(line) {
+    };
+    TCPCommunicator.prototype.matchLineToError = function (line) {
         return false;
-    }
-    matchLineToExpectedResponse(line) {
-        for (let idx = 0; idx < this.expectedResponses.length; idx++) {
-            let eresp = this.expectedResponses[idx];
+    };
+    TCPCommunicator.prototype.matchLineToExpectedResponse = function (line) {
+        for (var idx = 0; idx < this.expectedResponses.length; idx++) {
+            var eresp = this.expectedResponses[idx];
             if (line.search(eresp[0]) > -1) {
-                debug(`${line} matched expected response "${eresp[0]}" at [${idx}]`);
+                debug(line + " matched expected response \"" + eresp[0] + "\" at [" + idx + "]");
                 //Execute expected response callback
                 eresp[1](line);
                 this.expectedResponses = this.expectedResponses.slice(idx + 1);
@@ -135,20 +145,20 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
             }
         }
         return false;
-    }
-    onData(data) {
-        let strData = String(data);
+    };
+    TCPCommunicator.prototype.onData = function (data) {
+        var strData = String(data);
         this.inputBuffer += strData;
-        let lines = this.inputBuffer.split(this.inputLineTerminator);
+        var lines = this.inputBuffer.split(this.inputLineTerminator);
         while (lines.length > 1) {
             //debug("data recieved: " + lines[0]);
             this.processLine(lines[0]);
             lines.splice(0, 1);
         }
         this.inputBuffer = lines[0];
-    }
-    onEnd() {
-        let self = this;
+    };
+    TCPCommunicator.prototype.onEnd = function () {
+        var self = this;
         if (this.config.endpoint.enabled) {
             debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
             this.connected = false;
@@ -167,22 +177,22 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
         else {
             debug("successfully disconnected from " + this.host);
         }
-    }
+    };
     /**
      *  Functions to perform when device connection has been confirmed
      */
-    online() {
+    TCPCommunicator.prototype.online = function () {
         this.queryAll();
-    }
-    poll() {
+    };
+    TCPCommunicator.prototype.poll = function () {
         if (!this.connected) {
             return;
         }
         debug("polling device");
-        for (let id in this.controls) {
-            let control = this.controls[id];
+        for (var id in this.controls) {
+            var control = this.controls[id];
             if (control.poll) {
-                let cmd = this.commandsByTemplate[control.ctid];
+                var cmd = this.commandsByTemplate[control.ctid];
                 if (cmd) {
                     this.executeCommandQuery(cmd);
                 }
@@ -191,11 +201,11 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
                 }
             }
         }
-    }
-    preprocessLine(line) {
+    };
+    TCPCommunicator.prototype.preprocessLine = function (line) {
         return line;
-    }
-    processLine(line) {
+    };
+    TCPCommunicator.prototype.processLine = function (line) {
         line = this.preprocessLine(line);
         //Ignore empty lines
         if (line == '')
@@ -208,12 +218,13 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
             return;
         }
         // Match line to a command
-        let match = this.matchLineToCommand(line);
+        var match = this.matchLineToCommand(line);
         if (match) {
-            let cmd = match;
-            for (let ctid of cmd.ctidList) {
-                let control = this.controlsByCtid[ctid];
-                let val = cmd.parseReportValue(control, line);
+            var cmd = match;
+            for (var _i = 0, _a = cmd.ctidList; _i < _a.length; _i++) {
+                var ctid = _a[_i];
+                var control = this.controlsByCtid[ctid];
+                var val = cmd.parseReportValue(control, line);
                 this.setControlValue(control, val);
             }
             this.connectionConfirmed();
@@ -221,20 +232,20 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
         else {
             debug("read, unmatched: " + line);
         }
-    }
+    };
     /**
      * Query all controls, regardless of poll setting.
      *
      * Override this method to exclude polling of certain controls
      */
-    queryAll() {
-        for (let cmdStr in this.commands) {
+    TCPCommunicator.prototype.queryAll = function () {
+        for (var cmdStr in this.commands) {
             if (!this.commands[cmdStr].writeonly) {
                 this.executeCommandQuery(this.commands[cmdStr]);
             }
         }
-    }
-    setControlValue(control, val) {
+    };
+    TCPCommunicator.prototype.setControlValue = function (control, val) {
         if (control.value != val) {
             if (typeof val == 'object') {
                 // Don't send update if nothing will change
@@ -242,11 +253,12 @@ class TCPCommunicator extends EndpointCommunicator_1.EndpointCommunicator {
                     return;
                 }
             }
-            debug(`control update: ${control.name} = ${val}`);
+            debug("control update: " + control.name + " = " + val);
             this.config.controlUpdateCallback(control, val);
             control.value = val;
         }
-    }
-}
+    };
+    return TCPCommunicator;
+}(EndpointCommunicator_1.EndpointCommunicator));
 exports.TCPCommunicator = TCPCommunicator;
 //# sourceMappingURL=TCPCommunicator.js.map

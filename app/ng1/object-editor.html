@@ -11,7 +11,7 @@
         </md-input-container>
         <devctrl-object-editor ng-if="$ctrl.valueType(value) == 'object'"
                                 object="$ctrl.object[key]"
-                                name="key"
+                                fname="key"
                                 on-update="$ctrl.onUpdate(object, name)">
         </devctrl-object-editor>
         <md-button  class="md-icon-button" ng-click="$ctrl.deleteValue(key)">

@@ -31,7 +31,7 @@ declare var angular: angular.IAngularStatic;
                 {{option.name}}
             </md-option>
         </select> -->
-        <span flex class="title text-headline">{{pageTitle()}}</span>
+        <span flex class="title text-headline">{{menu.pageTitle()}}</span>
         <div layout="column">
             <div>{{session.client_name}}</div>
             <span *devctrlAdminOnly>{{session.username}}</span>
@@ -61,13 +61,10 @@ export class ToolbarComponent {
     $state;
     menuService;
 
-    //static $inject = [ '$state', 'MenuService', 'DataService'];
-    constructor(@Inject('$state') $state,
-                menuService : MenuService,
-                @Inject('DataService') private dataService : DataService) {
+    constructor(menuService : MenuService,
+                private dataService : DataService) {
         this.menu = menuService;
         this.menuService = menuService;
-        this.$state = $state;
         this.session = this.dataService['userSession'];
         console.log("Toolbar Component created");
 
@@ -81,11 +78,6 @@ export class ToolbarComponent {
     adminLogin() {
         this.dataService.doAdminLogon();
     };
-
-    pageTitle() {
-        return this.$state.current.title || this.$state.params.name;
-    };
-
 
     editClient($event) {
         //this.dataService.editRecord($event, self.user.client_id, "clients");

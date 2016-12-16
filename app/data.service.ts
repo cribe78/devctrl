@@ -1,8 +1,7 @@
-import {dataServiceSchema} from "./ng1/data-service-schema";
+import {dataServiceSchema} from "./data-service-schema";
 import {UserSession} from "../shared/UserSession";
 import * as io from "socket.io-client";
 import {IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData} from "../shared/DCSerializable";
-import {RecordController} from "./ng1/record.controller";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import {CtrlLogCtrl} from "./ng1/CtrlLogCtrl";
 import {DCDataModel, IndexedDataSet} from "../shared/DCDataModel";
@@ -10,7 +9,15 @@ import {Control} from "../shared/Control";
 import {Endpoint} from "../shared/Endpoint";
 import { Injectable, Inject } from "@angular/core";
 import { Headers, Http } from '@angular/http';
+import { MdSnackBar, MdDialog } from '@angular/material';
 import 'rxjs/add/operator/toPromise';
+import {AlertDialog} from "./alert-dialog.component";
+import {EndpointType} from "../shared/EndpointType";
+import {OptionSet} from "../shared/OptionSet";
+import {Panel} from "../shared/Panel";
+import {PanelControl} from "../shared/PanelControl";
+import {Room} from "../shared/Room";
+import {WatcherRule} from "../shared/WatcherRule";
 
 @Injectable()
 export class DataService {
@@ -35,8 +42,8 @@ export class DataService {
     //    '$q', 'socket', '$mdDialog', '$location'];
 
     constructor(private http : Http,
-                @Inject('$mdToast') private $mdToast,
-                @Inject('$mdDialog') private $mdDialog) {
+                private snackBar : MdSnackBar,
+                private mdDialog : MdDialog) {
         this.schema = dataServiceSchema;
 
         for (let table in this.schema) {
@@ -97,6 +104,7 @@ export class DataService {
         });
     }
 
+
     deleteRow(row : DCSerializable) {
         let resource = "api/data/" + row.table + "/" + row._id;
 
@@ -123,7 +131,7 @@ export class DataService {
     }
 
     dialogClose() {
-        this.$mdDialog.hide();
+        this.mdDialog.closeAll();
     }
 
     doAdminLogon(allowExpiration : boolean = false) {
@@ -225,42 +233,6 @@ export class DataService {
     }
 
 
-    editRecord($event, id: string, tableName: string, recordDefaults = {}) {
-        let record;
-
-        if (id !== "0") {
-            record = this.getRowRef(tableName, id);
-        }
-        else {
-            // Set the name as an empty string, otherwise it will resolve
-            // as "unknown [tablename]"
-            if (! recordDefaults["name"]) {
-                recordDefaults["name"] = '';
-            }
-            record = this.getNewRowRef(tableName, recordDefaults);
-        }
-
-        this.$mdDialog.show({
-            targetEvent: $event,
-            locals: {
-                obj: record
-            },
-            controller: RecordController,
-            controllerAs: 'record',
-            bindToController: true,
-            templateUrl: 'app/ng1/record.html',
-            clickOutsideToClose: true,
-            hasBackdrop : false
-        });
-    }
-
-
-    editRecordClose() {
-        //TODO: delete unused new record
-        this.$mdDialog.hide();
-    }
-
-
     errorToast(data) {
         let errorText = "An unknown error has occured"
         if (data.error) {
@@ -274,6 +246,9 @@ export class DataService {
 
         //$mdToast.show($mdToast.simple().content(errorText));
 
+        this.snackBar.open(errorText, "OK");
+
+        /**
         this.$mdToast.show({
             locals: {
                 message: errorText
@@ -289,6 +264,7 @@ export class DataService {
     <md-button ng-click="toast.hideToast()">OK</md-button>
 </md-toast>`
         });
+         **/
     }
 
     generateEndpointConfig($event, endpointId : string) {
@@ -305,15 +281,12 @@ module.exports = {
     endpointId: "${endpointId}",
     authId: "${response.json().session._id}"
 }               
-`;
+                `;
 
-                this.$mdDialog.show(
-                    this.$mdDialog.alert()
-                        .title(`${endpointName}.js`)
-                        .textContent(alert)
-                        .targetEvent($event)
-                        .ok("Got it!")
-                );
+                let ref = this.mdDialog.open(AlertDialog);
+                ref.componentInstance.title = `${endpointName}.js`;
+                ref.componentInstance.content = alert;
+                ref.componentInstance.ok = "Got It!";
             },
             response => {
                 this.errorToast("Unable to retrieve endpoint ncontrol config");
@@ -536,7 +509,20 @@ module.exports = {
 
         this.socket.on('reconnect', () => {
             // Refresh endpoints, as they may have been disconnected from the messenger
+            console.log("reconnect, fetching data");
             this.getMData(Endpoint.tableStr, {});
+        });
+
+        this.socket.on('connect', () => {
+            // Just load everything
+            this.getMData(Control.tableStr, {});
+            this.getMData(Endpoint.tableStr, {});
+            this.getMData(EndpointType.tableStr, {});
+            this.getMData(OptionSet.tableStr, {});
+            this.getMData(Panel.tableStr, {});
+            this.getMData(PanelControl.tableStr, {});
+            this.getMData(Room.tableStr, {});
+            this.getMData(WatcherRule.tableStr, {});
         });
 
 
@@ -564,12 +550,12 @@ module.exports = {
     }
 
     loadData(data) {
-        //try {
+        try {
             this.dataModel.loadData(data);
-        //}
-        //catch (e) {
-        //    console.error("loadData error: " + e.message);
-        //}
+        }
+        catch (e) {
+            console.error("loadData error: " + e.message);
+        }
     }
 
     revokeAdminAuth() {
@@ -603,6 +589,7 @@ module.exports = {
 
         this.getMData('control_log', qParams).then(
             () => {
+                /**
                 this.$mdDialog.show({
                     targetEvent: $event,
                     locals: {
@@ -615,11 +602,16 @@ module.exports = {
                     clickOutsideToClose: true,
                     hasBackdrop : false,
                 });
+                 **/
             },
             (error) => {
                 this.errorToast(error);
             }
         );
+    }
+
+    sortedArray(table : string, sortProp : string = 'name') : DCSerializable[] {
+        return this.dataModel.sortedArray(table, sortProp);
     }
 
     publishStatusUpdate(message: string) {

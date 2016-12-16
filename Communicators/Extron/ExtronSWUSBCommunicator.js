@@ -1,16 +1,23 @@
 "use strict";
-const debugMod = require("debug");
-const TCPCommunicator_1 = require("../TCPCommunicator");
-const TCPCommand_1 = require("../TCPCommand");
-let debug = debugMod("comms");
-class ExtronSWUSBCommunicator extends TCPCommunicator_1.TCPCommunicator {
-    constructor() {
-        super(...arguments);
-        this.inputLineTerminator = '\r\n';
-        this.outputLineTerminator = '';
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var debugMod = require("debug");
+var TCPCommunicator_1 = require("../TCPCommunicator");
+var TCPCommand_1 = require("../TCPCommand");
+var debug = debugMod("comms");
+var ExtronSWUSBCommunicator = (function (_super) {
+    __extends(ExtronSWUSBCommunicator, _super);
+    function ExtronSWUSBCommunicator() {
+        var _this = _super.apply(this, arguments) || this;
+        _this.inputLineTerminator = '\r\n';
+        _this.outputLineTerminator = '';
+        return _this;
     }
-    buildCommandList() {
-        let config = {
+    ExtronSWUSBCommunicator.prototype.buildCommandList = function () {
+        var config = {
             cmdStr: "Input",
             cmdQueryStr: "I",
             cmdQueryResponseRE: /Chn(\d)/,
@@ -31,14 +38,15 @@ class ExtronSWUSBCommunicator extends TCPCommunicator_1.TCPCommunicator {
             poll: 1
         };
         this.commands[config.cmdStr] = new TCPCommand_1.TCPCommand(config);
-    }
-    preprocessLine(line) {
+    };
+    ExtronSWUSBCommunicator.prototype.preprocessLine = function (line) {
         if (line.match(/^ser2net port/)) {
             return '';
         }
         return line;
-    }
-}
-let communicator = new ExtronSWUSBCommunicator();
+    };
+    return ExtronSWUSBCommunicator;
+}(TCPCommunicator_1.TCPCommunicator));
+var communicator = new ExtronSWUSBCommunicator();
 module.exports = communicator;
 //# sourceMappingURL=ExtronSWUSBCommunicator.js.map

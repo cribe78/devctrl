@@ -1,9 +1,9 @@
 "use strict";
-const Control_1 = require("../shared/Control");
-const sprintf_js_1 = require("sprintf-js");
-let debug = console.log;
-class HTTPCommand {
-    constructor(config) {
+var Control_1 = require("../shared/Control");
+var sprintf_js_1 = require("sprintf-js");
+var debug = console.log;
+var HTTPCommand = (function () {
+    function HTTPCommand(config) {
         this.cmdPathFunction = config.cmdPathFunction;
         this.cmdPathTemplate = config.cmdPathTemplate;
         this.cmdResponseRE = new RegExp(config.cmdResponseRE);
@@ -11,8 +11,8 @@ class HTTPCommand {
         this.readonly = !!config.readonly;
         this.writeonly = !!config.writeonly;
     }
-    commandPath(value) {
-        let path = `/${value}`; //  Fairly useless default value
+    HTTPCommand.prototype.commandPath = function (value) {
+        var path = "/" + value; //  Fairly useless default value
         if (this.cmdPathFunction) {
             path = this.cmdPathFunction(value);
         }
@@ -23,18 +23,18 @@ class HTTPCommand {
             path = sprintf_js_1.sprintf(this.cmdPathTemplate, value);
         }
         return path;
-    }
-    getControls() {
+    };
+    HTTPCommand.prototype.getControls = function () {
         return [new Control_1.Control(this.controlData._id, this.controlData)];
-    }
-    matchResponse(resp) {
-        let matches = resp.match(this.cmdResponseRE);
+    };
+    HTTPCommand.prototype.matchResponse = function (resp) {
+        var matches = resp.match(this.cmdResponseRE);
         if (matches) {
             return true;
         }
         return false;
-    }
-    parseValue(value) {
+    };
+    HTTPCommand.prototype.parseValue = function (value) {
         if (this.controlData.control_type == Control_1.Control.CONTROL_TYPE_RANGE) {
             return parseFloat(value);
         }
@@ -54,7 +54,8 @@ class HTTPCommand {
             return !!value;
         }
         return value;
-    }
-}
+    };
+    return HTTPCommand;
+}());
 exports.HTTPCommand = HTTPCommand;
 //# sourceMappingURL=HTTPCommand.js.map

@@ -8,25 +8,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-const data_service_schema_1 = require("./ng1/data-service-schema");
-const io = require("socket.io-client");
-const record_controller_1 = require("./ng1/record.controller");
-const CtrlLogCtrl_1 = require("./ng1/CtrlLogCtrl");
-const DCDataModel_1 = require("../shared/DCDataModel");
-const Endpoint_1 = require("../shared/Endpoint");
-const core_1 = require("@angular/core");
-const http_1 = require("@angular/http");
+var data_service_schema_1 = require("./data-service-schema");
+var io = require("socket.io-client");
+var DCDataModel_1 = require("../shared/DCDataModel");
+var Control_1 = require("../shared/Control");
+var Endpoint_1 = require("../shared/Endpoint");
+var core_1 = require("@angular/core");
+var http_1 = require("@angular/http");
+var material_1 = require("@angular/material");
 require("rxjs/add/operator/toPromise");
-let DataService = class DataService {
+var alert_dialog_component_1 = require("./alert-dialog.component");
+var EndpointType_1 = require("../shared/EndpointType");
+var OptionSet_1 = require("../shared/OptionSet");
+var Panel_1 = require("../shared/Panel");
+var PanelControl_1 = require("../shared/PanelControl");
+var Room_1 = require("../shared/Room");
+var WatcherRule_1 = require("../shared/WatcherRule");
+var DataService = (function () {
     //static $inject = ['$window', '$http', '$mdToast',  '$timeout',
     //    '$q', 'socket', '$mdDialog', '$location'];
-    constructor(http, $mdToast, $mdDialog) {
+    function DataService(http, snackBar, mdDialog) {
         this.http = http;
-        this.$mdToast = $mdToast;
-        this.$mdDialog = $mdDialog;
+        this.snackBar = snackBar;
+        this.mdDialog = mdDialog;
         this.initialized = false;
         this.pendingUpdates = [];
         this.tablePromises = {};
@@ -38,11 +42,11 @@ let DataService = class DataService {
             }
         };
         this.schema = data_service_schema_1.dataServiceSchema;
-        for (let table in this.schema) {
-            let tschema = this.schema[table];
+        for (var table in this.schema) {
+            var tschema = this.schema[table];
             if (tschema.foreign_keys) {
                 tschema['referenced'] = {};
-                for (let keyName in tschema.foreign_keys) {
+                for (var keyName in tschema.foreign_keys) {
                     tschema.referenced[tschema.foreign_keys[keyName]] = keyName;
                 }
             }
@@ -69,107 +73,113 @@ let DataService = class DataService {
             console.log("window.localStorage not available");
         }
     }
-    addRow(row, callback) {
-        let req = {};
+    DataService.prototype.addRow = function (row, callback) {
+        var _this = this;
+        var req = {};
         req[row.table] = [row.getDataObject()];
-        this.socket.emit('add-data', req, (response) => {
+        this.socket.emit('add-data', req, function (response) {
             if (response.error) {
-                this.errorToast(response.error);
+                _this.errorToast(response.error);
                 return;
             }
-            let newId = Object.keys(response.add[row.table])[0];
+            var newId = Object.keys(response.add[row.table])[0];
             console.log("new record " + newId + "added to " + row.table);
-            this.loadData(response);
-            let record = this.dataModel[row.table][newId];
+            _this.loadData(response);
+            var record = _this.dataModel[row.table][newId];
             if (angular.isFunction(callback)) {
                 callback(record);
             }
         });
-    }
-    deleteRow(row) {
-        let resource = "api/data/" + row.table + "/" + row._id;
+    };
+    DataService.prototype.deleteRow = function (row) {
+        var _this = this;
+        var resource = "api/data/" + row.table + "/" + row._id;
         // Check for foreign key constraints
-        let referencedTable = "";
-        for (let ref in row.referenced) {
+        var referencedTable = "";
+        for (var ref in row.referenced) {
             if (Object.keys(row.referenced[ref]).length > 0) {
                 referencedTable = ref;
             }
         }
         if (referencedTable) {
-            let msg = "Cannot delete " + row.table + " record due to foreign key constraint on " + referencedTable;
+            var msg = "Cannot delete " + row.table + " record due to foreign key constraint on " + referencedTable;
             this.errorToast({ error: msg });
             return;
         }
         this.http.delete(resource).toPromise()
-            .then(data => { this.loadData(data.json()); }, data => { this.errorToast(data.json()); });
-    }
-    dialogClose() {
-        this.$mdDialog.hide();
-    }
-    doAdminLogon(allowExpiration = false) {
+            .then(function (data) { _this.loadData(data.json()); }, function (data) { _this.errorToast(data.json()); });
+    };
+    DataService.prototype.dialogClose = function () {
+        this.mdDialog.closeAll();
+    };
+    DataService.prototype.doAdminLogon = function (allowExpiration) {
+        var _this = this;
+        if (allowExpiration === void 0) { allowExpiration = false; }
         // First, check current login status
         if (this.userSession.login_expires > Date.now()) {
-            let url = "/auth/admin_auth";
+            var url = "/auth/admin_auth";
             this.http.get(url).toPromise().then(
             //Success
-            response => {
-                angular.merge(this.userSession, response.json().session);
+            function (response) {
+                angular.merge(_this.userSession, response.json().session);
                 // Refresh credentials before they expire
-                let retryDelay = (this.userSession.admin_auth_expires - Date.now()) - 2000;
+                var retryDelay = (_this.userSession.admin_auth_expires - Date.now()) - 2000;
                 //let retryDelay = 60000;
-                let retryMilli = Date.now() + retryDelay;
-                let retryTime = new Date(retryMilli);
-                let retryTimeStr = retryTime.toTimeString().substr(0, 17);
-                if (retryMilli > this.userSession.login_expires) {
+                var retryMilli = Date.now() + retryDelay;
+                var retryTime = new Date(retryMilli);
+                var retryTimeStr = retryTime.toTimeString().substr(0, 17);
+                if (retryMilli > _this.userSession.login_expires) {
                     console.log("not scheduling admin refresh, user session will be expired");
                     return;
                 }
                 if (retryDelay > 0) {
-                    this.adminLogonTimeout = setTimeout(() => {
-                        this.doAdminLogon(true);
+                    _this.adminLogonTimeout = setTimeout(function () {
+                        _this.doAdminLogon(true);
                     }, retryDelay);
-                    console.log(`admin_auth successful, admin refresh scheduled for ${retryTimeStr}`);
+                    console.log("admin_auth successful, admin refresh scheduled for " + retryTimeStr);
                 }
                 else {
                     console.log("admin_auth successful, negative retry delay, what the hell does that mean?");
                 }
             }, 
             //Failure
-            response => {
+            function (response) {
                 if (response.status == 401) {
-                    this.errorToast("You are not authorize to access admin functions");
+                    _this.errorToast("You are not authorize to access admin functions");
                     //TODO: admin_auth_requested should be set on local storage
-                    this.userSession.admin_auth_requested = false;
+                    _this.userSession.admin_auth_requested = false;
                 }
                 else if (response.status == -1) {
                     if (!allowExpiration) {
                         console.log("XHR admin auth failed, attempting logon");
-                        this.doLogon(true, true);
+                        _this.doLogon(true, true);
                     }
                     else {
                         console.log("XHR admin auth failed, dropping admin privileges");
                     }
                 }
                 else {
-                    this.errorToast("Admin auth error: " + response.status);
+                    _this.errorToast("Admin auth error: " + response.status);
                 }
             });
         }
         else {
-            let expireStr = (new Date(this.userSession.login_expires)).toTimeString().substr(0, 17);
-            console.log(`user session expired at ${expireStr}, referring to doLogon`);
+            var expireStr = (new Date(this.userSession.login_expires)).toTimeString().substr(0, 17);
+            console.log("user session expired at " + expireStr + ", referring to doLogon");
             if (this.config.lastLogonAttempt) {
-                let lastLogonStr = (new Date(this.config.lastLogonAttempt)).toTimeString().substr(0, 17);
-                console.log(`last logon attempt was at ${lastLogonStr}`);
+                var lastLogonStr = (new Date(this.config.lastLogonAttempt)).toTimeString().substr(0, 17);
+                console.log("last logon attempt was at " + lastLogonStr);
             }
             this.doLogon(true);
         }
-    }
-    doLogon(admin_auth_check = false, force_login = false) {
+    };
+    DataService.prototype.doLogon = function (admin_auth_check, force_login) {
+        if (admin_auth_check === void 0) { admin_auth_check = false; }
+        if (force_login === void 0) { force_login = false; }
         if (force_login || this.userSession.login_expires < Date.now()) {
             // Circuit breaker for login loops
             if (this.config.lastLogonAttempt) {
-                let timeSinceLogon = Date.now() - this.config.lastLogonAttempt;
+                var timeSinceLogon = Date.now() - this.config.lastLogonAttempt;
                 if (timeSinceLogon < 10000) {
                     this.errorToast("Login loop detected.  Not processing logon request");
                     return;
@@ -177,48 +187,18 @@ let DataService = class DataService {
             }
             this.config.lastLogonAttempt = Date.now();
             this.updateConfig();
-            let location = window.location.pathname;
-            let newLocation = "/auth/do_logon?";
+            var location_1 = window.location.pathname;
+            var newLocation = "/auth/do_logon?";
             if (admin_auth_check) {
                 newLocation = newLocation + "admin_auth_requested=1&";
             }
             console.log("doLogon: admin_auth_requested = " + admin_auth_check);
-            newLocation = newLocation + "location=" + location;
+            newLocation = newLocation + "location=" + location_1;
             window.location.href = newLocation;
         }
-    }
-    editRecord($event, id, tableName, recordDefaults = {}) {
-        let record;
-        if (id !== "0") {
-            record = this.getRowRef(tableName, id);
-        }
-        else {
-            // Set the name as an empty string, otherwise it will resolve
-            // as "unknown [tablename]"
-            if (!recordDefaults["name"]) {
-                recordDefaults["name"] = '';
-            }
-            record = this.getNewRowRef(tableName, recordDefaults);
-        }
-        this.$mdDialog.show({
-            targetEvent: $event,
-            locals: {
-                obj: record
-            },
-            controller: record_controller_1.RecordController,
-            controllerAs: 'record',
-            bindToController: true,
-            templateUrl: 'app/ng1/record.html',
-            clickOutsideToClose: true,
-            hasBackdrop: false
-        });
-    }
-    editRecordClose() {
-        //TODO: delete unused new record
-        this.$mdDialog.hide();
-    }
-    errorToast(data) {
-        let errorText = "An unknown error has occured";
+    };
+    DataService.prototype.errorToast = function (data) {
+        var errorText = "An unknown error has occured";
         if (data.error) {
             errorText = data.error;
         }
@@ -227,6 +207,8 @@ let DataService = class DataService {
         }
         console.log(errorText);
         //$mdToast.show($mdToast.simple().content(errorText));
+        this.snackBar.open(errorText, "OK");
+        /**
         this.$mdToast.show({
             locals: {
                 message: errorText
@@ -242,31 +224,27 @@ let DataService = class DataService {
     <md-button ng-click="toast.hideToast()">OK</md-button>
 </md-toast>`
         });
-    }
-    generateEndpointConfig($event, endpointId) {
-        let endpoint = this.getRowRef(Endpoint_1.Endpoint.tableStr, endpointId);
-        let endpointName = endpoint.name.toLowerCase();
+         **/
+    };
+    DataService.prototype.generateEndpointConfig = function ($event, endpointId) {
+        var _this = this;
+        var endpoint = this.getRowRef(Endpoint_1.Endpoint.tableStr, endpointId);
+        var endpointName = endpoint.name.toLowerCase();
         endpointName = endpointName.replace(/ /g, '-');
-        let url = `/auth/create_endpoint_session?${endpointName}`;
+        var url = "/auth/create_endpoint_session?" + endpointName;
         this.http.get(url).toPromise().then(
         //Success
-        response => {
-            let alert = `
-module.exports = {
-    endpointId: "${endpointId}",
-    authId: "${response.json().session._id}"
-}               
-`;
-            this.$mdDialog.show(this.$mdDialog.alert()
-                .title(`${endpointName}.js`)
-                .textContent(alert)
-                .targetEvent($event)
-                .ok("Got it!"));
-        }, response => {
-            this.errorToast("Unable to retrieve endpoint ncontrol config");
+        function (response) {
+            var alert = "\nmodule.exports = {\n    endpointId: \"" + endpointId + "\",\n    authId: \"" + response.json().session._id + "\"\n}               \n                ";
+            var ref = _this.mdDialog.open(alert_dialog_component_1.AlertDialog);
+            ref.componentInstance.title = endpointName + ".js";
+            ref.componentInstance.content = alert;
+            ref.componentInstance.ok = "Got It!";
+        }, function (response) {
+            _this.errorToast("Unable to retrieve endpoint ncontrol config");
         });
-    }
-    getLog() {
+    };
+    DataService.prototype.getLog = function () {
         //TODO: Needs re-implementation in messenger
         /**
         return this.$http.get("log.php")
@@ -277,9 +255,9 @@ module.exports = {
                 }
             })
         **/
-    }
+    };
     // Get MongoDB data from the IO messenger
-    getMData(table, params) {
+    DataService.prototype.getMData = function (table, params) {
         /**
         if (! this.userSession._id) {
             console.log("chaining getMData to getUserInfo");
@@ -291,29 +269,31 @@ module.exports = {
             return this.userInfoPromise;
         }
          **/
-        let req = {
+        var _this = this;
+        var req = {
             table: table,
             params: params,
         };
-        let getMProm = new Promise((resolve, reject) => {
-            this.socket.emit('get-data', req, (data) => {
+        var getMProm = new Promise(function (resolve, reject) {
+            _this.socket.emit('get-data', req, function (data) {
                 console.log("data received:" + data);
                 if (data.error) {
                     reject(data.error);
                     return;
                 }
-                this.loadData(data);
+                _this.loadData(data);
                 resolve(true);
             });
         });
         return getMProm;
-    }
-    getNewRowRef(tableName, newData = {}) {
-        let ctor = this.dataModel.types[tableName];
-        let newRow = new ctor("0");
+    };
+    DataService.prototype.getNewRowRef = function (tableName, newData) {
+        if (newData === void 0) { newData = {}; }
+        var ctor = this.dataModel.types[tableName];
+        var newRow = new ctor("0");
         angular.merge(newRow, newData);
         return newRow;
-    }
+    };
     /*
      * data row properties:
      *   id - primary key value
@@ -322,30 +302,31 @@ module.exports = {
      *   loaded - has field data been loaded?
      *   referenced - other rows that reference this row
      */
-    getRowRef(tableName, key) {
+    DataService.prototype.getRowRef = function (tableName, key) {
         if (!tableName) {
             throw new Error("error looking up record for undefined table");
         }
         if (!angular.isDefined(key) || key === null) {
-            throw new Error(`error looking up ${tableName} record for undefined key`);
+            throw new Error("error looking up " + tableName + " record for undefined key");
         }
         return this.dataModel.getTableItem(key, tableName);
-    }
-    getSchema(table) {
+    };
+    DataService.prototype.getSchema = function (table) {
         return this.schema[table];
-    }
-    getTable(table) {
+    };
+    DataService.prototype.getTable = function (table) {
         if (!this.tablePromises[table]) {
             this.tablePromises[table] = this.getTablePromise(table);
         }
         return this.dataModel[table];
-    }
+    };
     /**
      * Get a promise object representing a request for table data
      * @param table
      * @returns {*}
      */
-    getTablePromise(table) {
+    DataService.prototype.getTablePromise = function (table) {
+        var _this = this;
         if (!this.initialized) {
             this.init();
         }
@@ -357,67 +338,69 @@ module.exports = {
             return this.tablePromises[table];
         }
         this.tablePromises[table] = this.getMData(table, {})
-            .then(() => {
-            return this.dataModel[table];
-        }, () => {
-            this.errorToast("getMData " + table + " problem");
+            .then(function () {
+            return _this.dataModel[table];
+        }, function () {
+            _this.errorToast("getMData " + table + " problem");
         });
         return this.tablePromises[table];
-    }
+    };
     /**
      * Look up a table object by table name, instantiating the object if
      * necessary.
      * @param table
      * @returns {*}
      */
-    getTableRef(table) {
+    DataService.prototype.getTableRef = function (table) {
         if (!this.dataModel[table]) {
             throw new Error("Error: getTableRef request for invalid table");
         }
         return this.dataModel[table];
-    }
-    getUserInfo() {
-        let userInfoUrl = "/auth/user_session";
+    };
+    DataService.prototype.getUserInfo = function () {
+        var _this = this;
+        var userInfoUrl = "/auth/user_session";
         if (typeof this.userInfoPromise == 'undefined') {
             this.userInfoPromise = this.http.get(userInfoUrl).toPromise()
                 .then(
             //Success
-            response => {
-                angular.merge(this.userSession, response.json().session);
+            function (response) {
+                angular.merge(_this.userSession, response.json().session);
                 // If we are logged in, check for admin auth
-                if (this.userSession.admin_auth_requested) {
+                if (_this.userSession.admin_auth_requested) {
                     console.log("getUserInfo doAdminLogon");
-                    this.doAdminLogon();
+                    _this.doAdminLogon();
                 }
-                else if (!this.userSession.auth) {
+                else if (!_this.userSession.auth) {
                     // User is not authorized application and should be directed to log on
                     console.log("getUserInfo doLogon");
-                    this.doLogon();
+                    _this.doLogon();
                 }
-                else if (this.isAdminAuthorized()) {
+                else if (_this.isAdminAuthorized()) {
                     // Setup periodic checks to renew admin auth
-                    this.doAdminLogon(true);
+                    _this.doAdminLogon(true);
                 }
             }, 
             //Failure
-            response => {
+            function (response) {
                 console.log("get user session failed with response code:" + response.status);
                 //TODO: we should prevent the user from using the application at this point
             });
         }
         return this.userInfoPromise;
-    }
-    guid() {
+    };
+    DataService.prototype.guid = function () {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            let r = Math.random() * 16 | 0;
-            let v = c == 'x' ? r : (r & 0x3 | 0x8);
+            var r = Math.random() * 16 | 0;
+            var v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
-    }
-    hideToast() {
+    };
+    DataService.prototype.hideToast = function () {
         //this.$mdToast.hide();
-    }
-    init() {
+    };
+    DataService.prototype.init = function () {
+        var _this = this;
         if (this.initialized) {
             return;
         }
@@ -426,101 +409,123 @@ module.exports = {
             path: "/socket.io",
             transports: ["websocket"]
         });
-        this.socket.on('control-data', data => {
-            this.loadData(data);
+        this.socket.on('control-data', function (data) {
+            _this.loadData(data);
             //console.log("socket control data received");
         });
-        this.socket.on('control-updates', data => {
-            this.loadControlUpdates(data);
+        this.socket.on('control-updates', function (data) {
+            _this.loadControlUpdates(data);
         });
-        this.socket.on('log-data', data => {
+        this.socket.on('log-data', function (data) {
             //this.dataModel.applog.push(data);
         });
-        this.socket.on('reconnect', () => {
+        this.socket.on('reconnect', function () {
             // Refresh endpoints, as they may have been disconnected from the messenger
-            this.getMData(Endpoint_1.Endpoint.tableStr, {});
+            console.log("reconnect, fetching data");
+            _this.getMData(Endpoint_1.Endpoint.tableStr, {});
+        });
+        this.socket.on('connect', function () {
+            // Just load everything
+            _this.getMData(Control_1.Control.tableStr, {});
+            _this.getMData(Endpoint_1.Endpoint.tableStr, {});
+            _this.getMData(EndpointType_1.EndpointType.tableStr, {});
+            _this.getMData(OptionSet_1.OptionSet.tableStr, {});
+            _this.getMData(Panel_1.Panel.tableStr, {});
+            _this.getMData(PanelControl_1.PanelControl.tableStr, {});
+            _this.getMData(Room_1.Room.tableStr, {});
+            _this.getMData(WatcherRule_1.WatcherRule.tableStr, {});
         });
         console.log("dataService2 initialized");
         this.initialized = true;
-    }
-    isAdminAuthorized() {
+    };
+    DataService.prototype.isAdminAuthorized = function () {
         return this.userSession.admin_auth && (this.userSession.admin_auth_expires > Date.now());
-    }
+    };
     /*
      * loadControlUpdates is process separately from loadData, as loadControlUpdates is
      * much more limited in the scope of changes to the data model
      */
-    loadControlUpdates(updates) {
-        for (let update of updates) {
+    DataService.prototype.loadControlUpdates = function (updates) {
+        for (var _i = 0, updates_1 = updates; _i < updates_1.length; _i++) {
+            var update = updates_1[_i];
             if (update.status == "observed" || update.status == "executed") {
-                let control = this.getRowRef("controls", update.control_id);
+                var control = this.getRowRef("controls", update.control_id);
                 control.value = update.value;
             }
         }
-    }
-    loadData(data) {
-        //try {
-        this.dataModel.loadData(data);
-        //}
-        //catch (e) {
-        //    console.error("loadData error: " + e.message);
-        //}
-    }
-    revokeAdminAuth() {
+    };
+    DataService.prototype.loadData = function (data) {
+        try {
+            this.dataModel.loadData(data);
+        }
+        catch (e) {
+            console.error("loadData error: " + e.message);
+        }
+    };
+    DataService.prototype.revokeAdminAuth = function () {
+        var _this = this;
         //TODO: this doesn't do anything unless the Apache auth session credentials
         // are also revoke
         this.userSession.admin_auth_expires = Date.now();
         if (this.adminLogonTimeout) {
             clearTimeout(this.adminLogonTimeout);
         }
-        let url = "/auth/revoke_admin";
+        var url = "/auth/revoke_admin";
         this.http.get(url).toPromise().then(
         //Success
-        response => {
-            angular.merge(this.userSession, response.json().session);
+        function (response) {
+            angular.merge(_this.userSession, response.json().session);
             console.log("revoke admin auth successful");
         }, 
         //Failure
-        response => {
-            this.errorToast("Revoke Admin auth error: " + response.status);
+        function (response) {
+            _this.errorToast("Revoke Admin auth error: " + response.status);
         });
-    }
-    showControlLog($event, ctrl) {
+    };
+    DataService.prototype.showControlLog = function ($event, ctrl) {
+        var _this = this;
         var qParams = {
             'control_id': ctrl.id
         };
-        this.getMData('control_log', qParams).then(() => {
+        this.getMData('control_log', qParams).then(function () {
+            /**
             this.$mdDialog.show({
                 targetEvent: $event,
                 locals: {
                     ctrl: ctrl
                 },
-                controller: CtrlLogCtrl_1.CtrlLogCtrl,
+                controller: CtrlLogCtrl,
                 controllerAs: 'ctrlLog',
                 bindToController: true,
                 templateUrl: 'app/ng1/ctrl-log.html',
                 clickOutsideToClose: true,
-                hasBackdrop: false,
+                hasBackdrop : false,
             });
-        }, (error) => {
-            this.errorToast(error);
+             **/
+        }, function (error) {
+            _this.errorToast(error);
         });
-    }
-    publishStatusUpdate(message) {
+    };
+    DataService.prototype.sortedArray = function (table, sortProp) {
+        if (sortProp === void 0) { sortProp = 'name'; }
+        return this.dataModel.sortedArray(table, sortProp);
+    };
+    DataService.prototype.publishStatusUpdate = function (message) {
         this.socket.emit('status-update', { message: message });
-    }
-    updateConfig() {
+    };
+    DataService.prototype.updateConfig = function () {
         if (typeof (window.localStorage) !== 'undefined') {
             window.localStorage['config'] = JSON.stringify(this.config);
         }
-    }
-    updateControlValue(control) {
+    };
+    DataService.prototype.updateControlValue = function (control) {
+        var _this = this;
         if (this.pendingUpdates[control._id]) {
             clearTimeout(this.pendingUpdates[control._id]);
         }
-        this.pendingUpdates[control._id] = setTimeout(() => {
-            let cuid = this.guid();
-            let updates = [
+        this.pendingUpdates[control._id] = setTimeout(function () {
+            var cuid = _this.guid();
+            var updates = [
                 {
                     _id: cuid,
                     name: control.name + " update",
@@ -528,30 +533,32 @@ module.exports = {
                     value: control.value,
                     type: "user",
                     status: "requested",
-                    source: this.userSession._id
+                    source: _this.userSession._id
                 }
             ];
-            this.socket.emit('control-updates', updates);
+            _this.socket.emit('control-updates', updates);
             return false;
         }, 100, false);
-    }
-    updateRow(row) {
-        let reqData = {
+    };
+    DataService.prototype.updateRow = function (row) {
+        var _this = this;
+        var reqData = {
             table: row.table,
             _id: row._id,
             "set": row.getDataObject()
         };
-        this.socket.emit('update-data', reqData, data => {
+        this.socket.emit('update-data', reqData, function (data) {
             console.log("data updated:" + data);
-            this.loadData(data);
+            _this.loadData(data);
         });
-    }
-};
+    };
+    return DataService;
+}());
 DataService = __decorate([
     core_1.Injectable(),
-    __param(1, core_1.Inject('$mdToast')),
-    __param(2, core_1.Inject('$mdDialog')),
-    __metadata("design:paramtypes", [http_1.Http, Object, Object])
+    __metadata("design:paramtypes", [http_1.Http,
+        material_1.MdSnackBar,
+        material_1.MdDialog])
 ], DataService);
 exports.DataService = DataService;
 //# sourceMappingURL=data.service.js.map

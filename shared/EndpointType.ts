@@ -8,6 +8,7 @@ export class EndpointType extends DCSerializable {
     communicatorClass: string;
     static tableStr = "endpoint_types";
 
+
     constructor(_id: string, data?: EndpointTypeData) {
         super(_id);
         this.table = EndpointType.tableStr;

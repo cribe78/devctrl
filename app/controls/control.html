@@ -1,0 +1,42 @@
+<div class="devctrl-ctrl-item" flex="auto" layout="row" layout-align="space-between start">
+    <div [ngSwitch]="cs.type">
+        <ctrl-button *ngSwitchCase="'button'"></ctrl-button>
+        <ctrl-select *ngSwitchCase="'select'"></ctrl-select>
+        <ctrl-switch *ngSwitchCase="'switch'"></ctrl-switch>
+        <ctrl-slider *ngSwitchCase="'slider'"></ctrl-slider>
+
+        <ctrl-default *ngSwitchDefault></ctrl-default>
+    </div>
+    <div class="devctrl-ctrl-admin-placeholder"
+         *ngIf="! menu.narrowMode()"
+         flex="none">
+
+        <button *devCtrlAdminOnly md-icon-button [md-menu-trigger-for]="adminmenu">
+            <md-icon>more_vert</md-icon>
+        </button>
+        <md-menu *devctrlAdminOnly #adminmenu="mdMenu">
+            <button md-menu-item (click)="cs.editControl($event)">
+                    <md-icon>create</md-icon>
+                    Control
+            </button>
+            <button md-menu-item *ngIf="cs.panelContext" (click)="cs.editPanelControl($event)">
+                    Edit Panel Control
+            </button>
+            <button md-menu-item *ngIf="cs.type == 'select' || cs.type == 'select-readonly'"
+                          label="Control Options"
+                           (click)="cs.editOptions()">
+                    <md-icon>create</md-icon>
+                    Control Options
+            </button>
+            <button md-menu-item label="Add Watcher Rule"
+                           (click)="cs.addWatcherRule($event)">
+                    <md-icon>visibility</md-icon>
+                    Add Watcher Rule
+            </button>
+            <button md-menu-item (click)="cs.showLog($event)">
+                    <md-icon>change_history</md-icon>
+                    Control Log
+            </button>
+        </md-menu>
+    </div>
+</div>

@@ -29,6 +29,7 @@ import {TableComponentNg2} from "./ng1/table.component";
 import {TableWrapperComponent} from "./table-wrapper.component";
 import {FormsModule} from "@angular/forms";
 import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
+import {ControlsModule} from "./controls/controls.module";
 
 
 
@@ -39,7 +40,8 @@ import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
         HttpModule,
         AppRoutingModule,
         FormsModule,
-        UpgradeModule
+        UpgradeModule,
+        ControlsModule
     ],
     declarations: [ MenuComponent,
         AdminOnlyDirective,
@@ -57,7 +59,6 @@ import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
         FkAutocompleteComponentNg2,
         ObjectEditorComponentNg2,
         PanelComponentNg2,
-        ControlComponentNg2,
         TableComponentNg2,
         ToolbarComponentNg2,
         ],

@@ -26,7 +26,6 @@ var endpoints_component_1 = require("./endpoints.component");
 var endpoint_status_component_1 = require("./endpoint-status.component");
 var panel_component_1 = require("./ng1/panel.component");
 var room_component_1 = require("./room.component");
-var control_component_1 = require("./ng1/control.component");
 var endpoint_component_1 = require("./endpoint.component");
 var config_component_1 = require("./config.component");
 var config_data_component_1 = require("./config-data.component");
@@ -38,6 +37,7 @@ var table_component_1 = require("./ng1/table.component");
 var table_wrapper_component_1 = require("./table-wrapper.component");
 var forms_1 = require("@angular/forms");
 var object_editor_component_1 = require("./ng1/object-editor.component");
+var controls_module_1 = require("./controls/controls.module");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -53,7 +53,8 @@ AppModule = __decorate([
             http_1.HttpModule,
             app_router_module_1.AppRoutingModule,
             forms_1.FormsModule,
-            static_1.UpgradeModule
+            static_1.UpgradeModule,
+            controls_module_1.ControlsModule
         ],
         declarations: [menu_component_1.MenuComponent,
             admin_only_directive_1.AdminOnlyDirective,
@@ -71,7 +72,6 @@ AppModule = __decorate([
             fk_autocomplete_component_1.FkAutocompleteComponentNg2,
             object_editor_component_1.ObjectEditorComponentNg2,
             panel_component_1.PanelComponentNg2,
-            control_component_1.ControlComponentNg2,
             table_component_1.TableComponentNg2,
             toolbar_component_1.ToolbarComponentNg2,
         ],

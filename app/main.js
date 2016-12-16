@@ -18,7 +18,7 @@ require("angular-aria");
 require("angular-material");
 require("./ng1/toArrayFilter");
 var endpoint_status_component_1 = require("./ng1/endpoint-status.component");
-var control_component_1 = require("./ng1/control.component");
+//import {ControlComponent} from "./ng1/control.component";
 var panel_component_1 = require("./ng1/panel.component");
 var menu_component_1 = require("./menu.component");
 var toolbar_component_1 = require("./ng1/toolbar.component");
@@ -26,6 +26,7 @@ var static_2 = require("@angular/upgrade/static");
 var record_editor_service_1 = require("./record-editor.service");
 var table_component_1 = require("./ng1/table.component");
 var app_component_1 = require("./app.component");
+var control_component_1 = require("./controls/control.component");
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
@@ -34,9 +35,9 @@ angular.module('DevCtrlApp', ['ngMaterial', 'angular-toArrayFilter'])
     .factory('DataService', static_2.downgradeInjectable(data_service_1.DataService))
     .factory('MenuService', static_2.downgradeInjectable(menu_service_1.MenuService))
     .factory('RecordEditorService', static_2.downgradeInjectable(record_editor_service_1.RecordEditorService))
-    .component('ctrl', control_component_1.ControlComponent)
     .component('devctrlTable', table_component_1.TableComponent)
     .directive('devctrlMenu', static_2.downgradeComponent({ component: menu_component_1.MenuComponent }))
+    .directive('devctrlCtrl', static_2.downgradeComponent({ component: control_component_1.ControlComponent }))
     .directive('devctrlApp', static_2.downgradeComponent({ component: app_component_1.AppComponent }))
     .component('devctrlToolbar', toolbar_component_1.ToolbarComponent)
     .component('devctrlPanel', panel_component_1.PanelComponent)

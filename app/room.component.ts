@@ -76,9 +76,16 @@ export class RoomComponent implements OnInit {
         }
 
         this.route.params.subscribe((params: Params) => {
-            if (params['name']) {
-                console.log(`room ${params['name']} navigated to`);
-                this.obj = this.getRoomByName(params['name']);
+            let name = params['name'];
+            if (name) {
+                console.log(`room ${name} navigated to`);
+                // If the name is a UUID, look up the name and redirect
+                if (this.rooms[name]) {
+                    this.obj = this.rooms[name];
+                }
+                else {
+                    this.obj = this.getRoomByName(params['name']);
+                }
             }
             else if (params['id']) {
                 this.obj = this.rooms[params['id']];

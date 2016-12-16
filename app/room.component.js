@@ -32,9 +32,16 @@ var RoomComponent = (function () {
             this.config.rooms = {};
         }
         this.route.params.subscribe(function (params) {
-            if (params['name']) {
-                console.log("room " + params['name'] + " navigated to");
-                _this.obj = _this.getRoomByName(params['name']);
+            var name = params['name'];
+            if (name) {
+                console.log("room " + name + " navigated to");
+                // If the name is a UUID, look up the name and redirect
+                if (_this.rooms[name]) {
+                    _this.obj = _this.rooms[name];
+                }
+                else {
+                    _this.obj = _this.getRoomByName(params['name']);
+                }
             }
             else if (params['id']) {
                 _this.obj = _this.rooms[params['id']];

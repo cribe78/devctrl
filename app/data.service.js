@@ -536,6 +536,7 @@ var DataService = (function () {
                     source: _this.userSession._id
                 }
             ];
+            console.log("control-update issued. " + control.name + " : " + control.value);
             _this.socket.emit('control-updates', updates);
             return false;
         }, 100, false);

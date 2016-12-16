@@ -63,7 +63,7 @@ export let ToolbarComponent : angular.IComponentOptions = {
                    ng-model="$ctrl.menu.toolbarSelect.selected"
                    ng-change="$ctrl.menu.toolbarSelectUpdate()">
             <md-option class="text-headline"
-                        ng-value="option.value"
+                        ng-value="option.id"
                        ng-repeat="option in $ctrl.menu.toolbarSelect.options">
                 {{option.name}}
             </md-option>

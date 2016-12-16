@@ -643,6 +643,7 @@ module.exports = {
                 }
             ];
 
+            console.log(`control-update issued. ${control.name} : ${control.value}`);
             this.socket.emit('control-updates', updates);
             return false;
         }, 100, false);

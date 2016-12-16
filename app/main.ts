@@ -21,7 +21,7 @@ import "angular-aria";
 import "angular-material";
 import "./ng1/toArrayFilter";
 import {EndpointStatusComponent} from "./ng1/endpoint-status.component";
-import {ControlComponent} from "./ng1/control.component";
+//import {ControlComponent} from "./ng1/control.component";
 import {PanelComponent} from "./ng1/panel.component";
 import {MenuComponent} from "./menu.component";
 import {ToolbarComponent} from "./ng1/toolbar.component";
@@ -29,6 +29,7 @@ import { downgradeComponent, downgradeInjectable } from '@angular/upgrade/static
 import {RecordEditorService} from "./record-editor.service";
 import {TableComponent} from "./ng1/table.component";
 import {AppComponent} from "./app.component";
+import {ControlComponent} from "./controls/control.component";
 /**
 *const platform = platformBrowserDynamic();
 *platform.bootstrapModule(AppModule);
@@ -39,10 +40,12 @@ angular.module('DevCtrlApp',
     .factory('DataService', downgradeInjectable(DataService))
     .factory('MenuService', downgradeInjectable(MenuService))
     .factory('RecordEditorService', downgradeInjectable(RecordEditorService))
-    .component('ctrl', ControlComponent)
+    //.component('ctrl', ControlComponent)
     .component('devctrlTable', TableComponent)
     .directive('devctrlMenu',
         downgradeComponent({component: MenuComponent}) as angular.IDirectiveFactory)
+    .directive('devctrlCtrl',
+        downgradeComponent({component: ControlComponent}) as angular.IDirectiveFactory)
     .directive('devctrlApp',
         downgradeComponent({component: AppComponent}) as angular.IDirectiveFactory)
     //.directive('devctrlToolbar',

@@ -32,7 +32,7 @@ var EndpointComponent = (function () {
             if (_this.obj) {
                 _this.menu.pageTitle = _this.obj.name;
                 _this.controls = _this.obj.referenced[Control_1.Control.tableStr];
-                _this.menu.toolbarSelectTable(Endpoint_1.Endpoint.tableStr, "endpoints.endpoint", _this.obj._id);
+                _this.menu.toolbarSelectTable(Endpoint_1.Endpoint.tableStr, ['devices'], _this.obj._id);
             }
         });
     };
@@ -70,7 +70,7 @@ var EndpointComponent = (function () {
 EndpointComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint',
-        template: "\n<md-toolbar>\n    <div class=\"md-toolbar-tools\">\n        <button md-button devctrl-admin-only (click)=\"addControl($event)\">Add Control</button>\n        <button md-button devctrl-admin-only (click)=\"editEndpoint($event)\">Edit Device</button>\n        <button md-button devctrl-admin-only (click)=\"generateConfig($event)\">Generate Config</button>\n        <span flex></span>\n        <devctrl-endpoint-status [endpointId]=\"obj._id\"></devctrl-endpoint-status>\n    </div>\n</md-toolbar>\n\n<md-list>\n    <template ngFor let-controlId [ngForOf]=\"controlIds()\">\n        <a md-list-item>\n            <ctrl flex [controlId]=\"controlId\"></ctrl>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-list>   \n"
+        template: "\n<md-toolbar>\n    <div class=\"md-toolbar-tools\">\n        <button md-button devctrl-admin-only (click)=\"addControl($event)\">Add Control</button>\n        <button md-button devctrl-admin-only (click)=\"editEndpoint($event)\">Edit Device</button>\n        <button md-button devctrl-admin-only (click)=\"generateConfig($event)\">Generate Config</button>\n        <span flex></span>\n        <devctrl-endpoint-status [endpointId]=\"obj._id\"></devctrl-endpoint-status>\n    </div>\n</md-toolbar>\n\n<md-list>\n    <template ngFor let-controlId [ngForOf]=\"controlIds()\">\n        <a md-list-item>\n            <devctrl-ctrl flex [controlId]=\"controlId\"></devctrl-ctrl>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-list>   \n"
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,

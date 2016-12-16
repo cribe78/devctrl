@@ -188,12 +188,13 @@ export class MenuService {
 
     toolbarSelectUpdate() {
         let row = this.dataService.getRowRef(this.toolbarSelect.tableName, this.toolbarSelect.selected);
-        this.go({
-            name : this.toolbarSelect.destState,
-            params : {
-                id : this.toolbarSelect.selected,
-                name : row.name
-            }
-        });
+
+        let dest = [this.toolbarSelect.selected];
+        if (Array.isArray(this.toolbarSelect.destState)) {
+            dest = this.toolbarSelect.destState;
+            dest.push(this.toolbarSelect.selected);
+        }
+
+        this.go(dest);
     }
 }

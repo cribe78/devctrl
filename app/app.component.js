@@ -13,14 +13,24 @@ var data_service_1 = require("./data.service");
 var menu_service_1 = require("./menu.service");
 var router_1 = require("@angular/router");
 var AppComponent = (function () {
-    function AppComponent(route, dataService, menuService) {
+    function AppComponent(route, router, dataService, menuService) {
         this.route = route;
+        this.router = router;
         this.dataService = dataService;
         this.menuService = menuService;
         this.menu = menuService;
     }
     ;
     AppComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        console.log("init AppComponent, url is " + this.route.snapshot.url.join(''));
+        this.route.url.subscribe(function (url) {
+            var pathSegments = url.map(function (segment) {
+                return segment.path;
+            });
+            var path = pathSegments.join('/');
+            console.log("APpComponent: route is " + path + " or " + _this.router.url);
+        });
     };
     AppComponent.prototype.backgroundImg = function () {
         //TODO: implement this with the new router
@@ -46,9 +56,10 @@ var AppComponent = (function () {
 AppComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-app',
-        template: "\n<div *ngIf=\"! menu.narrowMode()\"\n     [hidden]=\"menu.isSidenavOpen()\"\n     class=\"dc-sidenav md-sidenav-left md-whiteframe-z2\"\n     layout=\"column\">\n    <md-toolbar layout=\"row\"  layout-align=\"start center\" class=\"md-accent\">\n        <button md-button (click)=\"menu.toggleSidenav('left')\" class=\"dc-sidenav-close md-icon-button\">\n            <md-icon aria-label=\"Menu\"  md-font-set=\"material-icons\" >menu</md-icon>\n        </button>\n        <span flex class=\"text-display-1 md-accent md-hue-1\">DevCtrl BETA</span>\n    </md-toolbar>\n    <div flex role=\"navigation\" class=\"md-accent md-hue-1\">\n        <devctrl-menu></devctrl-menu>\n    </div>\n</div>\n<md-sidenav *ngIf=\"menu.narrowMode()\"\n            class=\"md-sidenav-left md-whiteframe-z2 \"\n            layout=\"column\"\n            md-component-id=\"left\">\n    <md-toolbar layout=\"row\"  layout-align=\"start center\" class=\"md-accent\">\n        <button md-button (click)=\"menu.toggleSidenav('left')\" class=\"dc-sidenav-close md-icon-button\">\n            <md-icon aria-label=\"Menu\"  md-font-set=\"material-icons\" >menu</md-icon>\n        </button>\n        <span flex class=\"text-display-1 md-accent md-hue-1\">DWI DevCtrl</span>\n    </md-toolbar>\n    <div flex role=\"navigation\" class=\"md-accent md-hue-1\">\n        <devctrl-menu></devctrl-menu>\n    </div>\n</md-sidenav>\n<div layout=\"column\" flex>\n    <devctrl-toolbar></devctrl-toolbar>\n    <div *ngIf=\"menu.narrowMode()\"\n                layout=\"column\"\n                flex\n                layout-margin\n                id=\"content\"\n                class=\"devctrl-main-content\">\n        <router-outlet></router-outlet>\n    </div>\n    <div *ngIf=\"! menu.narrowMode()\"\n                layout=\"column\"\n                layout-align=\"start center\"\n                flex\n                layout-margin\n                id=\"content\"\n                [style.background-img]=\"backgroundImg()\">\n        <section class=\"md-whiteframe-z1 devctrl-main-card\" [ngClass]=\"cardClasses()\">\n                <router-outlet></router-outlet> \n\n        </section>\n    </div>\n</div>"
+        template: "\n<div *ngIf=\"! menu.narrowMode()\"\n     [hidden]=\"menu.isSidenavOpen()\"\n     class=\"dc-sidenav md-sidenav-left md-whiteframe-z2 layout-column\">\n    <md-toolbar class=\"md-accent layout-row layout-align-start-center\">\n        <button md-button (click)=\"menu.toggleSidenav('left')\" class=\"dc-sidenav-close md-icon-button\">\n            <md-icon aria-label=\"Menu\">menu</md-icon>\n        </button>\n        <span flex class=\"text-display-1 md-accent md-hue-1\">DevCtrl BETA</span>\n    </md-toolbar>\n    <div flex role=\"navigation\" class=\"md-accent md-hue-1\">\n        <devctrl-menu></devctrl-menu>\n    </div>\n</div>\n\n    <md-sidenav *ngIf=\"menu.narrowMode()\"\n                class=\"md-sidenav-left md-whiteframe-z2 layout-column\">\n        <md-toolbar layout=\"row\"  layout-align=\"start center\" class=\"md-accent\">\n            <button md-button (click)=\"menu.toggleSidenav('left')\" class=\"dc-sidenav-close md-icon-button\">\n                <md-icon aria-label=\"Menu\">menu</md-icon>\n            </button>\n            <span flex class=\"text-display-1 md-accent md-hue-1\">DWI DevCtrl</span>\n        </md-toolbar>\n        <div flex role=\"navigation\" class=\"md-accent md-hue-1\">\n            <devctrl-menu></devctrl-menu>\n        </div>\n    </md-sidenav>\n    <div class=\"layout-column\" flex>\n        <devctrl-toolbar></devctrl-toolbar>\n        <div *ngIf=\"menu.narrowMode()\"\n                    flex\n                    id=\"content\"\n                    class=\"devctrl-main-content layout-column layout-margin\">\n            <router-outlet></router-outlet>\n        </div>\n        <div *ngIf=\"! menu.narrowMode()\"\n                class=\"layout-column layout-align-start-center layout-margin\"\n                    flex\n                    id=\"content\"\n                    [style.background-img]=\"backgroundImg()\">\n            <section class=\"md-whiteframe-z1 devctrl-main-card\" [ngClass]=\"cardClasses()\">\n                    <router-outlet></router-outlet> \n            </section>\n        </div>\n    </div>\n"
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
+        router_1.Router,
         data_service_1.DataService,
         menu_service_1.MenuService])
 ], AppComponent);

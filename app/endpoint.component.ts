@@ -23,7 +23,7 @@ import {RecordEditorService} from "./record-editor.service";
 <md-list>
     <template ngFor let-controlId [ngForOf]="controlIds()">
         <a md-list-item>
-            <ctrl flex [controlId]="controlId"></ctrl>
+            <devctrl-ctrl flex [controlId]="controlId"></devctrl-ctrl>
         </a>
         <md-divider></md-divider>
     </template>
@@ -51,7 +51,7 @@ export class EndpointComponent implements OnInit {
             if (this.obj) {
                 this.menu.pageTitle = this.obj.name;
                 this.controls = <IndexedDataSet<Control>>this.obj.referenced[Control.tableStr];
-                this.menu.toolbarSelectTable(Endpoint.tableStr, "endpoints.endpoint", this.obj._id);
+                this.menu.toolbarSelectTable(Endpoint.tableStr, ['devices'], this.obj._id);
             }
         });
     }

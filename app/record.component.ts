@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {DSTableDefinition} from "./ng1/data-service-schema";
+import {DSTableDefinition} from "./data-service-schema";
 import {DCSerializable} from "../shared/DCSerializable";
 import {DataService} from "./data.service";
 import { MdDialogRef } from '@angular/material';

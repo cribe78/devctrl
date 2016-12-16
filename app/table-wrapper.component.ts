@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {IndexedDataSet} from "../shared/DCDataModel";
-import {DSTableDefinition} from "./ng1/data-service-schema";
+import {DSTableDefinition} from "./data-service-schema";
 import {DataService} from "./data.service";
 import {DCSerializable} from "../shared/DCSerializable";
 import {RecordEditorService} from "./record-editor.service";

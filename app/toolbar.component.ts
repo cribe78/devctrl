@@ -2,7 +2,7 @@ import {DataService} from "./data.service";
 import {UserSession} from "../shared/UserSession";
 import {MenuService} from "./menu.service";
 import { Component, Inject, Input } from '@angular/core';
-declare var angular: angular.IAngularStatic;
+
 
 // This component depends on a working md-select, which has not been released yet
 
@@ -11,34 +11,32 @@ declare var angular: angular.IAngularStatic;
     moduleId: module.id,
     selector: 'devctrl-toolbar',
     template: `
-<md-toolbar layout="row" layout-align="start center">
-    <div flex layout="row"
-         layout-align="center center"
-         class="devctrl-main-toolbar devctrl-ctrl-select">
-        <button md-button (click)="toggleSidenav('left')"
+<md-toolbar class="layout-row layout-align-start-center">
+    <div class="flex devctrl-main-toolbar devctrl-ctrl-select layout-row layout-align-center-center">
+        <button md-button (click)="menu.toggleSidenav('left')"
                    ng-hide="menu.hideSidenavButton()"
                    class="dc-toolbar-sidenav-button md-icon-button">
             <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
         </button>
         <select *ngIf="menu.toolbarSelect.enabled"
                     aria-label="Select Page"
-                   placeholder="{{$ctrl.pageTitle()}}"
-                   ng-model="$ctrl.menu.toolbarSelect.selected"
-                   ng-change="$ctrl.menu.toolbarSelectUpdate()">
-            <md-option class="text-headline"s
-                        ng-value="option.value"
-                       ng-repeat="option in $ctrl.menu.toolbarSelect.options">
+                    name="toolbarSelect"
+                   [(ngModel)]="menu.toolbarSelect.selected"
+                   (change)="menu.toolbarSelectUpdate($event)">
+            <option class="text-headline"s
+                        [value]="option.value"
+                       *ngFor="let option of menu.toolbarSelect.options">
                 {{option.name}}
-            </md-option>
-        </select> -->
-        <span flex class="title text-headline">{{menu.pageTitle()}}</span>
-        <div layout="column">
+            </option>
+        </select>
+        <span class="flex title text-headline">{{menu.pageTitle}}</span>
+        <div class="layout-column">
             <div>{{session.client_name}}</div>
             <span *devctrlAdminOnly>{{session.username}}</span>
         </div>
 
-        <button md-icon-button [md-menu-trigger-for]="adminmenu">
-            <md-icon  md-font-set="material-icons">more_vert</md-icon>
+        <button md-button [md-menu-trigger-for]="adminmenu">
+            <md-icon>more_vert</md-icon>
         </button>
         <md-menu #adminmenu="mdMenu">
             <button md-menu-item (click)="adminLogin()">
@@ -93,64 +91,3 @@ export class ToolbarComponent {
         this.dataService.updateConfig();
     };
 }
-
-
-let templateOoriginal = `
-<md-toolbar layout="row" layout-align="start center">
-    <div flex layout="row"
-         layout-align="center center"
-         class="devctrl-main-toolbar devctrl-ctrl-select">
-        <md-button ng-click="$ctrl.menu.toggleSidenav('left')"
-                   ng-hide="$ctrl.menu.hideSidenavButton()"
-                   class="dc-toolbar-sidenav-button md-icon-button">
-            <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
-        </md-button>
-        <md-select ng-if="$ctrl.menu.toolbarSelect.enabled"
-                    aria-label="Select Page"
-                   placeholder="{{$ctrl.pageTitle()}}"
-                   ng-model="$ctrl.menu.toolbarSelect.selected"
-                   ng-change="$ctrl.menu.toolbarSelectUpdate()">
-            <md-option class="text-headline"
-                        ng-value="option.value"
-                       ng-repeat="option in $ctrl.menu.toolbarSelect.options">
-                {{option.name}}
-            </md-option>
-        </md-select>
-        <span flex class="title text-headline">{{$ctrl.pageTitle()}}</span>
-        <div layout="column">
-            <div>{{$ctrl.session.client_name}}</div>
-            <span ng-if="$ctrl.adminLoggedIn()">{{$ctrl.session.username}}</span>
-        </div>
-
-
-        <md-menu>
-            <md-button  class="md-icon-button" ng-click="$mdOpenMenu($event)">
-                <md-icon  md-font-set="material-icons">more_vert</md-icon>
-            </md-button>
-            <md-menu-content>
-                <md-menu-item ng-if="$ctrl.showAdminLogin()">
-                    <md-button ng-click="$ctrl.adminLogin()">
-                        Admin Login
-                    </md-button>
-                </md-menu-item>
-                <md-menu-item ng-if="$ctrl.adminLoggedIn()">
-                    <md-switch ng-model="$ctrl.config.editEnabled"
-                               ng-change="$ctrl.updateConfig()">
-                        Edit
-                    </md-switch>
-                </md-menu-item>
-                <md-menu-item ng-if="$ctrl.adminLoggedIn()">
-                    <md-button ng-click="$ctrl.revokeAdmin()">
-                        Admin Logout
-                    </md-button>
-                </md-menu-item>
-                <md-menu-item ng-if="$ctrl.adminLoggedIn()">
-                    <md-button ng-click="$ctrl.editClient($event)">
-                        Edit Client
-                    </md-button>
-                </md-menu-item>
-            </md-menu-content>
-        </md-menu>
-    </div>
-</md-toolbar>
-`;

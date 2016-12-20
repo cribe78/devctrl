@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {IndexedDataSet} from "../shared/DCDataModel";
-import {DSTableDefinition} from "./ng1/data-service-schema";
+import {IndexedDataSet} from "shared/DCDataModel";
+import {DSTableDefinition} from "./data-service-schema";
 import {DataService} from "./data.service";
-import {DCSerializable} from "../shared/DCSerializable";
-import {RecordEditorService} from "./record-editor.service";
+import {DCSerializable} from "shared/DCSerializable";
+import {RecordEditorService} from "data-editor/record-editor.service";
 
 @Component({
     selector: 'devctrl-table',
@@ -17,50 +17,50 @@ import {RecordEditorService} from "./record-editor.service";
 
 
 <md-list>
-    <div md-list-item layout="row">
-        <div flex="20">
+    <md-list-item class="layout-row">
+        <div class="flex-20">
             ID
         </div>
-        <div *ngFor="let field of schema.fields" flex class="table-header" (click)="setSortColumn(field)">
+        <div *ngFor="let field of schema.fields" class="flex table-header" (click)="setSortColumn(field)">
             {{field.label}}
         </div>
         <div flex="5"></div>
-    </div>
-    <md-divider></md-divider>
-    <md-list-item ng-repeat-start="(id, row) in data | toArray | orderBy: sortColumn : sortReversed"
-                  layout="row">
-        <div flex="20" class="devctrl-id-text">
-            <span>{{row._id}}</span>
-        </div>
-        <div class="md-list-item-text"
-             ng-repeat="field in schema.fields"
-             ng-switch="field.type"
-             flex>
-            <p ng-switch-when="fk">{{fkDisplayVal(field, row)}}</p>
-            <div ng-switch-when="bool">
-                <md-checkbox class="md-primary"
-                             ng-true-value="1"
-                             ng-false-value="0"
-                             ng-model="row[field.name]"
-                             ng-change="updateRow($event, row)"></md-checkbox>
-            </div>
-            <p ng-switch-default>{{row[field.name]}}</p>
-
-        </div>
-        <div flex="5">
-            <button md-button  devctrl-admin-only (click)="openRecord($event, row._id)">
-                <md-icon  md-font-set="material-icons">edit</md-icon>
-            </button>
-        </div>
     </md-list-item>
-    <md-divider ng-repeat-end></md-divider>
+    <md-divider></md-divider>
+    <template ngFor let-obj [ngForOf]="sorted()" [ngForTrackBy]="trackById">
+        <md-list-item class="layout-row">
+            <div class="flex-20 devctrl-id-text">
+                <span>{{obj._id}}</span>
+            </div>
+            <template ngFor let-field [ngForOf]="schema.fields">
+                <div class="flex md-list-item-text"
+                     [ngSwitch]="field.type">
+                    <p *ngSwitchCase="fk">{{fkDisplayVal(field, obj)}}</p>
+                    <div *ngSwitchCase="bool">
+                        <md-checkbox class="md-primary"
+                                     [ngModel]="obj[field.name]">
+                                     
+                        </md-checkbox>
+                    </div>
+                    <p *ngSwitchDefault>{{obj[field.name]}}</p>
+        
+                </div>
+            </template>
+            <div class="flex-5">
+                <button md-button  *devctrlAdminOnly (click)="openRecord($event, obj._id)">
+                    <md-icon>edit</md-icon>
+                </button>
+            </div>
+        </md-list-item>
+        <md-divider></md-divider>
+    </template>
 </md-list>
 
-<button md-button devctrl-admin-only (click)="addRow()">Add</button>    
+<button md-button *devctrlAdminOnly (click)="addRow()">Add</button>    
 `
 })
 export class TableComponent implements OnInit {
-    tableName;
+    @Input()tableName;
     data : IndexedDataSet<DCSerializable>;
     schema : DSTableDefinition;
     newRow;
@@ -107,6 +107,8 @@ export class TableComponent implements OnInit {
         }
     }
 
+
+
     openRecord($event, id) {
         this.recordService.editRecord($event, id, this.tableName);
     };
@@ -120,6 +122,12 @@ export class TableComponent implements OnInit {
             this.sortReversed = false;
         }
     }
+
+    sorted() {
+        return this.dataService.sortedArray(this.tableName, "name");
+    }
+
+    trackById = DCSerializable.trackById;
 
     updateRow($event, row) {
         this.dataService.updateRow(row);

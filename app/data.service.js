@@ -25,8 +25,6 @@ var PanelControl_1 = require("../shared/PanelControl");
 var Room_1 = require("../shared/Room");
 var WatcherRule_1 = require("../shared/WatcherRule");
 var DataService = (function () {
-    //static $inject = ['$window', '$http', '$mdToast',  '$timeout',
-    //    '$q', 'socket', '$mdDialog', '$location'];
     function DataService(http, snackBar, mdDialog) {
         this.http = http;
         this.snackBar = snackBar;
@@ -62,7 +60,7 @@ var DataService = (function () {
         this.dataModel = new DCDataModel_1.DCDataModel();
         if (typeof (window.localStorage) !== 'undefined') {
             var localConfig = window.localStorage['config'];
-            if (angular.isString(localConfig)) {
+            if (typeof localConfig == 'string') {
                 this.config = JSON.parse(localConfig);
             }
             else {
@@ -86,7 +84,7 @@ var DataService = (function () {
             console.log("new record " + newId + "added to " + row.table);
             _this.loadData(response);
             var record = _this.dataModel[row.table][newId];
-            if (angular.isFunction(callback)) {
+            if (typeof callback == 'function') {
                 callback(record);
             }
         });
@@ -121,7 +119,7 @@ var DataService = (function () {
             this.http.get(url).toPromise().then(
             //Success
             function (response) {
-                angular.merge(_this.userSession, response.json().session);
+                Object.assign(_this.userSession, response.json().session);
                 // Refresh credentials before they expire
                 var retryDelay = (_this.userSession.admin_auth_expires - Date.now()) - 2000;
                 //let retryDelay = 60000;
@@ -149,7 +147,7 @@ var DataService = (function () {
                     //TODO: admin_auth_requested should be set on local storage
                     _this.userSession.admin_auth_requested = false;
                 }
-                else if (response.status == -1) {
+                else if (response.status == -1 || response.status == 0) {
                     if (!allowExpiration) {
                         console.log("XHR admin auth failed, attempting logon");
                         _this.doLogon(true, true);
@@ -202,29 +200,12 @@ var DataService = (function () {
         if (data.error) {
             errorText = data.error;
         }
-        else if (angular.isString(data)) {
+        else if (typeof data == 'string') {
             errorText = data;
         }
         console.log(errorText);
         //$mdToast.show($mdToast.simple().content(errorText));
         this.snackBar.open(errorText, "OK");
-        /**
-        this.$mdToast.show({
-            locals: {
-                message: errorText
-            },
-            controllerAs: "toast",
-            controller: 'RoomsCtrl',
-            bindToController: true,
-            position: 'top right',
-            hideDelay: 0,
-            template: `
-<md-toast>
-    {{toast.message}}
-    <md-button ng-click="toast.hideToast()">OK</md-button>
-</md-toast>`
-        });
-         **/
     };
     DataService.prototype.generateEndpointConfig = function ($event, endpointId) {
         var _this = this;
@@ -243,18 +224,6 @@ var DataService = (function () {
         }, function (response) {
             _this.errorToast("Unable to retrieve endpoint ncontrol config");
         });
-    };
-    DataService.prototype.getLog = function () {
-        //TODO: Needs re-implementation in messenger
-        /**
-        return this.$http.get("log.php")
-            .then(response => {
-                if (angular.isDefined(response.data.applog)) {
-                    this.dataModel.applog.length = 0;
-                    angular.merge(this.dataModel.applog, response.data.applog);
-                }
-            })
-        **/
     };
     // Get MongoDB data from the IO messenger
     DataService.prototype.getMData = function (table, params) {
@@ -291,7 +260,7 @@ var DataService = (function () {
         if (newData === void 0) { newData = {}; }
         var ctor = this.dataModel.types[tableName];
         var newRow = new ctor("0");
-        angular.merge(newRow, newData);
+        Object.assign(newRow, newData);
         return newRow;
     };
     /*
@@ -306,7 +275,7 @@ var DataService = (function () {
         if (!tableName) {
             throw new Error("error looking up record for undefined table");
         }
-        if (!angular.isDefined(key) || key === null) {
+        if (!key || key === null) {
             throw new Error("error looking up " + tableName + " record for undefined key");
         }
         return this.dataModel.getTableItem(key, tableName);
@@ -365,7 +334,7 @@ var DataService = (function () {
                 .then(
             //Success
             function (response) {
-                angular.merge(_this.userSession, response.json().session);
+                Object.assign(_this.userSession, response.json().session);
                 // If we are logged in, check for admin auth
                 if (_this.userSession.admin_auth_requested) {
                     console.log("getUserInfo doAdminLogon");
@@ -426,14 +395,16 @@ var DataService = (function () {
         });
         this.socket.on('connect', function () {
             // Just load everything
-            _this.getMData(Control_1.Control.tableStr, {});
-            _this.getMData(Endpoint_1.Endpoint.tableStr, {});
-            _this.getMData(EndpointType_1.EndpointType.tableStr, {});
-            _this.getMData(OptionSet_1.OptionSet.tableStr, {});
-            _this.getMData(Panel_1.Panel.tableStr, {});
-            _this.getMData(PanelControl_1.PanelControl.tableStr, {});
-            _this.getMData(Room_1.Room.tableStr, {});
-            _this.getMData(WatcherRule_1.WatcherRule.tableStr, {});
+            _this.getUserInfo().then(function () {
+                _this.getMData(Control_1.Control.tableStr, {});
+                _this.getMData(Endpoint_1.Endpoint.tableStr, {});
+                _this.getMData(EndpointType_1.EndpointType.tableStr, {});
+                _this.getMData(OptionSet_1.OptionSet.tableStr, {});
+                _this.getMData(Panel_1.Panel.tableStr, {});
+                _this.getMData(PanelControl_1.PanelControl.tableStr, {});
+                _this.getMData(Room_1.Room.tableStr, {});
+                _this.getMData(WatcherRule_1.WatcherRule.tableStr, {});
+            });
         });
         console.log("dataService2 initialized");
         this.initialized = true;
@@ -474,7 +445,7 @@ var DataService = (function () {
         this.http.get(url).toPromise().then(
         //Success
         function (response) {
-            angular.merge(_this.userSession, response.json().session);
+            Object.assign(_this.userSession, response.json().session);
             console.log("revoke admin auth successful");
         }, 
         //Failure
@@ -488,20 +459,6 @@ var DataService = (function () {
             'control_id': ctrl.id
         };
         this.getMData('control_log', qParams).then(function () {
-            /**
-            this.$mdDialog.show({
-                targetEvent: $event,
-                locals: {
-                    ctrl: ctrl
-                },
-                controller: CtrlLogCtrl,
-                controllerAs: 'ctrlLog',
-                bindToController: true,
-                templateUrl: 'app/ng1/ctrl-log.html',
-                clickOutsideToClose: true,
-                hasBackdrop : false,
-            });
-             **/
         }, function (error) {
             _this.errorToast(error);
         });

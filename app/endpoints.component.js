@@ -14,7 +14,7 @@ var Endpoint_1 = require("../shared/Endpoint");
 var data_service_1 = require("./data.service");
 var EndpointType_1 = require("../shared/EndpointType");
 var menu_service_1 = require("./menu.service");
-var record_editor_service_1 = require("./record-editor.service");
+var record_editor_service_1 = require("data-editor/record-editor.service");
 var EndpointsComponent = (function () {
     function EndpointsComponent(dataService, route, menu, recordService) {
         this.dataService = dataService;
@@ -38,7 +38,7 @@ var EndpointsComponent = (function () {
 EndpointsComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoints',
-        template: "\n<div layout=\"column\" *ngIf=\"menu.routeUrl[0] !== 'devices'\">\n            <md-toolbar layout=\"row\" devctrl-admin-only >\n                <div class=\"md-toolbar-tools\">\n                    <button md-button (click)=\"addEndpoint($event)\">Add Endpoint</button>\n                    <button md-button (click)=\"addEndpointType($event)\">Add Endpoint Type</button>\n                </div>\n            </md-toolbar>\n            <md-list>\n                <md-list-item \n                    *ngFor=\"let endpoint of endpointsList\"\n                    (click)=\"menu.go(['devices', endpoint._id])\">\n                    {{endpoint.name}}\n                    <span flex></span>\n                    <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                    <md-icon md-font-set=\"material-icons\" >chevron_right</md-icon>\n                </md-list-item>\n                <md-divider ng-repeat-end></md-divider>\n            </md-list>\n</div>\n"
+        template: "\n<div layout=\"column\">\n            <md-toolbar layout=\"row\" devctrl-admin-only >\n                <div class=\"md-toolbar-tools\">\n                    <button md-button (click)=\"addEndpoint($event)\">Add Endpoint</button>\n                    <button md-button (click)=\"addEndpointType($event)\">Add Endpoint Type</button>\n                </div>\n            </md-toolbar>\n            <md-list>\n                <md-list-item \n                    *ngFor=\"let endpoint of endpointsList\"\n                    (click)=\"menu.go(['devices', endpoint._id])\">\n                    {{endpoint.name}}\n                    <span flex></span>\n                    <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                    <md-icon md-font-set=\"material-icons\" >chevron_right</md-icon>\n                </md-list-item>\n                <md-divider ng-repeat-end></md-divider>\n            </md-list>\n</div>\n"
     }),
     __metadata("design:paramtypes", [data_service_1.DataService,
         router_1.ActivatedRoute,

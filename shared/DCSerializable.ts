@@ -145,6 +145,13 @@ export abstract class DCSerializable {
         return data;
     }
 
+    /**
+     * For use as an the ngFor trackBy function
+     */
+    static trackById(idx : number, obj: DCSerializable) {
+        return obj._id;
+    }
+
     removeReference(refObj: DCSerializable) {
         if (this.referenced[refObj.table] && this.referenced[refObj.table][refObj._id]) {
             delete this.referenced[refObj.table][refObj._id];

@@ -1,7 +1,7 @@
 import {MenuService} from "./menu.service";
 import { Component, Inject } from '@angular/core';
 import {  ActivatedRoute } from '@angular/router';
-declare var angular: angular.IAngularStatic;
+
 
 @Component({
     moduleId: module.id,

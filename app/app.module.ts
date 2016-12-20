@@ -1,35 +1,35 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent }   from './app.component';
-import { MaterialModule } from '@angular/material';
+import { MaterialModule, MdSnackBarModule, MdDialogModule} from '@angular/material';
 import { HttpModule } from '@angular/http';
 import 'hammerjs';
 
 import { UpgradeModule } from '@angular/upgrade/static';
 import {MenuComponent} from "./menu.component";
 import {MenuService} from "./menu.service";
-import {ToolbarComponentNg2} from "./ng1/toolbar.component";
+import {ToolbarComponent} from "./toolbar.component";
 import {AdminOnlyDirective} from "./admin-only.directive";
 import {DataService} from "./data.service";
 import {AppRoutingModule} from "./app-router.module";
-import {RoomsComponent} from "./rooms.component";
 import {EndpointsComponent} from "./endpoints.component";
 import {EndpointStatusComponent} from "./endpoint-status.component";
-import {PanelComponentNg2} from "./ng1/panel.component";
-import {RoomComponent} from "./room.component";
-import {ControlComponentNg2} from "./ng1/control.component";
 import {EndpointComponent} from "./endpoint.component";
 import {ConfigComponent} from "./config.component";
 import {ConfigDataComponent} from "./config-data.component";
-import {RecordComponent} from "./record.component";
-import {FkAutocompleteComponentNg2} from "./ng1/fk-autocomplete.component";
+import {RecordComponent} from "./data-editor/record.component";
+import {FkAutocompleteComponent} from "./fk-autocomplete.component";
 import {AlertDialog} from "./alert-dialog.component";
-import {RecordEditorService} from "./record-editor.service";
-import {TableComponentNg2} from "./ng1/table.component";
+import {RecordEditorService} from "./data-editor/record-editor.service";
+import {TableComponent} from "./table.component";
 import {TableWrapperComponent} from "./table-wrapper.component";
 import {FormsModule} from "@angular/forms";
-import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
+//import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
 import {ControlsModule} from "./controls/controls.module";
+import {RoomComponent} from "./rooms/room.component";
+import {RoomsComponent} from "./rooms/rooms.component";
+import {PanelComponent} from "./rooms/panel.component";
+import {ObjectEditorComponent} from "./data-editor/object-editor.component";
 
 
 
@@ -37,11 +37,13 @@ import {ControlsModule} from "./controls/controls.module";
     imports:      [
         BrowserModule,
         MaterialModule.forRoot(),
+        MdSnackBarModule,
+        MdDialogModule.forRoot(),
         HttpModule,
         AppRoutingModule,
         FormsModule,
         UpgradeModule,
-        ControlsModule
+        ControlsModule,
     ],
     declarations: [ MenuComponent,
         AdminOnlyDirective,
@@ -52,18 +54,17 @@ import {ControlsModule} from "./controls/controls.module";
         EndpointComponent,
         EndpointsComponent,
         EndpointStatusComponent,
+        FkAutocompleteComponent,
+        ObjectEditorComponent,
+        PanelComponent,
         RecordComponent,
         RoomComponent,
         RoomsComponent,
+        TableComponent,
         TableWrapperComponent,
-        FkAutocompleteComponentNg2,
-        ObjectEditorComponentNg2,
-        PanelComponentNg2,
-        TableComponentNg2,
-        ToolbarComponentNg2,
+        ToolbarComponent
         ],
     entryComponents: [
-        AppComponent,
         AlertDialog,
         MenuComponent,
         RecordComponent
@@ -73,8 +74,8 @@ import {ControlsModule} from "./controls/controls.module";
         MenuService,
         RecordEditorService
     ],
-    //bootstrap:    [ AppComponent ]
+    bootstrap:    [ AppComponent ]
 })
 export class AppModule {
-    ngDoBootstrap() {};
+    //ngDoBootstrap() {};
 }

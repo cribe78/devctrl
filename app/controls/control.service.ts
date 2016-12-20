@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import {DataService} from "../data.service";
-import {RecordEditorService} from "../record-editor.service";
-import {PanelControl} from "../../shared/PanelControl";
-import {Control} from "../../shared/Control";
-import {WatcherRule} from "../../shared/WatcherRule";
+import {RecordEditorService} from "data-editor/record-editor.service";
+import {PanelControl} from "shared/PanelControl";
+import {Control} from "shared/Control";
+import {WatcherRule} from "shared/WatcherRule";
 
 @Injectable()
 export class ControlService {
@@ -73,7 +73,7 @@ export class ControlService {
     }
 
     config(key) {
-        if (angular.isObject(this.control.config) && this.control.config[key]) {
+        if (typeof this.control.config == 'object' && this.control.config[key]) {
             return this.control.config[key];
         }
 

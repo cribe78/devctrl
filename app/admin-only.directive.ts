@@ -14,7 +14,7 @@ export class AdminOnlyDirective implements DoCheck {
     constructor(
         private _template: TemplateRef<any>,
         private _viewContainer: ViewContainerRef,
-        @Inject('DataService') private dataService: DataService
+        private dataService: DataService
     ) { }
 
     ngDoCheck() {

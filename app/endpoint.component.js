@@ -10,11 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var Endpoint_1 = require("../shared/Endpoint");
+var Endpoint_1 = require("shared/Endpoint");
 var data_service_1 = require("./data.service");
 var menu_service_1 = require("./menu.service");
-var Control_1 = require("../shared/Control");
-var record_editor_service_1 = require("./record-editor.service");
+var Control_1 = require("shared/Control");
+var record_editor_service_1 = require("data-editor/record-editor.service");
 var EndpointComponent = (function () {
     function EndpointComponent(route, dataService, menu, recordService) {
         this.route = route;
@@ -41,7 +41,7 @@ var EndpointComponent = (function () {
         //Object.keys(this.controls).map(key => this.controls[key]);
     };
     EndpointComponent.prototype.togglePanel = function (panel) {
-        if (!angular.isDefined(panel.opened)) {
+        if (typeof panel.opened == 'undefined') {
             panel.opened = true;
         }
         else {
@@ -49,7 +49,7 @@ var EndpointComponent = (function () {
         }
     };
     EndpointComponent.prototype.isPanelOpen = function (panel) {
-        return angular.isDefined(panel.opened) && panel.opened;
+        return !!panel.opened;
     };
     EndpointComponent.prototype.addControl = function ($event) {
         this.recordService.editRecord($event, '0', 'controls', {
@@ -70,7 +70,7 @@ var EndpointComponent = (function () {
 EndpointComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint',
-        template: "\n<md-toolbar>\n    <div class=\"md-toolbar-tools\">\n        <button md-button devctrl-admin-only (click)=\"addControl($event)\">Add Control</button>\n        <button md-button devctrl-admin-only (click)=\"editEndpoint($event)\">Edit Device</button>\n        <button md-button devctrl-admin-only (click)=\"generateConfig($event)\">Generate Config</button>\n        <span flex></span>\n        <devctrl-endpoint-status [endpointId]=\"obj._id\"></devctrl-endpoint-status>\n    </div>\n</md-toolbar>\n\n<md-list>\n    <template ngFor let-controlId [ngForOf]=\"controlIds()\">\n        <a md-list-item>\n            <devctrl-ctrl flex [controlId]=\"controlId\"></devctrl-ctrl>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-list>   \n"
+        template: "\n<md-toolbar>\n    <div class=\"md-toolbar-tools\">\n        <button md-button *devctrlAdminOnly (click)=\"addControl($event)\">Add Control</button>\n        <button md-button *devctrlAdminOnly (click)=\"editEndpoint($event)\">Edit Device</button>\n        <button md-button *devctrlAdminOnly (click)=\"generateConfig($event)\">Generate Config</button>\n        <span flex></span>\n        <devctrl-endpoint-status [endpointId]=\"obj._id\"></devctrl-endpoint-status>\n    </div>\n</md-toolbar>\n\n<md-list>\n    <template ngFor let-controlId [ngForOf]=\"controlIds()\">\n        <a md-list-item>\n            <devctrl-ctrl flex [controlId]=\"controlId\"></devctrl-ctrl>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-list>   \n"
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,

@@ -44,8 +44,9 @@ export class MenuService {
     routeUrl : UrlSegment[];
     routeData;
     routeParams;
+    //private router : Router;
 
-    constructor(private route : ActivatedRoute,
+    constructor(
                 private router : Router,
                 private dataService: DataService) {
         this.menuConfig = dataService.config.menu;
@@ -62,20 +63,6 @@ export class MenuService {
         this.endpoints = this.dataService.getTable(Endpoint.tableStr) as IndexedDataSet<Endpoint>;
         this.rooms = this.dataService.getTable(Room.tableStr) as IndexedDataSet<Room>;
 
-        route.url.subscribe((url) => {
-            this.routeUrl = url;
-
-            console.log(`route changed: ${url[0].path}`);
-        });
-
-        route.data.subscribe((data) => {
-            this.routeData = data;
-        });
-
-        route.params.subscribe((params) => {
-            this.routeParams = params;
-        });
-
     }
 
 
@@ -88,10 +75,10 @@ export class MenuService {
     }
 
     go(state) {
-        if (angular.isString(state)) {
+        if (typeof state == 'string') {
             this.router.navigate([state]);
         }
-        else if (angular.isArray(state)) {
+        else if (Array.isArray(state)) {
             this.router.navigate(state);
         }
         else {
@@ -121,10 +108,13 @@ export class MenuService {
             item.isOpened = false;
         }
 
-        let levelOne = this.routeUrl[0].path;
+        if (this.routeUrl) {
+            let levelOne = this.routeUrl[0].path;
 
-        if (this.menuObj[levelOne]) {
-            this.menuObj[levelOne]['isOpened'] = true;
+
+            if (this.menuObj[levelOne]) {
+                this.menuObj[levelOne]['isOpened'] = true;
+            }
         }
 
         this.menuObj.rooms.children = [];

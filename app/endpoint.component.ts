@@ -1,20 +1,20 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {IndexedDataSet} from "../shared/DCDataModel";
-import {Endpoint} from "../shared/Endpoint";
+import {IndexedDataSet} from "shared/DCDataModel";
+import {Endpoint} from "shared/Endpoint";
 import {DataService} from "./data.service";
 import {MenuService} from "./menu.service";
-import {Control} from "../shared/Control";
-import {RecordEditorService} from "./record-editor.service";
+import {Control} from "shared/Control";
+import {RecordEditorService} from "data-editor/record-editor.service";
 
 @Component({
     selector: 'devctrl-endpoint',
     template: `
 <md-toolbar>
     <div class="md-toolbar-tools">
-        <button md-button devctrl-admin-only (click)="addControl($event)">Add Control</button>
-        <button md-button devctrl-admin-only (click)="editEndpoint($event)">Edit Device</button>
-        <button md-button devctrl-admin-only (click)="generateConfig($event)">Generate Config</button>
+        <button md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
+        <button md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
+        <button md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
         <span flex></span>
         <devctrl-endpoint-status [endpointId]="obj._id"></devctrl-endpoint-status>
     </div>
@@ -62,7 +62,7 @@ export class EndpointComponent implements OnInit {
     }
 
     togglePanel(panel) {
-        if (! angular.isDefined(panel.opened)) {
+        if (typeof panel.opened == 'undefined') {
             panel.opened = true;
         }
         else {
@@ -71,7 +71,7 @@ export class EndpointComponent implements OnInit {
     }
 
     isPanelOpen(panel) {
-        return angular.isDefined(panel.opened) && panel.opened;
+        return !! panel.opened;
     }
 
     addControl($event) {

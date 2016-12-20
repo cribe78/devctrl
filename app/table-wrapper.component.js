@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
 var data_service_1 = require("./data.service");
-var record_editor_service_1 = require("./record-editor.service");
+var record_editor_service_1 = require("data-editor/record-editor.service");
 var TableWrapperComponent = (function () {
     function TableWrapperComponent(route, dataService, recordService) {
         this.route = route;

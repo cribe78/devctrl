@@ -11,7 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
 var data_service_1 = require("./data.service");
-var record_editor_service_1 = require("./record-editor.service");
+var DCSerializable_1 = require("shared/DCSerializable");
+var record_editor_service_1 = require("data-editor/record-editor.service");
 var TableComponent = (function () {
     function TableComponent(route, dataService, recordService) {
         this.route = route;
@@ -19,6 +20,7 @@ var TableComponent = (function () {
         this.recordService = recordService;
         this.sortColumn = 'id';
         this.sortReversed = false;
+        this.trackById = DCSerializable_1.DCSerializable.trackById;
     }
     TableComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -64,16 +66,23 @@ var TableComponent = (function () {
             this.sortReversed = false;
         }
     };
+    TableComponent.prototype.sorted = function () {
+        return this.dataService.sortedArray(this.tableName, "name");
+    };
     TableComponent.prototype.updateRow = function ($event, row) {
         this.dataService.updateRow(row);
     };
     ;
     return TableComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], TableComponent.prototype, "tableName", void 0);
 TableComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-table',
-        template: "\n<div layout=\"row\">\n    <span class=\"text-title\">{{schema.label}}</span>\n    <span flex></span>\n    <button md-button devctrl-admin-only (click)=\"addRow()\">Add</button>\n</div>\n\n\n<md-list>\n    <div md-list-item layout=\"row\">\n        <div flex=\"20\">\n            ID\n        </div>\n        <div *ngFor=\"let field of schema.fields\" flex class=\"table-header\" (click)=\"setSortColumn(field)\">\n            {{field.label}}\n        </div>\n        <div flex=\"5\"></div>\n    </div>\n    <md-divider></md-divider>\n    <md-list-item ng-repeat-start=\"(id, row) in data | toArray | orderBy: sortColumn : sortReversed\"\n                  layout=\"row\">\n        <div flex=\"20\" class=\"devctrl-id-text\">\n            <span>{{row._id}}</span>\n        </div>\n        <div class=\"md-list-item-text\"\n             ng-repeat=\"field in schema.fields\"\n             ng-switch=\"field.type\"\n             flex>\n            <p ng-switch-when=\"fk\">{{fkDisplayVal(field, row)}}</p>\n            <div ng-switch-when=\"bool\">\n                <md-checkbox class=\"md-primary\"\n                             ng-true-value=\"1\"\n                             ng-false-value=\"0\"\n                             ng-model=\"row[field.name]\"\n                             ng-change=\"updateRow($event, row)\"></md-checkbox>\n            </div>\n            <p ng-switch-default>{{row[field.name]}}</p>\n\n        </div>\n        <div flex=\"5\">\n            <button md-button  devctrl-admin-only (click)=\"openRecord($event, row._id)\">\n                <md-icon  md-font-set=\"material-icons\">edit</md-icon>\n            </button>\n        </div>\n    </md-list-item>\n    <md-divider ng-repeat-end></md-divider>\n</md-list>\n\n<button md-button devctrl-admin-only (click)=\"addRow()\">Add</button>    \n"
+        template: "\n<div layout=\"row\">\n    <span class=\"text-title\">{{schema.label}}</span>\n    <span flex></span>\n    <button md-button devctrl-admin-only (click)=\"addRow()\">Add</button>\n</div>\n\n\n<md-list>\n    <md-list-item class=\"layout-row\">\n        <div class=\"flex-20\">\n            ID\n        </div>\n        <div *ngFor=\"let field of schema.fields\" class=\"flex table-header\" (click)=\"setSortColumn(field)\">\n            {{field.label}}\n        </div>\n        <div flex=\"5\"></div>\n    </md-list-item>\n    <md-divider></md-divider>\n    <template ngFor let-obj [ngForOf]=\"sorted()\" [ngForTrackBy]=\"trackById\">\n        <md-list-item class=\"layout-row\">\n            <div class=\"flex-20 devctrl-id-text\">\n                <span>{{obj._id}}</span>\n            </div>\n            <template ngFor let-field [ngForOf]=\"schema.fields\">\n                <div class=\"flex md-list-item-text\"\n                     [ngSwitch]=\"field.type\">\n                    <p *ngSwitchCase=\"fk\">{{fkDisplayVal(field, obj)}}</p>\n                    <div *ngSwitchCase=\"bool\">\n                        <md-checkbox class=\"md-primary\"\n                                     [ngModel]=\"obj[field.name]\">\n                                     \n                        </md-checkbox>\n                    </div>\n                    <p *ngSwitchDefault>{{obj[field.name]}}</p>\n        \n                </div>\n            </template>\n            <div class=\"flex-5\">\n                <button md-button  *devctrlAdminOnly (click)=\"openRecord($event, obj._id)\">\n                    <md-icon>edit</md-icon>\n                </button>\n            </div>\n        </md-list-item>\n        <md-divider></md-divider>\n    </template>\n</md-list>\n\n<button md-button *devctrlAdminOnly (click)=\"addRow()\">Add</button>    \n"
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,

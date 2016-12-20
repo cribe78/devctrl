@@ -10,9 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var data_service_1 = require("../data.service");
-var record_editor_service_1 = require("../record-editor.service");
-var Control_1 = require("../../shared/Control");
-var WatcherRule_1 = require("../../shared/WatcherRule");
+var record_editor_service_1 = require("data-editor/record-editor.service");
+var Control_1 = require("shared/Control");
+var WatcherRule_1 = require("shared/WatcherRule");
 var ControlService = (function () {
     function ControlService(dataService, recordService) {
         this.dataService = dataService;
@@ -86,7 +86,7 @@ var ControlService = (function () {
         this.recordService.editRecord($event, '0', WatcherRule_1.WatcherRule.tableStr, { watched_control_id: this.control._id });
     };
     ControlService.prototype.config = function (key) {
-        if (angular.isObject(this.control.config) && this.control.config[key]) {
+        if (typeof this.control.config == 'object' && this.control.config[key]) {
             return this.control.config[key];
         }
         return '';

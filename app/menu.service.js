@@ -14,9 +14,8 @@ var router_1 = require("@angular/router");
 var Endpoint_1 = require("../shared/Endpoint");
 var Room_1 = require("../shared/Room");
 var MenuService = (function () {
-    function MenuService(route, router, dataService) {
-        var _this = this;
-        this.route = route;
+    //private router : Router;
+    function MenuService(router, dataService) {
         this.router = router;
         this.dataService = dataService;
         this.menuObj = {
@@ -57,16 +56,6 @@ var MenuService = (function () {
         };
         this.endpoints = this.dataService.getTable(Endpoint_1.Endpoint.tableStr);
         this.rooms = this.dataService.getTable(Room_1.Room.tableStr);
-        route.url.subscribe(function (url) {
-            _this.routeUrl = url;
-            console.log("route changed: " + url[0].path);
-        });
-        route.data.subscribe(function (data) {
-            _this.routeData = data;
-        });
-        route.params.subscribe(function (params) {
-            _this.routeParams = params;
-        });
     }
     MenuService.prototype.backgroundImageStyle = function () {
         //let path = (<string[]>this.route.url).join("/");
@@ -76,10 +65,10 @@ var MenuService = (function () {
         return {};
     };
     MenuService.prototype.go = function (state) {
-        if (angular.isString(state)) {
+        if (typeof state == 'string') {
             this.router.navigate([state]);
         }
-        else if (angular.isArray(state)) {
+        else if (Array.isArray(state)) {
             this.router.navigate(state);
         }
         else {
@@ -103,9 +92,11 @@ var MenuService = (function () {
             var item = _a[_i];
             item.isOpened = false;
         }
-        var levelOne = this.routeUrl[0].path;
-        if (this.menuObj[levelOne]) {
-            this.menuObj[levelOne]['isOpened'] = true;
+        if (this.routeUrl) {
+            var levelOne = this.routeUrl[0].path;
+            if (this.menuObj[levelOne]) {
+                this.menuObj[levelOne]['isOpened'] = true;
+            }
         }
         this.menuObj.rooms.children = [];
         for (var roomId in this.rooms) {
@@ -170,8 +161,7 @@ var MenuService = (function () {
 }());
 MenuService = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [router_1.ActivatedRoute,
-        router_1.Router,
+    __metadata("design:paramtypes", [router_1.Router,
         data_service_1.DataService])
 ], MenuService);
 exports.MenuService = MenuService;

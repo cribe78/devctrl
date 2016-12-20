@@ -1,8 +1,8 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {RoomsComponent} from "./rooms.component";
+import {RoomsComponent} from "./rooms/rooms.component";
 import {EndpointsComponent} from "./endpoints.component";
-import {RoomComponent} from "./room.component";
+import {RoomComponent} from "./rooms/room.component";
 import {EndpointComponent} from "./endpoint.component";
 import {ConfigComponent} from "./config.component";
 import {ConfigDataComponent} from "./config-data.component";

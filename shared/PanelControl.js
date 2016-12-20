@@ -30,6 +30,9 @@ var PanelControl = (function (_super) {
             'control_id',
             'panel_id'
         ]);
+        _this.optionalProperties = _this.optionalProperties.concat([
+            'idx'
+        ]);
         if (data) {
             _this.loadData(data);
         }

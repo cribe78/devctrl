@@ -7,6 +7,7 @@ import {DefaultControl} from "./default.control";
 import {SwitchControl} from "./switch.control";
 import {SliderControl} from "./slider.control";
 import {SelectControl} from "./select.control";
+import {SelectReadonlyControl} from "./select-readonly.control";
 
 @NgModule({
     imports:      [
@@ -18,6 +19,7 @@ import {SelectControl} from "./select.control";
         ButtonControl,
         DefaultControl,
         SelectControl,
+        SelectReadonlyControl,
         SliderControl,
         SwitchControl
     ],
@@ -25,6 +27,7 @@ import {SelectControl} from "./select.control";
         ButtonControl,
         DefaultControl,
         SelectControl,
+        SelectReadonlyControl,
         SliderControl,
         SwitchControl
     ]

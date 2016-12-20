@@ -92,6 +92,12 @@ var DCSerializable = (function () {
         }
         return data;
     };
+    /**
+     * For use as an the ngFor trackBy function
+     */
+    DCSerializable.trackById = function (idx, obj) {
+        return obj._id;
+    };
     DCSerializable.prototype.removeReference = function (refObj) {
         if (this.referenced[refObj.table] && this.referenced[refObj.table][refObj._id]) {
             delete this.referenced[refObj.table][refObj._id];

@@ -5,12 +5,12 @@ import {Endpoint} from "../shared/Endpoint";
 import {DataService} from "./data.service";
 import {EndpointType} from "../shared/EndpointType";
 import {MenuService} from "./menu.service";
-import {RecordEditorService} from "./record-editor.service";
+import {RecordEditorService} from "data-editor/record-editor.service";
 
 @Component({
     selector: 'devctrl-endpoints',
     template: `
-<div layout="column" *ngIf="menu.routeUrl[0] !== 'devices'">
+<div layout="column">
             <md-toolbar layout="row" devctrl-admin-only >
                 <div class="md-toolbar-tools">
                     <button md-button (click)="addEndpoint($event)">Add Endpoint</button>

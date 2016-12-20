@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {IndexedDataSet} from "../shared/DCDataModel";
+import {IndexedDataSet} from "shared/DCDataModel";
 import {DSTableDefinition} from "./data-service-schema";
 import {DataService} from "./data.service";
-import {DCSerializable} from "../shared/DCSerializable";
-import {RecordEditorService} from "./record-editor.service";
+import {DCSerializable} from "shared/DCSerializable";
+import {RecordEditorService} from "data-editor/record-editor.service";
 
 @Component({
     selector: 'devctrl-table-wrapper',

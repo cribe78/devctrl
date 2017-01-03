@@ -148,7 +148,7 @@ var MenuService = (function () {
         this.toolbarSelect.selected = selectedId;
         this.toolbarSelect.enabled = true;
     };
-    MenuService.prototype.toolbarSelectUpdate = function () {
+    MenuService.prototype.toolbarSelectUpdate = function (event) {
         var row = this.dataService.getRowRef(this.toolbarSelect.tableName, this.toolbarSelect.selected);
         var dest = [this.toolbarSelect.selected];
         if (Array.isArray(this.toolbarSelect.destState)) {

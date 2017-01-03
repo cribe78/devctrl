@@ -176,7 +176,7 @@ export class MenuService {
         this.toolbarSelect.enabled = true;
     }
 
-    toolbarSelectUpdate() {
+    toolbarSelectUpdate(event) {
         let row = this.dataService.getRowRef(this.toolbarSelect.tableName, this.toolbarSelect.selected);
 
         let dest = [this.toolbarSelect.selected];

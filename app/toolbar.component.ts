@@ -23,8 +23,8 @@ import { Component, Inject, Input } from '@angular/core';
                     name="toolbarSelect"
                    [(ngModel)]="menu.toolbarSelect.selected"
                    (change)="menu.toolbarSelectUpdate($event)">
-            <option class="text-headline"s
-                        [value]="option.value"
+            <option class="text-headline"
+                        [value]="option.id"
                        *ngFor="let option of menu.toolbarSelect.options">
                 {{option.name}}
             </option>

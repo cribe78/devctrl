@@ -32,7 +32,6 @@ import {RecordEditorService} from "data-editor/record-editor.service";
 })
 export class EndpointComponent implements OnInit {
     endpointId: string;
-    endpoints: IndexedDataSet<Endpoint>;
     obj: Endpoint;
     controls: IndexedDataSet<Control>;
 
@@ -43,11 +42,11 @@ export class EndpointComponent implements OnInit {
                 private recordService : RecordEditorService) {}
 
     ngOnInit() {
-        this.endpoints = <IndexedDataSet<Endpoint>>this.dataService.getTable(Endpoint.tableStr);
-        this.route.params.subscribe((params) => {
-            this.endpointId = params['id'];
+        this.controls = {};
+        this.route.data.subscribe((data: { endpoint: Endpoint }) => {
+            this.endpointId = data.endpoint._id;
             console.log(`endpoint ${this.endpointId} loaded`);
-            this.obj = this.endpoints[this.endpointId];
+            this.obj = data.endpoint;
             if (this.obj) {
                 this.menu.pageTitle = this.obj.name;
                 this.controls = <IndexedDataSet<Control>>this.obj.referenced[Control.tableStr];

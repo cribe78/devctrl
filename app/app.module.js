@@ -39,6 +39,7 @@ var room_component_1 = require("./rooms/room.component");
 var rooms_component_1 = require("./rooms/rooms.component");
 var panel_component_1 = require("./rooms/panel.component");
 var object_editor_component_1 = require("./data-editor/object-editor.component");
+var flex_layout_1 = require("@angular/flex-layout");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -48,6 +49,7 @@ AppModule = __decorate([
     core_1.NgModule({
         imports: [
             platform_browser_1.BrowserModule,
+            flex_layout_1.FlexLayoutModule.forRoot(),
             material_1.MaterialModule.forRoot(),
             material_1.MdSnackBarModule,
             material_1.MdDialogModule.forRoot(),

@@ -24,11 +24,11 @@ var EndpointComponent = (function () {
     }
     EndpointComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.endpoints = this.dataService.getTable(Endpoint_1.Endpoint.tableStr);
-        this.route.params.subscribe(function (params) {
-            _this.endpointId = params['id'];
+        this.controls = {};
+        this.route.data.subscribe(function (data) {
+            _this.endpointId = data.endpoint._id;
             console.log("endpoint " + _this.endpointId + " loaded");
-            _this.obj = _this.endpoints[_this.endpointId];
+            _this.obj = data.endpoint;
             if (_this.obj) {
                 _this.menu.pageTitle = _this.obj.name;
                 _this.controls = _this.obj.referenced[Control_1.Control.tableStr];

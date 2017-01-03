@@ -29,6 +29,9 @@ var Endpoint = (function (_super) {
             }
         ];
         _this.table = Endpoint.tableStr;
+        _this.referenced = {
+            'controls': {}
+        };
         _this.requiredProperties = _this.requiredProperties.concat([
             'endpoint_type_id',
             'status',

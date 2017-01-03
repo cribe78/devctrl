@@ -30,12 +30,14 @@ import {RoomComponent} from "./rooms/room.component";
 import {RoomsComponent} from "./rooms/rooms.component";
 import {PanelComponent} from "./rooms/panel.component";
 import {ObjectEditorComponent} from "./data-editor/object-editor.component";
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 
 
 @NgModule({
     imports:      [
         BrowserModule,
+        FlexLayoutModule.forRoot(),
         MaterialModule.forRoot(),
         MdSnackBarModule,
         MdDialogModule.forRoot(),

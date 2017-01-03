@@ -17,6 +17,7 @@ var endpoint_component_1 = require("./endpoint.component");
 var config_data_component_1 = require("./config-data.component");
 var table_wrapper_component_1 = require("./table-wrapper.component");
 var room_resolver_1 = require("./rooms/room.resolver");
+var endpoint_resolver_1 = require("./endpoint.resolver");
 exports.appRoutes = [
     {
         path: '',
@@ -58,6 +59,9 @@ exports.appRoutes = [
                 data: {
                     listByName: 'endpoints',
                     title: false
+                },
+                resolve: {
+                    endpoint: endpoint_resolver_1.EndpointResolver
                 }
             }
         ]
@@ -97,7 +101,8 @@ AppRoutingModule = __decorate([
             router_1.RouterModule
         ],
         providers: [
-            room_resolver_1.RoomResolver
+            room_resolver_1.RoomResolver,
+            endpoint_resolver_1.EndpointResolver
         ]
     }),
     __metadata("design:paramtypes", [])

@@ -11,14 +11,19 @@ import { Component, Inject, Input } from '@angular/core';
     moduleId: module.id,
     selector: 'devctrl-toolbar',
     template: `
-<md-toolbar class="layout-row layout-align-start-center">
-    <div class="flex devctrl-main-toolbar devctrl-ctrl-select layout-row layout-align-center-center">
+<md-toolbar>
+    <div class="devctrl-main-toolbar devctrl-ctrl-select"
+         fxLayout="row"
+         fxLayoutAlign="space-between center"
+         fxFill>
         <button md-button (click)="menu.toggleSidenav('left')"
-                   ng-hide="menu.hideSidenavButton()"
-                   class="dc-toolbar-sidenav-button md-icon-button">
+                   *ngIf="menu.hideSidenavButtons()"
+                   class="flex-item dc-toolbar-sidenav-button md-icon-button"
+                   fxFlex="80px">
             <md-icon aria-label="Menu"  md-font-set="material-icons" >menu</md-icon>
         </button>
         <select *ngIf="menu.toolbarSelect.enabled"
+                fxFlex="140px"
                     aria-label="Select Page"
                     name="toolbarSelect"
                    [(ngModel)]="menu.toolbarSelect.selected"
@@ -29,16 +34,22 @@ import { Component, Inject, Input } from '@angular/core';
                 {{option.name}}
             </option>
         </select>
-        <span class="flex title text-headline">{{menu.pageTitle}}</span>
-        <div class="layout-column">
-            <div>{{session.client_name}}</div>
-            <span *devctrlAdminOnly>{{session.username}}</span>
+        <span class="text-headline" 
+                fxFlex 
+                fxAlign="center"
+                fxLayout="row"
+                fxLayoutAlign="space-around center">
+            <div>{{menu.pageTitle}}</div>
+        </span>
+        <div fxFlex="140px" fxLayout="column">
+            <div fxFlex="50%">{{session.client_name}}</div>
+            <span fxFlex="50%" *devctrlAdminOnly>{{session.username}}</span>
         </div>
 
-        <button md-button [md-menu-trigger-for]="adminmenu">
+        <button fxFlex="20px" md-button [md-menu-trigger-for]="adminmenu">
             <md-icon>more_vert</md-icon>
         </button>
-        <md-menu #adminmenu="mdMenu">
+        <md-menu fxFlex="none" #adminmenu="mdMenu">
             <button md-menu-item (click)="adminLogin()">
                     Admin Login
             </button>

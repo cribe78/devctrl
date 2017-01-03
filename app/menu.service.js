@@ -79,7 +79,7 @@ var MenuService = (function () {
         if (this.narrowMode()) {
             return false;
         }
-        return this.menuConfig.sidenavOpen;
+        return !!this.menuConfig.sidenavOpen;
     };
     MenuService.prototype.isFirstLevel = function () {
         //return this.route.url.length == 1;

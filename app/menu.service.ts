@@ -90,7 +90,7 @@ export class MenuService {
         if (this.narrowMode()) {
             return false;
         }
-        return this.menuConfig.sidenavOpen;
+        return !! this.menuConfig.sidenavOpen;
     }
 
     isFirstLevel() {

@@ -7,19 +7,20 @@ import {  ActivatedRoute, Router } from '@angular/router';
 @Component({
     selector: 'devctrl-app',
     template: `
-<div *ngIf="! menu.narrowMode()"
-     [hidden]="menu.isSidenavOpen()"
-     class="dc-sidenav md-sidenav-left md-whiteframe-z2 layout-column">
-    <md-toolbar class="md-accent layout-row layout-align-start-center">
-        <button md-button (click)="menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
-            <md-icon aria-label="Menu">menu</md-icon>
-        </button>
-        <span flex class="text-display-1 md-accent md-hue-1">DevCtrl BETA</span>
-    </md-toolbar>
-    <div flex role="navigation" class="md-accent md-hue-1">
-        <devctrl-menu></devctrl-menu>
+<body fxLayout="row">
+    <div *ngIf="! menu.narrowMode()"
+         [hidden]="menu.isSidenavOpen()"
+         class="dc-sidenav md-sidenav-left md-whiteframe-z2 layout-column">
+        <md-toolbar class="md-accent layout-row layout-align-start-center">
+            <button md-button (click)="menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
+                <md-icon aria-label="Menu">menu</md-icon>
+            </button>
+            <span flex class="text-display-1 md-accent md-hue-1">DevCtrl</span>
+        </md-toolbar>
+        <div flex role="navigation" class="md-accent md-hue-1">
+            <devctrl-menu></devctrl-menu>
+        </div>
     </div>
-</div>
 
     <md-sidenav *ngIf="menu.narrowMode()"
                 class="md-sidenav-left md-whiteframe-z2 layout-column">
@@ -27,13 +28,13 @@ import {  ActivatedRoute, Router } from '@angular/router';
             <button md-button (click)="menu.toggleSidenav('left')" class="dc-sidenav-close md-icon-button">
                 <md-icon aria-label="Menu">menu</md-icon>
             </button>
-            <span flex class="text-display-1 md-accent md-hue-1">DWI DevCtrl</span>
+            <span flex class="text-display-1 md-accent md-hue-1">DevCtrl</span>
         </md-toolbar>
         <div flex role="navigation" class="md-accent md-hue-1">
             <devctrl-menu></devctrl-menu>
         </div>
     </md-sidenav>
-    <div class="layout-column" flex>
+    <div fxLayout="column">
         <devctrl-toolbar></devctrl-toolbar>
         <div *ngIf="menu.narrowMode()"
                     flex
@@ -51,6 +52,7 @@ import {  ActivatedRoute, Router } from '@angular/router';
             </section>
         </div>
     </div>
+</body>
 `
 })
 export class AppComponent implements OnInit {

@@ -12,6 +12,10 @@ export class Room extends DCSerializable {
         super(_id);
         this.table = Room.tableStr;
 
+        this.referenced = {
+            'panels' : {}
+        };
+
         if (data) {
             this.loadData(data);
         }

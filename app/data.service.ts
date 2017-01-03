@@ -394,6 +394,7 @@ module.exports = {
      * @param table
      * @returns {*}
      */
+    //TODO: remove this function
     getTableRef(table: string) : IndexedDataSet<DCSerializable> {
         if (! this.dataModel[table]) {
             throw new Error("Error: getTableRef request for invalid table");

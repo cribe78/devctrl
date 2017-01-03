@@ -7,6 +7,7 @@ import {EndpointComponent} from "./endpoint.component";
 import {ConfigComponent} from "./config.component";
 import {ConfigDataComponent} from "./config-data.component";
 import {TableWrapperComponent} from "./table-wrapper.component";
+import {RoomResolver} from "./rooms/room.resolver";
 
 
 export const appRoutes: Routes = [
@@ -27,7 +28,10 @@ export const appRoutes: Routes = [
             },
             {
                 path: ':name',
-                component: RoomComponent
+                component: RoomComponent,
+                resolve: {
+                    room: RoomResolver
+                }
             }
         ]
     },
@@ -79,6 +83,9 @@ export const appRoutes: Routes = [
     ],
     exports: [
         RouterModule
+    ],
+    providers: [
+        RoomResolver
     ]
 })
 export class AppRoutingModule {}

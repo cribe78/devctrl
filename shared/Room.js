@@ -10,6 +10,9 @@ var Room = (function (_super) {
     function Room(_id, data) {
         var _this = _super.call(this, _id) || this;
         _this.table = Room.tableStr;
+        _this.referenced = {
+            'panels': {}
+        };
         if (data) {
             _this.loadData(data);
         }

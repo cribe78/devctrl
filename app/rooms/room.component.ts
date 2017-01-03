@@ -75,21 +75,8 @@ export class RoomComponent implements OnInit {
             this.config.rooms = {};
         }
 
-        this.route.params.subscribe((params: Params) => {
-            let name = params['name'];
-            if (name) {
-                console.log(`room ${name} navigated to`);
-                // If the name is a UUID, look up the name and redirect
-                if (this.rooms[name]) {
-                    this.obj = this.rooms[name];
-                }
-                else {
-                    this.obj = this.getRoomByName(name);
-                }
-            }
-            else if (params['id']) {
-                this.obj = this.rooms[params['id']];
-            }
+        this.route.data.subscribe((data: { room: Room}) => {
+            this.obj = data.room;
 
             this.menu.pageTitle = this.obj.name;
             this.menu.toolbarSelectTable("rooms", ['rooms'], this.obj._id);
@@ -218,7 +205,7 @@ export class RoomComponent implements OnInit {
         this.dataService.updateConfig();
     }
 
-    trackByName(index: number, endpoint) {
+    trackById(index: number, endpoint) {
         return endpoint._id;
     }
 }

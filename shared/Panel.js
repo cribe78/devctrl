@@ -19,6 +19,9 @@ var Panel = (function (_super) {
                 fkTable: Room_1.Room.tableStr
             }
         ];
+        _this.referenced = {
+            'panel_controls': {}
+        };
         _this.requiredProperties = _this.requiredProperties.concat([
             'room_id',
             'grouping',

@@ -320,6 +320,7 @@ var DataService = (function () {
      * @param table
      * @returns {*}
      */
+    //TODO: remove this function
     DataService.prototype.getTableRef = function (table) {
         if (!this.dataModel[table]) {
             throw new Error("Error: getTableRef request for invalid table");

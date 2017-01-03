@@ -31,21 +31,8 @@ var RoomComponent = (function () {
         if (!this.config.rooms) {
             this.config.rooms = {};
         }
-        this.route.params.subscribe(function (params) {
-            var name = params['name'];
-            if (name) {
-                console.log("room " + name + " navigated to");
-                // If the name is a UUID, look up the name and redirect
-                if (_this.rooms[name]) {
-                    _this.obj = _this.rooms[name];
-                }
-                else {
-                    _this.obj = _this.getRoomByName(name);
-                }
-            }
-            else if (params['id']) {
-                _this.obj = _this.rooms[params['id']];
-            }
+        this.route.data.subscribe(function (data) {
+            _this.obj = data.room;
             _this.menu.pageTitle = _this.obj.name;
             _this.menu.toolbarSelectTable("rooms", ['rooms'], _this.obj._id);
             _this.panels = _this.obj.referenced[Panel_1.Panel.tableStr];
@@ -147,7 +134,7 @@ var RoomComponent = (function () {
         group.opened = !group.opened;
         this.dataService.updateConfig();
     };
-    RoomComponent.prototype.trackByName = function (index, endpoint) {
+    RoomComponent.prototype.trackById = function (index, endpoint) {
         return endpoint._id;
     };
     return RoomComponent;

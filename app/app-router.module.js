@@ -16,6 +16,7 @@ var room_component_1 = require("./rooms/room.component");
 var endpoint_component_1 = require("./endpoint.component");
 var config_data_component_1 = require("./config-data.component");
 var table_wrapper_component_1 = require("./table-wrapper.component");
+var room_resolver_1 = require("./rooms/room.resolver");
 exports.appRoutes = [
     {
         path: '',
@@ -34,7 +35,10 @@ exports.appRoutes = [
             },
             {
                 path: ':name',
-                component: room_component_1.RoomComponent
+                component: room_component_1.RoomComponent,
+                resolve: {
+                    room: room_resolver_1.RoomResolver
+                }
             }
         ]
     },
@@ -91,6 +95,9 @@ AppRoutingModule = __decorate([
         ],
         exports: [
             router_1.RouterModule
+        ],
+        providers: [
+            room_resolver_1.RoomResolver
         ]
     }),
     __metadata("design:paramtypes", [])

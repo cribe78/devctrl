@@ -5,10 +5,13 @@ import { ControlService } from '../control.service';
     moduleId: module.id,
     selector: 'ctrl-select',
     template: `
-<div class="devctrl-ctrl devctrl-ctrl-select layout-row layout-align-space-between-center"
-     flex>
-    <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
-    <form>
+<div class="devctrl-ctrl devctrl-ctrl-select"
+     fxLayout="row" 
+     fxLayoutAlign="space-between center"
+     fxFill
+     style="display: flex; flex-direction: row;">
+    <div fxFlex="20%" class="text-menu devctrl-ctrl-label">{{cs.name}}</div>
+    <form fxFlex="none">
         <select [(ngModel)]="cs.value"
                 name="select"
                 (change)="cs.updateValue()">
@@ -19,6 +22,7 @@ import { ControlService } from '../control.service';
     </form>
 </div>    
     `
+    //TODO: remove explicit style once flex-layout is working
 })
 export class SelectControl implements OnInit {
     constructor(private cs : ControlService) { }

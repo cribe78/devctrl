@@ -18,14 +18,22 @@ export class AdminOnlyDirective implements DoCheck {
     ) { }
 
     ngDoCheck() {
+        let adminAuthorized = this.dataService.isAdminAuthorized();
+
+
         let test = this.dataService.isAdminAuthorized() != this._inverted;
 
         if (test && !this._hasView) {
+            console.log(`adminOnly: adminAuthorized is ${adminAuthorized}, creating view`);
             this._hasView = true;
             this._viewContainer.createEmbeddedView(this._template);
         } else if (!test && this._hasView) {
+            console.log(`adminOnly: adminAuthorized is ${adminAuthorized}, clearing view`);
             this._hasView = false;
             this._viewContainer.clear();
+        }
+        else {
+            console.log(`adminOnly: adminAuthorized is ${adminAuthorized}, doing nothing`);
         }
     }
 

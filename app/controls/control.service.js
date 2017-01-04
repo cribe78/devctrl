@@ -126,7 +126,7 @@ var ControlService = (function () {
     };
     ControlService.prototype.selectOptions = function () {
         var options;
-        if (this.control.option_set) {
+        if (this.control.option_set && this.control.option_set.options) {
             options = this.control.option_set.options;
         }
         else {

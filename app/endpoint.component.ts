@@ -11,20 +11,18 @@ import {RecordEditorService} from "data-editor/record-editor.service";
     selector: 'devctrl-endpoint',
     template: `
 <md-toolbar>
-    <div class="md-toolbar-tools">
-        <button md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
-        <button md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
-        <button md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
-        <span flex></span>
-        <devctrl-endpoint-status [endpointId]="obj._id"></devctrl-endpoint-status>
+    <div  fxFill fxLayout="row" class="md-toolbar-tools">
+        <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
+        <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
+        <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
+        <span fxFlex>&nbsp;</span>
+        <devctrl-endpoint-status fxFlex="none" [endpointId]="obj._id"></devctrl-endpoint-status>
     </div>
 </md-toolbar>
 
 <md-list>
     <template ngFor let-controlId [ngForOf]="controlIds()">
-        <a md-list-item>
-            <devctrl-ctrl flex [controlId]="controlId"></devctrl-ctrl>
-        </a>
+        <devctrl-ctrl md-list-item [controlId]="controlId"></devctrl-ctrl>
         <md-divider></md-divider>
     </template>
 </md-list>   

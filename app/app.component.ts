@@ -44,8 +44,9 @@ import {  ActivatedRoute, Router } from '@angular/router';
         </div>
         <div *ngIf="! menu.narrowMode()"
                 class="layout-column layout-align-start-center layout-margin"
-                    flex
-                    id="content"
+                fxLayout="column"
+                fxLayoutAlign="start center"
+                id="content"
                     [style.background-img]="backgroundImg()">
             <section class="md-whiteframe-z1 devctrl-main-card" [ngClass]="cardClasses()">
                     <router-outlet></router-outlet> 

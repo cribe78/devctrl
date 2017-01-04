@@ -46,7 +46,7 @@ export class MenuService {
     routeParams;
     //private router : Router;
 
-    constructor(
+    constructor(private route: ActivatedRoute,
                 private router : Router,
                 private dataService: DataService) {
         this.menuConfig = dataService.config.menu;
@@ -63,6 +63,9 @@ export class MenuService {
         this.endpoints = this.dataService.getTable(Endpoint.tableStr) as IndexedDataSet<Endpoint>;
         this.rooms = this.dataService.getTable(Room.tableStr) as IndexedDataSet<Room>;
 
+        route.url.subscribe((url) => {
+            this.routeUrl = url;
+        });
     }
 
 

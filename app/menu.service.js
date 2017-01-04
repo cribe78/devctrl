@@ -15,7 +15,9 @@ var Endpoint_1 = require("../shared/Endpoint");
 var Room_1 = require("../shared/Room");
 var MenuService = (function () {
     //private router : Router;
-    function MenuService(router, dataService) {
+    function MenuService(route, router, dataService) {
+        var _this = this;
+        this.route = route;
         this.router = router;
         this.dataService = dataService;
         this.menuObj = {
@@ -56,6 +58,9 @@ var MenuService = (function () {
         };
         this.endpoints = this.dataService.getTable(Endpoint_1.Endpoint.tableStr);
         this.rooms = this.dataService.getTable(Room_1.Room.tableStr);
+        route.url.subscribe(function (url) {
+            _this.routeUrl = url;
+        });
     }
     MenuService.prototype.backgroundImageStyle = function () {
         //let path = (<string[]>this.route.url).join("/");
@@ -161,7 +166,8 @@ var MenuService = (function () {
 }());
 MenuService = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [router_1.Router,
+    __metadata("design:paramtypes", [router_1.ActivatedRoute,
+        router_1.Router,
         data_service_1.DataService])
 ], MenuService);
 exports.MenuService = MenuService;

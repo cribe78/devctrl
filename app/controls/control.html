@@ -1,5 +1,5 @@
-<div class="devctrl-ctrl-item" flex="auto" layout="row" layout-align="space-between start">
-    <div [ngSwitch]="cs.type">
+<div fxLayout="row" class="devctrl-ctrl-item">
+    <div fxFlex [ngSwitch]="cs.type">
         <ctrl-button *ngSwitchCase="'button'"></ctrl-button>
         <ctrl-select *ngSwitchCase="'select'"></ctrl-select>
         <ctrl-switch *ngSwitchCase="'switch'"></ctrl-switch>
@@ -7,11 +7,8 @@
 
         <ctrl-default *ngSwitchDefault></ctrl-default>
     </div>
-    <div class="devctrl-ctrl-admin-placeholder"
-         *ngIf="! menu.narrowMode()"
-         flex="none">
-
-        <button *devCtrlAdminOnly md-icon-button [md-menu-trigger-for]="adminmenu">
+    <div fxFlex="none" class="devctrl-ctrl-admin-placeholder">
+        <button *devctrlAdminOnly md-button [md-menu-trigger-for]="adminmenu">
             <md-icon>more_vert</md-icon>
         </button>
         <md-menu *devctrlAdminOnly #adminmenu="mdMenu">

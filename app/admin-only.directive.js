@@ -19,14 +19,20 @@ var AdminOnlyDirective = (function () {
         this._inverted = false;
     }
     AdminOnlyDirective.prototype.ngDoCheck = function () {
+        var adminAuthorized = this.dataService.isAdminAuthorized();
         var test = this.dataService.isAdminAuthorized() != this._inverted;
         if (test && !this._hasView) {
+            console.log("adminOnly: adminAuthorized is " + adminAuthorized + ", creating view");
             this._hasView = true;
             this._viewContainer.createEmbeddedView(this._template);
         }
         else if (!test && this._hasView) {
+            console.log("adminOnly: adminAuthorized is " + adminAuthorized + ", clearing view");
             this._hasView = false;
             this._viewContainer.clear();
+        }
+        else {
+            console.log("adminOnly: adminAuthorized is " + adminAuthorized + ", doing nothing");
         }
     };
     Object.defineProperty(AdminOnlyDirective.prototype, "invert", {

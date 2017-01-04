@@ -41,12 +41,12 @@ import { Component, Inject, Input } from '@angular/core';
                 fxLayoutAlign="space-around center">
             <div>{{menu.pageTitle}}</div>
         </span>
-        <div fxFlex="140px" fxLayout="column">
+        <div fxFlex="none" fxLayout="column">
             <div fxFlex="50%">{{session.client_name}}</div>
             <span fxFlex="50%" *devctrlAdminOnly>{{session.username}}</span>
         </div>
 
-        <button fxFlex="20px" md-button [md-menu-trigger-for]="adminmenu">
+        <button fxFlex="none" md-button [md-menu-trigger-for]="adminmenu">
             <md-icon>more_vert</md-icon>
         </button>
         <md-menu fxFlex="none" #adminmenu="mdMenu">

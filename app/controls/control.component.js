@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var menu_service_1 = require("../menu.service");
+var menu_service_1 = require("../layout/menu.service");
 var PanelControl_1 = require("../../shared/PanelControl");
 var control_service_1 = require("./control.service");
 var ControlComponent = (function () {

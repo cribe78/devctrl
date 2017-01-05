@@ -26,7 +26,9 @@ import {Router, ActivatedRoute} from '@angular/router';
 `
 })
 export class ConfigComponent {
-    constructor(private route : ActivatedRoute, private router: Router) {}
+    constructor(private route : ActivatedRoute, private router: Router) {
+
+    }
 
     noActivatedChildren() {
         let val = this.route.children.length == 0;

@@ -1,31 +1,35 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {IndexedDataSet} from "shared/DCDataModel";
-import {Endpoint} from "shared/Endpoint";
-import {DataService} from "./data.service";
-import {MenuService} from "./menu.service";
-import {Control} from "shared/Control";
-import {RecordEditorService} from "data-editor/record-editor.service";
+import {IndexedDataSet} from "../../shared/DCDataModel";
+import {Endpoint} from "../../shared/Endpoint";
+import {DataService} from "../data.service";
+import {MenuService} from "../layout/menu.service";
+import {Control} from "../../shared/Control";
+import {RecordEditorService} from "../data-editor/record-editor.service";
 
 @Component({
     selector: 'devctrl-endpoint',
     template: `
-<md-toolbar>
-    <div  fxFill fxLayout="row" class="md-toolbar-tools">
-        <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
-        <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
-        <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
-        <span fxFlex>&nbsp;</span>
-        <devctrl-endpoint-status fxFlex="none" [endpointId]="obj._id"></devctrl-endpoint-status>
-    </div>
-</md-toolbar>
-
-<md-list>
-    <template ngFor let-controlId [ngForOf]="controlIds()">
-        <devctrl-ctrl md-list-item [controlId]="controlId"></devctrl-ctrl>
-        <md-divider></md-divider>
-    </template>
-</md-list>   
+<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
+    <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
+        <md-toolbar color="primary">
+            <div  fxFill fxLayout="row" class="md-toolbar-tools">
+                <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
+                <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
+                <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
+                <span fxFlex>&nbsp;</span>
+                <devctrl-endpoint-status fxFlex="none" [endpointId]="obj._id" backgroundColor="primary"></devctrl-endpoint-status>
+            </div>
+        </md-toolbar>
+        
+        <md-list>
+            <template ngFor let-controlId [ngForOf]="controlIds()">
+                <md-list-item><devctrl-ctrl [controlId]="controlId"></devctrl-ctrl></md-list-item>
+                <md-divider></md-divider>
+            </template>
+        </md-list>
+     </div>
+ </div>
 `
 })
 export class EndpointComponent implements OnInit {
@@ -42,6 +46,7 @@ export class EndpointComponent implements OnInit {
     ngOnInit() {
         this.controls = {};
         this.route.data.subscribe((data: { endpoint: Endpoint }) => {
+            this.menu.currentTopLevel = MenuService.TOPLEVEL_DEVICES;
             this.endpointId = data.endpoint._id;
             console.log(`endpoint ${this.endpointId} loaded`);
             this.obj = data.endpoint;

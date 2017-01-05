@@ -1,11 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import {IndexedDataSet} from "../shared/DCDataModel";
-import {Endpoint} from "../shared/Endpoint";
-import {DataService} from "./data.service";
-import {EndpointType} from "../shared/EndpointType";
-import {MenuService} from "./menu.service";
-import {RecordEditorService} from "data-editor/record-editor.service";
+import {IndexedDataSet} from "../../shared/DCDataModel";
+import {Endpoint} from "../../shared/Endpoint";
+import {DataService} from "../data.service";
+import {EndpointType} from "../../shared/EndpointType";
+import {MenuService} from "../layout/menu.service";
+import {RecordEditorService} from "../data-editor/record-editor.service";
 
 @Component({
     selector: 'devctrl-endpoints',
@@ -44,6 +44,7 @@ export class EndpointsComponent implements OnInit {
     ngOnInit() {
         this.endpoints = (<IndexedDataSet<Endpoint>>this.dataService.getTable(Endpoint.tableStr));
         this.endpointsList = this.dataService.sortedArray('endpoints', 'name') as Endpoint[];
+        this.menu.currentTopLevel = MenuService.TOPLEVEL_DEVICES;
         this.menu.pageTitle = "Devices";
     }
 

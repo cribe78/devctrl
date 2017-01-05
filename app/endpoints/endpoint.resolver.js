@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var data_service_1 = require("./data.service");
-var Endpoint_1 = require("../shared/Endpoint");
+var data_service_1 = require("../data.service");
+var Endpoint_1 = require("../../shared/Endpoint");
 var EndpointResolver = (function () {
     function EndpointResolver(ds, router) {
         this.ds = ds;

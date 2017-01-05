@@ -1,20 +1,20 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AppComponent }   from './app.component';
+import { AppComponent }   from './layout/app.component';
 import { MaterialModule, MdSnackBarModule, MdDialogModule} from '@angular/material';
 import { HttpModule } from '@angular/http';
 import 'hammerjs';
 
 import { UpgradeModule } from '@angular/upgrade/static';
-import {MenuComponent} from "./menu.component";
-import {MenuService} from "./menu.service";
-import {ToolbarComponent} from "./toolbar.component";
+import {MenuComponent} from "./layout/menu.component";
+import {MenuService} from "./layout/menu.service";
+import {ToolbarComponent} from "./layout/toolbar.component";
 import {AdminOnlyDirective} from "./admin-only.directive";
 import {DataService} from "./data.service";
 import {AppRoutingModule} from "./app-router.module";
-import {EndpointsComponent} from "./endpoints.component";
-import {EndpointStatusComponent} from "./endpoint-status.component";
-import {EndpointComponent} from "./endpoint.component";
+import {EndpointsComponent} from "./endpoints/endpoints.component";
+import {EndpointStatusComponent} from "./endpoints/endpoint-status.component";
+import {EndpointComponent} from "./endpoints/endpoint.component";
 import {ConfigComponent} from "./config.component";
 import {ConfigDataComponent} from "./config-data.component";
 import {RecordComponent} from "./data-editor/record.component";
@@ -31,6 +31,8 @@ import {RoomsComponent} from "./rooms/rooms.component";
 import {PanelComponent} from "./rooms/panel.component";
 import {ObjectEditorComponent} from "./data-editor/object-editor.component";
 import {FlexLayoutModule} from "@angular/flex-layout";
+import {MediaService} from "./layout/media.service";
+import {LayoutService} from "./layout/layout.service";
 
 
 
@@ -74,7 +76,9 @@ import {FlexLayoutModule} from "@angular/flex-layout";
     providers:    [
         DataService,
         MenuService,
-        RecordEditorService
+        RecordEditorService,
+        MediaService,
+        LayoutService
     ],
     bootstrap:    [ AppComponent ]
 })

@@ -11,13 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
 var rooms_component_1 = require("./rooms/rooms.component");
-var endpoints_component_1 = require("./endpoints.component");
+var endpoints_component_1 = require("./endpoints/endpoints.component");
 var room_component_1 = require("./rooms/room.component");
-var endpoint_component_1 = require("./endpoint.component");
+var endpoint_component_1 = require("./endpoints/endpoint.component");
 var config_data_component_1 = require("./config-data.component");
 var table_wrapper_component_1 = require("./table-wrapper.component");
 var room_resolver_1 = require("./rooms/room.resolver");
-var endpoint_resolver_1 = require("./endpoint.resolver");
+var endpoint_resolver_1 = require("./endpoints/endpoint.resolver");
 exports.appRoutes = [
     {
         path: '',

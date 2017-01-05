@@ -9,15 +9,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var data_service_1 = require("./data.service");
+var data_service_1 = require("../data.service");
 var menu_service_1 = require("./menu.service");
 var router_1 = require("@angular/router");
+var layout_service_1 = require("./layout.service");
 var AppComponent = (function () {
-    function AppComponent(route, router, dataService, menuService) {
+    function AppComponent(route, router, dataService, menuService, ls) {
         this.route = route;
         this.router = router;
         this.dataService = dataService;
         this.menuService = menuService;
+        this.ls = ls;
         this.menu = menuService;
     }
     ;
@@ -48,6 +50,12 @@ var AppComponent = (function () {
         }
         return {};
     };
+    AppComponent.prototype.sidenavMode = function () {
+        if (this.ls.mobile) {
+            return 'over';
+        }
+        return 'side';
+    };
     AppComponent.prototype.updateConfig = function () {
         this.dataService.updateConfig();
     };
@@ -56,12 +64,13 @@ var AppComponent = (function () {
 AppComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-app',
-        template: "\n<body fxLayout=\"row\">\n    <div *ngIf=\"! menu.narrowMode()\"\n         [hidden]=\"menu.isSidenavOpen()\"\n         class=\"dc-sidenav md-sidenav-left md-whiteframe-z2 layout-column\">\n        <md-toolbar class=\"md-accent layout-row layout-align-start-center\">\n            <button md-button (click)=\"menu.toggleSidenav('left')\" class=\"dc-sidenav-close md-icon-button\">\n                <md-icon aria-label=\"Menu\">menu</md-icon>\n            </button>\n            <span flex class=\"text-display-1 md-accent md-hue-1\">DevCtrl</span>\n        </md-toolbar>\n        <div flex role=\"navigation\" class=\"md-accent md-hue-1\">\n            <devctrl-menu></devctrl-menu>\n        </div>\n    </div>\n\n    <md-sidenav *ngIf=\"menu.narrowMode()\"\n                class=\"md-sidenav-left md-whiteframe-z2 layout-column\">\n        <md-toolbar layout=\"row\"  layout-align=\"start center\" class=\"md-accent\">\n            <button md-button (click)=\"menu.toggleSidenav('left')\" class=\"dc-sidenav-close md-icon-button\">\n                <md-icon aria-label=\"Menu\">menu</md-icon>\n            </button>\n            <span flex class=\"text-display-1 md-accent md-hue-1\">DevCtrl</span>\n        </md-toolbar>\n        <div flex role=\"navigation\" class=\"md-accent md-hue-1\">\n            <devctrl-menu></devctrl-menu>\n        </div>\n    </md-sidenav>\n    <div fxLayout=\"column\">\n        <devctrl-toolbar></devctrl-toolbar>\n        <div *ngIf=\"menu.narrowMode()\"\n                    flex\n                    id=\"content\"\n                    class=\"devctrl-main-content layout-column layout-margin\">\n            <router-outlet></router-outlet>\n        </div>\n        <div *ngIf=\"! menu.narrowMode()\"\n                class=\"layout-column layout-align-start-center layout-margin\"\n                fxLayout=\"column\"\n                fxLayoutAlign=\"start center\"\n                id=\"content\"\n                    [style.background-img]=\"backgroundImg()\">\n            <section class=\"md-whiteframe-z1 devctrl-main-card\" [ngClass]=\"cardClasses()\">\n                    <router-outlet></router-outlet> \n            </section>\n        </div>\n    </div>\n</body>\n"
+        template: "\n<body fxLayout=\"column\">\n    <devctrl-toolbar></devctrl-toolbar>    \n    <md-sidenav-container>\n        <md-sidenav class=\"dc-sidenav\"\n                    [opened]=\"menu.isSidenavOpen()\"\n                    [mode]=\"sidenavMode()\">\n            <devctrl-menu></devctrl-menu>\n        </md-sidenav>\n        <router-outlet></router-outlet>\n    </md-sidenav-container>\n</body>\n"
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         router_1.Router,
         data_service_1.DataService,
-        menu_service_1.MenuService])
+        menu_service_1.MenuService,
+        layout_service_1.LayoutService])
 ], AppComponent);
 exports.AppComponent = AppComponent;
 //# sourceMappingURL=app.component.js.map

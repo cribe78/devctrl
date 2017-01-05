@@ -9,8 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var Endpoint_1 = require("../shared/Endpoint");
-var data_service_1 = require("./data.service");
+var Endpoint_1 = require("../../shared/Endpoint");
+var data_service_1 = require("../data.service");
 var EndpointStatusComponent = (function () {
     function EndpointStatusComponent(dataService, injector) {
         this.dataService = dataService;
@@ -54,16 +54,21 @@ var EndpointStatusComponent = (function () {
     };
     EndpointStatusComponent.prototype.statusIconClasses = function () {
         var status = this.status();
-        if (status == Endpoint_1.EndpointStatus.Disabled) {
-            return { 'md-disabled': true };
-        }
-        if (status == Endpoint_1.EndpointStatus.Offline) {
-            return { 'md-warn': true };
-        }
-        return {
-            'md-primary': true,
-            'md-hue-2': true
+        var classes = {
+            'md-warn': false
         };
+        if (status == Endpoint_1.EndpointStatus.Disabled) {
+            classes['devctrl-icon-disabled'] = true;
+        }
+        else if (status == Endpoint_1.EndpointStatus.Offline) {
+            classes['md-warn'] = true;
+        }
+        else {
+            if (this.backgroundColor != 'primary') {
+                classes['md-primary'] = true;
+            }
+        }
+        return classes;
     };
     return EndpointStatusComponent;
 }());
@@ -71,6 +76,10 @@ __decorate([
     core_1.Input(),
     __metadata("design:type", Object)
 ], EndpointStatusComponent.prototype, "endpointId", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Object)
+], EndpointStatusComponent.prototype, "backgroundColor", void 0);
 EndpointStatusComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint-status',

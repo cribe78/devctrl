@@ -1,14 +1,14 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {RoomsComponent} from "./rooms/rooms.component";
-import {EndpointsComponent} from "./endpoints.component";
+import {EndpointsComponent} from "./endpoints/endpoints.component";
 import {RoomComponent} from "./rooms/room.component";
-import {EndpointComponent} from "./endpoint.component";
+import {EndpointComponent} from "./endpoints/endpoint.component";
 import {ConfigComponent} from "./config.component";
 import {ConfigDataComponent} from "./config-data.component";
 import {TableWrapperComponent} from "./table-wrapper.component";
 import {RoomResolver} from "./rooms/room.resolver";
-import {EndpointResolver} from "./endpoint.resolver";
+import {EndpointResolver} from "./endpoints/endpoint.resolver";
 
 
 export const appRoutes: Routes = [

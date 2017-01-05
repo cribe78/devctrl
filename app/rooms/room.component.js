@@ -13,7 +13,7 @@ var router_1 = require("@angular/router");
 var Room_1 = require("shared/Room");
 var data_service_1 = require("../data.service");
 var Panel_1 = require("shared/Panel");
-var menu_service_1 = require("../menu.service");
+var menu_service_1 = require("../layout/menu.service");
 var PanelControl_1 = require("shared/PanelControl");
 require("rxjs/add/operator/switchMap");
 var record_editor_service_1 = require("data-editor/record-editor.service");
@@ -33,6 +33,7 @@ var RoomComponent = (function () {
         }
         this.route.data.subscribe(function (data) {
             _this.obj = data.room;
+            _this.menu.currentTopLevel = menu_service_1.MenuService.TOPLEVEL_ROOMS;
             _this.menu.pageTitle = _this.obj.name;
             _this.menu.toolbarSelectTable("rooms", ['rooms'], _this.obj._id);
             _this.panels = _this.obj.referenced[Panel_1.Panel.tableStr];
@@ -142,7 +143,7 @@ var RoomComponent = (function () {
 RoomComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-room',
-        template: "\n<md-tab-group [selectedIndex]=\"selectedGroup\" md-dynamic-height>\n    <md-tab *ngFor=\"let groupName of getGroups()\"\n            label=\"{{groupName}}\" \n            (selectChange)=\"groupSelected(groupName)\">\n        <md-list flex>\n                <devctrl-panel *ngFor=\"let rpanel of groupPanels(groupName)\"\n                               [panelObj]=\"rpanel\">\n                </devctrl-panel>\n        </md-list>\n\n    </md-tab>\n    <md-tab label=\"Devices\" (selectChange)=\"groupSelected('Devices')\">\n        <md-list>\n            <template ngFor let-endpoint [ngForOf]=\"getRoomEndpoints()\" [ngForTrackBy]=\"trackById\">\n\n                <a md-list-item\n                          (click)=\"menu.go(['devices', endpoint._id])\"\n                          flex\n                          layout=\"row\">\n                    <span>{{endpoint.name}}</span>\n                    <span flex></span>\n                    <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                    <md-icon md-font-set=\"material-icons\">keyboard_arrow_right</md-icon>\n                </a>\n                <md-divider></md-divider>\n            </template>\n        </md-list>\n    </md-tab>\n</md-tab-group>\n<div flex layout=\"row\" devctrl-admin-only>\n    <span flex></span>\n    <button md-button\n            (click)=\"addPanel($event)\"\n            class=\"md-primary\">\n        Add Panel\n    </button>\n</div>\n    \n"
+        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex=\"none\" fxFlex.gt-xs=\"800px\" class=\"devctrl-card\">\n        <md-tab-group [selectedIndex]=\"selectedGroup\" md-dynamic-height>\n            <md-tab *ngFor=\"let groupName of getGroups()\"\n                    label=\"{{groupName}}\" \n                    (selectChange)=\"groupSelected(groupName)\">\n                <md-list flex>\n                        <devctrl-panel *ngFor=\"let rpanel of groupPanels(groupName)\"\n                                       [panelObj]=\"rpanel\">\n                        </devctrl-panel>\n                </md-list>\n        \n            </md-tab>\n            <md-tab label=\"Devices\" (selectChange)=\"groupSelected('Devices')\">\n                <md-list>\n                    <template ngFor let-endpoint [ngForOf]=\"getRoomEndpoints()\" [ngForTrackBy]=\"trackById\">\n        \n                        <a md-list-item\n                                  (click)=\"menu.go(['devices', endpoint._id])\"\n                                  flex\n                                  layout=\"row\">\n                            <span>{{endpoint.name}}</span>\n                            <span flex></span>\n                            <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                            <md-icon md-font-set=\"material-icons\">keyboard_arrow_right</md-icon>\n                        </a>\n                        <md-divider></md-divider>\n                    </template>\n                </md-list>\n            </md-tab>\n        </md-tab-group>\n        <div flex layout=\"row\" devctrl-admin-only>\n            <span flex></span>\n            <button md-button\n                    (click)=\"addPanel($event)\"\n                    class=\"md-primary\">\n                Add Panel\n            </button>\n        </div>\n    </div>\n</div>\n    \n"
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,

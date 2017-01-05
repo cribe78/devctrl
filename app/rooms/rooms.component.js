@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var Room_1 = require("../../shared/Room");
 var data_service_1 = require("../data.service");
 var core_1 = require("@angular/core");
-var menu_service_1 = require("../menu.service");
+var menu_service_1 = require("../layout/menu.service");
 var router_1 = require("@angular/router");
 var RoomsComponent = (function () {
     function RoomsComponent(dataService, route, menu) {
@@ -23,6 +23,7 @@ var RoomsComponent = (function () {
     }
     RoomsComponent.prototype.ngOnInit = function () {
         console.log("rooms component initialized");
+        this.menu.currentTopLevel = menu_service_1.MenuService.TOPLEVEL_ROOMS;
     };
     RoomsComponent.prototype.imageUrl = function (room) {
         return "/images/" + room.name + ".png";

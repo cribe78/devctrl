@@ -1,9 +1,9 @@
 import { Injectable }             from '@angular/core';
 import { Router, Resolve, RouterStateSnapshot,
     ActivatedRouteSnapshot } from '@angular/router';
-import { DataService } from './data.service';
-import {Room} from "../shared/Room";
-import {Endpoint} from "../shared/Endpoint";
+import { DataService } from '../data.service';
+import {Room} from "../../shared/Room";
+import {Endpoint} from "../../shared/Endpoint";
 
 @Injectable()
 export class EndpointResolver implements Resolve<Endpoint> {

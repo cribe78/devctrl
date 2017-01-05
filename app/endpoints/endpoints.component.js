@@ -10,11 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var Endpoint_1 = require("../shared/Endpoint");
-var data_service_1 = require("./data.service");
-var EndpointType_1 = require("../shared/EndpointType");
-var menu_service_1 = require("./menu.service");
-var record_editor_service_1 = require("data-editor/record-editor.service");
+var Endpoint_1 = require("../../shared/Endpoint");
+var data_service_1 = require("../data.service");
+var EndpointType_1 = require("../../shared/EndpointType");
+var menu_service_1 = require("../layout/menu.service");
+var record_editor_service_1 = require("../data-editor/record-editor.service");
 var EndpointsComponent = (function () {
     function EndpointsComponent(dataService, route, menu, recordService) {
         this.dataService = dataService;
@@ -25,6 +25,7 @@ var EndpointsComponent = (function () {
     EndpointsComponent.prototype.ngOnInit = function () {
         this.endpoints = this.dataService.getTable(Endpoint_1.Endpoint.tableStr);
         this.endpointsList = this.dataService.sortedArray('endpoints', 'name');
+        this.menu.currentTopLevel = menu_service_1.MenuService.TOPLEVEL_DEVICES;
         this.menu.pageTitle = "Devices";
     };
     EndpointsComponent.prototype.addEndpoint = function ($event) {

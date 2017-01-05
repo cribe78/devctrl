@@ -1,10 +1,10 @@
-import {DataService} from "./data.service";
+import {DataService} from "../data.service";
 import { Injectable, Inject } from '@angular/core';
 import {  Router, ActivatedRoute, Params, UrlSegment } from '@angular/router';
-import { appRoutes } from "./app-router.module";
-import {IndexedDataSet} from "../shared/DCDataModel";
-import {Endpoint} from "../shared/Endpoint";
-import {Room} from "../shared/Room";
+import { appRoutes } from "../app-router.module";
+import {IndexedDataSet} from "../../shared/DCDataModel";
+import {Endpoint} from "../../shared/Endpoint";
+import {Room} from "../../shared/Room";
 
 @Injectable()
 export class MenuService {
@@ -40,13 +40,17 @@ export class MenuService {
             ]
         }
     };
+
+    static TOPLEVEL_ROOMS = "rooms";
+    static TOPLEVEL_DEVICES = "devices";
+    static TOPLEVEL_CONFIG = "config";
     menuList = [this.menuObj['rooms'], this.menuObj['devices'], this.menuObj['config']];
-    routeUrl : UrlSegment[];
+    currentTopLevel;
     routeData;
     routeParams;
     //private router : Router;
 
-    constructor(private route: ActivatedRoute,
+    constructor(
                 private router : Router,
                 private dataService: DataService) {
         this.menuConfig = dataService.config.menu;
@@ -62,10 +66,6 @@ export class MenuService {
 
         this.endpoints = this.dataService.getTable(Endpoint.tableStr) as IndexedDataSet<Endpoint>;
         this.rooms = this.dataService.getTable(Room.tableStr) as IndexedDataSet<Room>;
-
-        route.url.subscribe((url) => {
-            this.routeUrl = url;
-        });
     }
 
 
@@ -106,17 +106,14 @@ export class MenuService {
     }
 
     menuItems() {
-
+        //TODO: enable opening and closing of items
         for (let item of this.menuList) {
             item.isOpened = false;
         }
 
-        if (this.routeUrl) {
-            let levelOne = this.routeUrl[0].path;
-
-
-            if (this.menuObj[levelOne]) {
-                this.menuObj[levelOne]['isOpened'] = true;
+        if (this.currentTopLevel) {
+            if (this.menuObj[this.currentTopLevel]) {
+                this.menuObj[this.currentTopLevel]['isOpened'] = true;
             }
         }
 
@@ -124,7 +121,7 @@ export class MenuService {
         for (let roomId in this.rooms) {
             let roomMenu = {
                 name: this.rooms[roomId].name,
-                route: ['rooms', { name: this.rooms[roomId].name }]
+                route: ['rooms', this.rooms[roomId].name]
             };
 
             this.menuObj.rooms.children.push(roomMenu);
@@ -134,7 +131,7 @@ export class MenuService {
         for (let eId in this.endpoints) {
             let endpointMenu = {
                 name: this.endpoints[eId].name,
-                route: ['rooms', { id: eId}]
+                route: ['devices', eId]
             };
 
             this.menuObj.devices.children.push(endpointMenu);
@@ -156,13 +153,9 @@ export class MenuService {
         this._pageTitle = val;
     }
 
-    toggleSidenav(position) {
+    toggleSidenav() {
         this.menuConfig.sidenavOpen = ! this.menuConfig.sidenavOpen;
         this.dataService.updateConfig();
-
-        if (this.narrowMode()) {
-            //this.$mdSidenav(position).toggle();
-        }
     }
 
     toolbarSelectTable(tableName, destState, selectedId) {

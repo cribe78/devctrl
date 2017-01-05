@@ -10,7 +10,7 @@ import {  ActivatedRoute } from '@angular/router';
 <md-nav-list>
     <template ngFor let-item [ngForOf]="menu.menuItems()" [ngForTrackBy]="trackByName">
         <a md-list-item (click)="menu.go(item.route)">
-            <a md-button>{{item.name}}</a>
+            <p>{{item.name}}</p>
             <span class="toggle-icon" [class.toggled]="item.isOpened">
                 <md-icon md-font-set="material-icons" >expand_more</md-icon>
             </span>

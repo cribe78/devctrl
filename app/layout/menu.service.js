@@ -8,16 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var data_service_1 = require("./data.service");
+var data_service_1 = require("../data.service");
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var Endpoint_1 = require("../shared/Endpoint");
-var Room_1 = require("../shared/Room");
+var Endpoint_1 = require("../../shared/Endpoint");
+var Room_1 = require("../../shared/Room");
 var MenuService = (function () {
     //private router : Router;
-    function MenuService(route, router, dataService) {
-        var _this = this;
-        this.route = route;
+    function MenuService(router, dataService) {
         this.router = router;
         this.dataService = dataService;
         this.menuObj = {
@@ -58,9 +56,6 @@ var MenuService = (function () {
         };
         this.endpoints = this.dataService.getTable(Endpoint_1.Endpoint.tableStr);
         this.rooms = this.dataService.getTable(Room_1.Room.tableStr);
-        route.url.subscribe(function (url) {
-            _this.routeUrl = url;
-        });
     }
     MenuService.prototype.backgroundImageStyle = function () {
         //let path = (<string[]>this.route.url).join("/");
@@ -93,21 +88,21 @@ var MenuService = (function () {
         return this.menuConfig.sidenavOpen;
     };
     MenuService.prototype.menuItems = function () {
+        //TODO: enable opening and closing of items
         for (var _i = 0, _a = this.menuList; _i < _a.length; _i++) {
             var item = _a[_i];
             item.isOpened = false;
         }
-        if (this.routeUrl) {
-            var levelOne = this.routeUrl[0].path;
-            if (this.menuObj[levelOne]) {
-                this.menuObj[levelOne]['isOpened'] = true;
+        if (this.currentTopLevel) {
+            if (this.menuObj[this.currentTopLevel]) {
+                this.menuObj[this.currentTopLevel]['isOpened'] = true;
             }
         }
         this.menuObj.rooms.children = [];
         for (var roomId in this.rooms) {
             var roomMenu = {
                 name: this.rooms[roomId].name,
-                route: ['rooms', { name: this.rooms[roomId].name }]
+                route: ['rooms', this.rooms[roomId].name]
             };
             this.menuObj.rooms.children.push(roomMenu);
         }
@@ -115,7 +110,7 @@ var MenuService = (function () {
         for (var eId in this.endpoints) {
             var endpointMenu = {
                 name: this.endpoints[eId].name,
-                route: ['rooms', { id: eId }]
+                route: ['devices', eId]
             };
             this.menuObj.devices.children.push(endpointMenu);
         }
@@ -136,11 +131,9 @@ var MenuService = (function () {
         enumerable: true,
         configurable: true
     });
-    MenuService.prototype.toggleSidenav = function (position) {
+    MenuService.prototype.toggleSidenav = function () {
         this.menuConfig.sidenavOpen = !this.menuConfig.sidenavOpen;
         this.dataService.updateConfig();
-        if (this.narrowMode()) {
-        }
     };
     MenuService.prototype.toolbarSelectTable = function (tableName, destState, selectedId) {
         var table = this.dataService.getTable(tableName);
@@ -164,10 +157,12 @@ var MenuService = (function () {
     };
     return MenuService;
 }());
+MenuService.TOPLEVEL_ROOMS = "rooms";
+MenuService.TOPLEVEL_DEVICES = "devices";
+MenuService.TOPLEVEL_CONFIG = "config";
 MenuService = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [router_1.ActivatedRoute,
-        router_1.Router,
+    __metadata("design:paramtypes", [router_1.Router,
         data_service_1.DataService])
 ], MenuService);
 exports.MenuService = MenuService;

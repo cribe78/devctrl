@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {DataService} from "./data.service";
-import {MenuService} from "./menu.service";
+import {MenuService} from "./layout/menu.service";
 
 @Component({
     selector: 'devctrl-config-data',
@@ -35,6 +35,7 @@ export class ConfigDataComponent implements OnInit
             this.schema[key]['name'] = key;
             return this.schema[key];
         });
+        this.menu.currentTopLevel = MenuService.TOPLEVEL_CONFIG;
     }
 
     noActivatedChildren() {

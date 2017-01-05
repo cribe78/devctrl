@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, Injector} from '@angular/core';
-import {EndpointStatus, Endpoint} from "../shared/Endpoint";
-import {DataService} from "./data.service";
+import {EndpointStatus, Endpoint} from "../../shared/Endpoint";
+import {DataService} from "../data.service";
 
 @Component({
     selector: 'devctrl-endpoint-status',
@@ -11,6 +11,7 @@ import {DataService} from "./data.service";
 export class EndpointStatusComponent implements OnInit {
     endpoint : Endpoint;
     @Input() endpointId;
+    @Input() backgroundColor;
 
     constructor(private dataService : DataService, private injector : Injector) {}
 
@@ -60,17 +61,22 @@ export class EndpointStatusComponent implements OnInit {
     statusIconClasses () {
         let status = this.status();
 
+        let classes = {
+            'md-warn' : false
+        };
 
         if (status == EndpointStatus.Disabled) {
-            return { 'md-disabled' : true};
+            classes['devctrl-icon-disabled'] = true;
         }
-        if (status == EndpointStatus.Offline) {
-            return {'md-warn' : true}
+        else if (status == EndpointStatus.Offline) {
+            classes['md-warn'] = true;
+        }
+        else {
+            if (this.backgroundColor != 'primary') {
+                classes['md-primary'] = true;
+            }
         }
 
-        return  {
-            'md-primary' : true,
-            'md-hue-2' : true
-        };
+        return classes;
     }
 }

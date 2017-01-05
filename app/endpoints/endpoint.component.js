@@ -10,11 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var Endpoint_1 = require("shared/Endpoint");
-var data_service_1 = require("./data.service");
-var menu_service_1 = require("./menu.service");
-var Control_1 = require("shared/Control");
-var record_editor_service_1 = require("data-editor/record-editor.service");
+var Endpoint_1 = require("../../shared/Endpoint");
+var data_service_1 = require("../data.service");
+var menu_service_1 = require("../layout/menu.service");
+var Control_1 = require("../../shared/Control");
+var record_editor_service_1 = require("../data-editor/record-editor.service");
 var EndpointComponent = (function () {
     function EndpointComponent(route, dataService, menu, recordService) {
         this.route = route;
@@ -26,6 +26,7 @@ var EndpointComponent = (function () {
         var _this = this;
         this.controls = {};
         this.route.data.subscribe(function (data) {
+            _this.menu.currentTopLevel = menu_service_1.MenuService.TOPLEVEL_DEVICES;
             _this.endpointId = data.endpoint._id;
             console.log("endpoint " + _this.endpointId + " loaded");
             _this.obj = data.endpoint;
@@ -70,7 +71,7 @@ var EndpointComponent = (function () {
 EndpointComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint',
-        template: "\n<md-toolbar>\n    <div  fxFill fxLayout=\"row\" class=\"md-toolbar-tools\">\n        <button fxFlex=\"none\" fxFlexAlign=\"start\" md-button *devctrlAdminOnly (click)=\"addControl($event)\">Add Control</button>\n        <button fxFlex=\"none\" fxFlexAlign=\"start\" md-button *devctrlAdminOnly (click)=\"editEndpoint($event)\">Edit Device</button>\n        <button fxFlex=\"none\" fxFlexAlign=\"start\" md-button *devctrlAdminOnly (click)=\"generateConfig($event)\">Generate Config</button>\n        <span fxFlex>&nbsp;</span>\n        <devctrl-endpoint-status fxFlex=\"none\" [endpointId]=\"obj._id\"></devctrl-endpoint-status>\n    </div>\n</md-toolbar>\n\n<md-list>\n    <template ngFor let-controlId [ngForOf]=\"controlIds()\">\n        <devctrl-ctrl md-list-item [controlId]=\"controlId\"></devctrl-ctrl>\n        <md-divider></md-divider>\n    </template>\n</md-list>   \n"
+        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex=\"none\" fxFlex.gt-xs=\"800px\" class=\"devctrl-card\">\n        <md-toolbar color=\"primary\">\n            <div  fxFill fxLayout=\"row\" class=\"md-toolbar-tools\">\n                <button fxFlex=\"none\" fxFlexAlign=\"start\" md-button *devctrlAdminOnly (click)=\"addControl($event)\">Add Control</button>\n                <button fxFlex=\"none\" fxFlexAlign=\"start\" md-button *devctrlAdminOnly (click)=\"editEndpoint($event)\">Edit Device</button>\n                <button fxFlex=\"none\" fxFlexAlign=\"start\" md-button *devctrlAdminOnly (click)=\"generateConfig($event)\">Generate Config</button>\n                <span fxFlex>&nbsp;</span>\n                <devctrl-endpoint-status fxFlex=\"none\" [endpointId]=\"obj._id\" backgroundColor=\"primary\"></devctrl-endpoint-status>\n            </div>\n        </md-toolbar>\n        \n        <md-list>\n            <template ngFor let-controlId [ngForOf]=\"controlIds()\">\n                <md-list-item><devctrl-ctrl [controlId]=\"controlId\"></devctrl-ctrl></md-list-item>\n                <md-divider></md-divider>\n            </template>\n        </md-list>\n     </div>\n </div>\n"
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,

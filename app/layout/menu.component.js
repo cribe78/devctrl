@@ -26,7 +26,7 @@ MenuComponent = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'devctrl-menu',
-        template: "\n<md-nav-list>\n    <template ngFor let-item [ngForOf]=\"menu.menuItems()\" [ngForTrackBy]=\"trackByName\">\n        <a md-list-item (click)=\"menu.go(item.route)\">\n            <a md-button>{{item.name}}</a>\n            <span class=\"toggle-icon\" [class.toggled]=\"item.isOpened\">\n                <md-icon md-font-set=\"material-icons\" >expand_more</md-icon>\n            </span>\n        </a>\n        <a md-list-item [hidden]=\"! item.isOpened\"\n                        *ngFor=\"let subitem of item.children\" \n                        (click)=\"menu.go(subitem.route)\">\n            <span flex=\"5\"></span>\n            <p>{{subitem.name}}</p>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-nav-list>\n"
+        template: "\n<md-nav-list>\n    <template ngFor let-item [ngForOf]=\"menu.menuItems()\" [ngForTrackBy]=\"trackByName\">\n        <a md-list-item (click)=\"menu.go(item.route)\">\n            <p>{{item.name}}</p>\n            <span class=\"toggle-icon\" [class.toggled]=\"item.isOpened\">\n                <md-icon md-font-set=\"material-icons\" >expand_more</md-icon>\n            </span>\n        </a>\n        <a md-list-item [hidden]=\"! item.isOpened\"\n                        *ngFor=\"let subitem of item.children\" \n                        (click)=\"menu.go(subitem.route)\">\n            <span flex=\"5\"></span>\n            <p>{{subitem.name}}</p>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-nav-list>\n"
     }),
     __metadata("design:paramtypes", [menu_service_1.MenuService, router_1.ActivatedRoute])
 ], MenuComponent);

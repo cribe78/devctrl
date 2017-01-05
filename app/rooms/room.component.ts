@@ -4,7 +4,7 @@ import {IndexedDataSet} from "shared/DCDataModel";
 import {Room} from "shared/Room";
 import {DataService} from "../data.service";
 import {Panel} from "shared/Panel";
-import {MenuService} from "../menu.service";
+import {MenuService} from "../layout/menu.service";
 import {Endpoint} from "shared/Endpoint";
 import {PanelControl} from "shared/PanelControl";
 import 'rxjs/add/operator/switchMap';
@@ -13,42 +13,46 @@ import {RecordEditorService} from "data-editor/record-editor.service";
 @Component({
     selector: 'devctrl-room',
     template: `
-<md-tab-group [selectedIndex]="selectedGroup" md-dynamic-height>
-    <md-tab *ngFor="let groupName of getGroups()"
-            label="{{groupName}}" 
-            (selectChange)="groupSelected(groupName)">
-        <md-list flex>
-                <devctrl-panel *ngFor="let rpanel of groupPanels(groupName)"
-                               [panelObj]="rpanel">
-                </devctrl-panel>
-        </md-list>
-
-    </md-tab>
-    <md-tab label="Devices" (selectChange)="groupSelected('Devices')">
-        <md-list>
-            <template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
-
-                <a md-list-item
-                          (click)="menu.go(['devices', endpoint._id])"
-                          flex
-                          layout="row">
-                    <span>{{endpoint.name}}</span>
-                    <span flex></span>
-                    <devctrl-endpoint-status [endpointId]="endpoint._id"></devctrl-endpoint-status>
-                    <md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon>
-                </a>
-                <md-divider></md-divider>
-            </template>
-        </md-list>
-    </md-tab>
-</md-tab-group>
-<div flex layout="row" devctrl-admin-only>
-    <span flex></span>
-    <button md-button
-            (click)="addPanel($event)"
-            class="md-primary">
-        Add Panel
-    </button>
+<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
+    <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
+        <md-tab-group [selectedIndex]="selectedGroup" md-dynamic-height>
+            <md-tab *ngFor="let groupName of getGroups()"
+                    label="{{groupName}}" 
+                    (selectChange)="groupSelected(groupName)">
+                <md-list flex>
+                        <devctrl-panel *ngFor="let rpanel of groupPanels(groupName)"
+                                       [panelObj]="rpanel">
+                        </devctrl-panel>
+                </md-list>
+        
+            </md-tab>
+            <md-tab label="Devices" (selectChange)="groupSelected('Devices')">
+                <md-list>
+                    <template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
+        
+                        <a md-list-item
+                                  (click)="menu.go(['devices', endpoint._id])"
+                                  flex
+                                  layout="row">
+                            <span>{{endpoint.name}}</span>
+                            <span flex></span>
+                            <devctrl-endpoint-status [endpointId]="endpoint._id"></devctrl-endpoint-status>
+                            <md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon>
+                        </a>
+                        <md-divider></md-divider>
+                    </template>
+                </md-list>
+            </md-tab>
+        </md-tab-group>
+        <div flex layout="row" devctrl-admin-only>
+            <span flex></span>
+            <button md-button
+                    (click)="addPanel($event)"
+                    class="md-primary">
+                Add Panel
+            </button>
+        </div>
+    </div>
 </div>
     
 `
@@ -78,6 +82,7 @@ export class RoomComponent implements OnInit {
         this.route.data.subscribe((data: { room: Room}) => {
             this.obj = data.room;
 
+            this.menu.currentTopLevel = MenuService.TOPLEVEL_ROOMS;
             this.menu.pageTitle = this.obj.name;
             this.menu.toolbarSelectTable("rooms", ['rooms'], this.obj._id);
             this.panels = <IndexedDataSet<Panel>>this.obj.referenced[Panel.tableStr];

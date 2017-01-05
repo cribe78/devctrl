@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {MenuService} from "../menu.service";
+import {MenuService} from "../layout/menu.service";
 import {PanelControl} from "../../shared/PanelControl";
 import {ControlService} from "./control.service";
 

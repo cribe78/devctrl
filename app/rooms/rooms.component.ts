@@ -1,7 +1,7 @@
 import {Room} from "../../shared/Room";
 import {DataService} from "../data.service";
 import { Component, OnInit, Input } from '@angular/core';
-import {MenuService} from "../menu.service";
+import {MenuService} from "../layout/menu.service";
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
@@ -31,6 +31,8 @@ export class RoomsComponent implements OnInit {
 
     ngOnInit() {
         console.log("rooms component initialized");
+        this.menu.currentTopLevel = MenuService.TOPLEVEL_ROOMS;
+
     }
 
     imageUrl(room) {

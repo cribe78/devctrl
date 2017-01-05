@@ -10,20 +10,20 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
-var app_component_1 = require("./app.component");
+var app_component_1 = require("./layout/app.component");
 var material_1 = require("@angular/material");
 var http_1 = require("@angular/http");
 require("hammerjs");
 var static_1 = require("@angular/upgrade/static");
-var menu_component_1 = require("./menu.component");
-var menu_service_1 = require("./menu.service");
-var toolbar_component_1 = require("./toolbar.component");
+var menu_component_1 = require("./layout/menu.component");
+var menu_service_1 = require("./layout/menu.service");
+var toolbar_component_1 = require("./layout/toolbar.component");
 var admin_only_directive_1 = require("./admin-only.directive");
 var data_service_1 = require("./data.service");
 var app_router_module_1 = require("./app-router.module");
-var endpoints_component_1 = require("./endpoints.component");
-var endpoint_status_component_1 = require("./endpoint-status.component");
-var endpoint_component_1 = require("./endpoint.component");
+var endpoints_component_1 = require("./endpoints/endpoints.component");
+var endpoint_status_component_1 = require("./endpoints/endpoint-status.component");
+var endpoint_component_1 = require("./endpoints/endpoint.component");
 var config_component_1 = require("./config.component");
 var config_data_component_1 = require("./config-data.component");
 var record_component_1 = require("./data-editor/record.component");
@@ -40,6 +40,8 @@ var rooms_component_1 = require("./rooms/rooms.component");
 var panel_component_1 = require("./rooms/panel.component");
 var object_editor_component_1 = require("./data-editor/object-editor.component");
 var flex_layout_1 = require("@angular/flex-layout");
+var media_service_1 = require("./layout/media.service");
+var layout_service_1 = require("./layout/layout.service");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -86,7 +88,9 @@ AppModule = __decorate([
         providers: [
             data_service_1.DataService,
             menu_service_1.MenuService,
-            record_editor_service_1.RecordEditorService
+            record_editor_service_1.RecordEditorService,
+            media_service_1.MediaService,
+            layout_service_1.LayoutService
         ],
         bootstrap: [app_component_1.AppComponent]
     }),

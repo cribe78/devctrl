@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
 var data_service_1 = require("./data.service");
-var menu_service_1 = require("./menu.service");
+var menu_service_1 = require("./layout/menu.service");
 var ConfigDataComponent = (function () {
     function ConfigDataComponent(route, menu, dataService) {
         this.route = route;
@@ -25,6 +25,7 @@ var ConfigDataComponent = (function () {
             _this.schema[key]['name'] = key;
             return _this.schema[key];
         });
+        this.menu.currentTopLevel = menu_service_1.MenuService.TOPLEVEL_CONFIG;
     };
     ConfigDataComponent.prototype.noActivatedChildren = function () {
         var val = this.route.children.length == 0;

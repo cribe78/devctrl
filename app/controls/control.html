@@ -1,17 +1,18 @@
 <div fxLayout="row" class="devctrl-ctrl-item">
-    <div fxFlex [ngSwitch]="cs.type">
+    <!-- TODO: flex-layout is broken here -->
+    <div fxFlex [ngSwitch]="cs.type" style="width: 100%;">
         <ctrl-button *ngSwitchCase="'button'"></ctrl-button>
         <ctrl-select *ngSwitchCase="'select'"></ctrl-select>
+        <ctrl-select-readonly *ngSwitchCase="'select-readonly'"></ctrl-select-readonly>
         <ctrl-switch *ngSwitchCase="'switch'"></ctrl-switch>
         <ctrl-slider *ngSwitchCase="'slider'"></ctrl-slider>
-
         <ctrl-default *ngSwitchDefault></ctrl-default>
     </div>
     <div fxFlex="none" class="devctrl-ctrl-admin-placeholder">
-        <button *devctrlAdminOnly md-button [md-menu-trigger-for]="adminmenu">
+        <button md-icon-button [md-menu-trigger-for]="adminmenu">
             <md-icon>more_vert</md-icon>
         </button>
-        <md-menu *devctrlAdminOnly #adminmenu="mdMenu">
+        <md-menu #adminmenu="mdMenu">
             <button md-menu-item (click)="cs.editControl($event)">
                     <md-icon>create</md-icon>
                     Control

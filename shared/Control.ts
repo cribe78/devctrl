@@ -71,6 +71,11 @@ export class Control extends DCSerializable {
     constructor(_id: string, data?: ControlData) {
         super(_id);
         this.table = Control.tableStr;
+        this.referenced = {
+            endpoints : {},
+            panel_controls : {}
+        };
+
         this.requiredProperties = this.requiredProperties.concat([
             'endpoint_id',
             'ctid',

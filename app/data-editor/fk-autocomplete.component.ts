@@ -1,8 +1,8 @@
-import {Component, Input, Output, OnInit} from '@angular/core';
+import {Component, Input, Output, OnInit, EventEmitter} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {IndexedDataSet} from "../shared/DCDataModel";
-import {DCSerializable} from "../shared/DCSerializable";
-import {DataService} from "./data.service";
+import {IndexedDataSet} from "../../shared/DCDataModel";
+import {DCSerializable} from "../../shared/DCSerializable";
+import {DataService} from "../data.service";
 
 @Component({
     selector: 'fk-autocomplete',
@@ -16,6 +16,8 @@ export class FkAutocompleteComponent implements OnInit
     @Input()field;
     @Input()objectField;
     @Input()selectedItemId;
+
+    @Output() onUpdate = new EventEmitter<any>();
 
     dataTable : IndexedDataSet<DCSerializable>;
     selectedItem : DCSerializable;
@@ -53,10 +55,10 @@ export class FkAutocompleteComponent implements OnInit
         return matches;
     }
 
-    @Output()onUpdate(data) {}
+
 
     selectedUpdated() {
-        this.onUpdate({value: this.selectedItem, name: this.objectField});
+        this.onUpdate.emit({value: this.selectedItem, name: this.objectField});
     }
 
 }

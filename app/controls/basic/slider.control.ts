@@ -6,18 +6,16 @@ import { ControlService } from '../control.service';
     selector: 'ctrl-slider',
     template: `
 <div class="devctrl-ctrl"
-      flex
-      layout="row"
-      layout-align="space-between center">
+     style="display: flex; flex-direction: row;">
 
-        <label flex="initial" class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
-        <md-slider flex
+        <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
+        <md-slider style="flex: 3 1;"
                    min="{{cs.intConfig('min')}}"
                    max="{{cs.intConfig('max')}}"
                    [(ngModel)]="cs.value"
                    (change)="cs.updateValue()">
         </md-slider>
-        <div layout layout-align="center center">
+        <div>
             <input class="devctrl-slider-input"
                    type="number"
                    [(ngModel)]="cs.value"

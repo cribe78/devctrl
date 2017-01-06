@@ -18,7 +18,7 @@ import {Router, ActivatedRoute} from '@angular/router';
         <devctrl-object-editor *ngIf="valueType(object[key]) == 'object'"
                                 [object]="object[key]"
                                 [fname]="key"
-                                (onUpdate)="onUpdate(object, name)">
+                                (onUpdate)="updateItem($event)">
         </devctrl-object-editor>
         <button md-button  class="md-icon-button" (click)="deleteValue(key)">
             <md-icon>delete</md-icon>
@@ -47,6 +47,7 @@ export class ObjectEditorComponent
 {
     @Input() object;
     @Input() fname;
+    @Output() onUpdate = new EventEmitter<any>();
     newKey;
     newVal;
 
@@ -74,12 +75,12 @@ export class ObjectEditorComponent
         this.newVal = undefined;
         //angular.element(document).find('#oe-new-key').focus();
 
-        this.onUpdate({object: this.object, name: this.fname});
+        this.onUpdate.emit({object: this.object, name: this.fname});
     }
 
     deleteValue(key) {
         delete this.object[key];
-        this.onUpdate({object: this.object, name: this.fname});
+        this.onUpdate.emit({object: this.object, name: this.fname});
     }
 
     keys() {
@@ -87,7 +88,7 @@ export class ObjectEditorComponent
     }
 
 
-    @Output() onUpdate(args) {}
+
 
     valueType(value) {
         if (Array.isArray(value)) {
@@ -107,5 +108,9 @@ export class ObjectEditorComponent
         }
 
         this.object[key] = tempVal;
+    }
+
+    updateItem() {
+        this.onUpdate.emit({object: this.object, name: this.fname});
     }
 }

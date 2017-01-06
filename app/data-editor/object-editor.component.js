@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var core_1 = require("@angular/core");
 var ObjectEditorComponent = (function () {
     function ObjectEditorComponent() {
+        this.onUpdate = new core_1.EventEmitter();
     }
     ObjectEditorComponent.prototype.addItem = function () {
         if (this.newKey && this.newVal) {
@@ -29,16 +30,15 @@ var ObjectEditorComponent = (function () {
         this.newKey = undefined;
         this.newVal = undefined;
         //angular.element(document).find('#oe-new-key').focus();
-        this.onUpdate({ object: this.object, name: this.fname });
+        this.onUpdate.emit({ object: this.object, name: this.fname });
     };
     ObjectEditorComponent.prototype.deleteValue = function (key) {
         delete this.object[key];
-        this.onUpdate({ object: this.object, name: this.fname });
+        this.onUpdate.emit({ object: this.object, name: this.fname });
     };
     ObjectEditorComponent.prototype.keys = function () {
         return Object.keys(this.object);
     };
-    ObjectEditorComponent.prototype.onUpdate = function (args) { };
     ObjectEditorComponent.prototype.valueType = function (value) {
         if (Array.isArray(value)) {
             return "array";
@@ -55,6 +55,9 @@ var ObjectEditorComponent = (function () {
         }
         this.object[key] = tempVal;
     };
+    ObjectEditorComponent.prototype.updateItem = function () {
+        this.onUpdate.emit({ object: this.object, name: this.fname });
+    };
     return ObjectEditorComponent;
 }());
 __decorate([
@@ -67,14 +70,12 @@ __decorate([
 ], ObjectEditorComponent.prototype, "fname", void 0);
 __decorate([
     core_1.Output(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], ObjectEditorComponent.prototype, "onUpdate", null);
+    __metadata("design:type", Object)
+], ObjectEditorComponent.prototype, "onUpdate", void 0);
 ObjectEditorComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-object-editor',
-        template: "\n<md-list>\n    <h3 md-subheader>\n        {{fname}}\n    </h3>\n    <md-list-item class=\"md-list-item-text\"\n                  *ngFor=\"let key of keys()\">\n        <div *ngIf=\"valueType(object[key]) != 'object'\">\n            <label>{{key}}</label>\n            <input  [(ngModel)]=\"object[key]\" (change)=\"updateValue($event, key)\">\n\n        </div>\n        <devctrl-object-editor *ngIf=\"valueType(object[key]) == 'object'\"\n                                [object]=\"object[key]\"\n                                [fname]=\"key\"\n                                (onUpdate)=\"onUpdate(object, name)\">\n        </devctrl-object-editor>\n        <button md-button  class=\"md-icon-button\" (click)=\"deleteValue(key)\">\n            <md-icon>delete</md-icon>\n        </button>\n    </md-list-item>\n    <md-list-item>\n        <div class=\"layout-row\">\n            <div class=\"form-group\">\n                <label>{{name}} Key</label>\n                <input id=\"oe-new-key\" [(ngModel)]=\"newKey\" name=\"new-key\">\n            </div>\n            <div class=\"form-group\">\n                <label>Value</label>\n                <input  [(ngModel)]=\"newVal\" name=\"new-val\">\n            </div>\n            <button md-button (click)=\"addItem()\">\n                Add\n            </button>\n        </div>\n    </md-list-item>\n\n</md-list>    \n"
+        template: "\n<md-list>\n    <h3 md-subheader>\n        {{fname}}\n    </h3>\n    <md-list-item class=\"md-list-item-text\"\n                  *ngFor=\"let key of keys()\">\n        <div *ngIf=\"valueType(object[key]) != 'object'\">\n            <label>{{key}}</label>\n            <input  [(ngModel)]=\"object[key]\" (change)=\"updateValue($event, key)\">\n\n        </div>\n        <devctrl-object-editor *ngIf=\"valueType(object[key]) == 'object'\"\n                                [object]=\"object[key]\"\n                                [fname]=\"key\"\n                                (onUpdate)=\"updateItem($event)\">\n        </devctrl-object-editor>\n        <button md-button  class=\"md-icon-button\" (click)=\"deleteValue(key)\">\n            <md-icon>delete</md-icon>\n        </button>\n    </md-list-item>\n    <md-list-item>\n        <div class=\"layout-row\">\n            <div class=\"form-group\">\n                <label>{{name}} Key</label>\n                <input id=\"oe-new-key\" [(ngModel)]=\"newKey\" name=\"new-key\">\n            </div>\n            <div class=\"form-group\">\n                <label>Value</label>\n                <input  [(ngModel)]=\"newVal\" name=\"new-val\">\n            </div>\n            <button md-button (click)=\"addItem()\">\n                Add\n            </button>\n        </div>\n    </md-list-item>\n\n</md-list>    \n"
     }),
     __metadata("design:paramtypes", [])
 ], ObjectEditorComponent);

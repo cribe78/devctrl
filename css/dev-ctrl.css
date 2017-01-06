@@ -78,7 +78,9 @@ coe-menu li {
 }
 
 
-
+devctrl-ctrl {
+    width: 100%;
+}
 
 .devctrl-ctrl {
     min-height: 48px;
@@ -89,6 +91,8 @@ coe-menu li {
 }
 .devctrl-ctrl-item {
     min-height: 48px;
+    width: 100%;
+    display: flex;
 }
 
 .devctrl-ctrl-label {
@@ -97,6 +101,7 @@ coe-menu li {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    flex: 1 1;
 }
 
 .devctrl-ctrl-select > md-select {

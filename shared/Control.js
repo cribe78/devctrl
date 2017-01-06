@@ -32,6 +32,10 @@ var Control = (function (_super) {
             }
         ];
         _this.table = Control.tableStr;
+        _this.referenced = {
+            endpoints: {},
+            panel_controls: {}
+        };
         _this.requiredProperties = _this.requiredProperties.concat([
             'endpoint_id',
             'ctid',

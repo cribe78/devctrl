@@ -9,10 +9,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var data_service_1 = require("./data.service");
+var data_service_1 = require("../data.service");
 var FkAutocompleteComponent = (function () {
     function FkAutocompleteComponent(dataService) {
         this.dataService = dataService;
+        this.onUpdate = new core_1.EventEmitter();
     }
     FkAutocompleteComponent.prototype.ngOnInit = function () {
         this.dataTable = this.dataService.getTable(this.table);
@@ -40,9 +41,8 @@ var FkAutocompleteComponent = (function () {
         }
         return matches;
     };
-    FkAutocompleteComponent.prototype.onUpdate = function (data) { };
     FkAutocompleteComponent.prototype.selectedUpdated = function () {
-        this.onUpdate({ value: this.selectedItem, name: this.objectField });
+        this.onUpdate.emit({ value: this.selectedItem, name: this.objectField });
     };
     return FkAutocompleteComponent;
 }());
@@ -64,10 +64,8 @@ __decorate([
 ], FkAutocompleteComponent.prototype, "selectedItemId", void 0);
 __decorate([
     core_1.Output(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], FkAutocompleteComponent.prototype, "onUpdate", null);
+    __metadata("design:type", Object)
+], FkAutocompleteComponent.prototype, "onUpdate", void 0);
 FkAutocompleteComponent = __decorate([
     core_1.Component({
         selector: 'fk-autocomplete',

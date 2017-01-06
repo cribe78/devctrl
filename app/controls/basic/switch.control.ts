@@ -8,11 +8,13 @@ import {ControlService} from "../control.service";
 <div layout="row"
      layout-align="space-between center"
      class="devctrl-ctrl"
-     flex >
+     style="display: flex; flex-direction: row;" >
 
-        <label class="text-menu">{{cs.name}}</label>
-        <md-slide-toggle [(ngModel)]="cs.value"
-                    (change)="cs.updateValue()"></md-slide-toggle>
+    <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
+    <md-slide-toggle [(ngModel)]="cs.value"
+                    (change)="cs.updateValue()">
+                    
+    </md-slide-toggle>
 
 </div>    
     `

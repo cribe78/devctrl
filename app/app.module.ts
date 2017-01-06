@@ -18,7 +18,7 @@ import {EndpointComponent} from "./endpoints/endpoint.component";
 import {ConfigComponent} from "./config.component";
 import {ConfigDataComponent} from "./config-data.component";
 import {RecordComponent} from "./data-editor/record.component";
-import {FkAutocompleteComponent} from "./fk-autocomplete.component";
+import {FkAutocompleteComponent} from "./data-editor/fk-autocomplete.component";
 import {AlertDialog} from "./alert-dialog.component";
 import {RecordEditorService} from "./data-editor/record-editor.service";
 import {TableComponent} from "./table.component";

@@ -10,24 +10,26 @@ import {RecordEditorService} from "../data-editor/record-editor.service";
 @Component({
     selector: 'devctrl-endpoints',
     template: `
-<div layout="column">
-            <md-toolbar layout="row" devctrl-admin-only >
-                <div class="md-toolbar-tools">
-                    <button md-button (click)="addEndpoint($event)">Add Endpoint</button>
-                    <button md-button (click)="addEndpointType($event)">Add Endpoint Type</button>
-                </div>
-            </md-toolbar>
-            <md-list>
-                <md-list-item 
-                    *ngFor="let endpoint of endpointsList"
+<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
+    <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
+        <md-toolbar color="primary">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button md-button *devctrlAdminOnly (click)="addEndpoint($event)">Add Endpoint</button>
+                <button md-button *devctrlAdminOnly (click)="addEndpointType($event)">Add Endpoint Type</button>
+            </div>
+        </md-toolbar>
+        <md-nav-list>
+            <template ngFor let-endpoint [ngForOf]="endpointsList">
+                 <a md-list-item 
                     (click)="menu.go(['devices', endpoint._id])">
                     {{endpoint.name}}
-                    <span flex></span>
+                    <span fxFlex></span>
                     <devctrl-endpoint-status [endpointId]="endpoint._id"></devctrl-endpoint-status>
-                    <md-icon md-font-set="material-icons" >chevron_right</md-icon>
-                </md-list-item>
-                <md-divider ng-repeat-end></md-divider>
-            </md-list>
+                    <md-icon>chevron_right</md-icon>
+                </a>
+                <md-divider></md-divider>           
+            </template>       
+        </md-nav-list>
 </div>
 `
 })

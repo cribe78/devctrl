@@ -13,10 +13,10 @@ import {RecordEditorService} from "../data-editor/record-editor.service";
 <div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
     <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
         <md-toolbar color="primary">
-            <div  fxFill fxLayout="row" class="md-toolbar-tools">
-                <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
-                <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
-                <button fxFlex="none" fxFlexAlign="start" md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
+            <div  fxFill fxLayout="row" fxLayoutAlign="start center" class="md-toolbar-tools">
+                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
+                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
+                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
                 <span fxFlex>&nbsp;</span>
                 <devctrl-endpoint-status fxFlex="none" [endpointId]="obj._id" backgroundColor="primary"></devctrl-endpoint-status>
             </div>

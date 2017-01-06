@@ -43,6 +43,10 @@ var MediaService = (function () {
             return !window.matchMedia(this.minSizes[size]).matches;
         }
     };
+    MediaService.prototype.widerThan = function (px) {
+        var test = "(min-width: " + (px - 1) + "px)";
+        return window.matchMedia(test).matches;
+    };
     Object.defineProperty(MediaService.prototype, "xs", {
         get: function () {
             return this.isSize('xs');

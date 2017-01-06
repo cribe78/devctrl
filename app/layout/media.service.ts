@@ -41,6 +41,11 @@ export class MediaService {
         }
     }
 
+    widerThan(px: number) {
+        let test = `(min-width: ${px-1}px)`;
+        return window.matchMedia(test).matches;
+    }
+
     get xs() {
         return this.isSize('xs');
     }

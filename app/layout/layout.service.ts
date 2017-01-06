@@ -4,7 +4,11 @@ import {MediaService} from "./media.service";
 
 @Injectable()
 export class LayoutService {
-    constructor(private mds: MediaService) {}
+    static menuWidth = 270;
+    static wide = 1500;
+
+    constructor(private mds: MediaService,
+                private mns: MenuService) {}
 
     get mobile() {
         return this.mds.lt('md');
@@ -12,5 +16,14 @@ export class LayoutService {
 
     get desktop() {
         return ! this.mobile;
+    }
+
+    get desktopWide() {
+        let testWidth = LayoutService.wide;
+        if (this.mns.isSidenavOpen()) {
+            testWidth += LayoutService.menuWidth;
+        }
+
+        return this.mds.widerThan(testWidth);
     }
 }

@@ -215,25 +215,25 @@ span.toggle-icon.toggled {
     transform: rotate(0deg);
 }
 
-.panelTile.gray {
+md-grid-tile.gray {
     background: #f5f5f5; }
-.panelTile.green {
+md-grid-tile.green {
     background: #b9f6ca; }
-.panelTile.yellow {
+md-grid-tile.yellow {
     background: #ffff8d; }
-.panelTile.blue {
+md-grid-tile.blue {
     background: #84ffff; }
-.panelTile.darkBlue {
+md-grid-tile.darkBlue {
     background: #80d8ff; }
-.panelTile.deepBlue {
+md-grid-tile.deepBlue {
     background: #448aff; }
-.panelTile.purple {
+md-grid-tile.purple {
     background: #b388ff; }
-.panelTile.lightPurple {
+md-grid-tile.lightPurple {
     background: #8c9eff; }
-.panelTile.red {
+md-grid-tile.red {
     background: #ff8a80; }
-.panelTile.pink {
+md-grid-tile.pink {
     background: #ff80ab; }
 
 .rot180 {

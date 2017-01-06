@@ -9,10 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
+var menu_service_1 = require("./menu.service");
 var media_service_1 = require("./media.service");
-var LayoutService = (function () {
-    function LayoutService(mds) {
+var LayoutService = LayoutService_1 = (function () {
+    function LayoutService(mds, mns) {
         this.mds = mds;
+        this.mns = mns;
     }
     Object.defineProperty(LayoutService.prototype, "mobile", {
         get: function () {
@@ -28,11 +30,26 @@ var LayoutService = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(LayoutService.prototype, "desktopWide", {
+        get: function () {
+            var testWidth = LayoutService_1.wide;
+            if (this.mns.isSidenavOpen()) {
+                testWidth += LayoutService_1.menuWidth;
+            }
+            return this.mds.widerThan(testWidth);
+        },
+        enumerable: true,
+        configurable: true
+    });
     return LayoutService;
 }());
-LayoutService = __decorate([
+LayoutService.menuWidth = 270;
+LayoutService.wide = 1500;
+LayoutService = LayoutService_1 = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [media_service_1.MediaService])
+    __metadata("design:paramtypes", [media_service_1.MediaService,
+        menu_service_1.MenuService])
 ], LayoutService);
 exports.LayoutService = LayoutService;
+var LayoutService_1;
 //# sourceMappingURL=layout.service.js.map

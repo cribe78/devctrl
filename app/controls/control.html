@@ -13,7 +13,9 @@
         <ctrl-default *ngSwitchDefault></ctrl-default>
     </div>
     <div fxFlex="none" class="devctrl-ctrl-admin-placeholder">
-        <button md-icon-button [md-menu-trigger-for]="adminmenu" style="margin-top: 4px;">
+        <button md-icon-button
+                *ngIf="cs.dataService.isAdminAuthorized()"
+                [md-menu-trigger-for]="adminmenu" style="margin-top: 4px;">
             <md-icon>more_vert</md-icon>
         </button>
         <md-menu #adminmenu="mdMenu">

@@ -21,7 +21,7 @@ SwitchControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-switch',
-        template: "\n<div layout=\"row\"\n     layout-align=\"space-between center\"\n     class=\"devctrl-ctrl\"\n     style=\"display: flex; flex-direction: row;\" >\n\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <md-slide-toggle [(ngModel)]=\"cs.value\"\n                    (change)=\"cs.updateValue()\">\n                    \n    </md-slide-toggle>\n\n</div>    \n    "
+        template: "\n<div layout=\"row\"\n     layout-align=\"space-between center\"\n     class=\"devctrl-ctrl\"\n     flex >\n\n        <label class=\"text-menu\">{{cs.name}}</label>\n        <md-slide-toggle [(ngModel)]=\"cs.value\"\n                    (change)=\"cs.updateValue()\"></md-slide-toggle>\n\n</div>    \n    "
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], SwitchControl);

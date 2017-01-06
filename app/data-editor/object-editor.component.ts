@@ -4,49 +4,50 @@ import {Router, ActivatedRoute} from '@angular/router';
 @Component({
     selector: 'devctrl-object-editor',
     template: `
-<md-list>
-    <h3 md-subheader>
-        {{fname}}
-    </h3>
-    <md-list-item class="md-list-item-text"
-                  *ngFor="let key of keys()">
-        <div *ngIf="valueType(object[key]) != 'object'">
-            <label>{{key}}</label>
-            <input  [(ngModel)]="object[key]" (change)="updateValue($event, key)">
-
-        </div>
-        <devctrl-object-editor *ngIf="valueType(object[key]) == 'object'"
-                                [object]="object[key]"
-                                [fname]="key"
-                                (onUpdate)="updateItem($event)">
-        </devctrl-object-editor>
-        <button md-button  class="md-icon-button" (click)="deleteValue(key)">
-            <md-icon>delete</md-icon>
-        </button>
-    </md-list-item>
-    <md-list-item>
-        <div class="layout-row">
-            <div class="form-group">
-                <label>{{name}} Key</label>
-                <input id="oe-new-key" [(ngModel)]="newKey" name="new-key">
+<div>
+    <span class="text-menu">
+        {{keyPath()}}
+    </span>
+    <div style="margin-left: 24px;">
+        <template ngFor let-key [ngForOf]="keys()">
+            <div fxLayout="row" *ngIf="valueType(object[key]) != 'object'">
+                <md-input-container>
+                    <input md-input 
+                            [placeholder]="keyPath(key)" 
+                            [(ngModel)]="object[key]" 
+                            (change)="updateValue($event, key)">
+                </md-input-container>  
+                <button type="button" md-icon-button  class="md-icon-button" (click)="deleteValue(key)">
+                    <md-icon>delete</md-icon>
+                </button>
             </div>
-            <div class="form-group">
-                <label>Value</label>
-                <input  [(ngModel)]="newVal" name="new-val">
-            </div>
-            <button md-button (click)="addItem()">
+            <devctrl-object-editor fxFlex *ngIf="valueType(object[key]) == 'object'"
+                            [object]="object[key]"
+                            [fname]="key"
+                            [pathPrefix]="keyPath()"
+                            (onUpdate)="updateItem($event)">
+            </devctrl-object-editor>
+        </template>
+        <div fxLayout="row">
+            <md-input-container>
+                <input md-input [placeholder]="newKeyPlaceholder()" [(ngModel)]="newKey" name="new-key">
+            </md-input-container>
+            <md-input-container>
+                <input md-input placeholder="Value" [(ngModel)]="newVal" name="new-val">
+            </md-input-container>
+            <button type="button" md-button (click)="addItem()">
                 Add
             </button>
         </div>
-    </md-list-item>
-
-</md-list>    
+    </div>
+</div>    
 `
 })
 export class ObjectEditorComponent
 {
     @Input() object;
     @Input() fname;
+    @Input() pathPrefix;
     @Output() onUpdate = new EventEmitter<any>();
     newKey;
     newVal;
@@ -87,8 +88,24 @@ export class ObjectEditorComponent
         return Object.keys(this.object);
     }
 
+    keyPath(key) {
+        let path = this.fname;
 
+        if (key) {
+            path = `${path}.${key}`;
+        }
 
+        if (this.pathPrefix) {
+            path = `${this.pathPrefix}.${path}`;
+        }
+
+        return path;
+    }
+
+    newKeyPlaceholder() {
+        let path = this.keyPath('');
+        return `New ${path} key`;
+    }
 
     valueType(value) {
         if (Array.isArray(value)) {

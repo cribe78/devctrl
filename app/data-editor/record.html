@@ -8,17 +8,19 @@
         <div fxFlex fxLayout="column">
             <template ngFor let-field [ngForOf]="schema.fields" [ngForTrackBy]="trackByName">
                 <div fxFlex [ngSwitch]="field.type">
-                    <md-input fxFlex *ngSwitchCase="'string'"
-                              placeholder="{{field.label}}"
-                              [(ngModel)]="obj[field.name]"
-                              name="{{field.name}}">
-                    </md-input>
-                    <md-input *ngSwitchCase="'int'"
-                              type="number"
-                              placeholder="{{field.label}}"
-                              [(ngModel)]="obj[field.name]"
-                              name="{{field.name}}">
-                    </md-input>
+                    <md-input-container *ngSwitchCase="'string'">
+                        <input md-input
+                               [placeholder]="field.label"
+                               [(ngModel)]="obj[field.name]"
+                               name="{{field.name}}">
+                    </md-input-container>
+                    <md-input-container  *ngSwitchCase="'int'">
+                        <input md-input
+                                  type="number"
+                                  [placeholder]="field.label"
+                                  [(ngModel)]="obj[field.name]"
+                                  name="{{field.name}}">
+                    </md-input-container>
                     <fk-autocomplete *ngSwitchCase="'fk'"
                                      [table]="schema.foreign_keys[field.name]"
                                      [field]="field"
@@ -26,17 +28,16 @@
                                      [selectedItemId]="obj[field.name]"
                                      (onUpdate)="objectUpdated(value, name)">
                     </fk-autocomplete>
-                    <div *ngSwitchCase="'select-static'">
-                        <label>{{field.label}}</label>
-                        <md-select placeholder={{field.label}}
-                                   [(ngModel)]="obj[field.name]"
-                                   name="{{field.name}}">
-                            <md-option [value]="option.value"
-                                       *ngFor="let option of field.options">
-                                {{option.name}}
-                            </md-option>
-                        </md-select>
-                    </div>
+                    <md-select *ngSwitchCase="'select-static'"
+                               [placeholder]="field.label"
+                               [(ngModel)]="obj[field.name]"
+                               name="{{field.name}}"
+                               style="margin-top: 20px;">
+                        <md-option [value]="option.value"
+                                   *ngFor="let option of field.options">
+                            {{option.name}}
+                        </md-option>
+                    </md-select>
                     <md-checkbox  *ngSwitchCase="'bool'"
                                   class="md-primary"
                                   [(ngModel)]="obj[field.name]"
@@ -55,11 +56,11 @@
             </template>
         </div>
     </form>
-    <div fxLayout="row">
-        <button md-button *ngIf="newRow" class="md-primary" (click)="addRow()">Add</button>
-        <button md-button *ngIf="! newRow" class="md-primary" (click)="updateRow()">Update</button>
-        <button md-button *ngIf="! newRow" class="md-primary md-hue-1" (click)="cloneRow()">Clone</button>
-        <button md-button *ngIf="! newRow" class="md-warn" (click)="deleteRow()">Delete</button>
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+        <button md-button *ngIf="newRow" color="primary" (click)="addRow()">Add</button>
+        <button md-button *ngIf="! newRow" color="primary" (click)="updateRow()">Update</button>
+        <button md-button *ngIf="! newRow" color="accent" (click)="cloneRow()">Clone</button>
+        <button md-button *ngIf="! newRow" color="warn" (click)="deleteRow()">Delete</button>
         <button md-button (click)="close()">Cancel</button>
     </div>
     <md-divider></md-divider>

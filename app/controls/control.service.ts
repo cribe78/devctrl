@@ -155,7 +155,7 @@ export class ControlService {
 
     setValue(val) {
         this.value = val;
-        this.updateValue(val);
+        this.updateValue();
     }
 
     selectValueName() {
@@ -177,7 +177,7 @@ export class ControlService {
         return obj.value;
     }
 
-    updateValue(val) {
+    updateValue() {
         this.dataService.updateControlValue(this.control);
     }
 }

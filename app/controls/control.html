@@ -2,14 +2,16 @@
     <!-- TODO: flex-layout is broken here -->
     <div fxFlex [ngSwitch]="cs.type" style="width: 100%;">
         <ctrl-button *ngSwitchCase="'button'"></ctrl-button>
+        <ctrl-button-set *ngSwitchCase="'button-set'"></ctrl-button-set>
         <ctrl-select *ngSwitchCase="'select'"></ctrl-select>
         <ctrl-select-readonly *ngSwitchCase="'select-readonly'"></ctrl-select-readonly>
         <ctrl-switch *ngSwitchCase="'switch'"></ctrl-switch>
         <ctrl-slider *ngSwitchCase="'slider'"></ctrl-slider>
+        <ctrl-f32-multibutton *ngSwitchCase="'f32-multibutton'"></ctrl-f32-multibutton>
         <ctrl-default *ngSwitchDefault></ctrl-default>
     </div>
     <div fxFlex="none" class="devctrl-ctrl-admin-placeholder">
-        <button md-icon-button [md-menu-trigger-for]="adminmenu">
+        <button md-icon-button [md-menu-trigger-for]="adminmenu" style="margin-top: 4px;">
             <md-icon>more_vert</md-icon>
         </button>
         <md-menu #adminmenu="mdMenu">

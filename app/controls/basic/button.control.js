@@ -21,7 +21,7 @@ ButtonControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-button',
-        template: "\n<div class=\"devctrl-ctrl\"\n     flex\n     layout=\"row\"\n     layout-align=\"space-between center\">\n    <label flex=\"initial\" class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <button md-button (click)=\"cs.setValue('')\">{{cs.name}}</button>\n</div>\n"
+        template: "\n<div class=\"devctrl-ctrl devctrl-ctrl-flex-layout\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <button md-button (click)=\"cs.setValue('')\">{{cs.name}}</button>\n</div>\n"
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], ButtonControl);

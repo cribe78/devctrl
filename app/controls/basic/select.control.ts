@@ -9,16 +9,16 @@ import { ControlService } from '../control.service';
      fxLayout="row" 
      fxLayoutAlign="space-between center"
      fxFill
-     style="display: flex; flex-direction: row;">
+     style="display: flex; flex-direction: row; align-items: center;">
     <div fxFlex="20%" class="text-menu devctrl-ctrl-label">{{cs.name}}</div>
-    <form fxFlex="none">
-        <select [(ngModel)]="cs.value"
+    <form fxFlex="none" style="margin-bottom: 0;">
+        <md-select [(ngModel)]="cs.value"
                 name="select"
                 (change)="cs.updateValue()">
-            <option [value]="obj.value" *ngFor="let obj of cs.selectOptionsArray(); trackBy: cs.trackByValue">
+            <md-option [value]="obj.value" *ngFor="let obj of cs.selectOptionsArray(); trackBy: cs.trackByValue">
                 {{obj.name}}
-            </option>
-        </select>
+            </md-option>
+        </md-select>
     </form>
 </div>    
     `

@@ -6,11 +6,8 @@ import {ControlService} from "../control.service";
     moduleId: module.id,
     selector: 'ctrl-button',
     template: `
-<div class="devctrl-ctrl"
-     flex
-     layout="row"
-     layout-align="space-between center">
-    <label flex="initial" class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
+<div class="devctrl-ctrl devctrl-ctrl-flex-layout">
+    <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
     <button md-button (click)="cs.setValue('')">{{cs.name}}</button>
 </div>
 `

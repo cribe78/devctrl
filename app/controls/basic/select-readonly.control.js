@@ -21,7 +21,7 @@ SelectReadonlyControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-select-readonly',
-        template: "\n<div class=\"devctrl-ctrl\"\n     style=\"display: flex; flex-direction: row;\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <span>{{cs.selectValueName()}}</span>\n</div>                \n    "
+        template: "\n<div class=\"devctrl-ctrl devctrl-ctrl-flex-layout\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <span>{{cs.selectValueName()}}</span>\n</div>                \n    "
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], SelectReadonlyControl);

@@ -6,7 +6,7 @@ import { ControlService } from '../control.service';
     selector: 'ctrl-slider',
     template: `
 <div class="devctrl-ctrl"
-     style="display: flex; flex-direction: row;">
+     style="display: flex; flex-direction: row; align-items: center;">
 
         <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
         <md-slider style="flex: 3 1;"

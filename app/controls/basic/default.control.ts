@@ -5,11 +5,9 @@ import {ControlService} from "../control.service";
     moduleId: module.id,
     selector: 'ctrl-default',
     template: `
-    <div class="devctrl-ctrl"
-     flex
-     layout="row"
-     layout-align="space-between center">
-        <span>{{cs.name}}</span>
+    <div class="devctrl-ctrl devctrl-ctrl-flex-layout">
+        <span class="text-menu devctrl-ctrl-label">{{cs.name}}</span>
+        <span class="md-warn">Unimplemented control type {{cs.type}}</span>
         <span>{{cs.value}}</span>
     </div>
     `

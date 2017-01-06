@@ -21,7 +21,7 @@ DefaultControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-default',
-        template: "\n    <div class=\"devctrl-ctrl\"\n     flex\n     layout=\"row\"\n     layout-align=\"space-between center\">\n        <span>{{cs.name}}</span>\n        <span>{{cs.value}}</span>\n    </div>\n    "
+        template: "\n    <div class=\"devctrl-ctrl devctrl-ctrl-flex-layout\">\n        <span class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</span>\n        <span class=\"md-warn\">Unimplemented control type {{cs.type}}</span>\n        <span>{{cs.value}}</span>\n    </div>\n    "
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], DefaultControl);

@@ -143,7 +143,7 @@ var ControlService = (function () {
     };
     ControlService.prototype.setValue = function (val) {
         this.value = val;
-        this.updateValue(val);
+        this.updateValue();
     };
     ControlService.prototype.selectValueName = function () {
         var opts = this.selectOptions();
@@ -159,7 +159,7 @@ var ControlService = (function () {
     ControlService.prototype.trackByValue = function (idx, obj) {
         return obj.value;
     };
-    ControlService.prototype.updateValue = function (val) {
+    ControlService.prototype.updateValue = function () {
         this.dataService.updateControlValue(this.control);
     };
     return ControlService;

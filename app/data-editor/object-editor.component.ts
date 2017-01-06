@@ -17,7 +17,7 @@ import {Router, ActivatedRoute} from '@angular/router';
                             [(ngModel)]="object[key]" 
                             (change)="updateValue($event, key)">
                 </md-input-container>  
-                <button type="button" md-icon-button  class="md-icon-button" (click)="deleteValue(key)">
+                <button type="button" md-icon-button (click)="deleteValue(key)">
                     <md-icon>delete</md-icon>
                 </button>
             </div>
@@ -35,8 +35,11 @@ import {Router, ActivatedRoute} from '@angular/router';
             <md-input-container>
                 <input md-input placeholder="Value" [(ngModel)]="newVal" name="new-val">
             </md-input-container>
-            <button type="button" md-button (click)="addItem()">
-                Add
+            <button md-icon-button
+                    type="button" 
+                    (click)="addItem()"
+                    color="primary">
+                <md-icon>add</md-icon>
             </button>
         </div>
     </div>

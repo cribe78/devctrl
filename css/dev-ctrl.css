@@ -77,6 +77,11 @@ coe-menu li {
     visibility: hidden;
 }
 
+#devctrl-content-canvas {
+    height:100%;
+    overflow: scroll;
+    padding-bottom: 80px;
+}
 
 devctrl-ctrl {
     width: 100%;
@@ -89,6 +94,14 @@ devctrl-ctrl {
 .devctrl-ctrl-admin-placeholder {
     width: 48px;
 }
+
+.devctrl-ctrl-flex-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .devctrl-ctrl-item {
     min-height: 48px;
     width: 100%;
@@ -139,10 +152,7 @@ section.devctrl-main-card {
     width: 1800px;
 }
 
-#devctrl-content-canvas {
-    height:100%;
-    overflow: scroll;
-}
+
 
 .devctrl-main-toolbar {
 }

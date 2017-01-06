@@ -21,7 +21,7 @@ SliderControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-slider',
-        template: "\n<div class=\"devctrl-ctrl\"\n      flex\n      layout=\"row\"\n      layout-align=\"space-between center\">\n\n        <label flex=\"initial\" class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n        <md-slider flex\n                   min=\"{{cs.intConfig('min')}}\"\n                   max=\"{{cs.intConfig('max')}}\"\n                   [(ngModel)]=\"cs.value\"\n                   (change)=\"cs.updateValue()\">\n        </md-slider>\n        <div layout layout-align=\"center center\">\n            <input class=\"devctrl-slider-input\"\n                   type=\"number\"\n                   [(ngModel)]=\"cs.value\"\n                   (change)=\"cs.updateValue()\">\n        </div>\n\n</div>    \n    "
+        template: "\n<div class=\"devctrl-ctrl\"\n     style=\"display: flex; flex-direction: row; align-items: center;\">\n\n        <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n        <md-slider style=\"flex: 3 1;\"\n                   min=\"{{cs.intConfig('min')}}\"\n                   max=\"{{cs.intConfig('max')}}\"\n                   [(ngModel)]=\"cs.value\"\n                   (change)=\"cs.updateValue()\">\n        </md-slider>\n        <div>\n            <input class=\"devctrl-slider-input\"\n                   type=\"number\"\n                   [(ngModel)]=\"cs.value\"\n                   (change)=\"cs.updateValue()\">\n        </div>\n\n</div>    \n    "
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], SliderControl);

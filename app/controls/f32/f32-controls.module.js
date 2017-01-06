@@ -11,34 +11,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var material_1 = require("@angular/material");
 var forms_1 = require("@angular/forms");
 var core_1 = require("@angular/core");
-var basic_controls_module_1 = require("./basic/basic-controls.module");
-var control_component_1 = require("./control.component");
 var common_1 = require("@angular/common");
-var f32_controls_module_1 = require("./f32/f32-controls.module");
-var ControlsModule = (function () {
-    function ControlsModule() {
+var f32_multibutton_control_1 = require("./f32-multibutton.control");
+var F32ControlsModule = (function () {
+    function F32ControlsModule() {
     }
-    return ControlsModule;
+    return F32ControlsModule;
 }());
-ControlsModule = __decorate([
+F32ControlsModule = __decorate([
     core_1.NgModule({
         imports: [
             material_1.MaterialModule,
             forms_1.FormsModule,
-            basic_controls_module_1.BasicControlsModule,
-            f32_controls_module_1.F32ControlsModule,
             common_1.CommonModule
         ],
         declarations: [
-            control_component_1.ControlComponent
+            f32_multibutton_control_1.F32MultibuttonControl
         ],
         exports: [
-            basic_controls_module_1.BasicControlsModule,
-            f32_controls_module_1.F32ControlsModule,
-            control_component_1.ControlComponent,
+            f32_multibutton_control_1.F32MultibuttonControl
         ]
     }),
     __metadata("design:paramtypes", [])
-], ControlsModule);
-exports.ControlsModule = ControlsModule;
-//# sourceMappingURL=controls.module.js.map
+], F32ControlsModule);
+exports.F32ControlsModule = F32ControlsModule;
+//# sourceMappingURL=f32-controls.module.js.map

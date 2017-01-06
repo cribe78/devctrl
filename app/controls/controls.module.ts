@@ -5,12 +5,14 @@ import {DataService} from "../data.service";
 import {BasicControlsModule} from "./basic/basic-controls.module";
 import {ControlComponent} from "./control.component";
 import {CommonModule} from "@angular/common";
+import {F32ControlsModule} from "./f32/f32-controls.module";
 
 @NgModule({
     imports:      [
         MaterialModule,
         FormsModule,
         BasicControlsModule,
+        F32ControlsModule,
         CommonModule
     ],
     declarations: [
@@ -18,7 +20,8 @@ import {CommonModule} from "@angular/common";
     ],
     exports: [
         BasicControlsModule,
-        ControlComponent
+        F32ControlsModule,
+        ControlComponent,
     ]
 
 })

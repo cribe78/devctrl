@@ -18,6 +18,7 @@ var switch_control_1 = require("./switch.control");
 var slider_control_1 = require("./slider.control");
 var select_control_1 = require("./select.control");
 var select_readonly_control_1 = require("./select-readonly.control");
+var button_set_control_1 = require("./button-set.control");
 var BasicControlsModule = (function () {
     function BasicControlsModule() {
     }
@@ -32,6 +33,7 @@ BasicControlsModule = __decorate([
         ],
         declarations: [
             button_control_1.ButtonControl,
+            button_set_control_1.ButtonSetControl,
             default_control_1.DefaultControl,
             select_control_1.SelectControl,
             select_readonly_control_1.SelectReadonlyControl,
@@ -40,6 +42,7 @@ BasicControlsModule = __decorate([
         ],
         exports: [
             button_control_1.ButtonControl,
+            button_set_control_1.ButtonSetControl,
             default_control_1.DefaultControl,
             select_control_1.SelectControl,
             select_readonly_control_1.SelectReadonlyControl,

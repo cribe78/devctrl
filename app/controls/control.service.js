@@ -111,16 +111,6 @@ var ControlService = (function () {
         }
         return 0;
     };
-    ControlService.prototype.normalizedValue = function () {
-        // Normalize a numeric value to a scale of 0 - 100
-        var rawVal = this.control.value;
-        var max = this.intConfig('max');
-        var min = this.intConfig('min');
-        rawVal = rawVal < min ? min : rawVal;
-        rawVal = rawVal > max ? max : rawVal;
-        var normVal = (rawVal + (0 - min)) * (max - min) / (100 - 0);
-        return normVal;
-    };
     ControlService.prototype.selectMenuItem = function (val) {
         this.setValue(val);
     };

@@ -9,6 +9,7 @@ import {SliderControl} from "./slider.control";
 import {SelectControl} from "./select.control";
 import {SelectReadonlyControl} from "./select-readonly.control";
 import {ButtonSetControl} from "./button-set.control";
+import {LevelControl} from "./level.control";
 
 @NgModule({
     imports:      [
@@ -20,6 +21,7 @@ import {ButtonSetControl} from "./button-set.control";
         ButtonControl,
         ButtonSetControl,
         DefaultControl,
+        LevelControl,
         SelectControl,
         SelectReadonlyControl,
         SliderControl,
@@ -29,6 +31,7 @@ import {ButtonSetControl} from "./button-set.control";
         ButtonControl,
         ButtonSetControl,
         DefaultControl,
+        LevelControl,
         SelectControl,
         SelectReadonlyControl,
         SliderControl,

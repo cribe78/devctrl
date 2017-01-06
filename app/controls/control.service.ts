@@ -112,19 +112,7 @@ export class ControlService {
         return 0;
     }
 
-    normalizedValue() {
-        // Normalize a numeric value to a scale of 0 - 100
-        let rawVal = this.control.value;
-        let max = this.intConfig('max');
-        let min = this.intConfig('min');
 
-        rawVal = rawVal < min ? min : rawVal;
-        rawVal = rawVal > max ? max : rawVal;
-
-        let normVal = (rawVal + ( 0 - min )) * ( max - min ) / ( 100 - 0);
-
-        return normVal;
-    }
 
 
     selectMenuItem(val) {

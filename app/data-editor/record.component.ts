@@ -35,6 +35,14 @@ export class RecordComponent {
         this.schema = this.dataService.getSchema(row.table);
     }
 
+    fkName(prop) {
+        if (this.obj[prop]) {
+            return this.obj[prop].name;
+        }
+
+        return 'unknown';
+    }
+
     updateRow() {
         this.dataService.updateRow(this.obj);
         this.close(true);

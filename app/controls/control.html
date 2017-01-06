@@ -1,8 +1,10 @@
 <div fxLayout="row" class="devctrl-ctrl-item">
     <!-- TODO: flex-layout is broken here -->
     <div fxFlex [ngSwitch]="cs.type" style="width: 100%;">
+        <ctrl-awhe130-preset *ngSwitchCase="'awhe130-preset'"></ctrl-awhe130-preset>
         <ctrl-button *ngSwitchCase="'button'"></ctrl-button>
         <ctrl-button-set *ngSwitchCase="'button-set'"></ctrl-button-set>
+        <ctrl-level *ngSwitchCase="'level'"></ctrl-level>
         <ctrl-select *ngSwitchCase="'select'"></ctrl-select>
         <ctrl-select-readonly *ngSwitchCase="'select-readonly'"></ctrl-select-readonly>
         <ctrl-switch *ngSwitchCase="'switch'"></ctrl-switch>

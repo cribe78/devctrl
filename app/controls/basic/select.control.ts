@@ -5,11 +5,7 @@ import { ControlService } from '../control.service';
     moduleId: module.id,
     selector: 'ctrl-select',
     template: `
-<div class="devctrl-ctrl devctrl-ctrl-select"
-     fxLayout="row" 
-     fxLayoutAlign="space-between center"
-     fxFill
-     style="display: flex; flex-direction: row; align-items: center;">
+<div class="devctrl-ctrl devctrl-ctrl-select devctrl-ctrl-flex-layout">
     <div fxFlex="20%" class="text-menu devctrl-ctrl-label">{{cs.name}}</div>
     <form fxFlex="none" style="margin-bottom: 0;">
         <md-select [(ngModel)]="cs.value"

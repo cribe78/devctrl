@@ -32,6 +32,12 @@ var RecordComponent = (function () {
         this.obj = row;
         this.schema = this.dataService.getSchema(row.table);
     };
+    RecordComponent.prototype.fkName = function (prop) {
+        if (this.obj[prop]) {
+            return this.obj[prop].name;
+        }
+        return 'unknown';
+    };
     RecordComponent.prototype.updateRow = function () {
         this.dataService.updateRow(this.obj);
         this.close(true);

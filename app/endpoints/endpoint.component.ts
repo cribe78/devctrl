@@ -24,7 +24,7 @@ import {RecordEditorService} from "../data-editor/record-editor.service";
         
         <md-list>
             <template ngFor let-controlId [ngForOf]="controlIds()">
-                <md-list-item><devctrl-ctrl [controlId]="controlId"></devctrl-ctrl></md-list-item>
+                <md-list-item class="devctrl-ctrl-list-item"><devctrl-ctrl [controlId]="controlId"></devctrl-ctrl></md-list-item>
                 <md-divider></md-divider>
             </template>
         </md-list>

@@ -73,7 +73,7 @@
     <h3 md-subheader>References</h3>
     <md-list *ngFor="let fkDef of obj.foreignKeys">
         <md-list-item>
-            <button md-button (click)="editOtherRow(obj[fkDef.fkObjProp])">{{fkDef.fkTable}}[{{obj[fkDef.fkObjProp].name}}]</button>
+            <button md-button (click)="editOtherRow(obj[fkDef.fkObjProp])">{{fkDef.fkTable}}[{{fkName(fkDef.fkObjProp)}}]</button>
         </md-list-item>
     </md-list>
 </div>    

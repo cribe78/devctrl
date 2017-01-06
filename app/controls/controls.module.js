@@ -15,6 +15,7 @@ var basic_controls_module_1 = require("./basic/basic-controls.module");
 var control_component_1 = require("./control.component");
 var common_1 = require("@angular/common");
 var f32_controls_module_1 = require("./f32/f32-controls.module");
+var panasonic_controls_module_1 = require("./panasonic/panasonic-controls.module");
 var ControlsModule = (function () {
     function ControlsModule() {
     }
@@ -27,6 +28,7 @@ ControlsModule = __decorate([
             forms_1.FormsModule,
             basic_controls_module_1.BasicControlsModule,
             f32_controls_module_1.F32ControlsModule,
+            panasonic_controls_module_1.PanasonicControlsModule,
             common_1.CommonModule
         ],
         declarations: [
@@ -36,6 +38,7 @@ ControlsModule = __decorate([
             basic_controls_module_1.BasicControlsModule,
             f32_controls_module_1.F32ControlsModule,
             control_component_1.ControlComponent,
+            panasonic_controls_module_1.PanasonicControlsModule
         ]
     }),
     __metadata("design:paramtypes", [])

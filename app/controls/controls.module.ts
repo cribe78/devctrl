@@ -6,6 +6,7 @@ import {BasicControlsModule} from "./basic/basic-controls.module";
 import {ControlComponent} from "./control.component";
 import {CommonModule} from "@angular/common";
 import {F32ControlsModule} from "./f32/f32-controls.module";
+import {PanasonicControlsModule} from "./panasonic/panasonic-controls.module";
 
 @NgModule({
     imports:      [
@@ -13,6 +14,7 @@ import {F32ControlsModule} from "./f32/f32-controls.module";
         FormsModule,
         BasicControlsModule,
         F32ControlsModule,
+        PanasonicControlsModule,
         CommonModule
     ],
     declarations: [
@@ -22,6 +24,7 @@ import {F32ControlsModule} from "./f32/f32-controls.module";
         BasicControlsModule,
         F32ControlsModule,
         ControlComponent,
+        PanasonicControlsModule
     ]
 
 })

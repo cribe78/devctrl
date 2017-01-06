@@ -6,8 +6,7 @@ import { ControlService } from '../control.service';
     selector: 'ctrl-f32-multibutton',
     //TODO: SVG icons aren't loading
     template: `
-<div class="devctrl-ctrl"
-     style="display: flex; flex-direction: row; align-items: center;">
+<div class="devctrl-ctrl devctrl-ctrl-flex-layout">
     <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
     <div *ngIf="cs.config('direction') !== 'reverse'">
         <button  md-icon-button (click)="cs.setValue(1)">

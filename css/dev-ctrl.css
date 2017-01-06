@@ -108,13 +108,18 @@ devctrl-ctrl {
     display: flex;
 }
 
+.devctrl-ctrl-list-item > .md-list-item {
+    height: auto;
+}
+
+.devctrl-ctrl
+
 .devctrl-ctrl-label {
     margin-right: 12px;
     width: 180px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    flex: 1 1;
 }
 
 .devctrl-ctrl-select > md-select {
@@ -123,9 +128,7 @@ devctrl-ctrl {
     margin-bottom: 12px;
 }
 
-.devctrl-ctrl-video {
-    height: 490px;
-}
+
 
 .devctrl-icon-disabled {
     color: #bdbdbd;

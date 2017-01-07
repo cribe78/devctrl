@@ -10,13 +10,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var data_service_1 = require("./data.service");
-var DCSerializable_1 = require("shared/DCSerializable");
-var record_editor_service_1 = require("data-editor/record-editor.service");
+var data_service_1 = require("../data.service");
+var DCSerializable_1 = require("../../shared/DCSerializable");
+var record_editor_service_1 = require("./record-editor.service");
+var menu_service_1 = require("../layout/menu.service");
 var TableComponent = (function () {
-    function TableComponent(route, dataService, recordService) {
+    function TableComponent(route, dataService, ms, recordService) {
         this.route = route;
         this.dataService = dataService;
+        this.ms = ms;
         this.recordService = recordService;
         this.sortColumn = 'id';
         this.sortReversed = false;
@@ -30,6 +32,7 @@ var TableComponent = (function () {
             _this.dataArray = _this.dataService.sortedArray(_this.tableName);
             _this.schema = _this.dataService.getSchema(_this.tableName);
             _this.dataService.publishStatusUpdate("table " + _this.tableName + " loaded");
+            _this.ms.pageTitle = _this.tableName;
         });
     };
     TableComponent.prototype.addRow = function ($event) {
@@ -82,10 +85,12 @@ __decorate([
 TableComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-table',
-        template: "\n<div layout=\"row\">\n    <span class=\"text-title\">{{schema.label}}</span>\n    <span flex></span>\n    <button md-button devctrl-admin-only (click)=\"addRow()\">Add</button>\n</div>\n\n\n<md-list>\n    <md-list-item class=\"layout-row\">\n        <div class=\"flex-20\">\n            ID\n        </div>\n        <div *ngFor=\"let field of schema.fields\" class=\"flex table-header\" (click)=\"setSortColumn(field)\">\n            {{field.label}}\n        </div>\n        <div flex=\"5\"></div>\n    </md-list-item>\n    <md-divider></md-divider>\n    <template ngFor let-obj [ngForOf]=\"sorted()\" [ngForTrackBy]=\"trackById\">\n        <md-list-item class=\"layout-row\">\n            <div class=\"flex-20 devctrl-id-text\">\n                <span>{{obj._id}}</span>\n            </div>\n            <template ngFor let-field [ngForOf]=\"schema.fields\">\n                <div class=\"flex md-list-item-text\"\n                     [ngSwitch]=\"field.type\">\n                    <p *ngSwitchCase=\"fk\">{{fkDisplayVal(field, obj)}}</p>\n                    <div *ngSwitchCase=\"bool\">\n                        <md-checkbox class=\"md-primary\"\n                                     [ngModel]=\"obj[field.name]\">\n                                     \n                        </md-checkbox>\n                    </div>\n                    <p *ngSwitchDefault>{{obj[field.name]}}</p>\n        \n                </div>\n            </template>\n            <div class=\"flex-5\">\n                <button md-button  *devctrlAdminOnly (click)=\"openRecord($event, obj._id)\">\n                    <md-icon>edit</md-icon>\n                </button>\n            </div>\n        </md-list-item>\n        <md-divider></md-divider>\n    </template>\n</md-list>\n\n<button md-button *devctrlAdminOnly (click)=\"addRow()\">Add</button>    \n"
+        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex class=\"devctrl-card\">\n        <md-toolbar color=\"primary\">\n            <div fxLayout=\"row\">\n                <span class=\"text-title\">{{schema.label}}</span>\n                <span fxFlex></span>\n                <button md-button *devctrlAdminOnly (click)=\"addRow()\">Add</button>\n            </div>\n        </md-toolbar>\n        <md-list>\n            <md-list-item>\n                <div fxFlex=\"20\">\n                    ID\n                </div>\n                <div *ngFor=\"let field of schema.fields\" \n                       fxFlex\n                       class=\"table-header\" \n                       (click)=\"setSortColumn(field)\">\n                    {{field.label}}\n                </div>\n                <div fxFlex=\"5\"></div>\n            </md-list-item>\n            <md-divider></md-divider>\n            <template ngFor let-obj [ngForOf]=\"sorted()\" [ngForTrackBy]=\"trackById\">\n                <md-list-item>\n                    <div fxFlex=\"20\" class=\"devctrl-id-text\">\n                        <span>{{obj._id}}</span>\n                    </div>\n                    <template ngFor let-field [ngForOf]=\"schema.fields\">\n                        <div fxFlex\n                             class=\"md-list-item-text\"\n                             [ngSwitch]=\"field.type\">\n                            <p *ngSwitchCase=\"fk\">{{fkDisplayVal(field, obj)}}</p>\n                            <div *ngSwitchCase=\"bool\">\n                                <md-checkbox class=\"md-primary\"\n                                             [ngModel]=\"obj[field.name]\">\n                                             \n                                </md-checkbox>\n                            </div>\n                            <p *ngSwitchDefault>{{obj[field.name]}}</p>\n                \n                        </div>\n                    </template>\n                    <div fxFlex=\"5\">\n                        <button md-button  *devctrlAdminOnly (click)=\"openRecord($event, obj._id)\">\n                            <md-icon>edit</md-icon>\n                        </button>\n                    </div>\n                </md-list-item>\n                <md-divider></md-divider>\n            </template>\n        </md-list>\n\n        <button md-button *devctrlAdminOnly (click)=\"addRow()\">Add</button> \n    </div>\n </div>\n",
+        styles: ["\n.md-list-item {\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n"]
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,
+        menu_service_1.MenuService,
         record_editor_service_1.RecordEditorService])
 ], TableComponent);
 exports.TableComponent = TableComponent;

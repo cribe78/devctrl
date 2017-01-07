@@ -14,10 +14,10 @@ var rooms_component_1 = require("./rooms/rooms.component");
 var endpoints_component_1 = require("./endpoints/endpoints.component");
 var room_component_1 = require("./rooms/room.component");
 var endpoint_component_1 = require("./endpoints/endpoint.component");
-var config_data_component_1 = require("./config-data.component");
-var table_wrapper_component_1 = require("./table-wrapper.component");
+var config_data_component_1 = require("./data-editor/config-data.component");
 var room_resolver_1 = require("./rooms/room.resolver");
 var endpoint_resolver_1 = require("./endpoints/endpoint.resolver");
+var table_component_1 = require("./data-editor/table.component");
 exports.appRoutes = [
     {
         path: '',
@@ -78,7 +78,7 @@ exports.appRoutes = [
             },
             {
                 path: ':name',
-                component: table_wrapper_component_1.TableWrapperComponent,
+                component: table_component_1.TableComponent,
                 data: {
                     title: "Table Editor",
                     cardClasses: "card-wide"

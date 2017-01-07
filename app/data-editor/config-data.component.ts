@@ -1,24 +1,33 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {DataService} from "./data.service";
-import {MenuService} from "./layout/menu.service";
+import {DataService} from "../data.service";
+import {MenuService} from "../layout/menu.service";
 
 @Component({
     selector: 'devctrl-config-data',
     template: `
-<div layout="column" *ngIf="noActivatedChildren()">
-    <md-list>
+<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
+    <div fxFlex="none" fxFlex.gt-xs="600px" class="devctrl-card">
+    <md-nav-list>
         <template ngFor let-schema [ngForOf]="schemaArray">
             <a md-list-item (click)="menu.go(['config', schema.name])">
                 {{schema.label}}
-                <span flex></span>
+                <span fxFlex></span>
                 <md-icon>chevron_right</md-icon>
             </a>
             <md-divider></md-divider> 
         </template>
-    </md-list>
+    </md-nav-list>
+    </div>
 </div>  
-`
+`,
+    styles: [`
+.md-list-item {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+}
+`]
 })
 export class ConfigDataComponent implements OnInit
 {
@@ -36,6 +45,8 @@ export class ConfigDataComponent implements OnInit
             return this.schema[key];
         });
         this.menu.currentTopLevel = MenuService.TOPLEVEL_CONFIG;
+        this.menu.pageTitle = "Data Tables";
+        this.menu.toolbarSelect.enabled = false;
     }
 
     noActivatedChildren() {

@@ -10,8 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var data_service_1 = require("./data.service");
-var menu_service_1 = require("./layout/menu.service");
+var data_service_1 = require("../data.service");
+var menu_service_1 = require("../layout/menu.service");
 var ConfigDataComponent = (function () {
     function ConfigDataComponent(route, menu, dataService) {
         this.route = route;
@@ -26,6 +26,8 @@ var ConfigDataComponent = (function () {
             return _this.schema[key];
         });
         this.menu.currentTopLevel = menu_service_1.MenuService.TOPLEVEL_CONFIG;
+        this.menu.pageTitle = "Data Tables";
+        this.menu.toolbarSelect.enabled = false;
     };
     ConfigDataComponent.prototype.noActivatedChildren = function () {
         var val = this.route.children.length == 0;
@@ -36,7 +38,8 @@ var ConfigDataComponent = (function () {
 ConfigDataComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-config-data',
-        template: "\n<div layout=\"column\" *ngIf=\"noActivatedChildren()\">\n    <md-list>\n        <template ngFor let-schema [ngForOf]=\"schemaArray\">\n            <a md-list-item (click)=\"menu.go(['config', schema.name])\">\n                {{schema.label}}\n                <span flex></span>\n                <md-icon>chevron_right</md-icon>\n            </a>\n            <md-divider></md-divider> \n        </template>\n    </md-list>\n</div>  \n"
+        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex=\"none\" fxFlex.gt-xs=\"600px\" class=\"devctrl-card\">\n    <md-nav-list>\n        <template ngFor let-schema [ngForOf]=\"schemaArray\">\n            <a md-list-item (click)=\"menu.go(['config', schema.name])\">\n                {{schema.label}}\n                <span fxFlex></span>\n                <md-icon>chevron_right</md-icon>\n            </a>\n            <md-divider></md-divider> \n        </template>\n    </md-nav-list>\n    </div>\n</div>  \n",
+        styles: ["\n.md-list-item {\n    display: flex; \n    align-items: center; \n    justify-content: space-between; \n}\n"]
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         menu_service_1.MenuService,

@@ -15,6 +15,15 @@ export class RoomResolver implements Resolve<Room> {
         return roomsPromise.then(loaded => {
             if (loaded) {
                 let rooms = this.ds.getTable(Room.tableStr);
+
+                if (rooms[name]) {
+                    // We were given an id, reroute to name
+                    console.log(`rerouting from room ${name} to ${rooms[name].name}`);
+                    this.router.navigate(['/rooms', rooms[name].name]);
+                    return;
+                }
+
+
                 for (let id in rooms) {
 
                     if (rooms[id].name.toLowerCase() == name.toLowerCase()) {

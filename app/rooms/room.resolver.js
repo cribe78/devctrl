@@ -24,6 +24,12 @@ var RoomResolver = (function () {
         return roomsPromise.then(function (loaded) {
             if (loaded) {
                 var rooms = _this.ds.getTable(Room_1.Room.tableStr);
+                if (rooms[name]) {
+                    // We were given an id, reroute to name
+                    console.log("rerouting from room " + name + " to " + rooms[name].name);
+                    _this.router.navigate(['/rooms', rooms[name].name]);
+                    return;
+                }
                 for (var id in rooms) {
                     if (rooms[id].name.toLowerCase() == name.toLowerCase()) {
                         console.log("RoomResolver resolved " + name);

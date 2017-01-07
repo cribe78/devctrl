@@ -22,7 +22,6 @@ import {FkAutocompleteComponent} from "./data-editor/fk-autocomplete.component";
 import {AlertDialog} from "./alert-dialog.component";
 import {RecordEditorService} from "./data-editor/record-editor.service";
 import {TableComponent} from "./data-editor/table.component";
-import {TableWrapperComponent} from "./data-editor/table-wrapper.component";
 import {FormsModule} from "@angular/forms";
 //import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
 import {ControlsModule} from "./controls/controls.module";
@@ -65,7 +64,6 @@ import {LayoutService} from "./layout/layout.service";
         RoomComponent,
         RoomsComponent,
         TableComponent,
-        TableWrapperComponent,
         ToolbarComponent
         ],
     entryComponents: [

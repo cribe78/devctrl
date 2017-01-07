@@ -6,7 +6,6 @@ import {RoomComponent} from "./rooms/room.component";
 import {EndpointComponent} from "./endpoints/endpoint.component";
 import {ConfigComponent} from "./config.component";
 import {ConfigDataComponent} from "./data-editor/config-data.component";
-import {TableWrapperComponent} from "./data-editor/table-wrapper.component";
 import {RoomResolver} from "./rooms/room.resolver";
 import {EndpointResolver} from "./endpoints/endpoint.resolver";
 import {TableComponent} from "./data-editor/table.component";

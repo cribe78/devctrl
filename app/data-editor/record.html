@@ -22,10 +22,8 @@
                                   name="{{field.name}}">
                     </md-input-container>
                     <fk-autocomplete *ngSwitchCase="'fk'"
-                                     [table]="schema.foreign_keys[field.name]"
+                                     [object]="obj"
                                      [field]="field"
-                                     [objectField]="obj.objectPropertyName(field.name)"
-                                     [selectedItemId]="obj[field.name]"
                                      (onUpdate)="objectUpdated(value, name)">
                     </fk-autocomplete>
                     <md-select *ngSwitchCase="'select-static'"

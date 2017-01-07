@@ -1,39 +1,93 @@
-import {Component, Input, Output, OnInit, EventEmitter} from '@angular/core';
+import {Component, Input, Output, OnInit, EventEmitter, ViewChild} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
+import {MdMenuTrigger} from '@angular/material';
 import {IndexedDataSet} from "../../shared/DCDataModel";
 import {DCSerializable} from "../../shared/DCSerializable";
 import {DataService} from "../data.service";
+import {DSFieldDefinition} from "../data-service-schema";
 
 @Component({
     selector: 'fk-autocomplete',
     template: `
-    Totally incomplete
-`
+<md-input-container>
+    <input md-input
+            #fkauto
+           [placeholder]="field.label"
+           [(ngModel)]="inputText"
+           (focus)="openAcMenu()"
+           (blur)="focusLost()"
+           [name]="field.name" >
+</md-input-container>
+
+<div class="ac-menu" [style.visibility]="menuVisibility" #acmenu>
+    <md-list>
+        <a md-list-item
+            *ngFor="let fkobj of getMatches(); trackBy: trackById"
+            (click)="selectItem(fkobj)">
+         {{fkobj.fkSelectName()}}
+        </a>
+    </md-list>
+</div>
+`,
+    styles: [`
+.ac-menu { 
+    position: absolute;
+    z-index: 1002;
+    background-color: white;
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+    cursor: pointer;
+    max-height: 300px;
+    overflow-y: auto;
+}
+`]
 })
 export class FkAutocompleteComponent implements OnInit
 {
-    @Input()table;
-    @Input()field;
-    @Input()objectField;
-    @Input()selectedItemId;
+    @Input()object : DCSerializable;
+    @Input()field : DSFieldDefinition;
 
     @Output() onUpdate = new EventEmitter<any>();
 
+    menuVisibility = "hidden";
+    inputText = '';
     dataTable : IndexedDataSet<DCSerializable>;
+    objProp; // The property name of object which holds the foreign object
     selectedItem : DCSerializable;
-    label : string;
 
     constructor(private dataService: DataService) {}
 
     ngOnInit() {
-        this.dataTable = this.dataService.getTable(this.table);
-        this.label = this.field.label;
-        this.selectedItem = this.dataTable[this.selectedItemId];
+        // Find the foreign key definition on the object
+        let fkDef;
+        for (let fk of this.object.foreignKeys) {
+            if (fk.fkIdProp == this.field.name) {
+                fkDef = fk;
+            }
+        }
+
+        if (! fkDef) {
+            console.error(`Invalid fk field provided to FkAutocomplete: ${this.field.name}`);
+            return;
+        }
+
+        this.dataTable = this.dataService.getTable(fkDef.fkTable);
+        this.objProp = fkDef.fkObjProp;
+        if (this.object[this.objProp]) {
+            this.selectedItem = this.object[this.objProp];
+            this.inputText = this.selectedItem.fkSelectName();
+        }
     }
 
-    getMatches(searchText) {
+
+    focusLost() {
+        // This timeout is necessary because otherwise the click event from selecting
+        // an item never fires
+        setTimeout(() => { this.closeAcMenu()}, 300);
+    }
+
+    getMatches() {
         let matches = [];
-        let stLower = searchText.toLowerCase();
+        let stLower = this.inputText.toLowerCase();
         let stLowerParts = stLower.split(' ');
         for (let id in this.dataTable) {
             let item : DCSerializable = this.dataTable[id];
@@ -52,26 +106,40 @@ export class FkAutocompleteComponent implements OnInit
             }
         }
 
+        // If input is an exact match, update underlying field
+        if (matches[0] && this.inputText == matches[0].fkSelectName()) {
+            if (! matches[0].equals(this.selectedItem)) {
+                this.selectedItem = matches[0];
+                this.selectedUpdated();
+            }
+        }
+
+
         return matches;
     }
 
 
+    openAcMenu() {
+        this.menuVisibility = "visible";
+    }
+
+    closeAcMenu() {
+        this.menuVisibility = "hidden";
+    }
+
+    selectItem(obj) {
+        this.selectedItem = obj;
+        this.inputText = obj.fkSelectName();
+        this.selectedUpdated();
+        this.closeAcMenu();
+    }
 
     selectedUpdated() {
-        this.onUpdate.emit({value: this.selectedItem, name: this.objectField});
+        this.onUpdate.emit({value: this.selectedItem, name: this.objProp});
+    }
+
+    trackById(idx, obj) {
+        return obj._id;
     }
 
 }
-
-
-let originalTemplate = `
-    <md-autocomplete
-        md-selected-item="$ctrl.selectedItem"
-        md-search-text="$ctrl.searchText"
-        md-items="item in $ctrl.getMatches($ctrl.searchText)"
-        md-item-text="item.fkSelectName()"
-        md-min-length="0"
-        md-floating-label="{{$ctrl.label}}"
-        md-selected-item-change="$ctrl.selectedUpdated()">
-        <span md-highlight-text="searchText">{{item.fkSelectName()}}</span>
-    </md-autocomplete>`;

@@ -31,7 +31,6 @@ var fk_autocomplete_component_1 = require("./data-editor/fk-autocomplete.compone
 var alert_dialog_component_1 = require("./alert-dialog.component");
 var record_editor_service_1 = require("./data-editor/record-editor.service");
 var table_component_1 = require("./data-editor/table.component");
-var table_wrapper_component_1 = require("./data-editor/table-wrapper.component");
 var forms_1 = require("@angular/forms");
 //import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
 var controls_module_1 = require("./controls/controls.module");
@@ -77,7 +76,6 @@ AppModule = __decorate([
             room_component_1.RoomComponent,
             rooms_component_1.RoomsComponent,
             table_component_1.TableComponent,
-            table_wrapper_component_1.TableWrapperComponent,
             toolbar_component_1.ToolbarComponent
         ],
         entryComponents: [

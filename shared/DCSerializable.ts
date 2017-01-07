@@ -77,6 +77,10 @@ export abstract class DCSerializable {
         this.referenced[refObj.table][refObj._id] = refObj;
     }
 
+    equals(obj: DCSerializable) {
+        return obj && obj._id == this._id;
+    }
+
     fkSelectName() {
         return this.name;
     }

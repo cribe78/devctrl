@@ -35,6 +35,9 @@ var DCSerializable = (function () {
         }
         this.referenced[refObj.table][refObj._id] = refObj;
     };
+    DCSerializable.prototype.equals = function (obj) {
+        return obj && obj._id == this._id;
+    };
     DCSerializable.prototype.fkSelectName = function () {
         return this.name;
     };

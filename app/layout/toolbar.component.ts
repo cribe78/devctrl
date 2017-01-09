@@ -32,18 +32,18 @@ import {LayoutService} from "./layout.service";
              fxLayout="row"
              fxLayoutAlign="space-between center"
              fxFill>
-            <select *ngIf="menu.toolbarSelect.enabled && ls.desktop"
+            <md-select *ngIf="menu.toolbarSelect.enabled && ls.desktop"
                     fxFlex="140px"
                         aria-label="Select Page"
                         name="toolbarSelect"
                        [(ngModel)]="menu.toolbarSelect.selected"
                        (change)="menu.toolbarSelectUpdate($event)">
-                <option class="text-headline"
+                <md-option class="text-headline"
                             [value]="option.id"
                            *ngFor="let option of menu.toolbarSelect.options">
                     {{option.name}}
-                </option>
-            </select>
+                </md-option>
+            </md-select>
             <span class="text-headline" 
                     fxFlex 
                     fxAlign="center"
@@ -73,7 +73,16 @@ import {LayoutService} from "./layout.service";
         </div>
     </md-toolbar>
 </div>
-`
+`,
+    styles: [`
+/deep/ .md-select-value {
+    color: rgba(255,255,255,.87);
+}
+
+/deep/ .md-select-arrow {
+    color: rgba(255,255,255,.87);
+}
+`]
 })
 export class ToolbarComponent {
     menu;

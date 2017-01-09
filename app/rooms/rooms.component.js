@@ -26,6 +26,8 @@ var RoomsComponent = RoomsComponent_1 = (function () {
     RoomsComponent.prototype.ngOnInit = function () {
         console.log("rooms component initialized");
         this.menu.currentTopLevel = menu_service_1.MenuService.TOPLEVEL_ROOMS;
+        this.menu.pageTitle = "Locations";
+        this.menu.toolbarSelectDisable();
     };
     RoomsComponent.prototype.cols = function () {
         if (this.ls.desktopWide) {
@@ -51,7 +53,7 @@ RoomsComponent = RoomsComponent_1 = __decorate([
     core_1.Component({
         selector: 'devctrl-rooms',
         template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex class=\"devctrl-card\">\n        <md-grid-list [cols]=\"cols()\"\n                      rowHeight=\"1:1\"\n                      gutterSize=\"8px\">\n            <md-grid-tile *ngFor=\"let room of list; let i = index;\" \n                        [class]=\"tileClass(i)\" \n                        (click)=\"menu.go(['rooms', room.name])\">\n                <img fxFill fxFlex [src]=\"imageUrl(room)\" />\n            </md-grid-tile>\n        </md-grid-list>\n    </div>\n</div>\n",
-        styles: ["\nimg {\n\n}\n"]
+        styles: ["\nmd-grid-tile.gray {\n    background: #f5f5f5; }\nmd-grid-tile.green {\n    background: #b9f6ca; }\nmd-grid-tile.yellow {\n    background: #ffff8d; }\nmd-grid-tile.blue {\n    background: #84ffff; }\nmd-grid-tile.darkBlue {\n    background: #80d8ff; }\nmd-grid-tile.deepBlue {\n    background: #448aff; }\nmd-grid-tile.purple {\n    background: #b388ff; }\nmd-grid-tile.lightPurple {\n    background: #8c9eff; }\nmd-grid-tile.red {\n    background: #ff8a80; }\nmd-grid-tile.pink {\n    background: #ff80ab; }\n"]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService,
         layout_service_1.LayoutService,

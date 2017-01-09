@@ -157,6 +157,9 @@ var MenuService = (function () {
             item.isOpened = false;
         }
     };
+    MenuService.prototype.toolbarSelectDisable = function () {
+        this.toolbarSelect.enabled = false;
+    };
     MenuService.prototype.toolbarSelectTable = function (tableName, destState, selectedId) {
         var table = this.dataService.getTable(tableName);
         this.toolbarSelect.options = [];

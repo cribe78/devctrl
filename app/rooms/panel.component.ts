@@ -36,7 +36,7 @@ import {DCSerializable} from "shared/DCSerializable";
 </h3>
 
 <md-list-item *ngFor="let pcontrol of pcList(); trackBy:trackById">
-    <devctrl-ctrl flex [panelControl]="pcontrol"></devctrl-ctrl>
+    <devctrl-ctrl [panelControl]="pcontrol"></devctrl-ctrl>
 </md-list-item>    
 `
 })

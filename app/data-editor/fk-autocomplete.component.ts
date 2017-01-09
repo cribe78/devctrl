@@ -39,6 +39,10 @@ import {DSFieldDefinition} from "../data-service-schema";
     max-height: 300px;
     overflow-y: auto;
 }
+
+input {
+    min-width: 300px;
+}
 `]
 })
 export class FkAutocompleteComponent implements OnInit

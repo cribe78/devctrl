@@ -6,7 +6,13 @@ import {DataService} from "../data.service";
     selector: 'devctrl-endpoint-status',
     template: `
 <md-icon [ngClass]="statusIconClasses()" md-tooltip="{{statusStr()}}">{{statusIcon()}}</md-icon>
-`
+`,
+    styles: [`
+.devctrl-icon-disabled {
+    color: #bdbdbd;
+}    
+`]
+
 })
 export class EndpointStatusComponent implements OnInit {
     endpoint : Endpoint;

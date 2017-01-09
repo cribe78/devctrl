@@ -20,7 +20,12 @@ import {LayoutService} from "./layout.service";
         <router-outlet></router-outlet>
     </md-sidenav-container>
 </body>
-`
+`,
+    styles: [`
+.dc-sidenav {
+    width: 270px;
+}
+`]
 })
 export class AppComponent implements OnInit {
     menu : MenuService;

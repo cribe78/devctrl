@@ -83,7 +83,8 @@ __decorate([
 EndpointStatusComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint-status',
-        template: "\n<md-icon [ngClass]=\"statusIconClasses()\" md-tooltip=\"{{statusStr()}}\">{{statusIcon()}}</md-icon>\n"
+        template: "\n<md-icon [ngClass]=\"statusIconClasses()\" md-tooltip=\"{{statusStr()}}\">{{statusIcon()}}</md-icon>\n",
+        styles: ["\n.devctrl-icon-disabled {\n    color: #bdbdbd;\n}    \n"]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService, core_1.Injector])
 ], EndpointStatusComponent);

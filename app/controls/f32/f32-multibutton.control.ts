@@ -31,7 +31,12 @@ import { ControlService } from '../control.service';
         </button>
     </div>
 </div>    
-    `
+    `,
+    styles: [`
+.rot180 {
+    transform: rotate(180deg);
+}
+`]
 })
 export class F32MultibuttonControl implements OnInit {
     constructor(private cs : ControlService) { }

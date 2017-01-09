@@ -47,7 +47,8 @@ ControlComponent = __decorate([
         moduleId: module.id,
         selector: 'devctrl-ctrl',
         providers: [control_service_1.ControlService],
-        templateUrl: 'control.html'
+        templateUrl: 'control.html',
+        styles: ["\n.devctrl-ctrl-item {\n    min-height: 48px;\n    width: 100%;\n    display: flex;\n}\n\n.devctrl-ctrl-admin-placeholder {\n    width: 48px;\n}\n\n:host {\n    width: 100%;\n}\n\n:host /deep/ .devctrl-ctrl-flex-layout {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n }\n \n:host /deep/ .devctrl-ctrl-label {\n    margin-right: 12px;\n    width: 180px;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n}\n\n:host /deep/ .devctrl-ctrl {\n    min-height: 48px;\n}\n\n"]
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService,
         menu_service_1.MenuService])

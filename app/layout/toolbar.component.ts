@@ -18,7 +18,7 @@ import {LayoutService} from "./layout.service";
         <div fxLayout="row"
              fxLayoutAlign="space-between center"
              fxFill>
-            <button md-icon-button fxFlex="none" (click)="menu.toggleSidenav()" class="dc-sidenav-close md-icon-button">
+            <button md-icon-button fxFlex="none" (click)="menu.toggleSidenav()">
                 <md-icon aria-label="Menu">menu</md-icon>
             </button>
             <span fxFlex class="text-display-1 md-accent">DevCtrl</span>

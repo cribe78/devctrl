@@ -189,6 +189,10 @@ export class MenuService {
         }
     }
 
+    toolbarSelectDisable() {
+        this.toolbarSelect.enabled = false;
+    }
+
     toolbarSelectTable(tableName, destState, selectedId) {
         let table = this.dataService.getTable(tableName);
         this.toolbarSelect.options = [];

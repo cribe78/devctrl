@@ -73,6 +73,12 @@ import {MenuService} from "../layout/menu.service";
     flex-direction: row;
     width: 100%;
 }
+
+md-list-item .table-header {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
 `]
 })
 export class TableComponent implements OnInit {

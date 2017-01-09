@@ -27,21 +27,19 @@ import {RecordEditorService} from "data-editor/record-editor.service";
         
             </md-tab>
             <md-tab label="Devices" (selectChange)="groupSelected('Devices')">
-                <md-list>
+                <md-nav-list class="devices">
                     <template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
-        
                         <a md-list-item
-                                  (click)="menu.go(['devices', endpoint._id])"
-                                  flex
-                                  layout="row">
-                            <span>{{endpoint.name}}</span>
-                            <span flex></span>
+                            fxLayout="row"
+                                  (click)="menu.go(['devices', endpoint._id])">
+                            <span md-line>{{endpoint.name}}</span>
+                            <span fxFlex>&nbsp;</span>
                             <devctrl-endpoint-status [endpointId]="endpoint._id"></devctrl-endpoint-status>
                             <md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon>
                         </a>
                         <md-divider></md-divider>
                     </template>
-                </md-list>
+                </md-nav-list>
             </md-tab>
         </md-tab-group>
         <div flex layout="row" devctrl-admin-only>
@@ -55,7 +53,12 @@ import {RecordEditorService} from "data-editor/record-editor.service";
     </div>
 </div>
     
-`
+`,
+    styles: [`
+:host /deep/ .devices .md-list-item {
+    width: 100%;
+}
+`]
 })
 export class RoomComponent implements OnInit {
 

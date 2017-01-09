@@ -35,7 +35,17 @@ import { ControlService } from '../control.service';
            [(ngModel)]="slider2d.yValue"
            (change)="cs.updateValue()">
 </div>    
-    `
+    `,
+    styles: [`
+.label-indented {
+    margin-left: 24px;
+}
+
+.devctrl-slider-input {
+    width: 60px;
+}
+
+`]
 })
 export class Slider2dControl implements OnInit {
     _xValue;

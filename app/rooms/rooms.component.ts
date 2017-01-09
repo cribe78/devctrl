@@ -23,9 +23,26 @@ import {LayoutService} from "../layout/layout.service";
 </div>
 `,
     styles: [`
-img {
-
-}
+md-grid-tile.gray {
+    background: #f5f5f5; }
+md-grid-tile.green {
+    background: #b9f6ca; }
+md-grid-tile.yellow {
+    background: #ffff8d; }
+md-grid-tile.blue {
+    background: #84ffff; }
+md-grid-tile.darkBlue {
+    background: #80d8ff; }
+md-grid-tile.deepBlue {
+    background: #448aff; }
+md-grid-tile.purple {
+    background: #b388ff; }
+md-grid-tile.lightPurple {
+    background: #8c9eff; }
+md-grid-tile.red {
+    background: #ff8a80; }
+md-grid-tile.pink {
+    background: #ff80ab; }
 `]
 })
 export class RoomsComponent implements OnInit {
@@ -45,7 +62,8 @@ export class RoomsComponent implements OnInit {
     ngOnInit() {
         console.log("rooms component initialized");
         this.menu.currentTopLevel = MenuService.TOPLEVEL_ROOMS;
-
+        this.menu.pageTitle = "Locations";
+        this.menu.toolbarSelectDisable();
     }
 
     cols() {

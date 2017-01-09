@@ -47,25 +47,6 @@ export class AppComponent implements OnInit {
         });
     }
 
-    backgroundImg() {
-        //TODO: implement this with the new router
-        /**
-        if (this.route.name && this.route.params.name) {
-            let img = "url(/images/backgrounds/" + this.route.current.name + "/" + this.route.params.name + ".jpg)";
-            return img;
-        }
-         **/
-
-        return "url(/images/backgrounds/default.jpg";
-    }
-
-    cardClasses() : { [index: string] : any} {
-        if (this.route.data && this.route.data['cardClasses']) {
-            return this.route.data['cardClasses'];
-        }
-
-        return {};
-    }
 
     sidenavMode() {
         if (this.ls.mobile) {

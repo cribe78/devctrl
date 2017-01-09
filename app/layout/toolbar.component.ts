@@ -75,11 +75,11 @@ import {LayoutService} from "./layout.service";
 </div>
 `,
     styles: [`
-/deep/ .md-select-value {
+md-select /deep/ .md-select-value {
     color: rgba(255,255,255,.87);
 }
 
-/deep/ .md-select-arrow {
+md-select /deep/ .md-select-arrow {
     color: rgba(255,255,255,.87);
 }
 `]

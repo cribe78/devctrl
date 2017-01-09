@@ -71,18 +71,16 @@ exports.appRoutes = [
         children: [
             {
                 path: '',
-                component: config_data_component_1.ConfigDataComponent,
-                data: {
-                    title: "Data Tables"
-                }
+                redirectTo: '/config/data',
+                pathMatch: 'full'
+            },
+            {
+                path: 'data',
+                component: config_data_component_1.ConfigDataComponent
             },
             {
                 path: ':name',
-                component: table_component_1.TableComponent,
-                data: {
-                    title: "Table Editor",
-                    cardClasses: "card-wide"
-                }
+                component: table_component_1.TableComponent
             }
         ]
     }

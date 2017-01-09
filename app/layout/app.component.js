@@ -34,22 +34,6 @@ var AppComponent = (function () {
             console.log("APpComponent: route is " + path + " or " + _this.router.url);
         });
     };
-    AppComponent.prototype.backgroundImg = function () {
-        //TODO: implement this with the new router
-        /**
-        if (this.route.name && this.route.params.name) {
-            let img = "url(/images/backgrounds/" + this.route.current.name + "/" + this.route.params.name + ".jpg)";
-            return img;
-        }
-         **/
-        return "url(/images/backgrounds/default.jpg";
-    };
-    AppComponent.prototype.cardClasses = function () {
-        if (this.route.data && this.route.data['cardClasses']) {
-            return this.route.data['cardClasses'];
-        }
-        return {};
-    };
     AppComponent.prototype.sidenavMode = function () {
         if (this.ls.mobile) {
             return 'over';

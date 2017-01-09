@@ -7,7 +7,7 @@ import { ControlService } from '../control.service';
     template: `
 <div class="devctrl-ctrl devctrl-ctrl-select devctrl-ctrl-flex-layout">
     <div fxFlex="20%" class="text-menu devctrl-ctrl-label">{{cs.name}}</div>
-    <form fxFlex="none" style="margin-bottom: 0;">
+    <form fxFlex="none">
         <md-select [(ngModel)]="cs.value"
                 name="select"
                 (change)="cs.updateValue()">
@@ -17,8 +17,12 @@ import { ControlService } from '../control.service';
         </md-select>
     </form>
 </div>    
-    `
-    //TODO: remove explicit style once flex-layout is working
+    `,
+    styles: [`
+form {
+    margin-bottom: 0;
+}
+`]
 })
 export class SelectControl implements OnInit {
     constructor(private cs : ControlService) { }

@@ -38,7 +38,8 @@ var MenuService = (function () {
                 children: [
                     {
                         name: "Data Tables",
-                        route: ['config', 'data']
+                        route: ['config', 'data'],
+                        isOpened: false
                     }
                 ]
             }
@@ -64,6 +65,16 @@ var MenuService = (function () {
         //}
         return {};
     };
+    Object.defineProperty(MenuService.prototype, "currentTopLevel", {
+        set: function (val) {
+            this._currentTopLevel = val;
+            if (this.menuObj[val]) {
+                this.openTopLevel(this.menuObj[val]);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     MenuService.prototype.go = function (state) {
         if (typeof state == 'string') {
             this.router.navigate([state]);
@@ -88,31 +99,23 @@ var MenuService = (function () {
         return this.menuConfig.sidenavOpen;
     };
     MenuService.prototype.menuItems = function () {
-        //TODO: enable opening and closing of items
-        for (var _i = 0, _a = this.menuList; _i < _a.length; _i++) {
-            var item = _a[_i];
-            item.isOpened = false;
-        }
-        if (this.currentTopLevel) {
-            if (this.menuObj[this.currentTopLevel]) {
-                this.menuObj[this.currentTopLevel]['isOpened'] = true;
-            }
-        }
-        this.menuObj.rooms.children = [];
+        this.menuObj['rooms'].children = [];
         for (var roomId in this.rooms) {
             var roomMenu = {
                 name: this.rooms[roomId].name,
-                route: ['rooms', this.rooms[roomId].name]
+                route: ['rooms', this.rooms[roomId].name],
+                isOpened: false
             };
-            this.menuObj.rooms.children.push(roomMenu);
+            this.menuObj['rooms'].children.push(roomMenu);
         }
-        this.menuObj.devices.children = [];
+        this.menuObj['devices'].children = [];
         for (var eId in this.endpoints) {
             var endpointMenu = {
                 name: this.endpoints[eId].name,
-                route: ['devices', eId]
+                route: ['devices', eId],
+                isOpened: false
             };
-            this.menuObj.devices.children.push(endpointMenu);
+            this.menuObj['devices'].children.push(endpointMenu);
         }
         ;
         return this.menuList;
@@ -120,6 +123,17 @@ var MenuService = (function () {
     MenuService.prototype.narrowMode = function () {
         return false;
         //return this.$mdMedia('max-width: 1000px');
+    };
+    MenuService.prototype.openTopLevel = function (item) {
+        for (var _i = 0, _a = this.menuList; _i < _a.length; _i++) {
+            var mitem = _a[_i];
+            if (mitem.name !== item.name) {
+                mitem.isOpened = false;
+            }
+            else {
+                mitem.isOpened = true;
+            }
+        }
     };
     Object.defineProperty(MenuService.prototype, "pageTitle", {
         get: function () {
@@ -134,6 +148,14 @@ var MenuService = (function () {
     MenuService.prototype.toggleSidenav = function () {
         this.menuConfig.sidenavOpen = !this.menuConfig.sidenavOpen;
         this.dataService.updateConfig();
+    };
+    MenuService.prototype.toggleTopLevel = function ($event, item) {
+        if (!item.isOpened) {
+            this.openTopLevel((item));
+        }
+        else {
+            item.isOpened = false;
+        }
     };
     MenuService.prototype.toolbarSelectTable = function (tableName, destState, selectedId) {
         var table = this.dataService.getTable(tableName);

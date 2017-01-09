@@ -6,6 +6,13 @@ import {IndexedDataSet} from "../../shared/DCDataModel";
 import {Endpoint} from "../../shared/Endpoint";
 import {Room} from "../../shared/Room";
 
+export interface MSMenuItem {
+    name: string;
+    route: string[];
+    isOpened : boolean;
+    children?: MSMenuItem[];
+}
+
 @Injectable()
 export class MenuService {
     items : any[];
@@ -15,7 +22,7 @@ export class MenuService {
     toolbarSelect;
     endpoints : IndexedDataSet<Endpoint>;
     rooms : IndexedDataSet<Room>;
-    menuObj = {
+    menuObj : { [index: string]: MSMenuItem } = {
         "rooms" : {
             name: "Locations",
             route: ['rooms'],
@@ -35,7 +42,8 @@ export class MenuService {
             children: [
                 {
                     name: "Data Tables",
-                    route: ['config', 'data']
+                    route: ['config', 'data'],
+                    isOpened: false
                 }
             ]
         }
@@ -44,8 +52,9 @@ export class MenuService {
     static TOPLEVEL_ROOMS = "rooms";
     static TOPLEVEL_DEVICES = "devices";
     static TOPLEVEL_CONFIG = "config";
-    menuList = [this.menuObj['rooms'], this.menuObj['devices'], this.menuObj['config']];
-    currentTopLevel;
+    menuList : MSMenuItem[] = [this.menuObj['rooms'], this.menuObj['devices'], this.menuObj['config']];
+    _currentTopLevel : string;
+    _openTopLevel : string;
     routeData;
     routeParams;
     //private router : Router;
@@ -77,6 +86,16 @@ export class MenuService {
         return {};
     }
 
+    set currentTopLevel(val : string) {
+        this._currentTopLevel = val;
+
+        if (this.menuObj[val]) {
+            this.openTopLevel(this.menuObj[val]);
+        }
+    }
+
+
+
     go(state) {
         if (typeof state == 'string') {
             this.router.navigate([state]);
@@ -106,35 +125,27 @@ export class MenuService {
     }
 
     menuItems() {
-        //TODO: enable opening and closing of items
-        for (let item of this.menuList) {
-            item.isOpened = false;
-        }
 
-        if (this.currentTopLevel) {
-            if (this.menuObj[this.currentTopLevel]) {
-                this.menuObj[this.currentTopLevel]['isOpened'] = true;
-            }
-        }
-
-        this.menuObj.rooms.children = [];
+        this.menuObj['rooms'].children = [];
         for (let roomId in this.rooms) {
             let roomMenu = {
                 name: this.rooms[roomId].name,
-                route: ['rooms', this.rooms[roomId].name]
+                route: ['rooms', this.rooms[roomId].name],
+                isOpened: false
             };
 
-            this.menuObj.rooms.children.push(roomMenu);
+            this.menuObj['rooms'].children.push(roomMenu);
         }
 
-        this.menuObj.devices.children = [];
+        this.menuObj['devices'].children = [];
         for (let eId in this.endpoints) {
             let endpointMenu = {
                 name: this.endpoints[eId].name,
-                route: ['devices', eId]
+                route: ['devices', eId],
+                isOpened: false
             };
 
-            this.menuObj.devices.children.push(endpointMenu);
+            this.menuObj['devices'].children.push(endpointMenu);
         };
 
         return this.menuList;
@@ -143,6 +154,17 @@ export class MenuService {
     narrowMode() {
         return false;
         //return this.$mdMedia('max-width: 1000px');
+    }
+
+    openTopLevel(item: MSMenuItem) {
+        for (let mitem of this.menuList) {
+            if (mitem.name !== item.name) {
+                mitem.isOpened = false;
+            }
+            else {
+                mitem.isOpened = true;
+            }
+        }
     }
 
     get pageTitle() {
@@ -156,6 +178,15 @@ export class MenuService {
     toggleSidenav() {
         this.menuConfig.sidenavOpen = ! this.menuConfig.sidenavOpen;
         this.dataService.updateConfig();
+    }
+
+    toggleTopLevel($event, item : MSMenuItem) {
+        if (! item.isOpened) {
+            this.openTopLevel((item));
+        }
+        else {
+            item.isOpened = false;
+        }
     }
 
     toolbarSelectTable(tableName, destState, selectedId) {

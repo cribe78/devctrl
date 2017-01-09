@@ -64,18 +64,16 @@ export const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                component: ConfigDataComponent,
-                data: {
-                    title: "Data Tables"
-                }
+                redirectTo: '/config/data',
+                pathMatch: 'full'
+            },
+            {
+                path: 'data',
+                component: ConfigDataComponent
             },
             {
                 path: ':name',
-                component: TableComponent,
-                data: {
-                    title: "Table Editor",
-                    cardClasses: "card-wide"
-                }
+                component: TableComponent
             }
         ]
     }

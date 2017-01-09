@@ -21,7 +21,8 @@ SelectControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-select',
-        template: "\n<div class=\"devctrl-ctrl devctrl-ctrl-select devctrl-ctrl-flex-layout\">\n    <div fxFlex=\"20%\" class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</div>\n    <form fxFlex=\"none\" style=\"margin-bottom: 0;\">\n        <md-select [(ngModel)]=\"cs.value\"\n                name=\"select\"\n                (change)=\"cs.updateValue()\">\n            <md-option [value]=\"obj.value\" *ngFor=\"let obj of cs.selectOptionsArray(); trackBy: cs.trackByValue\">\n                {{obj.name}}\n            </md-option>\n        </md-select>\n    </form>\n</div>    \n    "
+        template: "\n<div class=\"devctrl-ctrl devctrl-ctrl-select devctrl-ctrl-flex-layout\">\n    <div fxFlex=\"20%\" class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</div>\n    <form fxFlex=\"none\">\n        <md-select [(ngModel)]=\"cs.value\"\n                name=\"select\"\n                (change)=\"cs.updateValue()\">\n            <md-option [value]=\"obj.value\" *ngFor=\"let obj of cs.selectOptionsArray(); trackBy: cs.trackByValue\">\n                {{obj.name}}\n            </md-option>\n        </md-select>\n    </form>\n</div>    \n    ",
+        styles: ["\nform {\n    margin-bottom: 0;\n}\n"]
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], SelectControl);

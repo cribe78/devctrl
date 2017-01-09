@@ -59,7 +59,11 @@ export let commands : IAP400CommandConfig[] = [
         ctor: ClearOneCommand,
         control_type: "range",
         usertype: "level",
-        readonly: true
+        readonly: true,
+        templateConfig: {
+            min: -60,
+            max: 20
+        }
     }
 ];
 

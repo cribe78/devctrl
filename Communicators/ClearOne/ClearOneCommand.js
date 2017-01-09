@@ -5,6 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var TCPCommand_1 = require("../TCPCommand");
+var Control_1 = require("../../shared/Control");
 var ClearOneCommand = (function (_super) {
     __extends(ClearOneCommand, _super);
     function ClearOneCommand(config) {
@@ -38,7 +39,12 @@ var ClearOneCommand = (function (_super) {
         return this.updateResponseMatchString(update);
     };
     ClearOneCommand.prototype.updateResponseMatchString = function (update) {
-        return this.device + " " + this.cmdStr + " " + update.value + " " + this.updateTerminator;
+        var value = update.value;
+        if (this.control_type == Control_1.Control.CONTROL_TYPE_BOOLEAN) {
+            // Use "1" and "0" instead of "true" and "false"
+            value = value ? 1 : 0;
+        }
+        return this.device + " " + this.cmdStr + " " + value + " " + this.updateTerminator;
     };
     ClearOneCommand.prototype.parseQueryResponse = function (control, line) {
         return this.parseReportValue(control, line);

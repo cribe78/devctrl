@@ -53,7 +53,13 @@ export class ClearOneCommand extends TCPCommand {
     }
 
     updateResponseMatchString(update: ControlUpdateData) {
-        return `${ this.device } ${ this.cmdStr } ${ update.value } ${ this.updateTerminator }`;
+        let value = update.value;
+        if (this.control_type == Control.CONTROL_TYPE_BOOLEAN) {
+            // Use "1" and "0" instead of "true" and "false"
+            value = value ? 1 : 0;
+        }
+
+        return `${ this.device } ${ this.cmdStr } ${value} ${ this.updateTerminator }`;
     }
 
     parseQueryResponse(control: Control, line: string) : any {

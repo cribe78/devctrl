@@ -496,7 +496,7 @@ module.exports = {
             });
         });
 
-
+        this.getUserInfo();
         console.log("dataService2 initialized");
         this.initialized = true;
     }

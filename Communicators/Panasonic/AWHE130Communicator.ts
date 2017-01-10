@@ -26,7 +26,7 @@ class AWHE130Communicator extends HTTPCommunicator {
                 _id : ctid,
                 ctid: ctid,
                 endpoint_id : this.endpoint_id,
-                usertype: "awhe130-preset",
+                usertype: "awhe130-preset-map",
                 name: "preset",
                 control_type: Control.CONTROL_TYPE_INT,
                 poll : 0,

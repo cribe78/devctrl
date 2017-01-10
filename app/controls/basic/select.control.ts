@@ -10,7 +10,7 @@ import { ControlService } from '../control.service';
     <form fxFlex="none">
         <md-select [(ngModel)]="cs.value"
                 name="select"
-                (change)="cs.updateValue()">
+                (onClose)="cs.updateValue()">
             <md-option [value]="obj.value" *ngFor="let obj of cs.selectOptionsArray(); trackBy: cs.trackByValue">
                 {{obj.name}}
             </md-option>
@@ -22,6 +22,10 @@ import { ControlService } from '../control.service';
 form {
     margin-bottom: 0;
 }
+md-select { 
+    min-width: 160px;
+}
+
 `]
 })
 export class SelectControl implements OnInit {

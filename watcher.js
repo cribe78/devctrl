@@ -79,6 +79,9 @@ var Watcher = (function () {
                     if (Watcher.isString(ruleUpdate)) {
                         debug("watcherRule match fail: " + ruleUpdate);
                     }
+                    else if (!rule.enabled) {
+                        debug("skipping disabled rule " + rule.name);
+                    }
                     else {
                         updates.push(ruleUpdate);
                     }

@@ -13,6 +13,7 @@ var forms_1 = require("@angular/forms");
 var core_1 = require("@angular/core");
 var common_1 = require("@angular/common");
 var awhe130_preset_control_1 = require("./awhe130-preset.control");
+var awhe130_preset_map_control_1 = require("./awhe130-preset-map.control");
 var PanasonicControlsModule = (function () {
     function PanasonicControlsModule() {
     }
@@ -26,10 +27,12 @@ PanasonicControlsModule = __decorate([
             common_1.CommonModule
         ],
         declarations: [
-            awhe130_preset_control_1.AWHE130PresetControl
+            awhe130_preset_control_1.AWHE130PresetControl,
+            awhe130_preset_map_control_1.AWHE130PresetMapControl,
         ],
         exports: [
-            awhe130_preset_control_1.AWHE130PresetControl
+            awhe130_preset_control_1.AWHE130PresetControl,
+            awhe130_preset_map_control_1.AWHE130PresetMapControl
         ]
     }),
     __metadata("design:paramtypes", [])

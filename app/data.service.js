@@ -407,6 +407,7 @@ var DataService = (function () {
                 _this.getMData(WatcherRule_1.WatcherRule.tableStr, {});
             });
         });
+        this.getUserInfo();
         console.log("dataService2 initialized");
         this.initialized = true;
     };

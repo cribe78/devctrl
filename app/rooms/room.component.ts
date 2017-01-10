@@ -15,10 +15,12 @@ import {RecordEditorService} from "data-editor/record-editor.service";
     template: `
 <div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
     <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
-        <md-tab-group [selectedIndex]="selectedGroup" md-dynamic-height>
+        <!-- TODO: initial tab selection is not working -->
+        <md-tab-group #tabgroup 
+            [selectedIndex]="selectedGroup" 
+            (selectChange)="groupSelected(tabgroup.selectedIndex)">
             <md-tab *ngFor="let groupName of getGroups()"
-                    label="{{groupName}}" 
-                    (selectChange)="groupSelected(groupName)">
+                    label="{{groupName}}" >
                 <md-list flex>
                         <devctrl-panel *ngFor="let rpanel of groupPanels(groupName)"
                                        [panelObj]="rpanel">
@@ -26,7 +28,7 @@ import {RecordEditorService} from "data-editor/record-editor.service";
                 </md-list>
         
             </md-tab>
-            <md-tab label="Devices" (selectChange)="groupSelected('Devices')">
+            <md-tab label="Devices">
                 <md-nav-list class="devices">
                     <template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
                         <a md-list-item
@@ -42,7 +44,7 @@ import {RecordEditorService} from "data-editor/record-editor.service";
                 </md-nav-list>
             </md-tab>
         </md-tab-group>
-        <div flex layout="row" devctrl-admin-only>
+        <div flex layout="row" *devctrlAdminOnly>
             <span flex></span>
             <button md-button
                     (click)="addPanel($event)"
@@ -196,8 +198,9 @@ export class RoomComponent implements OnInit {
         console.log(`Room ${roomName} not found`);
     }
 
-    groupSelected($event) {
-        console.log(`tab ??? selected`);
+    groupSelected(idx) {
+        this.selectedGroup = idx;
+        console.log(`tab ${idx} selected`);
     }
 
 

@@ -29,7 +29,7 @@ export class Control extends DCSerializable {
     control_type: string;
     poll: number;
     config: any;
-    value: any;
+    private _value: any;
     ephemeral: boolean = false;
     option_set_id: string;
     private _option_set: OptionSet;
@@ -90,6 +90,7 @@ export class Control extends DCSerializable {
 
         if (data) {
             this.loadData(data);
+            this.coerceValue();
         }
     }
 
@@ -109,6 +110,21 @@ export class Control extends DCSerializable {
     set option_set(option_set : OptionSet) {
         this._option_set = option_set;
         this.option_set_id = option_set._id;
+    }
+
+    get value () {
+        return this._value;
+    }
+
+    set value(val) {
+        this._value = val;
+        this.coerceValue();
+    }
+
+    coerceValue() {
+        if (this.control_type == Control.CONTROL_TYPE_STRING && typeof this._value == 'number') {
+            this._value = "" + this._value;
+        }
     }
 
 

@@ -5,9 +5,6 @@ import { Component, Inject, Input } from '@angular/core';
 import {LayoutService} from "./layout.service";
 
 
-// This component depends on a working md-select, which has not been released yet
-
-
 @Component({
     moduleId: module.id,
     selector: 'devctrl-toolbar',
@@ -37,7 +34,7 @@ import {LayoutService} from "./layout.service";
                         aria-label="Select Page"
                         name="toolbarSelect"
                        [(ngModel)]="menu.toolbarSelect.selected"
-                       (change)="menu.toolbarSelectUpdate($event)">
+                       (onClose)="menu.toolbarSelectUpdate($event)">
                 <md-option class="text-headline"
                             [value]="option.id"
                            *ngFor="let option of menu.toolbarSelect.options">

@@ -9,8 +9,11 @@ export class RoomResolver implements Resolve<Room> {
     constructor(private ds: DataService, private router: Router) {}
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Room> {
         let name = route.params['name'];
+        console.log("room resolver invoked");
 
         let roomsPromise = this.ds.getTablePromise(Room.tableStr);
+
+
 
         return roomsPromise.then(loaded => {
             if (loaded) {

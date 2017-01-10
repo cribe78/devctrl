@@ -20,6 +20,7 @@ var RoomResolver = (function () {
     RoomResolver.prototype.resolve = function (route, state) {
         var _this = this;
         var name = route.params['name'];
+        console.log("room resolver invoked");
         var roomsPromise = this.ds.getTablePromise(Room_1.Room.tableStr);
         return roomsPromise.then(function (loaded) {
             if (loaded) {

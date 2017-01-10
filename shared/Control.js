@@ -48,6 +48,7 @@ var Control = (function (_super) {
         _this.optionalProperties = ['ephemeral', 'option_set_id'];
         if (data) {
             _this.loadData(data);
+            _this.coerceValue();
         }
         return _this;
     }
@@ -73,6 +74,22 @@ var Control = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Control.prototype, "value", {
+        get: function () {
+            return this._value;
+        },
+        set: function (val) {
+            this._value = val;
+            this.coerceValue();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Control.prototype.coerceValue = function () {
+        if (this.control_type == Control.CONTROL_TYPE_STRING && typeof this._value == 'number') {
+            this._value = "" + this._value;
+        }
+    };
     Control.prototype.fkSelectName = function () {
         if (this._endpoint) {
             return this._endpoint.name + ": " + this.name;

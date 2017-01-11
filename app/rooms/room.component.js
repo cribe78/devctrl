@@ -17,12 +17,14 @@ var menu_service_1 = require("../layout/menu.service");
 var PanelControl_1 = require("shared/PanelControl");
 require("rxjs/add/operator/switchMap");
 var record_editor_service_1 = require("data-editor/record-editor.service");
+var layout_service_1 = require("../layout/layout.service");
 var RoomComponent = (function () {
-    function RoomComponent(route, dataService, menu, recordService) {
+    function RoomComponent(route, dataService, menu, recordService, ls) {
         this.route = route;
         this.dataService = dataService;
         this.menu = menu;
         this.recordService = recordService;
+        this.ls = ls;
     }
     RoomComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -60,8 +62,14 @@ var RoomComponent = (function () {
     });
     RoomComponent.prototype.addPanel = function ($event) {
         this.recordService.editRecord($event, '0', 'panels', {
-            'room_id': this.obj._id
+            'room': this.obj,
+            'grouping': this.currentGrouping()
         });
+    };
+    RoomComponent.prototype.currentGrouping = function () {
+        var groups = this.getGroups();
+        var grouping = groups[this.selectedGroup];
+        return grouping;
     };
     RoomComponent.prototype.getGroups = function () {
         var deleteGroups = {};
@@ -144,13 +152,14 @@ var RoomComponent = (function () {
 RoomComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-room',
-        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex=\"none\" fxFlex.gt-xs=\"800px\" class=\"devctrl-card\">\n        <!-- TODO: initial tab selection is not working -->\n        <md-tab-group #tabgroup \n            [selectedIndex]=\"selectedGroup\" \n            (selectChange)=\"groupSelected(tabgroup.selectedIndex)\">\n            <md-tab *ngFor=\"let groupName of getGroups()\"\n                    label=\"{{groupName}}\" >\n                <md-list flex>\n                        <devctrl-panel *ngFor=\"let rpanel of groupPanels(groupName)\"\n                                       [panelObj]=\"rpanel\">\n                        </devctrl-panel>\n                </md-list>\n        \n            </md-tab>\n            <md-tab label=\"Devices\">\n                <md-nav-list class=\"devices\">\n                    <template ngFor let-endpoint [ngForOf]=\"getRoomEndpoints()\" [ngForTrackBy]=\"trackById\">\n                        <a md-list-item\n                            fxLayout=\"row\"\n                                  (click)=\"menu.go(['devices', endpoint._id])\">\n                            <span md-line>{{endpoint.name}}</span>\n                            <span fxFlex>&nbsp;</span>\n                            <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                            <md-icon md-font-set=\"material-icons\">keyboard_arrow_right</md-icon>\n                        </a>\n                        <md-divider></md-divider>\n                    </template>\n                </md-nav-list>\n            </md-tab>\n        </md-tab-group>\n        <div flex layout=\"row\" *devctrlAdminOnly>\n            <span flex></span>\n            <button md-button\n                    (click)=\"addPanel($event)\"\n                    class=\"md-primary\">\n                Add Panel\n            </button>\n        </div>\n    </div>\n</div>\n    \n",
+        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex=\"none\" fxFlex.gt-xs=\"900px\" class=\"devctrl-card\">\n        <!-- TODO: initial tab selection is not working -->\n        <md-tab-group #tabgroup \n            [selectedIndex]=\"selectedGroup\" \n            (selectChange)=\"groupSelected(tabgroup.selectedIndex)\">\n            <md-tab *ngFor=\"let groupName of getGroups()\"\n                    label=\"{{groupName}}\" >\n                <md-list>\n                        <devctrl-panel *ngFor=\"let rpanel of groupPanels(groupName)\"\n                                       [panelObj]=\"rpanel\">\n                        </devctrl-panel>\n                </md-list>\n        \n            </md-tab>\n            <md-tab label=\"Devices\">\n                <md-nav-list class=\"devices\">\n                    <template ngFor let-endpoint [ngForOf]=\"getRoomEndpoints()\" [ngForTrackBy]=\"trackById\">\n                        <a md-list-item\n                            fxLayout=\"row\"\n                                  (click)=\"menu.go(['devices', endpoint._id])\">\n                            <span md-line>{{endpoint.name}}</span>\n                            <span fxFlex>&nbsp;</span>\n                            <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                            <md-icon md-font-set=\"material-icons\">keyboard_arrow_right</md-icon>\n                        </a>\n                        <md-divider></md-divider>\n                    </template>\n                </md-nav-list>\n            </md-tab>\n        </md-tab-group>\n        <div flex layout=\"row\" *devctrlAdminOnly>\n            <span flex></span>\n            <button md-button\n                    (click)=\"addPanel($event)\"\n                    class=\"md-primary\">\n                Add Panel\n            </button>\n        </div>\n    </div>\n    <devctrl-action-history *ngIf=\"ls.desktopWide\" fxFlex></devctrl-action-history>\n</div>\n    \n",
         styles: ["\n:host /deep/ .devices .md-list-item {\n    width: 100%;\n}\n"]
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,
         menu_service_1.MenuService,
-        record_editor_service_1.RecordEditorService])
+        record_editor_service_1.RecordEditorService,
+        layout_service_1.LayoutService])
 ], RoomComponent);
 exports.RoomComponent = RoomComponent;
 //# sourceMappingURL=room.component.js.map

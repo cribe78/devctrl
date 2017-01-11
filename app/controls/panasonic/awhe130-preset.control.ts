@@ -6,21 +6,15 @@ import { ControlService } from '../control.service';
     selector: 'ctrl-awhe130-preset',
     template: `
 <div class="devctrl-ctrl">
-    <label class="text-menu devctrl-ctrl-label">{{cs.control.endpoint.name}} Presets</label>
-    <div class="button-row">
-        <button md-button  (click)="cs.setValue(-1)">Home</button>
-        <button md-button  (click)="cs.setValue(0)">Preset 1</button>
-        <button md-button  (click)="cs.setValue(1)">Preset 2</button>
-        <button md-button  (click)="cs.setValue(2)">Preset 3</button>
-        <button md-button  (click)="cs.setValue(3)">Preset 4</button>
-    </div>
+    <label class="text-menu devctrl-ctrl-label">{{cs.control.endpoint.name}} Preset Save</label>
     <img [src]="previewSource()" width="640" height="360" />
     <div class="button-row">
-        <button md-button  (click)="cs.setValue(4)">Preset 5</button>
-        <button md-button  (click)="cs.setValue(5)">Preset 6</button>
-        <button md-button  (click)="cs.setValue(6)">Preset 7</button>
-        <button md-button  (click)="cs.setValue(7)">Preset 8</button>
-        <button md-button  (click)="cs.setValue(8)">Preset 9</button>
+        <md-input-container>
+            <input md-input #presetNum type="number" 
+                    min=0 max=99 
+                    placeholder="Preset Number">
+        </md-input-container>     
+        <button md-button  (click)="cs.setValue(presetNum.value)">Save</button>
     </div>
 </div>    
     `,

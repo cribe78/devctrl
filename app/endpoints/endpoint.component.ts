@@ -6,6 +6,7 @@ import {DataService} from "../data.service";
 import {MenuService} from "../layout/menu.service";
 import {Control} from "../../shared/Control";
 import {RecordEditorService} from "../data-editor/record-editor.service";
+import {LayoutService} from "../layout/layout.service";
 
 @Component({
     selector: 'devctrl-endpoint',
@@ -28,8 +29,10 @@ import {RecordEditorService} from "../data-editor/record-editor.service";
                 <md-divider></md-divider>
             </template>
         </md-list>
-     </div>
+    </div>
+    <devctrl-action-history [hidden]="!ls.desktopWide" fxFlex></devctrl-action-history>
  </div>
+
 `
 })
 export class EndpointComponent implements OnInit {
@@ -41,7 +44,8 @@ export class EndpointComponent implements OnInit {
     constructor(private route : ActivatedRoute,
                 private dataService: DataService,
                 private menu : MenuService,
-                private recordService : RecordEditorService) {}
+                private recordService : RecordEditorService,
+                private ls : LayoutService) {}
 
     ngOnInit() {
         this.controls = {};

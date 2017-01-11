@@ -60,8 +60,8 @@ var RecordComponent = (function () {
             this.dialogRef.close();
         }
     };
-    RecordComponent.prototype.objectUpdated = function (value, field) {
-        this.obj[field] = value;
+    RecordComponent.prototype.objectUpdated = function (update) {
+        this.obj[update.name] = update.value;
     };
     RecordComponent.prototype.referencedTables = function () {
         return Object.keys(this.obj.referenced);

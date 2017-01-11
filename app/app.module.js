@@ -41,6 +41,7 @@ var object_editor_component_1 = require("./data-editor/object-editor.component")
 var flex_layout_1 = require("@angular/flex-layout");
 var media_service_1 = require("./layout/media.service");
 var layout_service_1 = require("./layout/layout.service");
+var action_history_component_1 = require("./layout/action-history.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -76,7 +77,8 @@ AppModule = __decorate([
             room_component_1.RoomComponent,
             rooms_component_1.RoomsComponent,
             table_component_1.TableComponent,
-            toolbar_component_1.ToolbarComponent
+            toolbar_component_1.ToolbarComponent,
+            action_history_component_1.ActionHistoryComponent
         ],
         entryComponents: [
             alert_dialog_component_1.AlertDialog,

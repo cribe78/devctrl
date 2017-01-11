@@ -14,6 +14,8 @@ var core_1 = require("@angular/core");
 var common_1 = require("@angular/common");
 var awhe130_preset_control_1 = require("./awhe130-preset.control");
 var awhe130_preset_map_control_1 = require("./awhe130-preset-map.control");
+var preset_map_pict_l_control_1 = require("./preset-maps/preset-map-pict-l.control");
+var preset_map_pict_r_control_1 = require("./preset-maps/preset-map-pict-r.control");
 var PanasonicControlsModule = (function () {
     function PanasonicControlsModule() {
     }
@@ -29,10 +31,14 @@ PanasonicControlsModule = __decorate([
         declarations: [
             awhe130_preset_control_1.AWHE130PresetControl,
             awhe130_preset_map_control_1.AWHE130PresetMapControl,
+            preset_map_pict_l_control_1.PresetMapPictLControl,
+            preset_map_pict_r_control_1.PresetMapPictRControl
         ],
         exports: [
             awhe130_preset_control_1.AWHE130PresetControl,
-            awhe130_preset_map_control_1.AWHE130PresetMapControl
+            awhe130_preset_map_control_1.AWHE130PresetMapControl,
+            preset_map_pict_l_control_1.PresetMapPictLControl,
+            preset_map_pict_r_control_1.PresetMapPictRControl
         ]
     }),
     __metadata("design:paramtypes", [])

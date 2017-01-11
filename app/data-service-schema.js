@@ -195,7 +195,8 @@ exports.dataServiceSchema = {
                 label: "Type",
                 options: [
                     { name: "List", value: "list" },
-                    { name: "Switch Group", value: "switch-group" }
+                    { name: "Switch Group", value: "switch-group" },
+                    { name: "Horizontal", value: "horizontal" }
                 ]
             },
             {

@@ -24,7 +24,7 @@
                     <fk-autocomplete *ngSwitchCase="'fk'"
                                      [object]="obj"
                                      [field]="field"
-                                     (onUpdate)="objectUpdated(value, name)">
+                                     (onUpdate)="objectUpdated($event)">
                     </fk-autocomplete>
                     <md-select *ngSwitchCase="'select-static'"
                                [placeholder]="field.label"
@@ -45,7 +45,7 @@
                     <devctrl-object-editor *ngSwitchCase="'object'"
                                            [object]="obj[field.name]"
                                            [fname]="field.name"
-                                           (onUpdate)="objectUpdated(object, name)">
+                                           (onUpdate)="objectUpdated($event)">
                     </devctrl-object-editor>
                     <div *ngSwitchDefault>
                         Unknown field type {{field.type}}

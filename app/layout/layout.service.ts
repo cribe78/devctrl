@@ -5,7 +5,7 @@ import {MediaService} from "./media.service";
 @Injectable()
 export class LayoutService {
     static menuWidth = 270;
-    static wide = 1500;
+    static wide = 1300;
 
     constructor(private mds: MediaService,
                 private mns: MenuService) {}
@@ -25,5 +25,10 @@ export class LayoutService {
         }
 
         return this.mds.widerThan(testWidth);
+    }
+
+    resized($event) {
+        this.mds.resized($event);
+        console.log("window resized");
     }
 }

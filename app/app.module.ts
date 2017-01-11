@@ -32,6 +32,7 @@ import {ObjectEditorComponent} from "./data-editor/object-editor.component";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {MediaService} from "./layout/media.service";
 import {LayoutService} from "./layout/layout.service";
+import {ActionHistoryComponent} from "./layout/action-history.component";
 
 
 
@@ -64,7 +65,8 @@ import {LayoutService} from "./layout/layout.service";
         RoomComponent,
         RoomsComponent,
         TableComponent,
-        ToolbarComponent
+        ToolbarComponent,
+        ActionHistoryComponent
         ],
     entryComponents: [
         AlertDialog,

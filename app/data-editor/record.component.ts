@@ -68,8 +68,8 @@ export class RecordComponent {
         }
     }
 
-    objectUpdated(value, field) {
-        this.obj[field] = value;
+    objectUpdated(update) {
+        this.obj[update.name] = update.value;
     }
 
     referencedTables() {

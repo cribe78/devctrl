@@ -18,7 +18,7 @@ class AWHE130Communicator extends HTTPCommunicator {
 
 
     buildCommandList() {
-        let ctid = this.endpoint_id + "-preset";
+        let ctid = this.endpoint_id + "-preset-map";
         let presetConfig : IHTTPCommandConfig = {
             cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23R%02d&res=1",
             cmdResponseRE: "s(\\d\\d)",
@@ -27,7 +27,27 @@ class AWHE130Communicator extends HTTPCommunicator {
                 ctid: ctid,
                 endpoint_id : this.endpoint_id,
                 usertype: "awhe130-preset-map",
-                name: "preset",
+                name: "preset select",
+                control_type: Control.CONTROL_TYPE_INT,
+                poll : 0,
+                ephemeral : false,
+                config: { "imageMap" : "default"},
+                value : 1
+            },
+            writeonly: true
+        };
+        this.commands[ctid] = new HTTPCommand(presetConfig);
+
+        ctid = this.endpoint_id + "-preset-save";
+        let presetSaveConfig : IHTTPCommandConfig = {
+            cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23M%02d&res=1",
+            cmdResponseRE: "s(\\d\\d)",
+            controlData: {
+                _id : ctid,
+                ctid: ctid,
+                endpoint_id : this.endpoint_id,
+                usertype: "awhe130-preset",
+                name: "preset save",
                 control_type: Control.CONTROL_TYPE_INT,
                 poll : 0,
                 ephemeral : false,
@@ -38,7 +58,7 @@ class AWHE130Communicator extends HTTPCommunicator {
             },
             writeonly: true
         };
-        this.commands[ctid] = new HTTPCommand(presetConfig);
+        this.commands[ctid] = new HTTPCommand(presetSaveConfig);
 
         ctid = this.endpoint_id + "-power";
         let powerConfig : IHTTPCommandConfig = {

@@ -24,6 +24,7 @@ var Panel_1 = require("../shared/Panel");
 var PanelControl_1 = require("../shared/PanelControl");
 var Room_1 = require("../shared/Room");
 var WatcherRule_1 = require("../shared/WatcherRule");
+var ActionLog_1 = require("../shared/ActionLog");
 var DataService = (function () {
     function DataService(http, snackBar, mdDialog) {
         this.http = http;
@@ -39,6 +40,7 @@ var DataService = (function () {
                 sidenavOpen: false
             }
         };
+        this.logs = [];
         this.schema = data_service_schema_1.dataServiceSchema;
         for (var table in this.schema) {
             var tschema = this.schema[table];
@@ -434,6 +436,21 @@ var DataService = (function () {
         catch (e) {
             console.error("loadData error: " + e.message);
         }
+    };
+    DataService.prototype.logAction = function (message, typeFlags, referenceList) {
+        if (typeFlags === void 0) { typeFlags = []; }
+        if (referenceList === void 0) { referenceList = []; }
+        var id = this.guid();
+        var action = new ActionLog_1.ActionLog(id, {
+            _id: id,
+            name: message,
+            timestamp: Date.now(),
+            typeFlags: typeFlags,
+            referenceList: referenceList,
+            user_session_id: this.userSession._id
+        });
+        this.logs.unshift(action); // Use unshift to make it easier to view recent logs first
+        console.log("action logged: " + message);
     };
     DataService.prototype.revokeAdminAuth = function () {
         var _this = this;

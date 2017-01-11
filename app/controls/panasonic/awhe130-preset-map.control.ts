@@ -7,19 +7,32 @@ import {DataService} from "../../data.service";
     selector: 'ctrl-awhe130-preset-map',
     template: `
 <div class="devctrl-ctrl">
-    <label class="text-menu devctrl-ctrl-label">{{cs.control.endpoint.name}} Presets</label>
-    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 840 593" >
+    <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 440">
         <defs>
             <style>
-            .cls-1 {
-                fill: transparent;
-            }
+                .cls-1,.cls-5{fill:#7997ce;}
+                .cls-1,.cls-4{stroke:#231f20;}
+                .cls-1,.cls-4,.cls-5{stroke-miterlimit:10;}
+                .cls-2{
+                    font-size:40px;
+                    pointer-events: none;   
+                }
+                .cls-2,.cls-3,.cls-6{fill:#2b2b2b;font-family:MyriadPro-BoldCond, Myriad Pro;font-weight:700;}
+                .cls-3{font-size:38.76px;}.cls-4{fill:none;stroke-width:3px;}
+                .cls-5{stroke:#000;}
+                .cls-6{font-size:30.6px;}
+                .cls-7{letter-spacing:-0.01em;}
+                .cls-8{letter-spacing:0em;}
             </style>
         </defs>
-        <svg:polygon class="cls-1" points="95.25,298 145,298 145,348 95,348" 
-            width="50" height="50" onclick="triggerPreset(1)" />
-        <image xlink:href="/app/controls/panasonic/PICT-PTZ-Left.svg" width="421" height="593"></image>
-        
+        <svg:g [ngSwitch]="imageMap">
+            <svg:g *ngSwitchCase="'pict-l'" preset-map-pict-l (presetSelected)="presetSelected($event)" />
+            <svg:g *ngSwitchCase="'pict-r'" preset-map-pict-r (presetSelected)="presepict-tSelected($event)" />
+            <svg:g *ngSwitchDefault>
+                <text x="10" y="50" font-size="32">Unimplemented default image map</text>
+            </svg:g>
+        </svg:g>
     </svg>
 </div>
     `,
@@ -37,14 +50,17 @@ import {DataService} from "../../data.service";
 `]
 })
 export class AWHE130PresetMapControl implements OnInit {
+
     constructor(private cs : ControlService,
                 private ds : DataService) { }
 
-    ngOnInit() { }
+    ngOnInit() {}
 
-    triggerPreset(preset) {
-        let msg = `Preset ${preset} selected!`;
-        console.log(msg)
-        this.ds.errorToast(msg);
+    get imageMap() {
+        return this.cs.config("imageMap");
+    }
+
+    presetSelected(value) {
+        this.ds.logAction(`Preset ${value} clicked`, ['preset_select'], [this.cs.controlId]);
     }
 }

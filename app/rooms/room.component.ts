@@ -9,19 +9,20 @@ import {Endpoint} from "shared/Endpoint";
 import {PanelControl} from "shared/PanelControl";
 import 'rxjs/add/operator/switchMap';
 import {RecordEditorService} from "data-editor/record-editor.service";
+import {LayoutService} from "../layout/layout.service";
 
 @Component({
     selector: 'devctrl-room',
     template: `
 <div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
-    <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
+    <div fxFlex="none" fxFlex.gt-xs="900px" class="devctrl-card">
         <!-- TODO: initial tab selection is not working -->
         <md-tab-group #tabgroup 
             [selectedIndex]="selectedGroup" 
             (selectChange)="groupSelected(tabgroup.selectedIndex)">
             <md-tab *ngFor="let groupName of getGroups()"
                     label="{{groupName}}" >
-                <md-list flex>
+                <md-list>
                         <devctrl-panel *ngFor="let rpanel of groupPanels(groupName)"
                                        [panelObj]="rpanel">
                         </devctrl-panel>
@@ -53,6 +54,7 @@ import {RecordEditorService} from "data-editor/record-editor.service";
             </button>
         </div>
     </div>
+    <devctrl-action-history *ngIf="ls.desktopWide" fxFlex></devctrl-action-history>
 </div>
     
 `,
@@ -73,7 +75,8 @@ export class RoomComponent implements OnInit {
     constructor(private route : ActivatedRoute,
                 private dataService: DataService,
                 private menu : MenuService,
-                private recordService : RecordEditorService) {
+                private recordService : RecordEditorService,
+                private ls : LayoutService) {
     }
 
     ngOnInit() {
@@ -117,11 +120,18 @@ export class RoomComponent implements OnInit {
     addPanel($event) {
         this.recordService.editRecord($event, '0', 'panels',
             {
-                'room_id' : this.obj._id
+                'room' : this.obj,
+                'grouping' : this.currentGrouping()
             }
         );
     }
 
+
+    currentGrouping() {
+        let groups = this.getGroups();
+        let grouping = groups[this.selectedGroup];
+        return grouping;
+    }
 
     getGroups() {
         let deleteGroups = {};

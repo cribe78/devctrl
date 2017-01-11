@@ -79,7 +79,7 @@ export class ObjectEditorComponent
         this.newVal = undefined;
         //angular.element(document).find('#oe-new-key').focus();
 
-        this.onUpdate.emit({object: this.object, name: this.fname});
+        this.onUpdate.emit({value: this.object, name: this.fname});
     }
 
     deleteValue(key) {
@@ -131,6 +131,6 @@ export class ObjectEditorComponent
     }
 
     updateItem() {
-        this.onUpdate.emit({object: this.object, name: this.fname});
+        this.onUpdate.emit({value: this.object, name: this.fname});
     }
 }

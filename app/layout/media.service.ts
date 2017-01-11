@@ -41,6 +41,11 @@ export class MediaService {
         }
     }
 
+    resized($event) {
+        // Called on the window.resize event
+
+    }
+
     widerThan(px: number) {
         let test = `(min-width: ${px-1}px)`;
         return window.matchMedia(test).matches;

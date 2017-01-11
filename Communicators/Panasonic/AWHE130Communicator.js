@@ -17,7 +17,7 @@ var AWHE130Communicator = (function (_super) {
         return _super.call(this) || this;
     }
     AWHE130Communicator.prototype.buildCommandList = function () {
-        var ctid = this.endpoint_id + "-preset";
+        var ctid = this.endpoint_id + "-preset-map";
         var presetConfig = {
             cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23R%02d&res=1",
             cmdResponseRE: "s(\\d\\d)",
@@ -26,7 +26,26 @@ var AWHE130Communicator = (function (_super) {
                 ctid: ctid,
                 endpoint_id: this.endpoint_id,
                 usertype: "awhe130-preset-map",
-                name: "preset",
+                name: "preset select",
+                control_type: Control_1.Control.CONTROL_TYPE_INT,
+                poll: 0,
+                ephemeral: false,
+                config: { "imageMap": "default" },
+                value: 1
+            },
+            writeonly: true
+        };
+        this.commands[ctid] = new HTTPCommand_1.HTTPCommand(presetConfig);
+        ctid = this.endpoint_id + "-preset-save";
+        var presetSaveConfig = {
+            cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23M%02d&res=1",
+            cmdResponseRE: "s(\\d\\d)",
+            controlData: {
+                _id: ctid,
+                ctid: ctid,
+                endpoint_id: this.endpoint_id,
+                usertype: "awhe130-preset",
+                name: "preset save",
                 control_type: Control_1.Control.CONTROL_TYPE_INT,
                 poll: 0,
                 ephemeral: false,
@@ -37,7 +56,7 @@ var AWHE130Communicator = (function (_super) {
             },
             writeonly: true
         };
-        this.commands[ctid] = new HTTPCommand_1.HTTPCommand(presetConfig);
+        this.commands[ctid] = new HTTPCommand_1.HTTPCommand(presetSaveConfig);
         ctid = this.endpoint_id + "-power";
         var powerConfig = {
             cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23O%d&res=1",

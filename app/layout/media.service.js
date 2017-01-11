@@ -43,6 +43,9 @@ var MediaService = (function () {
             return !window.matchMedia(this.minSizes[size]).matches;
         }
     };
+    MediaService.prototype.resized = function ($event) {
+        // Called on the window.resize event
+    };
     MediaService.prototype.widerThan = function (px) {
         var test = "(min-width: " + (px - 1) + "px)";
         return window.matchMedia(test).matches;

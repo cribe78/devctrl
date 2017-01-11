@@ -17,6 +17,7 @@ import {Panel} from "../shared/Panel";
 import {PanelControl} from "../shared/PanelControl";
 import {Room} from "../shared/Room";
 import {WatcherRule} from "../shared/WatcherRule";
+import {ActionLog} from "../shared/ActionLog";
 
 @Injectable()
 export class DataService {
@@ -37,6 +38,7 @@ export class DataService {
             sidenavOpen : false
         }
     };
+    logs : ActionLog[] = [];
 
 
     constructor(
@@ -527,6 +529,24 @@ module.exports = {
         catch (e) {
             console.error("loadData error: " + e.message);
         }
+    }
+
+    logAction(message: string, typeFlags: string[] = [], referenceList: string[] = []) {
+        let id = this.guid();
+        let action = new ActionLog(id,
+            {
+                _id: id,
+                name : message,
+                timestamp: Date.now(),
+                typeFlags: typeFlags,
+                referenceList: referenceList,
+                user_session_id: this.userSession._id
+            }
+        );
+
+        this.logs.unshift(action); // Use unshift to make it easier to view recent logs first
+
+        console.log(`action logged: ${message}`);
     }
 
     revokeAdminAuth() {

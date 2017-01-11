@@ -35,10 +35,34 @@ import {DCSerializable} from "shared/DCSerializable";
     </button>
 </h3>
 
-<md-list-item *ngFor="let pcontrol of pcList(); trackBy:trackById">
-    <devctrl-ctrl [panelControl]="pcontrol"></devctrl-ctrl>
-</md-list-item>    
-`
+<section [ngSwitch]="panelObj.type">
+    <md-list-item *ngSwitchCase="'horizontal'" class="devctrl-ctrl-list-item">
+        <div class="hpanel">
+            <devctrl-ctrl *ngFor="let pcontrol of pcList(); trackBy:trackById"
+                [panelControl]="pcontrol"></devctrl-ctrl>
+        </div>    
+    </md-list-item>
+    <template ngSwitchDefault>
+        <md-list-item *ngFor="let pcontrol of pcList(); trackBy:trackById"
+                    class="devctrl-ctrl-list-item">
+            <devctrl-ctrl [panelControl]="pcontrol"></devctrl-ctrl>
+        </md-list-item>
+    </template>
+</section>
+<md-divider></md-divider>
+`,
+    styles: [`
+.hpanel {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.hpanel devctrl-ctrl {
+    flex: 1 1;
+}
+`]
+
 })
 export class PanelComponent
 {
@@ -50,7 +74,7 @@ export class PanelComponent
     addControl($event) {
         this.recordService.editRecord(
             $event, "0", PanelControl.tableStr,
-            { panel_id: this.panelObj._id}
+            { panel: this.panelObj}
         );
     };
 

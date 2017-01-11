@@ -41,10 +41,14 @@ var LayoutService = LayoutService_1 = (function () {
         enumerable: true,
         configurable: true
     });
+    LayoutService.prototype.resized = function ($event) {
+        this.mds.resized($event);
+        console.log("window resized");
+    };
     return LayoutService;
 }());
 LayoutService.menuWidth = 270;
-LayoutService.wide = 1500;
+LayoutService.wide = 1300;
 LayoutService = LayoutService_1 = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [media_service_1.MediaService,

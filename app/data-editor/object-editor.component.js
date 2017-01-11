@@ -30,7 +30,7 @@ var ObjectEditorComponent = (function () {
         this.newKey = undefined;
         this.newVal = undefined;
         //angular.element(document).find('#oe-new-key').focus();
-        this.onUpdate.emit({ object: this.object, name: this.fname });
+        this.onUpdate.emit({ value: this.object, name: this.fname });
     };
     ObjectEditorComponent.prototype.deleteValue = function (key) {
         delete this.object[key];
@@ -70,7 +70,7 @@ var ObjectEditorComponent = (function () {
         this.object[key] = tempVal;
     };
     ObjectEditorComponent.prototype.updateItem = function () {
-        this.onUpdate.emit({ object: this.object, name: this.fname });
+        this.onUpdate.emit({ value: this.object, name: this.fname });
     };
     return ObjectEditorComponent;
 }());

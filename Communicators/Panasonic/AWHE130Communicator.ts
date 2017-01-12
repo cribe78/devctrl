@@ -20,8 +20,13 @@ class AWHE130Communicator extends HTTPCommunicator {
     buildCommandList() {
         let ctid = this.endpoint_id + "-preset-map";
         let presetConfig : IHTTPCommandConfig = {
+            name: "preset select",
             cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23R%02d&res=1",
             cmdResponseRE: "s(\\d\\d)",
+            cmdQueryPath: "/cgi-bin/aw_ptz?cmd=%23S&res=1",
+            cmdQueryResponseParseFn: (data) => {
+                return HTTPCommand.matchIntToRE(data, /s(\d\d)/);
+            },
             controlData: {
                 _id : ctid,
                 ctid: ctid,
@@ -33,14 +38,16 @@ class AWHE130Communicator extends HTTPCommunicator {
                 ephemeral : false,
                 config: { "imageMap" : "default"},
                 value : 1
-            },
-            writeonly: true
+            }
         };
         this.commands[ctid] = new HTTPCommand(presetConfig);
 
         ctid = this.endpoint_id + "-preset-save";
         let presetSaveConfig : IHTTPCommandConfig = {
+            name: "preset save",
             cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23M%02d&res=1",
+            cmdQueryPath: "",
+            cmdQueryResponseParseFn: (data) => {},
             cmdResponseRE: "s(\\d\\d)",
             controlData: {
                 _id : ctid,
@@ -62,8 +69,11 @@ class AWHE130Communicator extends HTTPCommunicator {
 
         ctid = this.endpoint_id + "-power";
         let powerConfig : IHTTPCommandConfig = {
+            name: "power",
             cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23O%d&res=1",
             cmdResponseRE: "p(\\d)",
+            cmdQueryPath: "/cgi-bin/aw_ptz?cmd=%23O&res=1",
+            cmdQueryResponseParseFn: data => { return HTTPCommand.matchBoolToRE(data, /p(\d)/)},
             controlData: {
                 _id : ctid,
                 ctid: ctid,
@@ -78,6 +88,104 @@ class AWHE130Communicator extends HTTPCommunicator {
             }
         };
         this.commands[ctid] = new HTTPCommand(powerConfig);
+
+        ctid = this.endpoint_id + "-zoom";
+        let zoomConfig : IHTTPCommandConfig = {
+            name: "zoom",
+            cmdPathTemplate: "/cgi-bin/aw_ptz?cmd=%%23AXZ%3X&res=1",
+            cmdResponseRE: "axz(\\w\\w\\w)",
+            cmdQueryPath:  "/cgi-bin/aw_ptz?cmd=%23GZ&res=1",
+            cmdQueryResponseParseFn: data => {
+                return HTTPCommand.matchHexIntToRE(data, /gz(\w\w\w)/);
+            },
+            controlData: {
+                _id : ctid,
+                ctid: ctid,
+                endpoint_id : this.endpoint_id,
+                usertype: Control.USERTYPE_SLIDER,
+                name: "Zoom",
+                control_type: Control.CONTROL_TYPE_RANGE,
+                poll : 1,
+                ephemeral : false,
+                config : {
+                    min: 1365,
+                    max: 4095
+                },
+                value : 1365
+            }
+        };
+        this.commands[ctid] = new HTTPCommand(zoomConfig);
+
+        ctid = this.endpoint_id + "-pan-tilt";
+        let panTiltConfig : IHTTPCommandConfig = {
+            name: "pan/tilt",
+            cmdPathFunction: (value) => {
+                let path = sprintf("/cgi-bin/aw_ptz?cmd=%%23APC%4X%4X&res=1", value.x, value.y);
+                return path;
+            },
+            cmdResponseRE: "aPC(\\w\\w\\w\\w\\w\\w\\w\\w)",
+            cmdQueryPath: "/cgi-bin/aw_ptz?cmd=%23APC&res=1",
+            cmdQueryResponseParseFn: data => {
+                let matches = data.match(/aPC(\w\w\w\w)(\w\w\w\w)/);
+                if (matches && matches.length == 3) {
+                    return {
+                        x: parseInt(matches[1], 16),
+                        y: parseInt(matches[2], 16)
+                    }
+                }
+            },
+            controlData: {
+                _id : ctid,
+                ctid: ctid,
+                endpoint_id : this.endpoint_id,
+                usertype: Control.USERTYPE_SLIDER_2D,
+                name: "Pan/Tilt",
+                control_type: Control.CONTROL_TYPE_XY,
+                poll : 1,
+                ephemeral : false,
+                config : {
+                    xMin: 11528,
+                    xMax: 54005,
+                    xName: "Pan",
+                    yMin: 7283,
+                    yMax: 36408,
+                    yName: "Tilt"
+                },
+                value : { x : 32000, y : 32000 }
+            }
+        };
+        this.commands[ctid] = new HTTPCommand(panTiltConfig);
+
+    }
+
+
+
+
+    getControlTemplates() : IndexedDataSet<Control> {
+        // Build the control list from the defined commands
+        // this populates controlsByCtid
+        super.getControlTemplates();
+
+        // Add aditional controls that have no associated commands
+        let ctid = this.endpoint_id + "-view";
+        let viewControlData : ControlData = {
+            _id : ctid,
+            ctid : ctid,
+            endpoint_id : this.endpoint_id,
+            usertype: Control.USERTYPE_IMAGE,
+            name: "View",
+            control_type: Control.CONTROL_TYPE_STRING,
+            poll: 0,
+            config: {
+                path: "/cgi-bin/mjpeg?resolution=640x360&quality=1",
+                proto: 'http'
+            },
+            value : ""
+        };
+
+        this.controlsByCtid[ctid] = new Control(ctid, viewControlData);
+
+        return this.controlsByCtid;
     }
 }
 

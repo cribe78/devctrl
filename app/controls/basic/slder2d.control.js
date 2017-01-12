@@ -15,40 +15,13 @@ var Slider2dControl = (function () {
         this.cs = cs;
     }
     Slider2dControl.prototype.ngOnInit = function () { };
-    Object.defineProperty(Slider2dControl.prototype, "xValue", {
-        get: function () {
-            return this._xValue;
-        },
-        set: function (val) {
-            if (typeof this._xValue == 'undefined' || typeof this._yValue == 'undefined') {
-                this.setXYVals();
-            }
-            this._xValue = val;
-            this.cs.value = this._xValue + "," + this._yValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Slider2dControl.prototype, "yValue", {
-        get: function () {
-            return this._yValue;
-        },
-        set: function (val) {
-            if (typeof this._xValue == 'undefined' || typeof this._yValue == 'undefined') {
-                this.setXYVals();
-            }
-            this._yValue = val;
-            this.cs.value = this._xValue + "," + this._yValue;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Slider2dControl.prototype.setXYVals = function () {
-        var xyVals = this.cs.value.split(",");
-        this._xValue = typeof xyVals[0] != 'undefined' ? xyVals[0] : 0;
-        this._xValue = parseInt(this._xValue);
-        this._yValue = typeof xyVals[1] != 'undefined' ? xyVals[1] : 0;
-        this._yValue = parseInt(this._yValue);
+    Slider2dControl.prototype.stepX = function () {
+        var step = this.cs.intConfig("stepX");
+        return step ? step : 1;
+    };
+    Slider2dControl.prototype.stepY = function () {
+        var step = this.cs.intConfig("stepY");
+        return step ? step : 1;
     };
     return Slider2dControl;
 }());
@@ -56,8 +29,8 @@ Slider2dControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-slider2d',
-        template: "\n<div>\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n</div>\n<div class=\"coe-ctrl layout-row laout-align-space-between-center\">\n    <label class=\"text-caption devctrl-ctrl-label devctrl-label-indented\">{{cs.config('xName')}}</label>\n    <md-slider flex\n               min=\"{{cs.intConfig('xMin')}}\"\n               max=\"{{cs.intConfig('xMax')}}\"\n               [(ngModel)]=\"xValue\"\n               (change)=\"cs.updateValue()\">\n    </md-slider>\n    <input class=\"devctrl-slider-input\" type=\"number\"\n           [(ngModel)]=\"slider2d.xValue\"\n           (change)=\"cs.updateValue()\">\n\n</div>\n<div class=\"coe-ctrl\"\n     layout=\"row\"\n     layout-align=\"space-between center\" >\n    <label class=\"text-caption devctrl-ctrl-label devctrl-label-indented\">{{cs.config('yName')}}</label>\n    <md-slider flex\n               min=\"{{cs.intConfig('yMin')}}\"\n               max=\"{{cs.intConfig('yMax')}}\"\n               [(ngModel)]=\"yValue\"\n               (change)=\"cs.updateValue()\">\n    </md-slider>\n    <input class=\"devctrl-slider-input\" type=\"number\"\n           [(ngModel)]=\"slider2d.yValue\"\n           (change)=\"cs.updateValue()\">\n</div>    \n    ",
-        styles: ["\n.label-indented {\n    margin-left: 24px;\n}\n\n.devctrl-slider-input {\n    width: 60px;\n}\n\n"]
+        template: "\n<div class=\"devctrl-ctrl\">\n    <div>\n        <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    </div>\n    <div class=\"container\">\n        <label class=\"text-caption devctrl-ctrl-label label-indented\">{{cs.config('xName')}}</label>\n        <md-slider class=\"slider\"\n                   min=\"{{cs.intConfig('xMin')}}\"\n                   max=\"{{cs.intConfig('xMax')}}\"\n                   [step]=\"stepY\"\n                   [(ngModel)]=\"cs.value.x\"\n                   (change)=\"cs.updateValue()\">\n        </md-slider>\n        <md-input-container>\n            <input md-input \n                   class=\"devctrl-slider-input\" type=\"number\"\n                   [(ngModel)]=\"cs.value.x\"\n                   (change)=\"cs.updateValue()\">\n        </md-input-container>\n    \n    </div>\n    <div class=\"container\">\n        <label class=\"text-caption devctrl-ctrl-label label-indented\">{{cs.config('yName')}}</label>\n        <md-slider class=\"slider\"\n                   min=\"{{cs.intConfig('yMin')}}\"\n                   max=\"{{cs.intConfig('yMax')}}\"\n                   [step]=\"stepX\"\n                   [(ngModel)]=\"cs.value.y\"\n                   (change)=\"cs.updateValue()\">\n        </md-slider>\n        <md-input-container>\n            <input md-input \n                   class=\"devctrl-slider-input\" type=\"number\"\n                   [(ngModel)]=\"cs.value.y\"\n                   (change)=\"cs.updateValue()\">\n        </md-input-container>\n    </div>    \n</div>\n    ",
+        styles: ["\n.label-indented {\n    margin-left: 24px;\n}\ndiv.container {\n    display: flex;\n    flex-direction: row;\n}\n\ndiv.devctrl-ctrl {\n    display: flex;\n    flex-direction: column;\n}\n\n.devctrl-slider-input {\n    width: 60px;\n}\n.slider {\n    flex: 1 1;\n}\n\n"]
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], Slider2dControl);

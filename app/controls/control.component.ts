@@ -31,6 +31,7 @@ import {ControlService} from "./control.service";
  }
  
 :host /deep/ .devctrl-ctrl-label {
+    min-height: 32px;
     margin-right: 12px;
     width: 180px;
     text-overflow: ellipsis;

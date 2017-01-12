@@ -13,12 +13,19 @@ var HTTPCommunicator = (function (_super) {
     function HTTPCommunicator() {
         var _this = _super.call(this) || this;
         _this.commands = {};
+        _this.commandsByControl = {};
         return _this;
     }
     HTTPCommunicator.prototype.buildCommandList = function () { };
     HTTPCommunicator.prototype.connect = function () {
+        var _this = this;
         this._connected = true;
         this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
+        if (!this.pollTimer) {
+            this.pollTimer = setInterval(function () {
+                _this.poll();
+            }, 10000);
+        }
     };
     ;
     HTTPCommunicator.prototype.disconnect = function () {
@@ -26,6 +33,40 @@ var HTTPCommunicator = (function (_super) {
         this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Offline);
     };
     ;
+    HTTPCommunicator.prototype.executeCommandQuery = function (cmd) {
+        var _this = this;
+        if (cmd.writeonly) {
+            debug("not querying writeonly command " + cmd.name);
+        }
+        var control = this.controlsByCtid[cmd.controlData.ctid];
+        var requestOptions = {
+            hostname: this.config.endpoint.address,
+            path: cmd.queryPath()
+        };
+        var requestPath = "http://" + requestOptions.hostname + requestOptions.path;
+        debug("sending request:" + requestPath);
+        http.get(requestPath, function (res) {
+            if (res.statusCode !== 200) {
+                debug("invalid status code response: " + res.statusCode);
+            }
+            else {
+                debug("cmd " + cmd.name + " successfully queried");
+                res.setEncoding('utf8');
+                var body_1 = '';
+                res.on('data', function (chunk) { body_1 += chunk; });
+                res.on('end', function () {
+                    var val = cmd.parseQueryResponse(body_1);
+                    if (typeof val !== 'undefined') {
+                        debug(cmd.name + " response parsed: " + body_1);
+                        _this.config.controlUpdateCallback(control, val);
+                    }
+                    else {
+                        debug(cmd.name + " update response did not match: " + body_1);
+                    }
+                });
+            }
+        });
+    };
     HTTPCommunicator.prototype.getControlTemplates = function () {
         this.buildCommandList();
         for (var cmd in this.commands) {
@@ -33,6 +74,7 @@ var HTTPCommunicator = (function (_super) {
             for (var _i = 0, controls_1 = controls; _i < controls_1.length; _i++) {
                 var control = controls_1[_i];
                 this.controlsByCtid[control.ctid] = control;
+                this.commandsByControl[control.ctid] = this.commands[cmd];
             }
         }
         return this.controlsByCtid;
@@ -54,26 +96,46 @@ var HTTPCommunicator = (function (_super) {
             hostname: this.config.endpoint.address,
             path: command.commandPath(update.value)
         };
-        http.get("http://" + requestOptions.hostname + requestOptions.path, function (res) {
+        var requestPath = "http://" + requestOptions.hostname + requestOptions.path;
+        debug("sending request:" + requestPath);
+        http.get(requestPath, function (res) {
             if (res.statusCode !== 200) {
                 debug("invalid status code response: " + res.statusCode);
             }
             else {
-                debug("preset " + update.value + " successfully selected");
+                debug(command.name + " set to " + update.value + " successfully");
                 res.setEncoding('utf8');
-                var body_1 = '';
-                res.on('data', function (chunk) { body_1 += chunk; });
+                var body_2 = '';
+                res.on('data', function (chunk) { body_2 += chunk; });
                 res.on('end', function () {
-                    if (command.matchResponse(body_1)) {
+                    if (command.matchResponse(body_2)) {
                         debug(control.name + " response matched expected");
                         _this.config.controlUpdateCallback(control, update.value);
                     }
                     else {
-                        debug(control.name + " update response did not match: " + body_1);
+                        debug(control.name + " update response did not match: " + body_2);
                     }
                 });
             }
         });
+    };
+    HTTPCommunicator.prototype.poll = function () {
+        if (!this.connected) {
+            return;
+        }
+        debug("polling device");
+        for (var id in this.controls) {
+            var control = this.controls[id];
+            if (control.poll) {
+                var cmd = this.commandsByControl[control.ctid];
+                if (cmd) {
+                    this.executeCommandQuery(cmd);
+                }
+                else {
+                    debug("command not found for poll control " + control.ctid);
+                }
+            }
+        }
     };
     HTTPCommunicator.prototype.setTemplates = function (controls) {
         this.controls = controls;

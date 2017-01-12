@@ -5,88 +5,81 @@ import { ControlService } from '../control.service';
     moduleId: module.id,
     selector: 'ctrl-slider2d',
     template: `
-<div>
-    <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
+<div class="devctrl-ctrl">
+    <div>
+        <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
+    </div>
+    <div class="container">
+        <label class="text-caption devctrl-ctrl-label label-indented">{{cs.config('xName')}}</label>
+        <md-slider class="slider"
+                   min="{{cs.intConfig('xMin')}}"
+                   max="{{cs.intConfig('xMax')}}"
+                   [step]="stepY"
+                   [(ngModel)]="cs.value.x"
+                   (change)="cs.updateValue()">
+        </md-slider>
+        <md-input-container>
+            <input md-input 
+                   class="devctrl-slider-input" type="number"
+                   [(ngModel)]="cs.value.x"
+                   (change)="cs.updateValue()">
+        </md-input-container>
+    
+    </div>
+    <div class="container">
+        <label class="text-caption devctrl-ctrl-label label-indented">{{cs.config('yName')}}</label>
+        <md-slider class="slider"
+                   min="{{cs.intConfig('yMin')}}"
+                   max="{{cs.intConfig('yMax')}}"
+                   [step]="stepX"
+                   [(ngModel)]="cs.value.y"
+                   (change)="cs.updateValue()">
+        </md-slider>
+        <md-input-container>
+            <input md-input 
+                   class="devctrl-slider-input" type="number"
+                   [(ngModel)]="cs.value.y"
+                   (change)="cs.updateValue()">
+        </md-input-container>
+    </div>    
 </div>
-<div class="coe-ctrl layout-row laout-align-space-between-center">
-    <label class="text-caption devctrl-ctrl-label devctrl-label-indented">{{cs.config('xName')}}</label>
-    <md-slider flex
-               min="{{cs.intConfig('xMin')}}"
-               max="{{cs.intConfig('xMax')}}"
-               [(ngModel)]="xValue"
-               (change)="cs.updateValue()">
-    </md-slider>
-    <input class="devctrl-slider-input" type="number"
-           [(ngModel)]="slider2d.xValue"
-           (change)="cs.updateValue()">
-
-</div>
-<div class="coe-ctrl"
-     layout="row"
-     layout-align="space-between center" >
-    <label class="text-caption devctrl-ctrl-label devctrl-label-indented">{{cs.config('yName')}}</label>
-    <md-slider flex
-               min="{{cs.intConfig('yMin')}}"
-               max="{{cs.intConfig('yMax')}}"
-               [(ngModel)]="yValue"
-               (change)="cs.updateValue()">
-    </md-slider>
-    <input class="devctrl-slider-input" type="number"
-           [(ngModel)]="slider2d.yValue"
-           (change)="cs.updateValue()">
-</div>    
     `,
     styles: [`
 .label-indented {
     margin-left: 24px;
 }
+div.container {
+    display: flex;
+    flex-direction: row;
+}
+
+div.devctrl-ctrl {
+    display: flex;
+    flex-direction: column;
+}
 
 .devctrl-slider-input {
     width: 60px;
+}
+.slider {
+    flex: 1 1;
 }
 
 `]
 })
 export class Slider2dControl implements OnInit {
-    _xValue;
-    _yValue;
-
     constructor(private cs : ControlService) { }
 
     ngOnInit() { }
 
-    set xValue(val) {
-        if (typeof this._xValue == 'undefined' || typeof this._yValue == 'undefined') {
-            this.setXYVals();
-        }
-
-        this._xValue = val;
-        this.cs.value = this._xValue + "," + this._yValue;
+    stepX() {
+        let step = this.cs.intConfig("stepX");
+        return step ? step : 1;
     }
 
-    get xValue() {
-        return this._xValue;
-    }
-
-    get yValue() {
-        return this._yValue;
-    }
-
-    set yValue(val) {
-        if (typeof this._xValue == 'undefined' || typeof this._yValue == 'undefined') {
-            this.setXYVals();
-        }
-
-        this._yValue = val;
-        this.cs.value = this._xValue + "," + this._yValue;
-    }
-
-
-    setXYVals() {
-        let xyVals = this.cs.value.split(",");
-        this._xValue = typeof xyVals[0] != 'undefined' ? xyVals[0] : 0;
-        this._xValue = parseInt(this._xValue);
-        this._yValue = typeof xyVals[1] != 'undefined' ? xyVals[1] : 0;
-        this._yValue = parseInt(this._yValue);
+    stepY() {
+        let step = this.cs.intConfig("stepY");
+        return step ? step : 1;
     }
 }
+

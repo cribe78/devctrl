@@ -151,6 +151,7 @@ var ControlService = (function () {
     };
     ControlService.prototype.updateValue = function () {
         this.dataService.updateControlValue(this.control);
+        this.dataService.logAction("Control update requested: set " + this.control.fkSelectName() + " to " + this.value, ['control update requested'], [this.controlId, this.control.endpoint_id]);
     };
     return ControlService;
 }());

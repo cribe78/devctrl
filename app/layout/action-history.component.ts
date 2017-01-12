@@ -7,7 +7,7 @@ import {DataService} from "../data.service";
     template: `
 <div class="devctrl-card history-card">
     <md-toolbar color="primary">
-        <span class="text-title">Log</span>
+        <span class="text-subhead">Log</span>
     </md-toolbar>
     <md-list>
         <md-list-item *ngFor="let action of ds.logs;">

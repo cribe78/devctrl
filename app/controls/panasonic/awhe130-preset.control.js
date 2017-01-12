@@ -24,8 +24,8 @@ AWHE130PresetControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-awhe130-preset',
-        template: "\n<div class=\"devctrl-ctrl\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.control.endpoint.name}} Preset Save</label>\n    <img [src]=\"previewSource()\" width=\"640\" height=\"360\" />\n    <div class=\"button-row\">\n        <md-input-container>\n            <input md-input #presetNum type=\"number\" \n                    min=0 max=99 \n                    placeholder=\"Preset Number\">\n        </md-input-container>     \n        <button md-button  (click)=\"cs.setValue(presetNum.value)\">Save</button>\n    </div>\n</div>    \n    ",
-        styles: ["\n.button-row {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-around;\n}\n.devctrl-ctrl {\n    height: 490px;\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n}\n.devctrl-ctrl-label {\n    align-self: flex-start;\n}\nimg {\n   \n}\n"
+        template: "\n<div class=\"devctrl-ctrl\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <md-input-container>\n        <input md-input #presetNum type=\"number\" \n                min=0 max=99 \n                placeholder=\"Preset Number\">\n    </md-input-container>     \n    <button md-button  (click)=\"cs.setValue(presetNum.value)\">Save</button>\n    \n</div>    \n    ",
+        styles: ["\n.button-row {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-around;\n}\n.devctrl-ctrl {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n}\n.devctrl-ctrl-label {\n    flex: 1 1;\n}\nimg {\n   \n}\n"
         ]
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])

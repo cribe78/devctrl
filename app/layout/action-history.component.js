@@ -21,7 +21,7 @@ ActionHistoryComponent = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'devctrl-action-history',
-        template: "\n<div class=\"devctrl-card history-card\">\n    <md-toolbar color=\"primary\">\n        <span class=\"text-title\">Log</span>\n    </md-toolbar>\n    <md-list>\n        <md-list-item *ngFor=\"let action of ds.logs;\">\n            <p md-line class=\"message\">{{action.name}}</p>\n            <p md-line class=\"ts\">{{action.timestamp | date:'medium'}}</p>\n        </md-list-item>\n        <md-list-item *ngIf=\"ds.logs.length == 0\">\n            <p md-line>Action log is empty</p>\n        </md-list-item>\n    </md-list>  \n</div>\n    ",
+        template: "\n<div class=\"devctrl-card history-card\">\n    <md-toolbar color=\"primary\">\n        <span class=\"text-subhead\">Log</span>\n    </md-toolbar>\n    <md-list>\n        <md-list-item *ngFor=\"let action of ds.logs;\">\n            <p md-line class=\"message\">{{action.name}}</p>\n            <p md-line class=\"ts\">{{action.timestamp | date:'medium'}}</p>\n        </md-list-item>\n        <md-list-item *ngIf=\"ds.logs.length == 0\">\n            <p md-line>Action log is empty</p>\n        </md-list-item>\n    </md-list>  \n</div>\n    ",
         styles: ["\n\n"]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService])

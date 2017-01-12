@@ -167,5 +167,9 @@ export class ControlService {
 
     updateValue() {
         this.dataService.updateControlValue(this.control);
+        this.dataService.logAction(
+            `Control update requested: set ${this.control.fkSelectName()} to ${this.value}`,
+            ['control update requested'],
+            [this.controlId, this.control.endpoint_id]);
     }
 }

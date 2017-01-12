@@ -8,10 +8,19 @@ import {DataService} from "../../data.service";
     template: `
 <div class="devctrl-ctrl">
     <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
-    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 440">
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 421 593">
         <defs>
             <style>
-                .cls-1,.cls-5{fill:#7997ce;}
+                .cls-1 {
+                    fill:#7997ce;
+                    cursor: pointer; 
+                }
+                .cls-1:hover {
+                    fill:#5f78a7;
+                }
+                .cls-1.selected {
+                    fill: #8bd0e5;
+                }
                 .cls-1,.cls-4{stroke:#231f20;}
                 .cls-1,.cls-4,.cls-5{stroke-miterlimit:10;}
                 .cls-2{
@@ -19,16 +28,22 @@ import {DataService} from "../../data.service";
                     pointer-events: none;   
                 }
                 .cls-2,.cls-3,.cls-6{fill:#2b2b2b;font-family:MyriadPro-BoldCond, Myriad Pro;font-weight:700;}
-                .cls-3{font-size:38.76px;}.cls-4{fill:none;stroke-width:3px;}
-                .cls-5{stroke:#000;}
-                .cls-6{font-size:30.6px;}
+                .cls-3{font-size:24px;}
+                .cls-4{fill:none;stroke-width:3px;}
+                .cls-6{font-size:30px;}
                 .cls-7{letter-spacing:-0.01em;}
                 .cls-8{letter-spacing:0em;}
+                .no-click {
+                    pointer-events: none;
+                }
+                .podium {
+                    fill: #9e8b65;
+                }
             </style>
         </defs>
         <svg:g [ngSwitch]="imageMap">
             <svg:g *ngSwitchCase="'pict-l'" preset-map-pict-l (presetSelected)="presetSelected($event)" />
-            <svg:g *ngSwitchCase="'pict-r'" preset-map-pict-r (presetSelected)="presepict-tSelected($event)" />
+            <svg:g *ngSwitchCase="'pict-r'" preset-map-pict-r (presetSelected)="presetSelected($event)" />
             <svg:g *ngSwitchDefault>
                 <text x="10" y="50" font-size="32">Unimplemented default image map</text>
             </svg:g>
@@ -38,7 +53,7 @@ import {DataService} from "../../data.service";
     `,
     styles: [`
 .devctrl-ctrl {
-    height: 490px;
+    height: 594px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,6 +76,6 @@ export class AWHE130PresetMapControl implements OnInit {
     }
 
     presetSelected(value) {
-        this.ds.logAction(`Preset ${value} clicked`, ['preset_select'], [this.cs.controlId]);
+        this.cs.setValue(value);
     }
 }

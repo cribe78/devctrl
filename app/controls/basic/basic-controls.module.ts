@@ -10,6 +10,8 @@ import {SelectControl} from "./select.control";
 import {SelectReadonlyControl} from "./select-readonly.control";
 import {ButtonSetControl} from "./button-set.control";
 import {LevelControl} from "./level.control";
+import {ImageControl} from "./image.control";
+import {Slider2dControl} from "./slder2d.control";
 
 @NgModule({
     imports:      [
@@ -21,20 +23,24 @@ import {LevelControl} from "./level.control";
         ButtonControl,
         ButtonSetControl,
         DefaultControl,
+        ImageControl,
         LevelControl,
         SelectControl,
         SelectReadonlyControl,
         SliderControl,
+        Slider2dControl,
         SwitchControl
     ],
     exports: [
         ButtonControl,
         ButtonSetControl,
         DefaultControl,
+        ImageControl,
         LevelControl,
         SelectControl,
         SelectReadonlyControl,
         SliderControl,
+        Slider2dControl,
         SwitchControl
     ]
 })

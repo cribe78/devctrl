@@ -11,6 +11,8 @@ let debug = console.log;
 
 export class HTTPCommunicator extends EndpointCommunicator {
     commands: IndexedDataSet<HTTPCommand> = {};
+    commandsByControl: IndexedDataSet<HTTPCommand> = {};
+    pollTimer;
 
     constructor() {
         super();
@@ -21,6 +23,12 @@ export class HTTPCommunicator extends EndpointCommunicator {
     connect() {
         this._connected = true;
         this.config.statusUpdateCallback(EndpointStatus.Online);
+
+        if (! this.pollTimer) {
+            this.pollTimer = setInterval(() => {
+                this.poll();
+            }, 10000);
+        }
     };
 
     disconnect() {
@@ -28,6 +36,43 @@ export class HTTPCommunicator extends EndpointCommunicator {
         this.config.statusUpdateCallback(EndpointStatus.Offline);
     };
 
+    executeCommandQuery(cmd: HTTPCommand) {
+        if (cmd.writeonly) {
+            debug(`not querying writeonly command ${cmd.name}`);
+        }
+
+
+        let control = this.controlsByCtid[cmd.controlData.ctid];
+        let requestOptions = {
+            hostname: this.config.endpoint.address,
+            path: cmd.queryPath()
+        };
+
+        let requestPath = "http://" + requestOptions.hostname + requestOptions.path;
+        debug("sending request:" + requestPath);
+
+        http.get(requestPath, (res) => {
+            if (res.statusCode !== 200) {
+                debug("invalid status code response: " + res.statusCode);
+            }
+            else {
+                debug(`cmd ${cmd.name} successfully queried`);
+                res.setEncoding('utf8');
+                let body ='';
+                res.on('data', (chunk) => { body += chunk});
+                res.on('end', () => {
+                    let val = cmd.parseQueryResponse(body);
+                    if (typeof val !== 'undefined') {
+                        debug(`${cmd.name} response parsed: ${body}`);
+                        this.config.controlUpdateCallback(control, val);
+                    }
+                    else {
+                        debug(`${cmd.name} update response did not match: ${body}`);
+                    }
+                });
+            }
+        });
+    }
 
     getControlTemplates() : IndexedDataSet<Control> {
         this.buildCommandList();
@@ -37,6 +82,7 @@ export class HTTPCommunicator extends EndpointCommunicator {
 
             for (let control of controls) {
                 this.controlsByCtid[control.ctid] = control;
+                this.commandsByControl[control.ctid] = this.commands[cmd];
             }
         }
 
@@ -62,12 +108,15 @@ export class HTTPCommunicator extends EndpointCommunicator {
             path: command.commandPath(update.value)
         };
 
-        http.get("http://" + requestOptions.hostname + requestOptions.path, (res) => {
+        let requestPath = "http://" + requestOptions.hostname + requestOptions.path;
+        debug("sending request:" + requestPath);
+
+        http.get(requestPath, (res) => {
             if (res.statusCode !== 200) {
                 debug("invalid status code response: " + res.statusCode);
             }
             else {
-                debug(`preset ${update.value} successfully selected`);
+                debug(`${command.name} set to ${update.value} successfully`);
                 res.setEncoding('utf8');
                 let body ='';
                 res.on('data', (chunk) => { body += chunk});
@@ -83,6 +132,30 @@ export class HTTPCommunicator extends EndpointCommunicator {
             }
         });
     }
+
+    poll() {
+        if (! this.connected) {
+            return;
+        }
+
+        debug("polling device");
+
+        for (let id in this.controls) {
+            let control = this.controls[id];
+
+            if (control.poll) {
+                let cmd = this.commandsByControl[control.ctid];
+
+                if (cmd) {
+                    this.executeCommandQuery(cmd);
+                }
+                else {
+                    debug("command not found for poll control " + control.ctid);
+                }
+            }
+        }
+    }
+
 
     setTemplates(controls: IndexedDataSet<Control>) {
         this.controls = controls;

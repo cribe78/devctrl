@@ -56,9 +56,11 @@ export class Control extends DCSerializable {
     static CONTROL_TYPE_STRING = "string";
     static CONTROL_TYPE_RANGE = "range";
     static CONTROL_TYPE_INT = "int";
+    static CONTROL_TYPE_XY = "xy";
 
     static USERTYPE_BUTTON = "button";
     static USERTYPE_BUTTON_SET = "button-set";
+    static USERTYPE_IMAGE = "image";
     static USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
     static USERTYPE_SLIDER_2D = "slider2d";
     static USERTYPE_SWITCH = "switch";
@@ -140,4 +142,7 @@ export class Control extends DCSerializable {
     }
 }
 
-
+export interface ControlXYValue {
+    x : number;
+    y : number;
+}

@@ -3,9 +3,12 @@ import {sprintf} from "sprintf-js";
 let debug = console.log;
 
 export interface IHTTPCommandConfig {
+    name: string;
     cmdPathFunction? : (value: any)=>string;
     cmdPathTemplate? : string; // A function returning the path or a template to expand
     cmdResponseRE : string;  //
+    cmdQueryPath: string;
+    cmdQueryResponseParseFn: (value: string) => any;
     controlData: ControlData;
     readonly?: boolean;
     writeonly?: boolean;
@@ -13,17 +16,23 @@ export interface IHTTPCommandConfig {
 
 
 export class HTTPCommand {
+    name: string;
     cmdPathFunction : (value: any)=>string;
     cmdPathTemplate : string; // A function returning the path or a template to expand
     cmdResponseRE : RegExp;  //
+    cmdQueryPath : string;
+    cmdQueryResponseParseFn: (value: string) => any;
     controlData: ControlData;
     readonly: boolean;
     writeonly: boolean;
 
     constructor(config: IHTTPCommandConfig) {
+        this.name = config.name;
         this.cmdPathFunction = config.cmdPathFunction;
         this.cmdPathTemplate = config.cmdPathTemplate;
         this.cmdResponseRE = new RegExp(config.cmdResponseRE);
+        this.cmdQueryPath = config.cmdQueryPath;
+        this.cmdQueryResponseParseFn = config.cmdQueryResponseParseFn;
         this.controlData = config.controlData;
 
         this.readonly = !! config.readonly;
@@ -59,6 +68,14 @@ export class HTTPCommand {
         return false;
     }
 
+    parseQueryResponse(resp) : any {
+        let val;
+        if (typeof this.cmdQueryResponseParseFn == 'function') {
+            val = this.cmdQueryResponseParseFn(resp);
+        }
+        return val;
+    }
+
     parseValue(value) : any {
         if (this.controlData.control_type == Control.CONTROL_TYPE_RANGE) {
             return parseFloat(value);
@@ -82,4 +99,32 @@ export class HTTPCommand {
 
         return value;
     }
+
+    queryPath() {
+        return this.cmdQueryPath;
+    }
+
+    static matchHexIntToRE(text: string, re : RegExp) {
+        return HTTPCommand.matchIntToRE(text, re, 16);
+    }
+
+    static matchIntToRE(text : string, re : RegExp, radix = 10) {
+        let matches = text.match(re);
+        if (matches && matches.length > 1) {
+            return parseInt(matches[1], radix);
+        }
+    }
+
+    static matchBoolToRE(text: string, re : RegExp) {
+        let matches = text.match(re);
+        if (matches && matches.length > 1) {
+            let val = matches[1];
+            if (val == "true" || val == "1") {
+                return true;
+            }
+            return false;
+        }
+    }
+
+
 }

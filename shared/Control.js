@@ -120,4 +120,15 @@ Control.USERTYPE_LEVEL = "level";
 Control.USERTYPE_SELECT = "select";
 Control.USERTYPE_SELECT_READONLY = "select-readonly";
 exports.Control = Control;
+var ControlXYValue = (function () {
+    function ControlXYValue(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    ControlXYValue.prototype.toString = function () {
+        return "(" + this.x + "," + this.y + ")";
+    };
+    return ControlXYValue;
+}());
+exports.ControlXYValue = ControlXYValue;
 //# sourceMappingURL=Control.js.map

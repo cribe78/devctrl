@@ -7,6 +7,7 @@ export interface IHTTPCommandConfig {
     cmdPathFunction? : (value: any)=>string;
     cmdPathTemplate? : string; // A function returning the path or a template to expand
     cmdResponseRE : string;  //
+    cmdResponseParser?: (value: string) => any;  // An optional function to extract a value from a response
     cmdQueryPath: string;
     cmdQueryResponseParseFn: (value: string) => any;
     controlData: ControlData;
@@ -20,6 +21,7 @@ export class HTTPCommand {
     cmdPathFunction : (value: any)=>string;
     cmdPathTemplate : string; // A function returning the path or a template to expand
     cmdResponseRE : RegExp;  //
+    cmdResponseParser: (value: string) => any;
     cmdQueryPath : string;
     cmdQueryResponseParseFn: (value: string) => any;
     controlData: ControlData;
@@ -31,6 +33,7 @@ export class HTTPCommand {
         this.cmdPathFunction = config.cmdPathFunction;
         this.cmdPathTemplate = config.cmdPathTemplate;
         this.cmdResponseRE = new RegExp(config.cmdResponseRE);
+        this.cmdResponseParser = config.cmdResponseParser;
         this.cmdQueryPath = config.cmdQueryPath;
         this.cmdQueryResponseParseFn = config.cmdQueryResponseParseFn;
         this.controlData = config.controlData;
@@ -66,6 +69,17 @@ export class HTTPCommand {
             return true;
         }
         return false;
+    }
+
+
+    parseCommandResponse(resp, defaultValue) : any {
+        if (typeof this.cmdResponseParser !== 'function') {
+            return defaultValue;
+        }
+
+        let ret = this.cmdResponseParser(resp);
+        //debug(`HTTPCommand parsed value: ${ret}`);
+        return ret;
     }
 
     parseQueryResponse(resp) : any {

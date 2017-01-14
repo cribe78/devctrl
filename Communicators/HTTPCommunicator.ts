@@ -56,14 +56,14 @@ export class HTTPCommunicator extends EndpointCommunicator {
                 debug("invalid status code response: " + res.statusCode);
             }
             else {
-                debug(`cmd ${cmd.name} successfully queried`);
+                //debug(`cmd ${cmd.name} successfully queried`);
                 res.setEncoding('utf8');
                 let body ='';
                 res.on('data', (chunk) => { body += chunk});
                 res.on('end', () => {
                     let val = cmd.parseQueryResponse(body);
                     if (typeof val !== 'undefined') {
-                        debug(`${cmd.name} response parsed: ${body}`);
+                        debug(`${cmd.name} response parsed: ${body},${val}`);
                         this.config.controlUpdateCallback(control, val);
                     }
                     else {
@@ -116,14 +116,15 @@ export class HTTPCommunicator extends EndpointCommunicator {
                 debug("invalid status code response: " + res.statusCode);
             }
             else {
-                debug(`${command.name} set to ${update.value} successfully`);
+                //debug(`${command.name} set to ${update.value} successfully`);
                 res.setEncoding('utf8');
                 let body ='';
                 res.on('data', (chunk) => { body += chunk});
                 res.on('end', () => {
                     if (command.matchResponse(body)) {
-                        debug(`${control.name} response matched expected`);
-                        this.config.controlUpdateCallback(control, update.value);
+                        let newVal = command.parseCommandResponse(body, update.value);
+                        debug(`${control.name} response successful, value: ${newVal}`);
+                        this.config.controlUpdateCallback(control, newVal);
                     }
                     else {
                         debug(`${control.name} update response did not match: ${body}`);

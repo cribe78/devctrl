@@ -15,13 +15,13 @@ import { ControlService } from '../control.service';
                    min="{{cs.intConfig('xMin')}}"
                    max="{{cs.intConfig('xMax')}}"
                    [step]="stepY"
-                   [(ngModel)]="cs.value.x"
+                   [(ngModel)]="xVal"
                    (change)="cs.updateValue()">
         </md-slider>
         <md-input-container>
             <input md-input 
                    class="devctrl-slider-input" type="number"
-                   [(ngModel)]="cs.value.x"
+                   [(ngModel)]="xVal"
                    (change)="cs.updateValue()">
         </md-input-container>
     
@@ -31,14 +31,14 @@ import { ControlService } from '../control.service';
         <md-slider class="slider"
                    min="{{cs.intConfig('yMin')}}"
                    max="{{cs.intConfig('yMax')}}"
-                   [step]="stepX"
-                   [(ngModel)]="cs.value.y"
+                   [step]="stepY"
+                   [(ngModel)]="yVal"
                    (change)="cs.updateValue()">
         </md-slider>
         <md-input-container>
             <input md-input 
                    class="devctrl-slider-input" type="number"
-                   [(ngModel)]="cs.value.y"
+                   [(ngModel)]="yVal"
                    (change)="cs.updateValue()">
         </md-input-container>
     </div>    
@@ -70,7 +70,8 @@ div.devctrl-ctrl {
 export class Slider2dControl implements OnInit {
     constructor(private cs : ControlService) { }
 
-    ngOnInit() { }
+    ngOnInit() {
+    }
 
     stepX() {
         let step = this.cs.intConfig("stepX");
@@ -80,6 +81,26 @@ export class Slider2dControl implements OnInit {
     stepY() {
         let step = this.cs.intConfig("stepY");
         return step ? step : 1;
+    }
+
+    get xVal() {
+        let m = this.cs.floatConfig('xMultiplier', 1);
+        return this.cs.value.x / m;
+    }
+
+    set xVal(val) {
+        let m = this.cs.floatConfig('xMultiplier', 1);
+        this.cs.value.x = m * val;
+    }
+
+    get yVal() {
+        let m = this.cs.floatConfig('yMultiplier', 1);
+        return this.cs.value.y / m;
+    }
+
+    set yVal(val) {
+        let m = this.cs.floatConfig('yMultiplier', 1);
+        this.cs.value.y = m * val;
     }
 }
 

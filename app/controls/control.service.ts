@@ -112,6 +112,14 @@ export class ControlService {
         return 0;
     }
 
+    floatConfig(key, defVal : number = 0) {
+        if (typeof this.control.config !== 'object' ||
+            typeof this.control.config[key] == 'undefined') {
+            return defVal;
+        }
+
+        return parseFloat(this.control.config[key]);
+    }
 
 
 

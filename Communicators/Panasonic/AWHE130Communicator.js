@@ -112,6 +112,12 @@ var AWHE130Communicator = (function (_super) {
             }
         };
         this.commands[ctid] = new HTTPCommand_1.HTTPCommand(zoomConfig);
+        var parsePanTiltXY = function (data) {
+            var matches = data.match(/aPC(\w\w\w\w)(\w\w\w\w)/);
+            if (matches && matches.length == 3) {
+                return new Control_1.ControlXYValue(parseInt(matches[1], 16), parseInt(matches[2], 16));
+            }
+        };
         ctid = this.endpoint_id + "-pan-tilt";
         var panTiltConfig = {
             name: "pan/tilt",
@@ -120,16 +126,9 @@ var AWHE130Communicator = (function (_super) {
                 return path;
             },
             cmdResponseRE: "aPC(\\w\\w\\w\\w\\w\\w\\w\\w)",
+            cmdResponseParser: parsePanTiltXY,
             cmdQueryPath: "/cgi-bin/aw_ptz?cmd=%23APC&res=1",
-            cmdQueryResponseParseFn: function (data) {
-                var matches = data.match(/aPC(\w\w\w\w)(\w\w\w\w)/);
-                if (matches && matches.length == 3) {
-                    return {
-                        x: parseInt(matches[1], 16),
-                        y: parseInt(matches[2], 16)
-                    };
-                }
-            },
+            cmdQueryResponseParseFn: parsePanTiltXY,
             controlData: {
                 _id: ctid,
                 ctid: ctid,
@@ -140,12 +139,14 @@ var AWHE130Communicator = (function (_super) {
                 poll: 1,
                 ephemeral: false,
                 config: {
-                    xMin: 11528,
-                    xMax: 54005,
+                    xMultiplier: 30,
+                    xMin: 384,
+                    xMax: 1800,
                     xName: "Pan",
-                    yMin: 7283,
-                    yMax: 36408,
-                    yName: "Tilt"
+                    yMin: 242,
+                    yMax: 1213,
+                    yName: "Tilt",
+                    yMultiplier: 30
                 },
                 value: { x: 32000, y: 32000 }
             }

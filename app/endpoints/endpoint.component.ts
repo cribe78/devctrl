@@ -30,7 +30,7 @@ import {LayoutService} from "../layout/layout.service";
             </template>
         </md-list>
     </div>
-    <devctrl-action-history [hidden]="!ls.desktopWide" fxFlex></devctrl-action-history>
+    <devctrl-action-history [hidden]="!ls.desktopWide"></devctrl-action-history>
  </div>
 
 `

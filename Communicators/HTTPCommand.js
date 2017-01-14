@@ -8,6 +8,7 @@ var HTTPCommand = (function () {
         this.cmdPathFunction = config.cmdPathFunction;
         this.cmdPathTemplate = config.cmdPathTemplate;
         this.cmdResponseRE = new RegExp(config.cmdResponseRE);
+        this.cmdResponseParser = config.cmdResponseParser;
         this.cmdQueryPath = config.cmdQueryPath;
         this.cmdQueryResponseParseFn = config.cmdQueryResponseParseFn;
         this.controlData = config.controlData;
@@ -36,6 +37,14 @@ var HTTPCommand = (function () {
             return true;
         }
         return false;
+    };
+    HTTPCommand.prototype.parseCommandResponse = function (resp, defaultValue) {
+        if (typeof this.cmdResponseParser !== 'function') {
+            return defaultValue;
+        }
+        var ret = this.cmdResponseParser(resp);
+        //debug(`HTTPCommand parsed value: ${ret}`);
+        return ret;
     };
     HTTPCommand.prototype.parseQueryResponse = function (resp) {
         var val;

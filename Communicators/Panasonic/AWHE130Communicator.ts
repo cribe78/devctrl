@@ -1,6 +1,6 @@
 import {HTTPCommunicator} from "../HTTPCommunicator";
 import {IndexedDataSet} from "../../shared/DCDataModel";
-import {Control, ControlData} from "../../shared/Control";
+import {Control, ControlData, ControlXYValue} from "../../shared/Control";
 import {ControlUpdateData} from "../../shared/ControlUpdate";
 import * as http from "http";
 import {sprintf} from "sprintf-js";
@@ -116,6 +116,16 @@ class AWHE130Communicator extends HTTPCommunicator {
         };
         this.commands[ctid] = new HTTPCommand(zoomConfig);
 
+        let parsePanTiltXY = data => {
+            let matches = data.match(/aPC(\w\w\w\w)(\w\w\w\w)/);
+            if (matches && matches.length == 3) {
+                return new ControlXYValue(
+                    parseInt(matches[1], 16),
+                    parseInt(matches[2], 16)
+                );
+            }
+        };
+
         ctid = this.endpoint_id + "-pan-tilt";
         let panTiltConfig : IHTTPCommandConfig = {
             name: "pan/tilt",
@@ -124,16 +134,9 @@ class AWHE130Communicator extends HTTPCommunicator {
                 return path;
             },
             cmdResponseRE: "aPC(\\w\\w\\w\\w\\w\\w\\w\\w)",
+            cmdResponseParser: parsePanTiltXY,
             cmdQueryPath: "/cgi-bin/aw_ptz?cmd=%23APC&res=1",
-            cmdQueryResponseParseFn: data => {
-                let matches = data.match(/aPC(\w\w\w\w)(\w\w\w\w)/);
-                if (matches && matches.length == 3) {
-                    return {
-                        x: parseInt(matches[1], 16),
-                        y: parseInt(matches[2], 16)
-                    }
-                }
-            },
+            cmdQueryResponseParseFn: parsePanTiltXY,
             controlData: {
                 _id : ctid,
                 ctid: ctid,
@@ -144,12 +147,14 @@ class AWHE130Communicator extends HTTPCommunicator {
                 poll : 1,
                 ephemeral : false,
                 config : {
-                    xMin: 11528,
-                    xMax: 54005,
+                    xMultiplier: 30,
+                    xMin: 384,
+                    xMax: 1800,
                     xName: "Pan",
-                    yMin: 7283,
-                    yMax: 36408,
-                    yName: "Tilt"
+                    yMin: 242,
+                    yMax: 1213,
+                    yName: "Tilt",
+                    yMultiplier: 30
                 },
                 value : { x : 32000, y : 32000 }
             }

@@ -111,6 +111,14 @@ var ControlService = (function () {
         }
         return 0;
     };
+    ControlService.prototype.floatConfig = function (key, defVal) {
+        if (defVal === void 0) { defVal = 0; }
+        if (typeof this.control.config !== 'object' ||
+            typeof this.control.config[key] == 'undefined') {
+            return defVal;
+        }
+        return parseFloat(this.control.config[key]);
+    };
     ControlService.prototype.selectMenuItem = function (val) {
         this.setValue(val);
     };

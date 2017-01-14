@@ -50,14 +50,14 @@ var HTTPCommunicator = (function (_super) {
                 debug("invalid status code response: " + res.statusCode);
             }
             else {
-                debug("cmd " + cmd.name + " successfully queried");
+                //debug(`cmd ${cmd.name} successfully queried`);
                 res.setEncoding('utf8');
                 var body_1 = '';
                 res.on('data', function (chunk) { body_1 += chunk; });
                 res.on('end', function () {
                     var val = cmd.parseQueryResponse(body_1);
                     if (typeof val !== 'undefined') {
-                        debug(cmd.name + " response parsed: " + body_1);
+                        debug(cmd.name + " response parsed: " + body_1 + "," + val);
                         _this.config.controlUpdateCallback(control, val);
                     }
                     else {
@@ -103,14 +103,15 @@ var HTTPCommunicator = (function (_super) {
                 debug("invalid status code response: " + res.statusCode);
             }
             else {
-                debug(command.name + " set to " + update.value + " successfully");
+                //debug(`${command.name} set to ${update.value} successfully`);
                 res.setEncoding('utf8');
                 var body_2 = '';
                 res.on('data', function (chunk) { body_2 += chunk; });
                 res.on('end', function () {
                     if (command.matchResponse(body_2)) {
-                        debug(control.name + " response matched expected");
-                        _this.config.controlUpdateCallback(control, update.value);
+                        var newVal = command.parseCommandResponse(body_2, update.value);
+                        debug(control.name + " response successful, value: " + newVal);
+                        _this.config.controlUpdateCallback(control, newVal);
                     }
                     else {
                         debug(control.name + " update response did not match: " + body_2);

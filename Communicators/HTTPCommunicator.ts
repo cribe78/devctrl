@@ -71,7 +71,11 @@ export class HTTPCommunicator extends EndpointCommunicator {
                     }
                 });
             }
-        });
+        })
+            .on('error', (e) => {
+                debug(`Error on query: ${e.message}`);
+                this.disconnect();
+            });
     }
 
     getControlTemplates() : IndexedDataSet<Control> {
@@ -131,6 +135,9 @@ export class HTTPCommunicator extends EndpointCommunicator {
                     }
                 });
             }
+        }).on('error', (e) => {
+            debug(`Error on update request: ${e.message}`);
+            this.disconnect();
         });
     }
 

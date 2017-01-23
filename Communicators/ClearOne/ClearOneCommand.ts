@@ -45,7 +45,7 @@ export class ClearOneCommand extends TCPCommand {
     }
 
     queryResponseMatchString() {
-        return this.queryString + '.*';
+        return this.queryString() + '.*';
     }
 
     updateString(control: Control, update: ControlUpdateData) {

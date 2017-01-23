@@ -65,6 +65,10 @@ var HTTPCommunicator = (function (_super) {
                     }
                 });
             }
+        })
+            .on('error', function (e) {
+            debug("Error on query: " + e.message);
+            _this.disconnect();
         });
     };
     HTTPCommunicator.prototype.getControlTemplates = function () {
@@ -118,6 +122,9 @@ var HTTPCommunicator = (function (_super) {
                     }
                 });
             }
+        }).on('error', function (e) {
+            debug("Error on update request: " + e.message);
+            _this.disconnect();
         });
     };
     HTTPCommunicator.prototype.poll = function () {

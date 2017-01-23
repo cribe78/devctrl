@@ -188,7 +188,10 @@ var TCPCommunicator = (function (_super) {
         if (!this.connected) {
             return;
         }
-        debug("polling device");
+        var exd = this.expectedResponses.length;
+        if (exd > 1000) {
+            debug("WARNING polling device, expected response queue has reached length of " + exd);
+        }
         for (var id in this.controls) {
             var control = this.controls[id];
             if (control.poll) {

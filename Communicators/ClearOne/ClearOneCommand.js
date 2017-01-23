@@ -33,7 +33,7 @@ var ClearOneCommand = (function (_super) {
         return this.device + " " + this.cmdStr;
     };
     ClearOneCommand.prototype.queryResponseMatchString = function () {
-        return this.queryString + '.*';
+        return this.queryString() + '.*';
     };
     ClearOneCommand.prototype.updateString = function (control, update) {
         return this.updateResponseMatchString(update);

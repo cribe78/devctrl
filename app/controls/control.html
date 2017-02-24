@@ -1,0 +1,49 @@
+<div fxLayout="row" class="devctrl-ctrl-item">
+    <!-- TODO: flex-layout is broken here -->
+    <div fxFlex [ngSwitch]="cs.type" style="width: 100%;">
+        <ctrl-awhe130-preset *ngSwitchCase="'awhe130-preset'"></ctrl-awhe130-preset>
+        <ctrl-awhe130-preset-map *ngSwitchCase="'awhe130-preset-map'"></ctrl-awhe130-preset-map>
+        <ctrl-button *ngSwitchCase="'button'"></ctrl-button>
+        <ctrl-button-set *ngSwitchCase="'button-set'"></ctrl-button-set>
+        <ctrl-image *ngSwitchCase="'image'"></ctrl-image>
+        <ctrl-level *ngSwitchCase="'level'"></ctrl-level>
+        <ctrl-select *ngSwitchCase="'select'"></ctrl-select>
+        <ctrl-select-readonly *ngSwitchCase="'select-readonly'"></ctrl-select-readonly>
+        <ctrl-switch *ngSwitchCase="'switch'"></ctrl-switch>
+        <ctrl-slider *ngSwitchCase="'slider'"></ctrl-slider>
+        <ctrl-slider2d *ngSwitchCase="'slider2d'"></ctrl-slider2d>
+        <ctrl-f32-multibutton *ngSwitchCase="'f32-multibutton'"></ctrl-f32-multibutton>
+        <ctrl-default *ngSwitchDefault></ctrl-default>
+    </div>
+    <div fxFlex="none" class="devctrl-ctrl-admin-placeholder">
+        <button md-icon-button
+                *ngIf="cs.dataService.isAdminAuthorized()"
+                [md-menu-trigger-for]="adminmenu" style="margin-top: 4px;">
+            <md-icon>more_vert</md-icon>
+        </button>
+        <md-menu #adminmenu="mdMenu">
+            <button md-menu-item (click)="cs.editControl($event)">
+                    <md-icon>create</md-icon>
+                    Control
+            </button>
+            <button md-menu-item *ngIf="cs.panelContext" (click)="cs.editPanelControl($event)">
+                    Edit Panel Control
+            </button>
+            <button md-menu-item *ngIf="cs.type == 'select' || cs.type == 'select-readonly'"
+                          label="Control Options"
+                           (click)="cs.editOptions()">
+                    <md-icon>create</md-icon>
+                    Control Options
+            </button>
+            <button md-menu-item label="Add Watcher Rule"
+                           (click)="cs.addWatcherRule($event)">
+                    <md-icon>visibility</md-icon>
+                    Add Watcher Rule
+            </button>
+            <button md-menu-item (click)="cs.showLog($event)">
+                    <md-icon>change_history</md-icon>
+                    Control Log
+            </button>
+        </md-menu>
+    </div>
+</div>

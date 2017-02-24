@@ -1,0 +1,77 @@
+<md-toolbar color="primary" layout-align="center center">
+    <span *ngIf="obj.id !== 0">{{schema.label}}[{{obj._id}}]</span>
+    <span *ngIf="obj.id == 0">New {{schema.label}} Record</span>
+</md-toolbar>
+<div fxLayout="column">
+    <h3 md-subheader>Edit</h3>
+    <form >
+        <div fxFlex fxLayout="column">
+            <template ngFor let-field [ngForOf]="schema.fields" [ngForTrackBy]="trackByName">
+                <div fxFlex [ngSwitch]="field.type">
+                    <md-input-container *ngSwitchCase="'string'">
+                        <input md-input
+                               [placeholder]="field.label"
+                               [(ngModel)]="obj[field.name]"
+                               name="{{field.name}}">
+                    </md-input-container>
+                    <md-input-container  *ngSwitchCase="'int'">
+                        <input md-input
+                                  type="number"
+                                  [placeholder]="field.label"
+                                  [(ngModel)]="obj[field.name]"
+                                  name="{{field.name}}">
+                    </md-input-container>
+                    <fk-autocomplete *ngSwitchCase="'fk'"
+                                     [object]="obj"
+                                     [field]="field"
+                                     (onUpdate)="objectUpdated($event)">
+                    </fk-autocomplete>
+                    <md-select *ngSwitchCase="'select-static'"
+                               [placeholder]="field.label"
+                               [(ngModel)]="obj[field.name]"
+                               name="{{field.name}}"
+                               style="margin-top: 20px;">
+                        <md-option [value]="option.value"
+                                   *ngFor="let option of field.options">
+                            {{option.name}}
+                        </md-option>
+                    </md-select>
+                    <md-checkbox  *ngSwitchCase="'bool'"
+                                  class="md-primary"
+                                  [(ngModel)]="obj[field.name]"
+                                  name="{{field.name}}">
+                        {{field.label}}
+                    </md-checkbox>
+                    <devctrl-object-editor *ngSwitchCase="'object'"
+                                           [object]="obj[field.name]"
+                                           [fname]="field.name"
+                                           (onUpdate)="objectUpdated($event)">
+                    </devctrl-object-editor>
+                    <div *ngSwitchDefault>
+                        Unknown field type {{field.type}}
+                    </div>
+                </div>
+            </template>
+        </div>
+    </form>
+    <div fxLayout="row" fxLayoutAlign="space-around center">
+        <button md-button *ngIf="newRow" color="primary" (click)="addRow()">Add</button>
+        <button md-button *ngIf="! newRow" color="primary" (click)="updateRow()">Update</button>
+        <button md-button *ngIf="! newRow" color="accent" (click)="cloneRow()">Clone</button>
+        <button md-button *ngIf="! newRow" color="warn" (click)="deleteRow()">Delete</button>
+        <button md-button (click)="close()">Cancel</button>
+    </div>
+    <md-divider></md-divider>
+    <h3>Referenced by</h3>
+    <md-list *ngFor="let tableName of referencedTables()">
+        <md-list-item *ngFor="let ref of referencedArray(tableName)">
+            <button md-button (click)="editOtherRow(ref)">{{tableName}}[{{ref._id}}]</button>
+        </md-list-item>
+    </md-list>
+    <h3 md-subheader>References</h3>
+    <md-list *ngFor="let fkDef of obj.foreignKeys">
+        <md-list-item>
+            <button md-button (click)="editOtherRow(obj[fkDef.fkObjProp])">{{fkDef.fkTable}}[{{fkName(fkDef.fkObjProp)}}]</button>
+        </md-list-item>
+    </md-list>
+</div>    

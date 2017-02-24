@@ -105,7 +105,7 @@ var Messenger = (function () {
     Messenger.addData = function (request, fn) {
         var resp = { add: {} };
         var request_handled = false;
-        var _loop_1 = function(table) {
+        var _loop_1 = function (table) {
             if (request[table]) {
                 var col = Messenger.mongodb.collection(table);
                 resp.add[table] = {};
@@ -179,8 +179,10 @@ var Messenger = (function () {
         };
         for (var table in Messenger.dataModel.types) {
             var state_1 = _loop_1(table);
-            if (typeof state_1 === "object") return state_1.value;
-            if (state_1 === "break") break;
+            if (typeof state_1 === "object")
+                return state_1.value;
+            if (state_1 === "break")
+                break;
         }
         if (!request_handled) {
             var errmsg = "no valid data found in add request";
@@ -231,8 +233,7 @@ var Messenger = (function () {
     Messenger.broadcastControlValues = function (updates, fn, socket) {
         var controlsCollection = Messenger.mongodb.collection(Control_1.Control.tableStr);
         var controls = Messenger.dataModel.controls;
-        // Commit value to database for non-ephemeral controls
-        var _loop_2 = function(update) {
+        var _loop_2 = function (update) {
             if (!controls[update.control_id]) {
                 debug("dropping update of invalid control_id " + update.control_id + " from " + socket["session"].client_name);
                 return { value: void 0 };
@@ -248,10 +249,12 @@ var Messenger = (function () {
                 });
             }
         };
+        // Commit value to database for non-ephemeral controls
         for (var _i = 0, updates_1 = updates; _i < updates_1.length; _i++) {
             var update = updates_1[_i];
             var state_2 = _loop_2(update);
-            if (typeof state_2 === "object") return state_2.value;
+            if (typeof state_2 === "object")
+                return state_2.value;
         }
         io.emit('control-updates', updates);
     };

@@ -8,7 +8,7 @@ var TCPCommand_1 = require("../TCPCommand");
 var IA200Command = (function (_super) {
     __extends(IA200Command, _super);
     function IA200Command() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     IA200Command.prototype.expandTemplate = function (template, value) {
         // The IA 200 wants ints as 4 digit ascii strings with leading zeros

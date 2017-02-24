@@ -45,6 +45,10 @@ export class Endpoint extends DCSerializable {
         super(_id);
         this.table = Endpoint.tableStr;
 
+        this.referenced = {
+            'controls' : {}
+        };
+
         this.requiredProperties = this.requiredProperties.concat([
             'endpoint_type_id',
             'status',

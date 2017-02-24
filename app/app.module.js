@@ -8,21 +8,93 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var platform_browser_1 = require('@angular/platform-browser');
-var app_component_1 = require('./app.component');
+var core_1 = require("@angular/core");
+var platform_browser_1 = require("@angular/platform-browser");
+var app_component_1 = require("./layout/app.component");
+var material_1 = require("@angular/material");
+var http_1 = require("@angular/http");
+require("hammerjs");
+var static_1 = require("@angular/upgrade/static");
+var menu_component_1 = require("./layout/menu.component");
+var menu_service_1 = require("./layout/menu.service");
+var toolbar_component_1 = require("./layout/toolbar.component");
+var admin_only_directive_1 = require("./admin-only.directive");
+var data_service_1 = require("./data.service");
+var app_router_module_1 = require("./app-router.module");
+var endpoints_component_1 = require("./endpoints/endpoints.component");
+var endpoint_status_component_1 = require("./endpoints/endpoint-status.component");
+var endpoint_component_1 = require("./endpoints/endpoint.component");
+var config_component_1 = require("./config.component");
+var config_data_component_1 = require("./data-editor/config-data.component");
+var record_component_1 = require("./data-editor/record.component");
+var fk_autocomplete_component_1 = require("./data-editor/fk-autocomplete.component");
+var alert_dialog_component_1 = require("./alert-dialog.component");
+var record_editor_service_1 = require("./data-editor/record-editor.service");
+var table_component_1 = require("./data-editor/table.component");
+var forms_1 = require("@angular/forms");
+//import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
+var controls_module_1 = require("./controls/controls.module");
+var room_component_1 = require("./rooms/room.component");
+var rooms_component_1 = require("./rooms/rooms.component");
+var panel_component_1 = require("./rooms/panel.component");
+var object_editor_component_1 = require("./data-editor/object-editor.component");
+var flex_layout_1 = require("@angular/flex-layout");
+var media_service_1 = require("./layout/media.service");
+var layout_service_1 = require("./layout/layout.service");
+var action_history_component_1 = require("./layout/action-history.component");
 var AppModule = (function () {
     function AppModule() {
     }
-    AppModule = __decorate([
-        core_1.NgModule({
-            imports: [platform_browser_1.BrowserModule],
-            declarations: [app_component_1.AppComponent],
-            providers: [],
-        }), 
-        __metadata('design:paramtypes', [])
-    ], AppModule);
     return AppModule;
 }());
+AppModule = __decorate([
+    core_1.NgModule({
+        imports: [
+            platform_browser_1.BrowserModule,
+            flex_layout_1.FlexLayoutModule.forRoot(),
+            material_1.MaterialModule.forRoot(),
+            material_1.MdSnackBarModule,
+            material_1.MdDialogModule.forRoot(),
+            http_1.HttpModule,
+            app_router_module_1.AppRoutingModule,
+            forms_1.FormsModule,
+            static_1.UpgradeModule,
+            controls_module_1.ControlsModule,
+        ],
+        declarations: [menu_component_1.MenuComponent,
+            admin_only_directive_1.AdminOnlyDirective,
+            alert_dialog_component_1.AlertDialog,
+            app_component_1.AppComponent,
+            config_component_1.ConfigComponent,
+            config_data_component_1.ConfigDataComponent,
+            endpoint_component_1.EndpointComponent,
+            endpoints_component_1.EndpointsComponent,
+            endpoint_status_component_1.EndpointStatusComponent,
+            fk_autocomplete_component_1.FkAutocompleteComponent,
+            object_editor_component_1.ObjectEditorComponent,
+            panel_component_1.PanelComponent,
+            record_component_1.RecordComponent,
+            room_component_1.RoomComponent,
+            rooms_component_1.RoomsComponent,
+            table_component_1.TableComponent,
+            toolbar_component_1.ToolbarComponent,
+            action_history_component_1.ActionHistoryComponent
+        ],
+        entryComponents: [
+            alert_dialog_component_1.AlertDialog,
+            menu_component_1.MenuComponent,
+            record_component_1.RecordComponent
+        ],
+        providers: [
+            data_service_1.DataService,
+            menu_service_1.MenuService,
+            record_editor_service_1.RecordEditorService,
+            media_service_1.MediaService,
+            layout_service_1.LayoutService
+        ],
+        bootstrap: [app_component_1.AppComponent]
+    }),
+    __metadata("design:paramtypes", [])
+], AppModule);
 exports.AppModule = AppModule;
 //# sourceMappingURL=app.module.js.map

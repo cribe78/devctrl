@@ -77,6 +77,10 @@ export abstract class DCSerializable {
         this.referenced[refObj.table][refObj._id] = refObj;
     }
 
+    equals(obj: DCSerializable) {
+        return obj && obj._id == this._id;
+    }
+
     fkSelectName() {
         return this.name;
     }
@@ -143,6 +147,13 @@ export abstract class DCSerializable {
         }
 
         return data;
+    }
+
+    /**
+     * For use as an the ngFor trackBy function
+     */
+    static trackById(idx : number, obj: DCSerializable) {
+        return obj._id;
     }
 
     removeReference(refObj: DCSerializable) {

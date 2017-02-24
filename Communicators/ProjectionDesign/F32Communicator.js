@@ -12,7 +12,7 @@ var debug = console.log;
 var F32Communicator = (function (_super) {
     __extends(F32Communicator, _super);
     function F32Communicator() {
-        _super.apply(this, arguments);
+        return _super.apply(this, arguments) || this;
     }
     F32Communicator.prototype.buildCommandList = function () {
         var f32Mnemonics = {

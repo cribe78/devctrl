@@ -8,9 +8,9 @@ var DCSerializable_1 = require("./DCSerializable");
 var ControlUpdate = (function (_super) {
     __extends(ControlUpdate, _super);
     function ControlUpdate(_id, data) {
-        _super.call(this, _id);
-        this.table = ControlUpdate.tableStr;
-        this.requiredProperties = [
+        var _this = _super.call(this, _id) || this;
+        _this.table = ControlUpdate.tableStr;
+        _this.requiredProperties = [
             'control_id',
             'value',
             'type',
@@ -18,14 +18,15 @@ var ControlUpdate = (function (_super) {
             'source'
         ];
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     ControlUpdate.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    ControlUpdate.tableStr = "ControlUpdates";
     return ControlUpdate;
 }(DCSerializable_1.DCSerializable));
+ControlUpdate.tableStr = "ControlUpdates";
 exports.ControlUpdate = ControlUpdate;
 //# sourceMappingURL=ControlUpdate.js.map

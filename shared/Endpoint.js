@@ -9,18 +9,18 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DCSerializable_1 = require("./DCSerializable");
 var EndpointType_1 = require("./EndpointType");
+var EndpointStatus;
 (function (EndpointStatus) {
     EndpointStatus[EndpointStatus["Online"] = 0] = "Online";
     EndpointStatus[EndpointStatus["Disabled"] = 1] = "Disabled";
     EndpointStatus[EndpointStatus["Offline"] = 2] = "Offline";
     EndpointStatus[EndpointStatus["Unknown"] = 3] = "Unknown";
-})(exports.EndpointStatus || (exports.EndpointStatus = {}));
-var EndpointStatus = exports.EndpointStatus;
+})(EndpointStatus = exports.EndpointStatus || (exports.EndpointStatus = {}));
 var Endpoint = (function (_super) {
     __extends(Endpoint, _super);
     function Endpoint(_id, data) {
-        _super.call(this, _id);
-        this.foreignKeys = [
+        var _this = _super.call(this, _id) || this;
+        _this.foreignKeys = [
             {
                 type: EndpointType_1.EndpointType,
                 fkObjProp: "type",
@@ -28,23 +28,27 @@ var Endpoint = (function (_super) {
                 fkTable: EndpointType_1.EndpointType.tableStr
             }
         ];
-        this.table = Endpoint.tableStr;
-        this.requiredProperties = this.requiredProperties.concat([
+        _this.table = Endpoint.tableStr;
+        _this.referenced = {
+            'controls': {}
+        };
+        _this.requiredProperties = _this.requiredProperties.concat([
             'endpoint_type_id',
             'status',
             'ip',
             'port',
             'enabled'
         ]);
-        this.defaultProperties = {
+        _this.defaultProperties = {
             status: EndpointStatus.Offline,
             ip: "",
             port: 0,
             enabled: false
         };
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     Object.defineProperty(Endpoint.prototype, "address", {
         get: function () {
@@ -70,8 +74,8 @@ var Endpoint = (function (_super) {
     Endpoint.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    Endpoint.tableStr = "endpoints";
     return Endpoint;
 }(DCSerializable_1.DCSerializable));
+Endpoint.tableStr = "endpoints";
 exports.Endpoint = Endpoint;
 //# sourceMappingURL=Endpoint.js.map

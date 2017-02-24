@@ -6,6 +6,7 @@ import {Endpoint} from "./Endpoint";
 export interface PanelControlData extends DCSerializableData {
     control_id: string;
     panel_id: string;
+    idx: number;
 }
 
 export class PanelControl extends DCSerializable {
@@ -13,6 +14,7 @@ export class PanelControl extends DCSerializable {
     _control: Control;
     panel_id: string;
     _panel: Panel;
+    idx: number;
 
     static tableStr = "panel_controls";
     table: string;
@@ -39,6 +41,10 @@ export class PanelControl extends DCSerializable {
         this.requiredProperties = this.requiredProperties.concat([
             'control_id',
             'panel_id'
+        ]);
+
+        this.optionalProperties = this.optionalProperties.concat([
+            'idx'
         ]);
 
         if (data) {

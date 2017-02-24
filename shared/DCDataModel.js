@@ -23,6 +23,7 @@ var DCDataModel = (function () {
         this.rooms = {};
         this.watcher_rules = {};
         this.option_sets = {};
+        this.sortedArrays = {};
         this.types = {
             endpoints: Endpoint_1.Endpoint,
             endpoint_types: EndpointType_1.EndpointType,
@@ -132,6 +133,7 @@ var DCDataModel = (function () {
         }
     };
     DCDataModel.prototype.loadTableData = function (newData, modelData, ctor) {
+        var table = '';
         for (var id in newData) {
             if (modelData[id]) {
                 modelData[id].loadData(newData[id]);
@@ -139,6 +141,12 @@ var DCDataModel = (function () {
             else {
                 modelData[id] = new ctor(id, newData[id]);
             }
+            if (!table) {
+                table = modelData[id].table;
+            }
+        }
+        if (table) {
+            this.sortArrays(table);
         }
     };
     DCDataModel.prototype.getItem = function (id, table) {
@@ -167,6 +175,57 @@ var DCDataModel = (function () {
             case WatcherRule_1.WatcherRule.tableStr:
                 return this.getItem(id, table);
         }
+    };
+    DCDataModel.prototype.sortArrays = function (table) {
+        if (this.sortedArrays[table]) {
+            for (var prop in this.sortedArrays[table]) {
+                this.sortArray(table, prop);
+            }
+        }
+    };
+    DCDataModel.prototype.sortArray = function (table, sortProp) {
+        if (this.sortedArrays[table] && this.sortedArrays[table][sortProp]) {
+            this.sortedArrays[table][sortProp].length = 0;
+            var keys = Object.keys(this[table]);
+            for (var _i = 0, keys_1 = keys; _i < keys_1.length; _i++) {
+                var key = keys_1[_i];
+                this.sortedArrays[table][sortProp].push(this[table][key]);
+            }
+            this.sortedArrays[table][sortProp].sort(function (a, b) {
+                if (a[sortProp] < b[sortProp]) {
+                    return -1;
+                }
+                if (a[sortProp] > b[sortProp]) {
+                    return 1;
+                }
+                return 0;
+            });
+        }
+    };
+    /**
+     * sortedArray
+     *
+     * The data model maintains a set of sorted object arrays per request.  Return the
+     * specified one
+     * @param table
+     * @param sortProp
+     * @returns DCSerializable[]
+     */
+    DCDataModel.prototype.sortedArray = function (table, sortProp) {
+        if (sortProp === void 0) { sortProp = '_id'; }
+        if (!this.sortedArrays[table]) {
+            this.sortedArrays[table] = {};
+        }
+        var sorted = this.sortedArrays[table][sortProp];
+        if (sorted) {
+            return sorted;
+        }
+        if (!this[table]) {
+            throw new Error("Request for invalid table array");
+        }
+        this.sortedArrays[table][sortProp] = [];
+        this.sortArray(table, sortProp);
+        return this.sortedArrays[table][sortProp];
     };
     return DCDataModel;
 }());

@@ -31,6 +31,10 @@ export class Panel extends DCSerializable {
             }
         ];
 
+        this.referenced = {
+            'panel_controls' : {}
+        };
+
         this.requiredProperties = this.requiredProperties.concat([
             'room_id',
             'grouping',

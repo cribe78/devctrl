@@ -237,7 +237,10 @@ export class TCPCommunicator extends EndpointCommunicator {
             return;
         }
 
-        debug("polling device");
+        let exd = this.expectedResponses.length;
+        if (exd > 1000) {
+            debug(`WARNING polling device, expected response queue has reached length of ${exd}`);
+        }
 
         for (let id in this.controls) {
             let control = this.controls[id];

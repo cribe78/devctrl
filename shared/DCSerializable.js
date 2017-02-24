@@ -35,6 +35,9 @@ var DCSerializable = (function () {
         }
         this.referenced[refObj.table][refObj._id] = refObj;
     };
+    DCSerializable.prototype.equals = function (obj) {
+        return obj && obj._id == this._id;
+    };
     DCSerializable.prototype.fkSelectName = function () {
         return this.name;
     };
@@ -91,6 +94,12 @@ var DCSerializable = (function () {
             }
         }
         return data;
+    };
+    /**
+     * For use as an the ngFor trackBy function
+     */
+    DCSerializable.trackById = function (idx, obj) {
+        return obj._id;
     };
     DCSerializable.prototype.removeReference = function (refObj) {
         if (this.referenced[refObj.table] && this.referenced[refObj.table][refObj._id]) {

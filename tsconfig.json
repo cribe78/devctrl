@@ -2,12 +2,25 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
+    //"module": "es2015",
     "moduleResolution": "node",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "lib" : ["es2015", "dom"],
+    //"lib": ["dom"],
     "removeComments": false,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "typeRoots": [
+      "node_modules/@types/"
+    ],
+    "types": [
+      "hammerjs"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*", "app/*"]
+    }
   },
   "exclude": [
     "node_modules"

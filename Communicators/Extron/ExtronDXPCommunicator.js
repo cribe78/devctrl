@@ -16,10 +16,11 @@ for (var i = 1; i <= 8; i++) {
 var ExtronDXPCommunicator = (function (_super) {
     __extends(ExtronDXPCommunicator, _super);
     function ExtronDXPCommunicator() {
-        _super.apply(this, arguments);
-        this.inputLineTerminator = '\r\n';
-        this.outputLineTerminator = '\r\n';
-        this.endpointPassword = "DWCONTROL";
+        var _this = _super.apply(this, arguments) || this;
+        _this.inputLineTerminator = '\r\n';
+        _this.outputLineTerminator = '\r\n';
+        _this.endpointPassword = "DWCONTROL";
+        return _this;
     }
     ExtronDXPCommunicator.prototype.buildCommandList = function () {
         // Video/Audio Tie Commands

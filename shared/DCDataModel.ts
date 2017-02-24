@@ -31,6 +31,7 @@ export class DCDataModel {
     watcher_rules: IndexedDataSet<WatcherRule> = {};
     option_sets: IndexedDataSet<OptionSet> = {};
     debug: (message: any, ...args: any[]) => void;
+    sortedArrays : any = {};
 
     types = {
         endpoints : Endpoint,
@@ -178,6 +179,7 @@ export class DCDataModel {
          modelData: IndexedDataSet<Type>,
          ctor: { new(id: string, data: any): Type })
     : void {
+        let table = '';
         for (let id in newData) {
             if (modelData[id]) {
                 modelData[id].loadData(newData[id]);
@@ -185,6 +187,13 @@ export class DCDataModel {
             else {
                 modelData[id] = new ctor(id, newData[id]);
             }
+            if (! table) {
+                table = modelData[id].table;
+            }
+        }
+
+        if (table) {
+            this.sortArrays(table);
         }
     }
 
@@ -216,5 +225,67 @@ export class DCDataModel {
             case WatcherRule.tableStr:
                 return this.getItem<WatcherRule>(id, table);
         }
+    }
+
+
+    sortArrays(table : string) {
+        if (this.sortedArrays[table]) {
+            for (let prop in this.sortedArrays[table]) {
+                this.sortArray(table, prop);
+            }
+        }
+    }
+
+    sortArray(table : string, sortProp : string) {
+        if (this.sortedArrays[table] && this.sortedArrays[table][sortProp]) {
+            this.sortedArrays[table][sortProp].length = 0;
+            let keys = Object.keys(this[table]);
+            for (let key of keys) {
+                this.sortedArrays[table][sortProp].push(this[table][key]);
+            }
+
+
+            this.sortedArrays[table][sortProp].sort((a,b) => {
+                if (a[sortProp] < b[sortProp]) {
+                    return -1;
+                }
+                if (a[sortProp] > b[sortProp]) {
+                    return 1;
+                }
+
+                return 0;
+            });
+        }
+    }
+
+    /**
+     * sortedArray
+     *
+     * The data model maintains a set of sorted object arrays per request.  Return the
+     * specified one
+     * @param table
+     * @param sortProp
+     * @returns DCSerializable[]
+     */
+
+    sortedArray(table : string, sortProp : string = '_id') : DCSerializable[] {
+        if (! this.sortedArrays[table]) {
+            this.sortedArrays[table] = {};
+        }
+
+        let sorted = this.sortedArrays[table][sortProp];
+
+        if (sorted) {
+            return sorted;
+        }
+
+        if (! this[table]) {
+            throw new Error("Request for invalid table array");
+        }
+
+        this.sortedArrays[table][sortProp] = [];
+        this.sortArray(table, sortProp);
+
+        return this.sortedArrays[table][sortProp];
     }
 }

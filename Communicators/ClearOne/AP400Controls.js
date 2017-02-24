@@ -54,7 +54,11 @@ exports.commands = [
         ctor: ClearOneCommand_1.ClearOneCommand,
         control_type: "range",
         usertype: "level",
-        readonly: true
+        readonly: true,
+        templateConfig: {
+            min: -60,
+            max: 20
+        }
     }
 ];
 //# sourceMappingURL=AP400Controls.js.map

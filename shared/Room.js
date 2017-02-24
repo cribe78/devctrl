@@ -8,11 +8,15 @@ var DCSerializable_1 = require("./DCSerializable");
 var Room = (function (_super) {
     __extends(Room, _super);
     function Room(_id, data) {
-        _super.call(this, _id);
-        this.table = Room.tableStr;
+        var _this = _super.call(this, _id) || this;
+        _this.table = Room.tableStr;
+        _this.referenced = {
+            'panels': {}
+        };
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
         }
+        return _this;
     }
     Room.prototype.getDataObject = function () {
         return {
@@ -20,8 +24,8 @@ var Room = (function (_super) {
             name: this.name
         };
     };
-    Room.tableStr = "rooms";
     return Room;
 }(DCSerializable_1.DCSerializable));
+Room.tableStr = "rooms";
 exports.Room = Room;
 //# sourceMappingURL=Room.js.map

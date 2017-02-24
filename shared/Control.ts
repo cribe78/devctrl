@@ -29,7 +29,7 @@ export class Control extends DCSerializable {
     control_type: string;
     poll: number;
     config: any;
-    value: any;
+    private _value: any;
     ephemeral: boolean = false;
     option_set_id: string;
     private _option_set: OptionSet;
@@ -56,9 +56,11 @@ export class Control extends DCSerializable {
     static CONTROL_TYPE_STRING = "string";
     static CONTROL_TYPE_RANGE = "range";
     static CONTROL_TYPE_INT = "int";
+    static CONTROL_TYPE_XY = "xy";
 
     static USERTYPE_BUTTON = "button";
     static USERTYPE_BUTTON_SET = "button-set";
+    static USERTYPE_IMAGE = "image";
     static USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
     static USERTYPE_SLIDER_2D = "slider2d";
     static USERTYPE_SWITCH = "switch";
@@ -71,6 +73,11 @@ export class Control extends DCSerializable {
     constructor(_id: string, data?: ControlData) {
         super(_id);
         this.table = Control.tableStr;
+        this.referenced = {
+            endpoints : {},
+            panel_controls : {}
+        };
+
         this.requiredProperties = this.requiredProperties.concat([
             'endpoint_id',
             'ctid',
@@ -85,6 +92,7 @@ export class Control extends DCSerializable {
 
         if (data) {
             this.loadData(data);
+            this.coerceValue();
         }
     }
 
@@ -106,6 +114,21 @@ export class Control extends DCSerializable {
         this.option_set_id = option_set._id;
     }
 
+    get value () {
+        return this._value;
+    }
+
+    set value(val) {
+        this._value = val;
+        this.coerceValue();
+    }
+
+    coerceValue() {
+        if (this.control_type == Control.CONTROL_TYPE_STRING && typeof this._value == 'number') {
+            this._value = "" + this._value;
+        }
+    }
+
 
     fkSelectName() {
         if (this._endpoint) {
@@ -119,4 +142,10 @@ export class Control extends DCSerializable {
     }
 }
 
+export class ControlXYValue {
+    constructor(public x : number, public y : number) {}
 
+    toString() {
+        return `(${this.x},${this.y})`;
+    }
+}

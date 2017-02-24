@@ -5,22 +5,24 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var TCPCommand_1 = require("../TCPCommand");
+var Control_1 = require("../../shared/Control");
 var ClearOneCommand = (function (_super) {
     __extends(ClearOneCommand, _super);
     function ClearOneCommand(config) {
-        _super.call(this, config);
-        this.channelName = '';
-        this.updateTerminator = '';
+        var _this = _super.call(this, config) || this;
+        _this.channelName = '';
+        _this.updateTerminator = '';
         if (config.channel) {
-            this.channel = config.channel;
-            this.cmdStr = config.cmdStr + " " + config.channel;
-            this.channelName = config.channelName;
-            this.name = config.cmdStr + " " + config.channelName;
+            _this.channel = config.channel;
+            _this.cmdStr = config.cmdStr + " " + config.channel;
+            _this.channelName = config.channelName;
+            _this.name = config.cmdStr + " " + config.channelName;
         }
         if (config.updateTerminator) {
-            this.updateTerminator = config.updateTerminator;
+            _this.updateTerminator = config.updateTerminator;
         }
-        this.device = config.device;
+        _this.device = config.device;
+        return _this;
     }
     ClearOneCommand.prototype.matchesReport = function (devStr) {
         var matchStr = this.queryString();
@@ -31,13 +33,18 @@ var ClearOneCommand = (function (_super) {
         return this.device + " " + this.cmdStr;
     };
     ClearOneCommand.prototype.queryResponseMatchString = function () {
-        return this.queryString + '.*';
+        return this.queryString() + '.*';
     };
     ClearOneCommand.prototype.updateString = function (control, update) {
         return this.updateResponseMatchString(update);
     };
     ClearOneCommand.prototype.updateResponseMatchString = function (update) {
-        return this.device + " " + this.cmdStr + " " + update.value + " " + this.updateTerminator;
+        var value = update.value;
+        if (this.control_type == Control_1.Control.CONTROL_TYPE_BOOLEAN) {
+            // Use "1" and "0" instead of "true" and "false"
+            value = value ? 1 : 0;
+        }
+        return this.device + " " + this.cmdStr + " " + value + " " + this.updateTerminator;
     };
     ClearOneCommand.prototype.parseQueryResponse = function (control, line) {
         return this.parseReportValue(control, line);

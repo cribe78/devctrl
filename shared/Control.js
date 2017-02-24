@@ -15,9 +15,9 @@ var OptionSet_1 = require("./OptionSet");
 var Control = (function (_super) {
     __extends(Control, _super);
     function Control(_id, data) {
-        _super.call(this, _id);
-        this.ephemeral = false;
-        this.foreignKeys = [
+        var _this = _super.call(this, _id) || this;
+        _this.ephemeral = false;
+        _this.foreignKeys = [
             {
                 type: Endpoint_1.Endpoint,
                 fkObjProp: "endpoint",
@@ -31,8 +31,12 @@ var Control = (function (_super) {
                 fkTable: OptionSet_1.OptionSet.tableStr
             }
         ];
-        this.table = Control.tableStr;
-        this.requiredProperties = this.requiredProperties.concat([
+        _this.table = Control.tableStr;
+        _this.referenced = {
+            endpoints: {},
+            panel_controls: {}
+        };
+        _this.requiredProperties = _this.requiredProperties.concat([
             'endpoint_id',
             'ctid',
             'usertype',
@@ -41,10 +45,12 @@ var Control = (function (_super) {
             'config',
             'value'
         ]);
-        this.optionalProperties = ['ephemeral', 'option_set_id'];
+        _this.optionalProperties = ['ephemeral', 'option_set_id'];
         if (data) {
-            this.loadData(data);
+            _this.loadData(data);
+            _this.coerceValue();
         }
+        return _this;
     }
     Object.defineProperty(Control.prototype, "endpoint", {
         get: function () {
@@ -68,6 +74,22 @@ var Control = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Control.prototype, "value", {
+        get: function () {
+            return this._value;
+        },
+        set: function (val) {
+            this._value = val;
+            this.coerceValue();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Control.prototype.coerceValue = function () {
+        if (this.control_type == Control.CONTROL_TYPE_STRING && typeof this._value == 'number') {
+            this._value = "" + this._value;
+        }
+    };
     Control.prototype.fkSelectName = function () {
         if (this._endpoint) {
             return this._endpoint.name + ": " + this.name;
@@ -77,23 +99,36 @@ var Control = (function (_super) {
     Control.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    Control.tableStr = "controls";
-    // usertype and control_type values
-    Control.CONTROL_TYPE_BOOLEAN = "boolean";
-    Control.CONTROL_TYPE_STRING = "string";
-    Control.CONTROL_TYPE_RANGE = "range";
-    Control.CONTROL_TYPE_INT = "int";
-    Control.USERTYPE_BUTTON = "button";
-    Control.USERTYPE_BUTTON_SET = "button-set";
-    Control.USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
-    Control.USERTYPE_SLIDER_2D = "slider2d";
-    Control.USERTYPE_SWITCH = "switch";
-    Control.USERTYPE_SLIDER = "slider";
-    Control.USERTYPE_READONLY = "readonly";
-    Control.USERTYPE_LEVEL = "level";
-    Control.USERTYPE_SELECT = "select";
-    Control.USERTYPE_SELECT_READONLY = "select-readonly";
     return Control;
 }(DCSerializable_1.DCSerializable));
+Control.tableStr = "controls";
+// usertype and control_type values
+Control.CONTROL_TYPE_BOOLEAN = "boolean";
+Control.CONTROL_TYPE_STRING = "string";
+Control.CONTROL_TYPE_RANGE = "range";
+Control.CONTROL_TYPE_INT = "int";
+Control.CONTROL_TYPE_XY = "xy";
+Control.USERTYPE_BUTTON = "button";
+Control.USERTYPE_BUTTON_SET = "button-set";
+Control.USERTYPE_IMAGE = "image";
+Control.USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
+Control.USERTYPE_SLIDER_2D = "slider2d";
+Control.USERTYPE_SWITCH = "switch";
+Control.USERTYPE_SLIDER = "slider";
+Control.USERTYPE_READONLY = "readonly";
+Control.USERTYPE_LEVEL = "level";
+Control.USERTYPE_SELECT = "select";
+Control.USERTYPE_SELECT_READONLY = "select-readonly";
 exports.Control = Control;
+var ControlXYValue = (function () {
+    function ControlXYValue(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    ControlXYValue.prototype.toString = function () {
+        return "(" + this.x + "," + this.y + ")";
+    };
+    return ControlXYValue;
+}());
+exports.ControlXYValue = ControlXYValue;
 //# sourceMappingURL=Control.js.map

@@ -1,5 +1,7 @@
 /**
- * Uncomment and customize properties in this file as necessary.  Rename the file to config.local.js
+ * Uncomment and customize properties in this file as necessary.  Rename the file to config.local.js.
+ * Create a directory named conf and add instance specific config files to it if running ncontrol instances for
+ * multiple devices.
  */
 
 module.exports = {

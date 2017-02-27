@@ -1,0 +1,19 @@
+/**
+ * Uncomment and customize properties in this file as necessary.  Rename the file to config.local.js
+ */
+
+module.exports = {
+    //wsUrl : "https://devctrl.dwi.ufl.edu/",
+    //endpointId : "overrideme",
+    //mongoHost : "localhost",
+    //mongoPort : 27017,
+    //mongoDB : "devctrl",
+    //ioPort : 2880,
+    //ioPath: "/socket.io",
+    //authPort : 2992,
+    //TODO: this is setting is specific to the Extron DXP, figure out somewhere else to put it
+    //"endpointPassword" : "DWCONTROL",
+    //app: "./ncontrol",
+    //authId: "overrideme",
+    //identifierName : "identifier"
+};

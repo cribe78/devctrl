@@ -1,0 +1,14 @@
+# Place symlinks to this service configuration file in ncontrol.target.wants and name them
+# ncontrol@instancename.service
+[Unit]
+Description=%i instance of devctrl
+PartOf=ncontrol.target
+
+[Service]
+ExecStart=/usr/bin/node app.js %i
+#WorkingDirectory=/var/www/html/controller.dwi.ufl.edu
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=ncontrol.target

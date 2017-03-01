@@ -10,6 +10,8 @@ import {IndexedDataSet} from "../shared/DCDataModel";
 //let debug = debugMod("comms");
 let debug = console.log;
 
+export type TCPCommEncoding = "string" | "hex";
+
 export class TCPCommunicator extends EndpointCommunicator {
     host: string;
     port : number;
@@ -23,6 +25,8 @@ export class TCPCommunicator extends EndpointCommunicator {
     pollTimer: any = 0;
     backoffTime: number = 1000;
     expectedResponses: [string | RegExp, (line: string) => any][] = [];
+    commsMode : TCPCommEncoding = "string";
+    indeterminateControls : { [idx: string] : boolean} = {};
 
 
     constructor() {
@@ -94,7 +98,8 @@ export class TCPCommunicator extends EndpointCommunicator {
         let self = this;
         let queryStr = cmd.queryString();
         debug("sending query: " + queryStr);
-        this.socket.write(queryStr + this.outputLineTerminator);
+        this.writeToSocket(queryStr + this.outputLineTerminator);
+
         this.expectedResponses.push([
             cmd.queryResponseMatchString(),
             (line) => {
@@ -137,13 +142,18 @@ export class TCPCommunicator extends EndpointCommunicator {
 
         let updateStr = command.updateString(control, request);
         debug("sending update: " + updateStr);
-        this.socket.write(updateStr + this.outputLineTerminator);
+        this.writeToSocket(updateStr + this.outputLineTerminator);
+
         this.expectedResponses.push([
             command.updateResponseMatchString(request),
             (line) => {
                 this.setControlValue(control, request.value);
             }
-        ])
+        ]);
+
+        // Mark this control as indeterminate, in case we see a query or other update
+        // regarding it but the expected response never comes
+        this.indeterminateControls[request.control_id] = true;
 
     }
 
@@ -184,13 +194,19 @@ export class TCPCommunicator extends EndpointCommunicator {
     }
 
     onData(data: any) {
-        let strData = String(data);
+        let strData = '';
+        if (this.commsMode == 'string') {
+            strData = String(data);
+        }
+        else if (this.commsMode == 'hex') {
+            strData = data.toString('hex');
+        }
 
         this.inputBuffer += strData;
         let lines = this.inputBuffer.split(this.inputLineTerminator);
 
         while (lines.length > 1) {
-            //debug("data recieved: " + lines[0]);
+            debug("data recieved: " + lines[0]);
             this.processLine(lines[0]);
 
             lines.splice(0,1);
@@ -314,13 +330,14 @@ export class TCPCommunicator extends EndpointCommunicator {
     }
 
     setControlValue(control: Control, val: any) {
-        if (control.value != val) {
-            if (typeof val == 'object') {
-                // Don't send update if nothing will change
-                if (JSON.stringify(control.value) == JSON.stringify(val)) {
-                    return;
-                }
-            }
+        let valDiff = control.value != val;
+        if (typeof val == 'object') {
+            // Don't send update if nothing will change
+            valDiff = JSON.stringify(control.value) != JSON.stringify(val);
+        }
+
+        if (valDiff || this.indeterminateControls[control._id]) {
+            this.indeterminateControls[control._id] = false;
 
             debug(`control update: ${control.name} = ${val}`);
             this.config.controlUpdateCallback(control, val);
@@ -328,4 +345,13 @@ export class TCPCommunicator extends EndpointCommunicator {
         }
     }
 
+
+    writeToSocket(val: string) {
+        let bufMode = 'ascii';
+        if (this.commsMode == 'hex') {
+            bufMode = 'hex';
+        }
+        let bufferToSend = Buffer.from(val, bufMode);
+        this.socket.write(bufferToSend);
+    }
 }

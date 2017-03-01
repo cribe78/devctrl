@@ -22,6 +22,8 @@ var TCPCommunicator = (function (_super) {
         _this.pollTimer = 0;
         _this.backoffTime = 1000;
         _this.expectedResponses = [];
+        _this.commsMode = "string";
+        _this.indeterminateControls = {};
         return _this;
     }
     TCPCommunicator.prototype.buildCommandList = function () {
@@ -75,7 +77,7 @@ var TCPCommunicator = (function (_super) {
         var self = this;
         var queryStr = cmd.queryString();
         debug("sending query: " + queryStr);
-        this.socket.write(queryStr + this.outputLineTerminator);
+        this.writeToSocket(queryStr + this.outputLineTerminator);
         this.expectedResponses.push([
             cmd.queryResponseMatchString(),
             function (line) {
@@ -112,13 +114,16 @@ var TCPCommunicator = (function (_super) {
         var command = this.commandsByTemplate[control.ctid];
         var updateStr = command.updateString(control, request);
         debug("sending update: " + updateStr);
-        this.socket.write(updateStr + this.outputLineTerminator);
+        this.writeToSocket(updateStr + this.outputLineTerminator);
         this.expectedResponses.push([
             command.updateResponseMatchString(request),
             function (line) {
                 _this.setControlValue(control, request.value);
             }
         ]);
+        // Mark this control as indeterminate, in case we see a query or other update
+        // regarding it but the expected response never comes
+        this.indeterminateControls[request.control_id] = true;
     };
     TCPCommunicator.prototype.matchLineToCommand = function (line) {
         for (var cmdStr in this.commands) {
@@ -147,11 +152,17 @@ var TCPCommunicator = (function (_super) {
         return false;
     };
     TCPCommunicator.prototype.onData = function (data) {
-        var strData = String(data);
+        var strData = '';
+        if (this.commsMode == 'string') {
+            strData = String(data);
+        }
+        else if (this.commsMode == 'hex') {
+            strData = data.toString('hex');
+        }
         this.inputBuffer += strData;
         var lines = this.inputBuffer.split(this.inputLineTerminator);
         while (lines.length > 1) {
-            //debug("data recieved: " + lines[0]);
+            debug("data recieved: " + lines[0]);
             this.processLine(lines[0]);
             lines.splice(0, 1);
         }
@@ -249,17 +260,25 @@ var TCPCommunicator = (function (_super) {
         }
     };
     TCPCommunicator.prototype.setControlValue = function (control, val) {
-        if (control.value != val) {
-            if (typeof val == 'object') {
-                // Don't send update if nothing will change
-                if (JSON.stringify(control.value) == JSON.stringify(val)) {
-                    return;
-                }
-            }
+        var valDiff = control.value != val;
+        if (typeof val == 'object') {
+            // Don't send update if nothing will change
+            valDiff = JSON.stringify(control.value) != JSON.stringify(val);
+        }
+        if (valDiff || this.indeterminateControls[control._id]) {
+            this.indeterminateControls[control._id] = false;
             debug("control update: " + control.name + " = " + val);
             this.config.controlUpdateCallback(control, val);
             control.value = val;
         }
+    };
+    TCPCommunicator.prototype.writeToSocket = function (val) {
+        var bufMode = 'ascii';
+        if (this.commsMode == 'hex') {
+            bufMode = 'hex';
+        }
+        var bufferToSend = Buffer.from(val, bufMode);
+        this.socket.write(bufferToSend);
     };
     return TCPCommunicator;
 }(EndpointCommunicator_1.EndpointCommunicator));

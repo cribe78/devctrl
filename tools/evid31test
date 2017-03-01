@@ -11,12 +11,13 @@ use strict;
 
 $|++;
 
-my $device_ip = "baryon.dwi.ufl.edu";
-my $device_port = 4003;
+my $device_ip = "rpi-mr1.dwi.ufl.edu";
+my $device_port = 4001;
 my $command;
 my $debug = 1;
 
-my $res = GetOptions( "command=s" => \$command);
+my $res = GetOptions( "command=s" => \$command,
+                      "port=i" => \$device_port);
 
 if ($command =~ /(\w+):([-\w]+)/) {
 	my $set = $1;
@@ -81,6 +82,7 @@ while ($idx <  $cmd_len) {
 }
 
 $bin_cmd .= pack('C', hex("FF"));
+print "sending command $command\n";
 
 my $sock = device_connect();
 

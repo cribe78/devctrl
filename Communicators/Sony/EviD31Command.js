@@ -24,6 +24,11 @@ var EviD31Command = (function (_super) {
             value = value ? "02" : "03";
             res = template.replace("ZZ", value);
         }
+        else if (this.control_type == Control_1.Control.CONTROL_TYPE_XY) {
+            var xyVal = value;
+            res = template.replace("XXXX", this.hexNumber(value.x));
+            res = res.replace("YYYY", this.hexNumber(value.y));
+        }
         return res;
     };
     /**
@@ -44,12 +49,28 @@ var EviD31Command = (function (_super) {
     EviD31Command.prototype.parseValue = function (value) {
         if (this.control_type == Control_1.Control.CONTROL_TYPE_RANGE ||
             this.control_type == Control_1.Control.CONTROL_TYPE_INT) {
-            // Value is a hex string, each octet starts with a hex 0
+            // Value is a hex string, each octet starts with a hex 0,
+            // ie, every other byte is 0
             var hexStr = value.charAt(1) + value.charAt(3) + value.charAt(5) + value.charAt(7);
             return parseInt(hexStr, 16);
         }
         else if (this.control_type == Control_1.Control.CONTROL_TYPE_BOOLEAN) {
             return this.parseBoolean(value);
+        }
+        else if (this.control_type == Control_1.Control.CONTROL_TYPE_XY) {
+            var hexStrX = value.charAt(1) + value.charAt(3) + value.charAt(5) + value.charAt(7);
+            var hexStrY = value.charAt(9) + value.charAt(11) + value.charAt(13) + value.charAt(15);
+            var xVal = parseInt(hexStrX, 16);
+            var yVal = parseInt(hexStrY, 16);
+            if (xVal > 32768) {
+                xVal = xVal - 65536;
+            }
+            if (yVal > 32768) {
+                yVal = yVal - 65536;
+            }
+            var xy = new Control_1.ControlXYValue(xVal, yVal);
+            if (xy.x)
+                return xy;
         }
         return value;
     };

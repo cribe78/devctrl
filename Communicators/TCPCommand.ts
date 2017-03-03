@@ -18,19 +18,14 @@ export interface ITCPCommandConfig {
     endpoint_id: string;
     control_type: string;
     usertype: string;
-    templateConfig: ITCPTemplateConfig;
+    templateConfig: any;
     poll?: number;
     ephemeral?: boolean;
     readonly?: boolean; // Don't bother trying to set this value
     writeonly?: boolean; // Don't bother trying to read this value
 }
 
-export interface ITCPTemplateConfig {
-    min?: number;
-    max?: number;
-    options?: any;
-    direction?: string;
-}
+
 
 
 export class TCPCommand {
@@ -45,7 +40,7 @@ export class TCPCommand {
     endpoint_id: string;
     usertype: string;
     control_type: string;
-    templateConfig: ITCPTemplateConfig;
+    templateConfig: any;
     ctidList: string[];
     poll: number = 0;
     ephemeral: boolean; // Command value will not be persisted in the database

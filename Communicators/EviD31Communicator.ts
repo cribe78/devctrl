@@ -3,7 +3,8 @@ import {ITCPCommandConfig} from "./TCPCommand";
 import {EviD31Command} from "./Sony/EviD31Command";
 import {Control} from "../shared/Control";
 
-//TODO: Implement EviD31Communicator
+//TODO: This communicator seems to have issues with order of commands and responses.  Query responses sometimes
+// come back out of order.
 
 class EviD31Communicator extends TCPCommunicator {
 
@@ -33,6 +34,46 @@ class EviD31Communicator extends TCPCommunicator {
 
 
         this.commands[irisConfig.cmdStr] = new EviD31Command(irisConfig);
+
+        let panTiltConfig : ITCPCommandConfig = {
+            cmdStr: "Pan/Tilt",
+            cmdQueryStr: "81090612",
+            cmdQueryResponseRE: /9050(\w{16})/,
+            cmdUpdateTemplate: "810106020A0AXXXXYYYY",
+            cmdUpdateResponseTemplate: "905\\d",
+            endpoint_id: this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_XY,
+            usertype: Control.USERTYPE_SLIDER_2D,
+            templateConfig : {
+                xMin: -880,
+                xMax: 880,
+                xName: "Pan",
+                yMin: -300,
+                yMax: 300,
+                yName: "Tilt"
+            },
+            poll: 1
+        };
+
+        this.commands[panTiltConfig.cmdStr] = new EviD31Command(panTiltConfig);
+
+
+        let zoomConfig : ITCPCommandConfig = {
+            cmdStr: "Zoom",
+            cmdQueryStr: "81090447",
+            cmdQueryResponseRE: /\w050(\w{8})/,
+            cmdUpdateTemplate: "81010447ZZZZ",
+            cmdUpdateResponseTemplate: "905\\d",
+            endpoint_id: this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_RANGE,
+            usertype: Control.USERTYPE_SLIDER,
+            templateConfig: {
+                min: 0,
+                max: 1023
+            },
+            poll: 1
+        };
+        this.commands[zoomConfig.cmdStr] = new EviD31Command(zoomConfig);
     }
 
 

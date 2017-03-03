@@ -1,5 +1,5 @@
 import {TCPCommand} from "../TCPCommand";
-import {Control} from "../../shared/Control";
+import {Control, ControlXYValue} from "../../shared/Control";
 export class EviD31Command extends TCPCommand {
     expandTemplate(template: string, value: any) : string {
         // Use sprintf to expand the template
@@ -16,6 +16,11 @@ export class EviD31Command extends TCPCommand {
             //This protocol uses 02 for On and 03 for off
             value = value ? "02" : "03";
             res = template.replace("ZZ", value);
+        }
+        else if (this.control_type == Control.CONTROL_TYPE_XY) {
+            let xyVal = value as ControlXYValue;
+            res = template.replace("XXXX", this.hexNumber(value.x));
+            res = res.replace("YYYY", this.hexNumber(value.y));
         }
 
 
@@ -45,12 +50,29 @@ export class EviD31Command extends TCPCommand {
     parseValue(value) : any {
         if (this.control_type == Control.CONTROL_TYPE_RANGE ||
             this.control_type == Control.CONTROL_TYPE_INT) {
-            // Value is a hex string, each octet starts with a hex 0
+            // Value is a hex string, each octet starts with a hex 0,
+            // ie, every other byte is 0
             let hexStr = value.charAt(1) + value.charAt(3) + value.charAt(5) + value.charAt(7);
             return parseInt(hexStr, 16);
         }
         else if (this.control_type == Control.CONTROL_TYPE_BOOLEAN) {
             return this.parseBoolean(value);
+        }
+        else if (this.control_type == Control.CONTROL_TYPE_XY) {
+            let hexStrX = value.charAt(1) + value.charAt(3) + value.charAt(5) + value.charAt(7);
+            let hexStrY = value.charAt(9) + value.charAt(11) + value.charAt(13) + value.charAt(15);
+
+            let xVal = parseInt(hexStrX, 16);
+            let yVal = parseInt(hexStrY, 16);
+
+            if (xVal > 32768) { xVal = xVal - 65536 }
+            if (yVal > 32768) { yVal = yVal - 65536 }
+
+            let xy = new ControlXYValue(xVal, yVal);
+
+            if (xy.x )
+
+            return xy;
         }
 
         return value;

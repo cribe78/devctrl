@@ -1,6 +1,18 @@
-import {TCPCommand, ITCPCommandConfig} from "../TCPCommand";
+import {TCPCommand, ITCPCommandConfig, ITCPTemplateConfig} from "../TCPCommand";
 import {Control} from "../../shared/Control";
 import {ControlUpdateData} from "../../shared/ControlUpdate";
+
+export interface IClearOneCommandTemplate {
+    cmdStr: string;
+    ioList?: any;
+    ctor: typeof ClearOneCommand;
+    control_type: string;
+    usertype: string;
+    readonly?: boolean;
+    updateTerminator?: string;
+    templateConfig?: ITCPTemplateConfig;
+}
+
 
 export interface IClearOneCommandConfig extends ITCPCommandConfig {
     channel: string;

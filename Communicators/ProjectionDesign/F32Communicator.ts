@@ -7,315 +7,102 @@ let debug = console.log;
 
 class F32Communicator extends TCPCommunicator {
     buildCommandList() {
-        let f32Mnemonics = {
-            Power: "POWR",
-            Brightness: "BRIG",
-            Shutter: "SHUT"
-        };
-
         // Commands, as defined in pw392_communication_protocol.pdf
 
-        let name = "Power";
-        let cmd = "POWR";
-        let command : ITCPCommandConfig = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_BOOLEAN,
-            usertype: Control.USERTYPE_SWITCH,
-            templateConfig : {},
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "Power State";
-        cmd = "POST";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_STRING,
-            usertype: Control.USERTYPE_SELECT_READONLY,
-            templateConfig : {
-                options : {
-                    "0" : "Deep Sleep",
-                    "1" : "Off",
-                    "2" : "Powering Up",
-                    "3" : "On",
-                    "4" : "Powering Down",
-                    "5" : "Critical Powering Down",
-                    "6" : "Critical Off"
-                }
+        this.registerSwitchCommand("Power", "POWR");
+        this.registerSelectCommand("Power State", "POST",
+            {
+                "0" : "Deep Sleep",
+                "1" : "Off",
+                "2" : "Powering Up",
+                "3" : "On",
+                "4" : "Powering Down",
+                "5" : "Critical Powering Down",
+                "6" : "Critical Off"
             },
-            poll: 1,
-            readonly : true
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "Input";
-        cmd = "IABS";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_STRING,
-            usertype: Control.USERTYPE_SELECT,
-            templateConfig : {
-                options : {
-                    "0" : "VGA",
-                    "1" : "BNC",
-                    "2" : "DVI",
-                    "4" : "S-Video",
-                    "5" : "Composite",
-                    "6" : "Component",
-                    "8" : "HDMI"
-                }
-            },
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
+            true
+        );
+        this.registerSelectCommand("Input", "IABS",
+            {
+                "0" : "VGA",
+                "1" : "BNC",
+                "2" : "DVI",
+                "4" : "S-Video",
+                "5" : "Composite",
+                "6" : "Component",
+                "8" : "HDMI"
+            }
+        );
 
         // IVGA, IDVI, etc. not implemented.  See IABS
 
-
-        name = "Signal Status";
-        cmd = "ISTS";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_STRING,
-            usertype: Control.USERTYPE_SELECT_READONLY,
-            templateConfig : {
-                options: {
-                    "0" : "Searching",
-                    "1" : "Locked to Source"
-                }
+        this.registerSelectCommand("Signal Status", "ISTS",
+            {
+                "0" : "Searching",
+                "1" : "Locked to Source"
             },
-            poll: 1,
-            readonly : true
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "Brightness";
-        cmd = "BRIG";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_RANGE,
-            usertype: Control.USERTYPE_SLIDER,
-            templateConfig : { min: 0, max: 100 },
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "Contrast";
-        cmd = "CNTR";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_RANGE,
-            usertype: Control.USERTYPE_SLIDER,
-            templateConfig : { min: 0, max: 100 },
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
+            true
+        );
+        this.registerRangeCommand("Brightness", "BRIG");
+        this.registerRangeCommand("Contrast", "CNTR");
 
         // CSAT (Color) not implemented
         // VHUE (Hue Video) not implemented
 
-        name = "Sharpness";
-        cmd = "SHRP";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_RANGE,
-            usertype: Control.USERTYPE_SLIDER,
-            templateConfig : { min: 0, max: 20 },
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
+        this.registerRangeCommand("Sharpness", "SHRP", 0, 20);
 
         // PRST (Picture Reset) not implemented
         // AUTO (Auto) not implemented
 
-        name = "Picture Mute";
-        cmd = "PMUT";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_BOOLEAN,
-            usertype: Control.USERTYPE_SWITCH,
-            templateConfig : {},
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
-
-
-        name = "Freeze Image";
-        cmd = "FRZE";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_BOOLEAN,
-            usertype: Control.USERTYPE_SWITCH,
-            templateConfig : {},
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "Scaling";
-        cmd = "SABS";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_STRING,
-            usertype: Control.USERTYPE_SELECT,
-            templateConfig : {
-                options: {
-                    "0" : "1:1",
-                    "1" : "Fill All",
-                    "2" : "Fill Aspect Ratio",
-                    "3" : "Fill 16:9",
-                    "4" : "Fill 4:3",
-                    "9" : "Fill LB to 16:9"
-                }
-            },
-            poll: 1,
-        };
-        this.commands[name] = new TCPCommand(command);
+        this.registerSwitchCommand("Picture Mute", "PMUT");
+        this.registerSwitchCommand("Freeze Image", "FRZE");
+        this.registerSelectCommand("Scaling", "SABS",
+            {
+                "0" : "1:1",
+                "1" : "Fill All",
+                "2" : "Fill Aspect Ratio",
+                "3" : "Fill 16:9",
+                "4" : "Fill 4:3",
+                "9" : "Fill LB to 16:9"
+            }
+        );
 
         // S1T1 ... SANL scaling commands not implemented
 
-        name = "Gamma";
-        cmd = "GABS";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_STRING,
-            usertype: Control.USERTYPE_SELECT,
-            templateConfig : {
-                options: {
-                    "0" : "Film 1",
-                    "1" : "Film 2",
-                    "2" : "Video 1",
-                    "3" : "Video 2",
-                    "7" : "Computer 1",
-                    "8" : "Computer 2"
-                }
-            },
-            poll: 1,
-        };
-        this.commands[name] = new TCPCommand(command);
+        this.registerSelectCommand("Gamma", "GABS",
+            {
+                "0" : "Film 1",
+                "1" : "Film 2",
+                "2" : "Video 1",
+                "3" : "Video 2",
+                "7" : "Computer 1",
+                "8" : "Computer 2"
+            }
+        );
+        this.registerSelectCommand("Test Image", "TEST",
+            {
+                "0" : "Off",
+                "1" : "1",
+                "2" : "2",
+                "3" : "3",
+                "4" : "4",
+            }
+        );
+        this.registerSelectCommand("Lamp Mode", "LMOD",
+            {
+                "0" : "Lamp 1",
+                "1" : "Lamp 2",
+                "2" : "Dual Lamps",
+                "3" : "Auto-switch"
+            }
+        );
 
-        name = "Test Image";
-        cmd = "TEST";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_STRING,
-            usertype: Control.USERTYPE_SELECT,
-            templateConfig : {
-                options: {
-                    "0" : "Off",
-                    "1" : "1",
-                    "2" : "2",
-                    "3" : "3",
-                    "4" : "4",
-                }
-            },
-            poll: 1,
-        };
-        this.commands[name] = new TCPCommand(command);
+        this.registerMultibuttonCommand("Focus In", "FOIN");
+        this.registerMultibuttonCommand("Focus Out", "FOUT", "reverse");
 
-        name = "Lamp Mode";
-        cmd = "LMOD";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_STRING,
-            usertype: Control.USERTYPE_SELECT,
-            templateConfig : {
-                options: {
-                    "0" : "Lamp 1",
-                    "1" : "Lamp 2",
-                    "2" : "Dual Lamps",
-                    "3" : "Auto-switch"
-                }
-            },
-            poll: 1,
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "Focus In";
-        cmd = "FOIN";
-        command = {
-            cmdStr: name,
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_INT,
-            usertype: Control.USERTYPE_F32_MULTIBUTTON,
-            templateConfig : {},
-            poll: 0,
-            writeonly: true
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "Focus Out";
-        cmd = "FOUT";
-        command = {
-            cmdStr: name,
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_INT,
-            usertype: Control.USERTYPE_F32_MULTIBUTTON,
-            templateConfig : { direction: "reverse" },
-            poll: 0,
-            writeonly: true
-        };
-        this.commands[name] = new TCPCommand(command);
-
-        name = "OK";
-        cmd = "NVOK";
-        command = {
+        let name = "OK";
+        let cmd = "NVOK";
+        this.commands[name] = new TCPCommand({
             cmdStr: name,
             cmdUpdateTemplate: ":" + cmd,
             cmdUpdateResponseTemplate: "%%001 " + cmd + " 000001",
@@ -325,24 +112,10 @@ class F32Communicator extends TCPCommunicator {
             templateConfig : {},
             poll: 0,
             writeonly : true
-        };
-        this.commands[name] = new TCPCommand(command);
+        });
 
-        name = "Shutter";
-        cmd = "SHUT";
-        command = {
-            cmdStr: name,
-            cmdQueryStr: ":" + cmd + "?",
-            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
-            cmdUpdateTemplate: ":" + cmd + " %06d",
-            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
-            endpoint_id : this.config.endpoint._id,
-            control_type: Control.CONTROL_TYPE_BOOLEAN,
-            usertype: Control.USERTYPE_SWITCH,
-            templateConfig : {},
-            poll: 1
-        };
-        this.commands[name] = new TCPCommand(command);
+
+        this.registerSwitchCommand("Shutter", "SHUT");
     }
 
     matchLineToError(line) {
@@ -377,6 +150,71 @@ class F32Communicator extends TCPCommunicator {
 
         // Lines have extra carriage returns that screw up debug printing
         return line.replace(/\r/g,'');
+    }
+
+
+    registerMultibuttonCommand(name: string, cmd: string, direction = "default") {
+        this.commands[name] = new TCPCommand({
+            cmdStr: name,
+            cmdUpdateTemplate: ":" + cmd + " %06d",
+            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
+            endpoint_id : this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_INT,
+            usertype: Control.USERTYPE_F32_MULTIBUTTON,
+            templateConfig : { direction: direction },
+            poll: 0,
+            writeonly: true
+        });
+    }
+
+    registerRangeCommand(name: string, cmd: string, min = 0, max = 100) {
+        this.commands[name] = new TCPCommand(
+            {
+                cmdStr: name,
+                cmdQueryStr: ":" + cmd + "?",
+                cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
+                cmdUpdateTemplate: ":" + cmd + " %06d",
+                cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
+                endpoint_id : this.config.endpoint._id,
+                control_type: Control.CONTROL_TYPE_RANGE,
+                usertype: Control.USERTYPE_SLIDER,
+                templateConfig : { min: min, max: max },
+                poll: 1
+            }
+        );
+    }
+
+    registerSelectCommand(name: string, cmd: string, options: any, readonly = false) {
+        let usertype = readonly ? Control.USERTYPE_SELECT_READONLY : Control.USERTYPE_SELECT;
+
+        this.commands[name] = new TCPCommand({
+            cmdStr: name,
+            cmdQueryStr: ":" + cmd + "?",
+            cmdQueryResponseRE: "%001 " + cmd + " \\d{5}(\\d)",
+            endpoint_id : this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_STRING,
+            usertype: usertype,
+            templateConfig : {
+                options: options
+            },
+            readonly: readonly,
+            poll: 1
+        });
+    }
+
+    registerSwitchCommand(name: string, cmd: string) {
+        this.commands[name] = new TCPCommand({
+            cmdStr: name,
+            cmdQueryStr: ":" + cmd + "?",
+            cmdQueryResponseRE: "%001 " + cmd + " (\\d{6})",
+            cmdUpdateTemplate: ":" + cmd + " %06d",
+            cmdUpdateResponseTemplate: "%%001 " + cmd + " %06d",
+            endpoint_id : this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_BOOLEAN,
+            usertype: Control.USERTYPE_SWITCH,
+            templateConfig : {},
+            poll: 1
+        });
     }
 }
 

@@ -4,9 +4,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TCPCommunicator_1 = require("./TCPCommunicator");
-var EviD31Command_1 = require("./Sony/EviD31Command");
-var Control_1 = require("../shared/Control");
+var EviD31Command_1 = require("./EviD31Command");
+var Control_1 = require("../../shared/Control");
+var SynchronousTCPCommunicator_1 = require("../SynchronousTCPCommunicator");
 //TODO: This communicator seems to have issues with order of commands and responses.  Query responses sometimes
 // come back out of order.
 var EviD31Communicator = (function (_super) {
@@ -73,7 +73,7 @@ var EviD31Communicator = (function (_super) {
         this.commands[zoomConfig.cmdStr] = new EviD31Command_1.EviD31Command(zoomConfig);
     };
     return EviD31Communicator;
-}(TCPCommunicator_1.TCPCommunicator));
+}(SynchronousTCPCommunicator_1.SynchronousTCPCommunicator));
 var communicator = new EviD31Communicator();
 module.exports = communicator;
 //# sourceMappingURL=EviD31Communicator.js.map

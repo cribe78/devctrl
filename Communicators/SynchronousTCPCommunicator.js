@@ -88,6 +88,7 @@ var SynchronousTCPCommunicator = (function (_super) {
         this.runNextCommand();
     };
     SynchronousTCPCommunicator.prototype.runNextCommand = function () {
+        var _this = this;
         // If we are out of commands, reset the queues and stop
         if (this.commandTimeoutTimer) {
             clearTimeout(this.commandTimeoutTimer);
@@ -107,7 +108,9 @@ var SynchronousTCPCommunicator = (function (_super) {
         var logCommand = command.replace(/\r?\n|\r/g, '');
         debug("sending command: " + logCommand);
         this.writeToSocket(command);
-        this.commandTimeoutTimer = setTimeout(this.runNextCommand, 400);
+        this.commandTimeoutTimer = setTimeout(function () {
+            _this.runNextCommand();
+        }, 400);
     };
     return SynchronousTCPCommunicator;
 }(TCPCommunicator_1.TCPCommunicator));

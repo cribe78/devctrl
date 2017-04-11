@@ -133,6 +133,8 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
         debug("sending command: " + logCommand);
         this.writeToSocket(command);
 
-        this.commandTimeoutTimer = setTimeout(this.runNextCommand, 400);
+        this.commandTimeoutTimer = setTimeout(() => {
+            this.runNextCommand()
+        }, 400);
     }
 }

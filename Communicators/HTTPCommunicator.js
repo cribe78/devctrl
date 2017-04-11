@@ -145,12 +145,6 @@ var HTTPCommunicator = (function (_super) {
             }
         }
     };
-    HTTPCommunicator.prototype.setTemplates = function (controls) {
-        this.controls = controls;
-        for (var id in controls) {
-            this.controlsByCtid[controls[id].ctid] = controls[id];
-        }
-    };
     return HTTPCommunicator;
 }(EndpointCommunicator_1.EndpointCommunicator));
 exports.HTTPCommunicator = HTTPCommunicator;

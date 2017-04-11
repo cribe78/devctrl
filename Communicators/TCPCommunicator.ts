@@ -26,7 +26,7 @@ export class TCPCommunicator extends EndpointCommunicator {
     backoffTime: number = 1000;
     expectedResponses: [string | RegExp, (line: string) => any][] = [];
     commsMode : TCPCommEncoding = "string";
-    indeterminateControls : { [idx: string] : boolean} = {};
+
 
 
     constructor() {
@@ -105,7 +105,7 @@ export class TCPCommunicator extends EndpointCommunicator {
             (line) => {
                 for (let ctid of cmd.ctidList) {
                     let control = self.controlsByCtid[ctid];
-
+                    //debug("control id is " + control._id);
                     let val = cmd.parseQueryResponse(control, line);
                     self.setControlValue(control, val);
                 }
@@ -329,21 +329,7 @@ export class TCPCommunicator extends EndpointCommunicator {
         }
     }
 
-    setControlValue(control: Control, val: any) {
-        let valDiff = control.value != val;
-        if (typeof val == 'object') {
-            // Don't send update if nothing will change
-            valDiff = JSON.stringify(control.value) != JSON.stringify(val);
-        }
 
-        if (valDiff || this.indeterminateControls[control._id]) {
-            this.indeterminateControls[control._id] = false;
-
-            debug(`control update: ${control.name} = ${val}`);
-            this.config.controlUpdateCallback(control, val);
-            control.value = val;
-        }
-    }
 
 
     writeToSocket(val: string) {

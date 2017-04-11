@@ -23,7 +23,6 @@ var TCPCommunicator = (function (_super) {
         _this.backoffTime = 1000;
         _this.expectedResponses = [];
         _this.commsMode = "string";
-        _this.indeterminateControls = {};
         return _this;
     }
     TCPCommunicator.prototype.buildCommandList = function () {
@@ -84,6 +83,7 @@ var TCPCommunicator = (function (_super) {
                 for (var _i = 0, _a = cmd.ctidList; _i < _a.length; _i++) {
                     var ctid = _a[_i];
                     var control = self.controlsByCtid[ctid];
+                    //debug("control id is " + control._id);
                     var val = cmd.parseQueryResponse(control, line);
                     self.setControlValue(control, val);
                 }
@@ -257,19 +257,6 @@ var TCPCommunicator = (function (_super) {
             if (!this.commands[cmdStr].writeonly) {
                 this.executeCommandQuery(this.commands[cmdStr]);
             }
-        }
-    };
-    TCPCommunicator.prototype.setControlValue = function (control, val) {
-        var valDiff = control.value != val;
-        if (typeof val == 'object') {
-            // Don't send update if nothing will change
-            valDiff = JSON.stringify(control.value) != JSON.stringify(val);
-        }
-        if (valDiff || this.indeterminateControls[control._id]) {
-            this.indeterminateControls[control._id] = false;
-            debug("control update: " + control.name + " = " + val);
-            this.config.controlUpdateCallback(control, val);
-            control.value = val;
         }
     };
     TCPCommunicator.prototype.writeToSocket = function (val) {

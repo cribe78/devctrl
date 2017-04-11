@@ -163,14 +163,4 @@ export class HTTPCommunicator extends EndpointCommunicator {
             }
         }
     }
-
-
-    setTemplates(controls: IndexedDataSet<Control>) {
-        this.controls = controls;
-
-        for (let id in controls) {
-            this.controlsByCtid[controls[id].ctid] = controls[id];
-        }
-    }
-
 }

@@ -8,7 +8,7 @@ import {  ActivatedRoute } from '@angular/router';
     selector: 'devctrl-menu',
     template: `
 <md-nav-list>
-    <template ngFor let-item [ngForOf]="menu.menuItems()" [ngForTrackBy]="trackByName">
+    <ng-template ngFor let-item [ngForOf]="menu.menuItems()" [ngForTrackBy]="trackByName">
         <md-list-item>
             <a md-line (click)="menu.go(item.route)">{{item.name}}</a>
             <button md-icon-button class="toggle-icon" 
@@ -24,7 +24,7 @@ import {  ActivatedRoute } from '@angular/router';
             <p>{{subitem.name}}</p>
         </a>
         <md-divider></md-divider>
-    </template>
+    </ng-template>
 </md-nav-list>
 `,
     styles: [`

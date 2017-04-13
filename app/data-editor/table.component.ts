@@ -32,24 +32,24 @@ import {MenuService} from "../layout/menu.service";
                 <div class="flexPoint5"></div>
             </md-list-item>
             <md-divider></md-divider>
-            <template ngFor let-obj [ngForOf]="sorted()" [ngForTrackBy]="trackById">
+            <ng-template ngFor let-obj [ngForOf]="sorted()" [ngForTrackBy]="trackById">
                 <md-list-item>
                     <div class="devctrl-id-text flex1">
                         <span>{{obj._id}}</span>
                     </div>
-                    <template ngFor let-field [ngForOf]="schema.fields">
+                    <ng-template ngFor let-field [ngForOf]="schema.fields">
                         <div class="flex1"
                              [ngSwitch]="field.type">
-                            <p *ngSwitchCase="fk">{{fkDisplayVal(field, obj)}}</p>
-                            <div *ngSwitchCase="bool">
-                                <md-checkbox class="md-primary"
+                            <p *ngSwitchCase="'fk'">{{fkDisplayVal(field, obj)}}</p>
+                            <div *ngSwitchCase="'unbool'">   
+                                <md-checkbox color="primary"
                                              [ngModel]="obj[field.name]">
-                                             
+                                             Check
                                 </md-checkbox>
                             </div>
                             <p *ngSwitchDefault>{{obj[field.name]}}</p>
                         </div>
-                    </template>
+                    </ng-template>
                     <div class="flexPoint5">
                         <button md-button  *devctrlAdminOnly (click)="openRecord($event, obj._id)">
                             <md-icon>edit</md-icon>
@@ -57,7 +57,7 @@ import {MenuService} from "../layout/menu.service";
                     </div>
                 </md-list-item>
                 <md-divider></md-divider>
-            </template>
+            </ng-template>
         </md-list>
 
         <button md-button *devctrlAdminOnly (click)="addRow()">Add</button> 
@@ -139,9 +139,13 @@ export class TableComponent implements OnInit {
                     return row[field.name];
                 }
 
-                return "unknown object " + field._id;
+                if (row[field.name]) {
+                    return "unknown object " + row[field.name];
+                }
             }
         }
+
+        return '';
     }
 
 

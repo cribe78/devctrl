@@ -9,8 +9,8 @@ import {  ActivatedRoute } from '@angular/router';
     template: `
 <md-nav-list>
     <ng-template ngFor let-item [ngForOf]="menu.menuItems()" [ngForTrackBy]="trackByName">
-        <md-list-item>
-            <a md-line (click)="menu.go(item.route)">{{item.name}}</a>
+        <md-list-item (click)="menu.go(item.route)">
+            <a md-line >{{item.name}}</a>
             <button md-icon-button class="toggle-icon" 
                     [class.toggled]="item.isOpened" 
                     (click)="menu.toggleTopLevel($event, item)">

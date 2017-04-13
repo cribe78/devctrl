@@ -181,6 +181,8 @@ export class MenuService {
     }
 
     toggleTopLevel($event, item : MSMenuItem) {
+        $event.stopPropagation();
+
         if (! item.isOpened) {
             this.openTopLevel((item));
         }

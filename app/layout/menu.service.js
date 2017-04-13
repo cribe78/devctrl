@@ -150,6 +150,7 @@ var MenuService = (function () {
         this.dataService.updateConfig();
     };
     MenuService.prototype.toggleTopLevel = function ($event, item) {
+        $event.stopPropagation();
         if (!item.isOpened) {
             this.openTopLevel((item));
         }

@@ -6,13 +6,13 @@ import {MenuService} from "../layout/menu.service";
 @Component({
     selector: 'devctrl-config-data',
     template: `
-<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
-    <div fxFlex="none" fxFlex.gt-xs="600px" class="devctrl-card">
+<div id="devctrl-content-canvas">
+    <div class="devctrl-card">
     <md-nav-list>
         <template ngFor let-schema [ngForOf]="schemaArray">
             <a md-list-item (click)="menu.go(['config', schema.name])">
                 {{schema.label}}
-                <span fxFlex></span>
+                <span class="devctrl-spacer"></span>
                 <md-icon>chevron_right</md-icon>
             </a>
             <md-divider></md-divider> 
@@ -21,12 +21,17 @@ import {MenuService} from "../layout/menu.service";
     </div>
 </div>  
 `,
+    //language=CSS
     styles: [`
-.md-list-item {
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-}
+        .devctrl-card {
+            max-width: 600px;
+            flex: 1 1;
+        }
+        .md-list-item {
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+        }
 `]
 })
 export class ConfigDataComponent implements OnInit

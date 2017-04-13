@@ -10,37 +10,35 @@ import {MenuService} from "../layout/menu.service";
 @Component({
     selector: 'devctrl-table',
     template: `
-<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
-    <div fxFlex class="devctrl-card">
+<div id="devctrl-content-canvas">
+    <div class="devctrl-card">
         <md-toolbar color="primary">
-            <div fxLayout="row">
+            <div class="devctrl-toolbar-tools">
                 <span class="text-title">{{schema.label}}</span>
-                <span fxFlex></span>
+                <span class="devctrl-spacer"></span>
                 <button md-button *devctrlAdminOnly (click)="addRow()">Add</button>
             </div>
         </md-toolbar>
         <md-list>
             <md-list-item>
-                <div fxFlex="20">
+                <div class="flex1">
                     ID
                 </div>
                 <div *ngFor="let field of schema.fields" 
-                       fxFlex
-                       class="table-header" 
+                       class="table-header flex1" 
                        (click)="setSortColumn(field)">
                     {{field.label}}
                 </div>
-                <div fxFlex="5"></div>
+                <div class="flexPoint5"></div>
             </md-list-item>
             <md-divider></md-divider>
             <template ngFor let-obj [ngForOf]="sorted()" [ngForTrackBy]="trackById">
                 <md-list-item>
-                    <div fxFlex="20" class="devctrl-id-text">
+                    <div class="devctrl-id-text flex1">
                         <span>{{obj._id}}</span>
                     </div>
                     <template ngFor let-field [ngForOf]="schema.fields">
-                        <div fxFlex
-                             class="md-list-item-text"
+                        <div class="flex1"
                              [ngSwitch]="field.type">
                             <p *ngSwitchCase="fk">{{fkDisplayVal(field, obj)}}</p>
                             <div *ngSwitchCase="bool">
@@ -50,10 +48,9 @@ import {MenuService} from "../layout/menu.service";
                                 </md-checkbox>
                             </div>
                             <p *ngSwitchDefault>{{obj[field.name]}}</p>
-                
                         </div>
                     </template>
-                    <div fxFlex="5">
+                    <div class="flexPoint5">
                         <button md-button  *devctrlAdminOnly (click)="openRecord($event, obj._id)">
                             <md-icon>edit</md-icon>
                         </button>
@@ -67,18 +64,33 @@ import {MenuService} from "../layout/menu.service";
     </div>
  </div>
 `,
+    //language=CSS
     styles: [`
-.md-list-item {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-md-list-item .table-header {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
+        .devctrl-card {
+            flex: 1 1;
+        }
+        
+        .devctrl-id-text span {
+            text-overflow: ellipsis;
+        }
+        
+        .flex2 {
+            flex: 2 2;
+        }
+        
+        .flex1 {
+            flex: 1 1 100px;
+        }
+        
+        .flexPoint5 {
+            flex: .5 .5;
+        }
+        
+        md-list-item .table-header {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
 `]
 })
 export class TableComponent implements OnInit {

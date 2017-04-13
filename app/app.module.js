@@ -10,11 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
+var animations_1 = require("@angular/platform-browser/animations");
 var app_component_1 = require("./layout/app.component");
 var material_1 = require("@angular/material");
 var http_1 = require("@angular/http");
 require("hammerjs");
-var static_1 = require("@angular/upgrade/static");
 var menu_component_1 = require("./layout/menu.component");
 var menu_service_1 = require("./layout/menu.service");
 var toolbar_component_1 = require("./layout/toolbar.component");
@@ -32,16 +32,15 @@ var alert_dialog_component_1 = require("./alert-dialog.component");
 var record_editor_service_1 = require("./data-editor/record-editor.service");
 var table_component_1 = require("./data-editor/table.component");
 var forms_1 = require("@angular/forms");
-//import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
 var controls_module_1 = require("./controls/controls.module");
 var room_component_1 = require("./rooms/room.component");
 var rooms_component_1 = require("./rooms/rooms.component");
 var panel_component_1 = require("./rooms/panel.component");
 var object_editor_component_1 = require("./data-editor/object-editor.component");
-var flex_layout_1 = require("@angular/flex-layout");
 var media_service_1 = require("./layout/media.service");
 var layout_service_1 = require("./layout/layout.service");
 var action_history_component_1 = require("./layout/action-history.component");
+var dc_material_module_1 = require("./dc-material.module");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -51,14 +50,13 @@ AppModule = __decorate([
     core_1.NgModule({
         imports: [
             platform_browser_1.BrowserModule,
-            flex_layout_1.FlexLayoutModule.forRoot(),
-            material_1.MaterialModule.forRoot(),
+            animations_1.BrowserAnimationsModule,
+            dc_material_module_1.DCMaterialModule,
             material_1.MdSnackBarModule,
-            material_1.MdDialogModule.forRoot(),
+            material_1.MdDialogModule,
             http_1.HttpModule,
             app_router_module_1.AppRoutingModule,
             forms_1.FormsModule,
-            static_1.UpgradeModule,
             controls_module_1.ControlsModule,
         ],
         declarations: [menu_component_1.MenuComponent,

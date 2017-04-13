@@ -7,14 +7,31 @@ body {
     height:100%;
     overflow: scroll;
     padding-bottom: 80px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: start;
 }
 
-.devctrl-ctrl-list-item > .md-list-item {
+.mat-list .devctrl-ctrl-list-item.mat-list-item > div.mat-list-item-content {
     height: auto;
 }
 
 .devctrl-id-text {
     font-size: 10px;
+}
+
+
+span.devctrl-spacer {
+    flex: 1 1;
+}
+
+div.devctrl-toolbar-tools {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    flex: 1 1;
 }
 
 /** Mobile specific classes **/
@@ -23,9 +40,6 @@ body {
         width: 100%;
     }
 
-    .devctrl-title-toolbar {
-        width: 100%;
-    }
 }
 /** Desktop specific classes **/
 @media screen and (min-width: 600px) {

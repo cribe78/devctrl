@@ -10,7 +10,7 @@ import {DSFieldDefinition} from "../data-service-schema";
     selector: 'fk-autocomplete',
     template: `
 <md-input-container>
-    <input md-input
+    <input mdInput
             #fkauto
            [placeholder]="field.label"
            [(ngModel)]="inputText"

@@ -9,7 +9,7 @@ import {LayoutService} from "./layout.service";
 @Component({
     selector: 'devctrl-app',
     template: `
-<body fxLayout="column" (window:resize)="ls.resized($event)">
+<body (window:resize)="ls.resized($event)">
     <devctrl-toolbar></devctrl-toolbar>    
     <md-sidenav-container>
         <md-sidenav class="dc-sidenav"

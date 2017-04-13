@@ -6,8 +6,8 @@ import { ControlService } from '../control.service';
     selector: 'ctrl-select',
     template: `
 <div class="devctrl-ctrl devctrl-ctrl-select devctrl-ctrl-flex-layout">
-    <div fxFlex="20%" class="text-menu devctrl-ctrl-label">{{cs.name}}</div>
-    <form fxFlex="none">
+    <div class="text-menu devctrl-ctrl-label">{{cs.name}}</div>
+    <form>
         <md-select [(ngModel)]="cs.value"
                 name="select"
                 (onClose)="cs.updateValue()">
@@ -18,6 +18,7 @@ import { ControlService } from '../control.service';
     </form>
 </div>    
     `,
+    //language=CSS
     styles: [`
 form {
     margin-bottom: 0;

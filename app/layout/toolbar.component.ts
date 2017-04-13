@@ -9,28 +9,21 @@ import {LayoutService} from "./layout.service";
     moduleId: module.id,
     selector: 'devctrl-toolbar',
     template: `
-<div fxLayout="column"
-     fxLayout.gt-sm="row">
-    <md-toolbar fxFlex fxFlex.gt-sm="270px" class="md-accent devctrl-title-toolbar">
-        <div fxLayout="row"
-             fxLayoutAlign="space-between center"
-             fxFill>
-            <button md-icon-button fxFlex="none" (click)="menu.toggleSidenav()">
+<div class="outer-div">
+    <md-toolbar color="accent" class="devctrl-title-toolbar">
+        <div class="devctrl-title-toolbar-inner">
+            <button md-icon-button (click)="menu.toggleSidenav()">
                 <md-icon aria-label="Menu">menu</md-icon>
             </button>
-            <span fxFlex class="text-display-1 md-accent">DevCtrl</span>
-            <button *ngIf="ls.mobile" fxFlex="none" md-icon-button [md-menu-trigger-for]="adminmenu">
+            <span class="text-display-1 md-accent">DevCtrl</span>
+            <button *ngIf="ls.mobile" md-icon-button [md-menu-trigger-for]="adminmenu">
                 <md-icon>more_vert</md-icon>
             </button>
         </div>
     </md-toolbar>
-    <md-toolbar fxFlex color="primary">
-        <div class="devctrl-main-toolbar devctrl-ctrl-select"
-             fxLayout="row"
-             fxLayoutAlign="space-between center"
-             fxFill>
+    <md-toolbar color="primary" class="devctrl-main-toolbar">
+        <div class="devctrl-main-toolbar devctrl-ctrl-select">
             <md-select *ngIf="menu.toolbarSelect.enabled && ls.desktop"
-                    fxFlex="140px"
                         aria-label="Select Page"
                         name="toolbarSelect"
                        [(ngModel)]="menu.toolbarSelect.selected"
@@ -41,29 +34,25 @@ import {LayoutService} from "./layout.service";
                     {{option.name}}
                 </md-option>
             </md-select>
-            <span class="text-headline" 
-                    fxFlex 
-                    fxAlign="center"
-                    fxLayout="row"
-                    fxLayoutAlign="space-around center">
+            <span class="devctrl-pagetitle text-headline" >
                 <div>{{menu.pageTitle}}</div>
             </span>
-            <div fxFlex="none" fxLayout="column">
-                <div fxFlex="50%" class="text-subhead">{{session.client_name}}</div>
-                <span fxFlex="50%" *devctrlAdminOnly class="text-subhead">{{session.username}}</span>
+            <div class="devctrl-client-info">
+                <div class="text-subhead">{{session.client_name}}</div>
+                <span *devctrlAdminOnly class="text-subhead">{{session.username}}</span>
             </div>
     
-            <button *ngIf="ls.desktop" fxFlex="none" md-icon-button [md-menu-trigger-for]="adminmenu">
+            <button *ngIf="ls.desktop" md-icon-button [md-menu-trigger-for]="adminmenu">
                 <md-icon>more_vert</md-icon>
             </button>
-            <md-menu fxFlex="none" #adminmenu="mdMenu">
+            <md-menu #adminmenu="mdMenu">
                 <button md-menu-item (click)="adminLogin()">
                         Admin Login
                 </button>
                 <button md-menu-item *devctrlAdminOnly (click)="revokeAdmin()">
-                        Admin Logout
+                        Admin Logout 
                 </button>
-                <button md-menu-item *devCtrlAdminOnly (click)="editClient($event)">
+                <button md-menu-item *devctrlAdminOnly (click)="editClient($event)">
                         Edit Client
                 </button>
             </md-menu>
@@ -71,14 +60,91 @@ import {LayoutService} from "./layout.service";
     </md-toolbar>
 </div>
 `,
-    styles: [`
-md-select /deep/ .md-select-value {
+    //language=CSS
+    styles: [`   
+.outer-div {
+    display: flex;
+    flex-direction: row;
+}
+
+
+md-toolbar.devctrl-main-toolbar {
+    flex: 1 1;
+}
+
+
+div.devctrl-main-toolbar {
+    display: flex;
+    flex: 1 1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.devctrl-client-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.devctrl-pagetitle {
+    flex: 1 1;
+    display: flex;
+    justify-content: center;
+}
+
+.devctrl-title-toolbar {
+    width: 270px;
+}
+
+.devctrl-title-toolbar-inner {    
+    display: flex;
+    justify-content: space-between;
+}
+
+.devctrl-main-toolbar md-select {
+    width: 200px;
+}
+
+md-select /deep/ .mat-select-value {
     color: rgba(255,255,255,.87);
 }
 
-md-select /deep/ .md-select-arrow {
+md-select /deep/ .mat-select-arrow {
     color: rgba(255,255,255,.87);
 }
+
+@media screen and (max-width: 599px) {
+    .devctrl-title-toolbar {
+        width: 100%;
+    }
+    
+    .outer-div {
+        flex-direction: column;
+    }
+}
+
+.job-toolbar {
+    flex: 1 1;
+    display: flex;
+    justify-content: space-between;
+}
+
+.job-monitor-card {
+    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);
+    transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);
+    will-change: box-shadow;
+    display: block;
+
+}
+
+.job-output {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    max-height: 800px;
+}
+
 `]
 })
 export class ToolbarComponent {

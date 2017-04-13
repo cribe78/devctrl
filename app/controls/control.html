@@ -1,6 +1,6 @@
-<div fxLayout="row" class="devctrl-ctrl-item">
+<div class="devctrl-ctrl-item">
     <!-- TODO: flex-layout is broken here -->
-    <div fxFlex [ngSwitch]="cs.type" style="width: 100%;">
+    <div class="control-wrapper" [ngSwitch]="cs.type" style="width: 100%;">
         <ctrl-awhe130-preset *ngSwitchCase="'awhe130-preset'"></ctrl-awhe130-preset>
         <ctrl-awhe130-preset-map *ngSwitchCase="'awhe130-preset-map'"></ctrl-awhe130-preset-map>
         <ctrl-button *ngSwitchCase="'button'"></ctrl-button>
@@ -15,7 +15,7 @@
         <ctrl-f32-multibutton *ngSwitchCase="'f32-multibutton'"></ctrl-f32-multibutton>
         <ctrl-default *ngSwitchDefault></ctrl-default>
     </div>
-    <div fxFlex="none" class="devctrl-ctrl-admin-placeholder">
+    <div class="devctrl-ctrl-admin-placeholder">
         <button md-icon-button
                 *ngIf="cs.dataService.isAdminAuthorized()"
                 [md-menu-trigger-for]="adminmenu" style="margin-top: 4px;">

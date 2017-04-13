@@ -11,15 +11,15 @@ import {LayoutService} from "../layout/layout.service";
 @Component({
     selector: 'devctrl-endpoint',
     template: `
-<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
-    <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
+<div id="devctrl-content-canvas">
+    <div class="devctrl-card">
         <md-toolbar color="primary">
-            <div  fxFill fxLayout="row" fxLayoutAlign="start center" class="md-toolbar-tools">
-                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
-                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
-                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
-                <span fxFlex>&nbsp;</span>
-                <devctrl-endpoint-status fxFlex="none" [endpointId]="obj._id" backgroundColor="primary"></devctrl-endpoint-status>
+            <div class="devctrl-toolbar-tools">
+                <button md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
+                <button md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
+                <button md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
+                <span class="devctrl-spacer">&nbsp;</span>
+                <devctrl-endpoint-status [endpointId]="obj._id" backgroundColor="primary"></devctrl-endpoint-status>
             </div>
         </md-toolbar>
         
@@ -33,7 +33,14 @@ import {LayoutService} from "../layout/layout.service";
     <devctrl-action-history [hidden]="!ls.desktopWide"></devctrl-action-history>
  </div>
 
-`
+`,
+    //language=CSS
+    styles: [`
+        .devctrl-card {
+            max-width: 900px;
+            flex: 1 1;
+        }
+    `]
 })
 export class EndpointComponent implements OnInit {
     endpointId: string;

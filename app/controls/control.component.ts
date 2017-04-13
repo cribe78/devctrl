@@ -8,11 +8,17 @@ import {ControlService} from "./control.service";
     selector: 'devctrl-ctrl',
     providers: [ControlService],
     templateUrl: 'control.html',
-    styles: [`
+
+    //language=CSS
+    styles: [`        
+        .control-wrapper {
+            flex: 1 1;
+        }
 .devctrl-ctrl-item {
     min-height: 48px;
     width: 100%;
     display: flex;
+    flex-direction: row;
 }
 
 .devctrl-ctrl-admin-placeholder {

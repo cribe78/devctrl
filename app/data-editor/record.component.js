@@ -80,6 +80,8 @@ RecordComponent = __decorate([
         moduleId: module.id,
         selector: 'devctrl-record',
         templateUrl: 'record.html',
+        //language=CSS
+        styles: ["\n        .field-container {\n            flex: 1 1;\n        }\n        \n        .form-container {\n            display: flex;\n            flex-direction: column;\n            flex: 1 1;\n        }\n        \n        .record-container {\n            display: flex;\n            flex-direction: column;\n        }    \n    "]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService,
         material_1.MdDialogRef])

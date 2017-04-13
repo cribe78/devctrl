@@ -21,7 +21,7 @@ SliderControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-slider',
-        template: "\n<div class=\"devctrl-ctrl\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <md-slider style=\"flex: 3 1;\"\n               min=\"{{cs.intConfig('min')}}\"\n               max=\"{{cs.intConfig('max')}}\"\n               [(ngModel)]=\"cs.value\"\n               (change)=\"cs.updateValue()\">\n    </md-slider>\n    <md-input-container>\n        <input md-input\n               class=\"devctrl-slider-input\"\n               type=\"number\"\n               [(ngModel)]=\"cs.value\"\n               (change)=\"cs.updateValue()\">\n    </md-input-container>\n</div>    \n    ",
+        template: "\n<div class=\"devctrl-ctrl\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <md-slider style=\"flex: 3 1;\"\n               min=\"{{cs.intConfig('min')}}\"\n               max=\"{{cs.intConfig('max')}}\"\n               [(ngModel)]=\"cs.value\"\n               (change)=\"cs.updateValue()\">\n    </md-slider>\n    <md-input-container>\n        <input mdInput\n               class=\"devctrl-slider-input\"\n               type=\"number\"\n               [(ngModel)]=\"cs.value\"\n               (change)=\"cs.updateValue()\">\n    </md-input-container>\n</div>    \n    ",
         styles: ["\n.devctrl-ctrl {\n    display: flex; \n    flex-direction: row; \n    align-items: center;\n}\n\n.devctrl-slider-input {\n    width: 60px;\n}\n\n"]
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])

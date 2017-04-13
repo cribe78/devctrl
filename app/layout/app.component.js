@@ -48,7 +48,7 @@ var AppComponent = (function () {
 AppComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-app',
-        template: "\n<body fxLayout=\"column\" (window:resize)=\"ls.resized($event)\">\n    <devctrl-toolbar></devctrl-toolbar>    \n    <md-sidenav-container>\n        <md-sidenav class=\"dc-sidenav\"\n                    [opened]=\"menu.isSidenavOpen()\"\n                    [mode]=\"sidenavMode()\">\n            <devctrl-menu></devctrl-menu>\n        </md-sidenav>\n        <router-outlet></router-outlet>\n    </md-sidenav-container>\n</body>\n",
+        template: "\n<body (window:resize)=\"ls.resized($event)\">\n    <devctrl-toolbar></devctrl-toolbar>    \n    <md-sidenav-container>\n        <md-sidenav class=\"dc-sidenav\"\n                    [opened]=\"menu.isSidenavOpen()\"\n                    [mode]=\"sidenavMode()\">\n            <devctrl-menu></devctrl-menu>\n        </md-sidenav>\n        <router-outlet></router-outlet>\n    </md-sidenav-container>\n</body>\n",
         styles: ["\n.dc-sidenav {\n    width: 270px;\n}\n"]
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,

@@ -42,12 +42,12 @@ import {DCSerializable} from "shared/DCSerializable";
                 [panelControl]="pcontrol"></devctrl-ctrl>
         </div>    
     </md-list-item>
-    <template ngSwitchDefault>
+    <ng-template ngSwitchDefault>
         <md-list-item *ngFor="let pcontrol of pcList(); trackBy:trackById"
                     class="devctrl-ctrl-list-item">
             <devctrl-ctrl [panelControl]="pcontrol"></devctrl-ctrl>
         </md-list-item>
-    </template>
+    </ng-template>
 </section>
 <md-divider></md-divider>
 `,

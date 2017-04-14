@@ -9,14 +9,14 @@ import {MenuService} from "../layout/menu.service";
 <div id="devctrl-content-canvas">
     <div class="devctrl-card">
     <md-nav-list>
-        <template ngFor let-schema [ngForOf]="schemaArray">
+        <ng-template ngFor let-schema [ngForOf]="schemaArray">
             <a md-list-item (click)="menu.go(['config', schema.name])">
                 {{schema.label}}
                 <span class="devctrl-spacer"></span>
                 <md-icon>chevron_right</md-icon>
             </a>
             <md-divider></md-divider> 
-        </template>
+        </ng-template>
     </md-nav-list>
     </div>
 </div>  

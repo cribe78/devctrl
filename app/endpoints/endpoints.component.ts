@@ -19,7 +19,7 @@ import {RecordEditorService} from "../data-editor/record-editor.service";
             </div>
         </md-toolbar>
         <md-nav-list>
-            <template ngFor let-endpoint [ngForOf]="endpointsList">
+            <ng-template ngFor let-endpoint [ngForOf]="endpointsList">
                  <a md-list-item 
                     (click)="menu.go(['devices', endpoint._id])">
                     {{endpoint.name}}
@@ -28,7 +28,7 @@ import {RecordEditorService} from "../data-editor/record-editor.service";
                     <md-icon>chevron_right</md-icon>
                 </a>
                 <md-divider></md-divider>           
-            </template>       
+            </ng-template>       
         </md-nav-list>
 </div>
 `,

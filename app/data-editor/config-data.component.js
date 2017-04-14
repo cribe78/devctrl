@@ -38,7 +38,7 @@ var ConfigDataComponent = (function () {
 ConfigDataComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-config-data',
-        template: "\n<div id=\"devctrl-content-canvas\">\n    <div class=\"devctrl-card\">\n    <md-nav-list>\n        <template ngFor let-schema [ngForOf]=\"schemaArray\">\n            <a md-list-item (click)=\"menu.go(['config', schema.name])\">\n                {{schema.label}}\n                <span class=\"devctrl-spacer\"></span>\n                <md-icon>chevron_right</md-icon>\n            </a>\n            <md-divider></md-divider> \n        </template>\n    </md-nav-list>\n    </div>\n</div>  \n",
+        template: "\n<div id=\"devctrl-content-canvas\">\n    <div class=\"devctrl-card\">\n    <md-nav-list>\n        <ng-template ngFor let-schema [ngForOf]=\"schemaArray\">\n            <a md-list-item (click)=\"menu.go(['config', schema.name])\">\n                {{schema.label}}\n                <span class=\"devctrl-spacer\"></span>\n                <md-icon>chevron_right</md-icon>\n            </a>\n            <md-divider></md-divider> \n        </ng-template>\n    </md-nav-list>\n    </div>\n</div>  \n",
         //language=CSS
         styles: ["\n        .devctrl-card {\n            max-width: 600px;\n            flex: 1 1;\n        }\n        .md-list-item {\n            display: flex; \n            align-items: center; \n            justify-content: space-between; \n        }\n"]
     }),

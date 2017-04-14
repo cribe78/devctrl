@@ -31,7 +31,7 @@ import {LayoutService} from "../layout/layout.service";
             </md-tab>
             <md-tab label="Devices">
                 <md-nav-list class="devices">
-                    <template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
+                    <ng-template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
                         <a md-list-item
                                   (click)="menu.go(['devices', endpoint._id])">
                             <span md-line>{{endpoint.name}}</span>
@@ -40,7 +40,7 @@ import {LayoutService} from "../layout/layout.service";
                             <md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon>
                         </a>
                         <md-divider></md-divider>
-                    </template>
+                    </ng-template>
                 </md-nav-list>
             </md-tab>
         </md-tab-group>

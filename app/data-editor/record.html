@@ -6,7 +6,7 @@
     <h3 md-subheader>Edit</h3>
     <form >
         <div class="form-container">
-            <template ngFor let-field [ngForOf]="schema.fields" [ngForTrackBy]="trackByName">
+            <ng-template ngFor let-field [ngForOf]="schema.fields" [ngForTrackBy]="trackByName">
                 <div class="field-container" [ngSwitch]="field.type">
                     <md-input-container *ngSwitchCase="'string'">
                         <input mdInput
@@ -51,7 +51,7 @@
                         Unknown field type {{field.type}}
                     </div>
                 </div>
-            </template>
+            </ng-template>
         </div>
     </form>
     <div>

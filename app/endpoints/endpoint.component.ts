@@ -24,10 +24,10 @@ import {LayoutService} from "../layout/layout.service";
         </md-toolbar>
         
         <md-list>
-            <template ngFor let-controlId [ngForOf]="controlIds()">
+            <ng-template ngFor let-controlId [ngForOf]="controlIds()">
                 <md-list-item class="devctrl-ctrl-list-item"><devctrl-ctrl [controlId]="controlId"></devctrl-ctrl></md-list-item>
                 <md-divider></md-divider>
-            </template>
+            </ng-template>
         </md-list>
     </div>
     <devctrl-action-history [hidden]="!ls.desktopWide"></devctrl-action-history>

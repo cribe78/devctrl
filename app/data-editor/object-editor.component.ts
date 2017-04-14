@@ -9,7 +9,7 @@ import {Router, ActivatedRoute} from '@angular/router';
         {{keyPath()}}
     </span>
     <div style="margin-left: 24px;">
-        <template ngFor let-key [ngForOf]="keys()">
+        <ng-template ngFor let-key [ngForOf]="keys()">
             <div class="prop-row" *ngIf="valueType(object[key]) != 'object'">
                 <md-input-container>
                     <input mdInput 
@@ -27,7 +27,7 @@ import {Router, ActivatedRoute} from '@angular/router';
                             [pathPrefix]="keyPath()"
                             (onUpdate)="updateItem($event)">
             </devctrl-object-editor>
-        </template>
+        </ng-template>
         <div class="new-prop-row">
             <md-input-container>
                 <input mdInput [placeholder]="newKeyPlaceholder()" [(ngModel)]="newKey" name="new-key">

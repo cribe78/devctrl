@@ -202,7 +202,7 @@ class AWHE130Communicator extends HTTPCommunicator {
                 poll: 0,
                 config: {
                     relativeUrl: "/live/index.html",
-                    proto: "http"
+                    linkProto: "http"
                 },
                 value: ""
             }

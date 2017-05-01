@@ -4,8 +4,8 @@ body {
 }
 
 #devctrl-content-canvas {
-    height:100%;
-    overflow: scroll;
+/**    height:100%; **/
+/**    overflow: scroll; **/
     padding-bottom: 80px;
     display: flex;
     flex-direction: row;

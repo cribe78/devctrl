@@ -110,6 +110,7 @@ Control.CONTROL_TYPE_INT = "int";
 Control.CONTROL_TYPE_XY = "xy";
 Control.USERTYPE_BUTTON = "button";
 Control.USERTYPE_BUTTON_SET = "button-set";
+Control.USERTYPE_HYPERLINK = "hyperlink";
 Control.USERTYPE_IMAGE = "image";
 Control.USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
 Control.USERTYPE_SLIDER_2D = "slider2d";

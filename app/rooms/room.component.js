@@ -18,6 +18,7 @@ var PanelControl_1 = require("shared/PanelControl");
 require("rxjs/add/operator/switchMap");
 var record_editor_service_1 = require("data-editor/record-editor.service");
 var layout_service_1 = require("../layout/layout.service");
+//TODO: remember selected tab
 var RoomComponent = (function () {
     function RoomComponent(route, dataService, menu, recordService, ls) {
         this.route = route;

@@ -2,6 +2,7 @@ import { NgModule }      from '@angular/core';
 import {
     MdButtonModule,
     MdCardModule,
+    MdCheckboxModule,
     MdGridListModule,
     MdIconModule,
     MdInputModule,
@@ -20,6 +21,7 @@ import {
     imports: [
         MdButtonModule,
         MdCardModule,
+        MdCheckboxModule,
         MdGridListModule,
         MdIconModule,
         MdInputModule,
@@ -35,6 +37,7 @@ import {
     exports: [
         MdButtonModule,
         MdCardModule,
+        MdCheckboxModule,
         MdGridListModule,
         MdIconModule,
         MdInputModule,

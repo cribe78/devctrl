@@ -20,6 +20,7 @@ DCMaterialModule = __decorate([
         imports: [
             material_1.MdButtonModule,
             material_1.MdCardModule,
+            material_1.MdCheckboxModule,
             material_1.MdGridListModule,
             material_1.MdIconModule,
             material_1.MdInputModule,
@@ -35,6 +36,7 @@ DCMaterialModule = __decorate([
         exports: [
             material_1.MdButtonModule,
             material_1.MdCardModule,
+            material_1.MdCheckboxModule,
             material_1.MdGridListModule,
             material_1.MdIconModule,
             material_1.MdInputModule,

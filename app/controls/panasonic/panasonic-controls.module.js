@@ -16,6 +16,9 @@ var awhe130_preset_control_1 = require("./awhe130-preset.control");
 var awhe130_preset_map_control_1 = require("./awhe130-preset-map.control");
 var preset_map_pict_l_control_1 = require("./preset-maps/preset-map-pict-l.control");
 var preset_map_pict_r_control_1 = require("./preset-maps/preset-map-pict-r.control");
+var preset_map_default_control_1 = require("./preset-maps/preset-map-default.control");
+var preset_map_orc_students_1 = require("./preset-maps/preset-map-orc-students");
+var preset_map_orc_instructor_1 = require("./preset-maps/preset-map-orc-instructor");
 var PanasonicControlsModule = (function () {
     function PanasonicControlsModule() {
     }
@@ -31,12 +34,18 @@ PanasonicControlsModule = __decorate([
         declarations: [
             awhe130_preset_control_1.AWHE130PresetControl,
             awhe130_preset_map_control_1.AWHE130PresetMapControl,
+            preset_map_default_control_1.PresetMapDefault,
+            preset_map_orc_instructor_1.PresetMapOrcInstructor,
+            preset_map_orc_students_1.PresetMapOrcStudents,
             preset_map_pict_l_control_1.PresetMapPictLControl,
             preset_map_pict_r_control_1.PresetMapPictRControl
         ],
         exports: [
             awhe130_preset_control_1.AWHE130PresetControl,
             awhe130_preset_map_control_1.AWHE130PresetMapControl,
+            preset_map_default_control_1.PresetMapDefault,
+            preset_map_orc_instructor_1.PresetMapOrcInstructor,
+            preset_map_orc_students_1.PresetMapOrcStudents,
             preset_map_pict_l_control_1.PresetMapPictLControl,
             preset_map_pict_r_control_1.PresetMapPictRControl
         ]

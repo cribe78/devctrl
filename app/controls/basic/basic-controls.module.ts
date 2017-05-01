@@ -12,6 +12,7 @@ import {ButtonSetControl} from "./button-set.control";
 import {LevelControl} from "./level.control";
 import {ImageControl} from "./image.control";
 import {Slider2dControl} from "./slder2d.control";
+import {HyperlinkControl} from "./hyperlink.control";
 
 @NgModule({
     imports:      [
@@ -23,6 +24,7 @@ import {Slider2dControl} from "./slder2d.control";
         ButtonControl,
         ButtonSetControl,
         DefaultControl,
+        HyperlinkControl,
         ImageControl,
         LevelControl,
         SelectControl,
@@ -35,6 +37,7 @@ import {Slider2dControl} from "./slder2d.control";
         ButtonControl,
         ButtonSetControl,
         DefaultControl,
+        HyperlinkControl,
         ImageControl,
         LevelControl,
         SelectControl,

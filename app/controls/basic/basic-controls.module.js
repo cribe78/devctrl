@@ -22,6 +22,7 @@ var button_set_control_1 = require("./button-set.control");
 var level_control_1 = require("./level.control");
 var image_control_1 = require("./image.control");
 var slder2d_control_1 = require("./slder2d.control");
+var hyperlink_control_1 = require("./hyperlink.control");
 var BasicControlsModule = (function () {
     function BasicControlsModule() {
     }
@@ -38,6 +39,7 @@ BasicControlsModule = __decorate([
             button_control_1.ButtonControl,
             button_set_control_1.ButtonSetControl,
             default_control_1.DefaultControl,
+            hyperlink_control_1.HyperlinkControl,
             image_control_1.ImageControl,
             level_control_1.LevelControl,
             select_control_1.SelectControl,
@@ -50,6 +52,7 @@ BasicControlsModule = __decorate([
             button_control_1.ButtonControl,
             button_set_control_1.ButtonSetControl,
             default_control_1.DefaultControl,
+            hyperlink_control_1.HyperlinkControl,
             image_control_1.ImageControl,
             level_control_1.LevelControl,
             select_control_1.SelectControl,

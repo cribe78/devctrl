@@ -190,6 +190,25 @@ class AWHE130Communicator extends HTTPCommunicator {
 
         this.controlsByCtid[ctid] = new Control(ctid, viewControlData);
 
+        let linkCtid = this.endpoint_id + "-hyperlink";
+        this.controlsByCtid[linkCtid] = new Control(linkCtid,
+            {
+                _id : linkCtid,
+                ctid: linkCtid,
+                endpoint_id: this.endpoint_id,
+                usertype: Control.USERTYPE_HYPERLINK,
+                name: "Device Web Interface",
+                control_type: Control.CONTROL_TYPE_STRING,
+                poll: 0,
+                config: {
+                    relativeUrl: "/live/index.html",
+                    proto: "http"
+                },
+                value: ""
+            }
+        );
+
+
         return this.controlsByCtid;
     }
 }

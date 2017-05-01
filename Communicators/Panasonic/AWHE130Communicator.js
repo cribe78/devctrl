@@ -174,6 +174,21 @@ var AWHE130Communicator = (function (_super) {
             value: ""
         };
         this.controlsByCtid[ctid] = new Control_1.Control(ctid, viewControlData);
+        var linkCtid = this.endpoint_id + "-hyperlink";
+        this.controlsByCtid[linkCtid] = new Control_1.Control(linkCtid, {
+            _id: linkCtid,
+            ctid: linkCtid,
+            endpoint_id: this.endpoint_id,
+            usertype: Control_1.Control.USERTYPE_HYPERLINK,
+            name: "Device Web Interface",
+            control_type: Control_1.Control.CONTROL_TYPE_STRING,
+            poll: 0,
+            config: {
+                relativeUrl: "/live/index.html",
+                proto: "http"
+            },
+            value: ""
+        });
         return this.controlsByCtid;
     };
     return AWHE130Communicator;

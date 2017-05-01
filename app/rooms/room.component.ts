@@ -10,6 +10,7 @@ import {PanelControl} from "shared/PanelControl";
 import 'rxjs/add/operator/switchMap';
 import {RecordEditorService} from "data-editor/record-editor.service";
 import {LayoutService} from "../layout/layout.service";
+//TODO: remember selected tab
 
 @Component({
     selector: 'devctrl-room',

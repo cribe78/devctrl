@@ -60,6 +60,7 @@ export class Control extends DCSerializable {
 
     static USERTYPE_BUTTON = "button";
     static USERTYPE_BUTTON_SET = "button-set";
+    static USERTYPE_HYPERLINK = "hyperlink";
     static USERTYPE_IMAGE = "image";
     static USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
     static USERTYPE_SLIDER_2D = "slider2d";

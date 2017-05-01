@@ -100,7 +100,7 @@ export class ObjectEditorComponent
 
     deleteValue(key) {
         delete this.object[key];
-        this.onUpdate.emit({object: this.object, name: this.fname});
+        this.onUpdate.emit({value: this.object, name: this.fname});
     }
 
     keys() {

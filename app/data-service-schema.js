@@ -223,6 +223,11 @@ exports.dataServiceSchema = {
                 "name": "panel_id",
                 "type": "fk",
                 "label": "Panel"
+            },
+            {
+                name: "idx",
+                type: "int",
+                label: "Order"
             }
         ]
     },

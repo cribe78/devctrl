@@ -34,7 +34,7 @@ var ObjectEditorComponent = (function () {
     };
     ObjectEditorComponent.prototype.deleteValue = function (key) {
         delete this.object[key];
-        this.onUpdate.emit({ object: this.object, name: this.fname });
+        this.onUpdate.emit({ value: this.object, name: this.fname });
     };
     ObjectEditorComponent.prototype.keys = function () {
         return Object.keys(this.object);

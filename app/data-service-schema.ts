@@ -250,6 +250,11 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "name": "panel_id",
                 "type": "fk",
                 "label": "Panel"
+            },
+            {
+                name: "idx",
+                type: "int",
+                label: "Order"
             }
         ]
     },

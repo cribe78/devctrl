@@ -185,7 +185,7 @@ var AWHE130Communicator = (function (_super) {
             poll: 0,
             config: {
                 relativeUrl: "/live/index.html",
-                proto: "http"
+                linkProto: "http"
             },
             value: ""
         });

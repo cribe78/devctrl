@@ -65,6 +65,7 @@ export class Control extends DCSerializable {
     static USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
     static USERTYPE_SLIDER_2D = "slider2d";
     static USERTYPE_SWITCH = "switch";
+    static USERTYPE_SWITCH_READONLY = "switch-readonly";
     static USERTYPE_SLIDER = "slider";
     static USERTYPE_READONLY = "readonly";
     static USERTYPE_LEVEL = "level";

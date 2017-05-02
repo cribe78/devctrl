@@ -23,6 +23,7 @@ var level_control_1 = require("./level.control");
 var image_control_1 = require("./image.control");
 var slder2d_control_1 = require("./slder2d.control");
 var hyperlink_control_1 = require("./hyperlink.control");
+var switch_readonly_control_1 = require("./switch-readonly.control");
 var BasicControlsModule = (function () {
     function BasicControlsModule() {
     }
@@ -46,7 +47,8 @@ BasicControlsModule = __decorate([
             select_readonly_control_1.SelectReadonlyControl,
             slider_control_1.SliderControl,
             slder2d_control_1.Slider2dControl,
-            switch_control_1.SwitchControl
+            switch_control_1.SwitchControl,
+            switch_readonly_control_1.SwitchReadonlyControl
         ],
         exports: [
             button_control_1.ButtonControl,
@@ -59,7 +61,8 @@ BasicControlsModule = __decorate([
             select_readonly_control_1.SelectReadonlyControl,
             slider_control_1.SliderControl,
             slder2d_control_1.Slider2dControl,
-            switch_control_1.SwitchControl
+            switch_control_1.SwitchControl,
+            switch_readonly_control_1.SwitchReadonlyControl
         ]
     }),
     __metadata("design:paramtypes", [])

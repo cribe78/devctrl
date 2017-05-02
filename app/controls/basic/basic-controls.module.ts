@@ -13,6 +13,7 @@ import {LevelControl} from "./level.control";
 import {ImageControl} from "./image.control";
 import {Slider2dControl} from "./slder2d.control";
 import {HyperlinkControl} from "./hyperlink.control";
+import {SwitchReadonlyControl} from "./switch-readonly.control";
 
 @NgModule({
     imports:      [
@@ -31,7 +32,8 @@ import {HyperlinkControl} from "./hyperlink.control";
         SelectReadonlyControl,
         SliderControl,
         Slider2dControl,
-        SwitchControl
+        SwitchControl,
+        SwitchReadonlyControl
     ],
     exports: [
         ButtonControl,
@@ -44,7 +46,8 @@ import {HyperlinkControl} from "./hyperlink.control";
         SelectReadonlyControl,
         SliderControl,
         Slider2dControl,
-        SwitchControl
+        SwitchControl,
+        SwitchReadonlyControl
     ]
 })
 export class BasicControlsModule {}

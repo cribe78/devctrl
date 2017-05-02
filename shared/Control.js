@@ -115,6 +115,7 @@ Control.USERTYPE_IMAGE = "image";
 Control.USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
 Control.USERTYPE_SLIDER_2D = "slider2d";
 Control.USERTYPE_SWITCH = "switch";
+Control.USERTYPE_SWITCH_READONLY = "switch-readonly";
 Control.USERTYPE_SLIDER = "slider";
 Control.USERTYPE_READONLY = "readonly";
 Control.USERTYPE_LEVEL = "level";

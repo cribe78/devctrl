@@ -298,32 +298,34 @@ class NControl {
             throw new Error("failed to sync control templates");
         }
 
-        // Get ControlTemplates from communicator
-        let controlTemplates = this.communicator.getControlTemplates();
+        // Don't do this part twice
+        if (this.syncControlsPassNumber == 1) {
+            // Get ControlTemplates from communicator
+            let controlTemplates = this.communicator.getControlTemplates();
 
-        let newControls = [];
-        let ctByCtid = {};
+            let newControls = [];
+            let controlsByCtid = {};
 
-
-        for (let id in this.dataModel.controls) {
-            let ct = this.dataModel.controls[id];
-            ctByCtid[ct.ctid] = ct;
-        }
-
-        // Match communicator control templates to server control templates by ctid
-        for (let ctid in controlTemplates) {
-            if (! ctByCtid[ctid]) {
-                newControls.push(controlTemplates[ctid].getDataObject());
+            for (let id in this.dataModel.controls) {
+                let ct = this.dataModel.controls[id];
+                controlsByCtid[ct.ctid] = ct;
             }
-        }
 
-        // newControls is an array of templates to create
-        // Create new ControlTemplates on server
-        if (newControls.length > 0) {
-            debug("adding new controls");
-            this.addData({ controls: newControls}, this.syncControls);
+            // Match communicator control templates to server control templates by ctid
+            for (let ctid in controlTemplates) {
+                if (! controlsByCtid[ctid]) {
+                    newControls.push(controlTemplates[ctid].getDataObject());
+                }
+            }
 
-            return;
+            // newControls is an array of templates to create
+            // Create new ControlTemplates on server
+            if (newControls.length > 0) {
+                debug("adding new controls");
+                this.addData({ controls: newControls}, this.syncControls);
+
+                return;
+            }
         }
 
         debug("controls successfully synced!");

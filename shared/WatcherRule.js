@@ -11,6 +11,7 @@ var WatcherRule = (function (_super) {
     function WatcherRule(_id, data) {
         var _this = _super.call(this, _id) || this;
         _this.watch_value = '';
+        _this.action_control_value = {};
         _this.enabled = false;
         _this.table = WatcherRule.tableStr;
         _this.requiredProperties = [
@@ -95,7 +96,7 @@ var WatcherRule = (function (_super) {
         }
         // Determine resultant update value
         var outputValue;
-        if (this.action_control_value.value) {
+        if (typeof this.action_control_value.value !== 'undefined') {
             outputValue = this.action_control_value.value;
         }
         else if (this.action_control_value.map) {

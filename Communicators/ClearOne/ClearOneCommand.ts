@@ -1,4 +1,4 @@
-import {TCPCommand, ITCPCommandConfig, ITCPTemplateConfig} from "../TCPCommand";
+import {TCPCommand, ITCPCommandConfig} from "../TCPCommand";
 import {Control} from "../../shared/Control";
 import {ControlUpdateData} from "../../shared/ControlUpdate";
 
@@ -10,7 +10,7 @@ export interface IClearOneCommandTemplate {
     usertype: string;
     readonly?: boolean;
     updateTerminator?: string;
-    templateConfig?: ITCPTemplateConfig;
+    templateConfig?: any;
 }
 
 

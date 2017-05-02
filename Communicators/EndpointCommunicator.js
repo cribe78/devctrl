@@ -1,4 +1,5 @@
 "use strict";
+var Control_1 = require("../shared/Control");
 var debug = console.log;
 var EndpointCommunicator = (function () {
     function EndpointCommunicator() {
@@ -45,6 +46,25 @@ var EndpointCommunicator = (function () {
      */
     EndpointCommunicator.prototype.handleControlUpdateRequest = function (request) {
         throw new Error("handleControlUpdateRequest must be implemented by Communicator");
+    };
+    EndpointCommunicator.prototype.registerHyperlinkControl = function (config, name, cmd) {
+        if (name === void 0) { name = "Device Web Interface"; }
+        if (cmd === void 0) { cmd = "hyperlink"; }
+        var ctid = this.endpoint_id + "-" + cmd;
+        if (this.controlsByCtid[ctid]) {
+            throw new Error("duplicate ctid " + ctid + " registered");
+        }
+        this.controlsByCtid[ctid] = new Control_1.Control(ctid, {
+            _id: ctid,
+            ctid: ctid,
+            endpoint_id: this.endpoint_id,
+            usertype: Control_1.Control.USERTYPE_HYPERLINK,
+            name: name,
+            control_type: Control_1.Control.CONTROL_TYPE_STRING,
+            poll: 0,
+            config: config,
+            value: ""
+        });
     };
     EndpointCommunicator.prototype.setControlValue = function (control, val) {
         var valDiff = control.value != val;

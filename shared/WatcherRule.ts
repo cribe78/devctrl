@@ -28,7 +28,7 @@ export class WatcherRule extends DCSerializable {
     value_test: string;
     action_control_id: string;
     _action_control: Control;
-    action_control_value: WatcherActionValue;
+    action_control_value: WatcherActionValue = {};
     enabled: boolean = false;
 
     static tableStr = "watcher_rules";
@@ -126,7 +126,7 @@ export class WatcherRule extends DCSerializable {
 
         // Determine resultant update value
         let outputValue;
-        if (this.action_control_value.value) {
+        if (typeof this.action_control_value.value !== 'undefined') {
             outputValue = this.action_control_value.value;
         }
         else if (this.action_control_value.map) {

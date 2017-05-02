@@ -19,6 +19,13 @@ var MXA910Communicator = (function (_super) {
         this.registerSwitchCommand("Mute All", "DEVICE_AUDIO_MUTE");
         this.registerSwitchReadonlyCommand("Mute LED", "DEV_MUTE_STATUS_LED_STATE");
     };
+    MXA910Communicator.prototype.getControlTemplates = function () {
+        _super.prototype.getControlTemplates.call(this);
+        this.registerHyperlinkControl({
+            relativeUrl: "/"
+        });
+        return this.controlsByCtid;
+    };
     MXA910Communicator.prototype.matchLineToError = function (line) {
         if (line == "< REP ERR ") {
             console.log("ERROR REPORTED");

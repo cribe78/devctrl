@@ -1,6 +1,7 @@
 import {TCPCommunicator} from "../TCPCommunicator";
 import {MXA910Command} from "./MXA910Command";
 import {Control} from "../../shared/Control";
+import {IndexedDataSet} from "../../shared/DCDataModel";
 let debug= console.log;
 
 class MXA910Communicator extends TCPCommunicator {
@@ -9,6 +10,16 @@ class MXA910Communicator extends TCPCommunicator {
     buildCommandList() {
         this.registerSwitchCommand("Mute All", "DEVICE_AUDIO_MUTE");
         this.registerSwitchReadonlyCommand("Mute LED", "DEV_MUTE_STATUS_LED_STATE");
+    }
+
+    getControlTemplates() : IndexedDataSet<Control> {
+        super.getControlTemplates();
+
+        this.registerHyperlinkControl({
+            relativeUrl: "/"
+        });
+
+        return this.controlsByCtid;
     }
 
     matchLineToError(line: string) {

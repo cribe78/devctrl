@@ -66,6 +66,27 @@ export class EndpointCommunicator {
         throw new Error("handleControlUpdateRequest must be implemented by Communicator");
     }
 
+    registerHyperlinkControl(config: any, name = "Device Web Interface", cmd = "hyperlink") {
+        let ctid = this.endpoint_id + "-" + cmd;
+
+        if (this.controlsByCtid[ctid]) {
+            throw new Error(`duplicate ctid ${ctid} registered`);
+        }
+
+        this.controlsByCtid[ctid] = new Control(ctid, {
+            _id : ctid,
+            ctid: ctid,
+            endpoint_id: this.endpoint_id,
+            usertype: Control.USERTYPE_HYPERLINK,
+            name: name,
+            control_type: Control.CONTROL_TYPE_STRING,
+            poll: 0,
+            config: config,
+            value: ""
+        });
+
+    }
+
     setControlValue(control: Control, val: any) {
         let valDiff = control.value != val;
         if (typeof val == 'object') {

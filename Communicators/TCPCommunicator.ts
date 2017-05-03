@@ -133,28 +133,31 @@ export class TCPCommunicator extends EndpointCommunicator {
     }
 
     handleControlUpdateRequest(request: ControlUpdateData) {
+        let control = this.controls[request.control_id];
+
         if (! this.connected) {
             return;
         }
 
-        let control = this.controls[request.control_id];
         let command = this.commandsByTemplate[control.ctid];
 
-        let updateStr = command.updateString(control, request);
-        debug("sending update: " + updateStr);
-        this.writeToSocket(updateStr + this.outputLineTerminator);
+        if (command) {
+            let updateStr = command.updateString(control, request);
+            debug("sending update: " + updateStr);
 
-        this.expectedResponses.push([
-            command.updateResponseMatchString(request),
-            (line) => {
-                this.setControlValue(control, request.value);
-            }
-        ]);
+            this.queueCommand(updateStr + this.outputLineTerminator,
+                [
+                    command.updateResponseMatchString(request),
+                    (line) => {
+                        this.setControlValue(control, request.value);
+                    }
+                ]
+            );
 
-        // Mark this control as indeterminate, in case we see a query or other update
-        // regarding it but the expected response never comes
-        this.indeterminateControls[request.control_id] = true;
-
+            // Mark this control as indeterminate, in case we see a query or other update
+            // regarding it but the expected response never comes
+            this.indeterminateControls[request.control_id] = true;
+        }
     }
 
 
@@ -313,6 +316,16 @@ export class TCPCommunicator extends EndpointCommunicator {
         else {
             debug("read, unmatched: " + line );
         }
+    }
+
+    /**
+     * This implementation just writes the command to the socket.  Child classes
+     * can do fancier things
+     */
+
+    queueCommand(cmdStr : string, expectedResponse: [string | RegExp, (line: string) => any]) {
+        this.writeToSocket(cmdStr);
+        this.expectedResponses.push(expectedResponse);
     }
 
     /**

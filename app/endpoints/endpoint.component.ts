@@ -90,7 +90,9 @@ export class EndpointComponent implements OnInit {
     addControl($event) {
         this.recordService.editRecord($event, '0', 'controls',
             {
-                'endpoint_type_id' : this.obj.endpoint_type_id
+                endpoint: this.obj,
+                ctid: this.endpointId + "-",
+                poll: false
             }
         );
     }

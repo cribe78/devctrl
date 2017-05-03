@@ -107,23 +107,24 @@ var TCPCommunicator = (function (_super) {
     };
     TCPCommunicator.prototype.handleControlUpdateRequest = function (request) {
         var _this = this;
+        var control = this.controls[request.control_id];
         if (!this.connected) {
             return;
         }
-        var control = this.controls[request.control_id];
         var command = this.commandsByTemplate[control.ctid];
-        var updateStr = command.updateString(control, request);
-        debug("sending update: " + updateStr);
-        this.writeToSocket(updateStr + this.outputLineTerminator);
-        this.expectedResponses.push([
-            command.updateResponseMatchString(request),
-            function (line) {
-                _this.setControlValue(control, request.value);
-            }
-        ]);
-        // Mark this control as indeterminate, in case we see a query or other update
-        // regarding it but the expected response never comes
-        this.indeterminateControls[request.control_id] = true;
+        if (command) {
+            var updateStr = command.updateString(control, request);
+            debug("sending update: " + updateStr);
+            this.queueCommand(updateStr + this.outputLineTerminator, [
+                command.updateResponseMatchString(request),
+                function (line) {
+                    _this.setControlValue(control, request.value);
+                }
+            ]);
+            // Mark this control as indeterminate, in case we see a query or other update
+            // regarding it but the expected response never comes
+            this.indeterminateControls[request.control_id] = true;
+        }
     };
     TCPCommunicator.prototype.matchLineToCommand = function (line) {
         for (var cmdStr in this.commands) {
@@ -246,6 +247,14 @@ var TCPCommunicator = (function (_super) {
         else {
             debug("read, unmatched: " + line);
         }
+    };
+    /**
+     * This implementation just writes the command to the socket.  Child classes
+     * can do fancier things
+     */
+    TCPCommunicator.prototype.queueCommand = function (cmdStr, expectedResponse) {
+        this.writeToSocket(cmdStr);
+        this.expectedResponses.push(expectedResponse);
     };
     /**
      * Query all controls, regardless of poll setting.

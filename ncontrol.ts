@@ -210,6 +210,16 @@ class NControl {
                 if (control.endpoint_id && control.endpoint_id == this.endpoint._id
                 && update.status == "requested") {
                     debug(`control update: ${ control.name } : ${ update.value }`);
+
+                    if (control.control_type == Control.CONTROL_TYPE_ECHO) {
+                        // Just update the value and kick it back to the messenger
+                        // This is a "dummy" command that can be used to trigger other
+                        // actions
+
+                        this.pushControlUpdate(control, update.value);
+                        return;
+                    }
+
                     this.communicator.handleControlUpdateRequest(update);
                 }
             }

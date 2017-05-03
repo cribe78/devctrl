@@ -38,31 +38,6 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
     }
 
 
-    handleControlUpdateRequest(request: ControlUpdateData) {
-        if (! this.connected) {
-            return;
-        }
-
-        let control = this.controls[request.control_id];
-        let command = this.commandsByTemplate[control.ctid];
-
-        let updateStr = command.updateString(control, request);
-        debug("sending update: " + updateStr);
-
-        this.queueCommand(updateStr + this.outputLineTerminator,
-            [
-                command.updateResponseMatchString(request),
-                (line) => {
-                    this.setControlValue(control, request.value);
-                }
-            ]
-        );
-
-        // Mark this control as indeterminate, in case we see a query or other update
-        // regarding it but the expected response never comes
-        this.indeterminateControls[request.control_id] = true;
-    }
-
     onData(data: any) {
         let strData = '';
         if (this.commsMode == 'string') {

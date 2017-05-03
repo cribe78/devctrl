@@ -16,6 +16,7 @@ var Control = (function (_super) {
     __extends(Control, _super);
     function Control(_id, data) {
         var _this = _super.call(this, _id) || this;
+        _this.config = {};
         _this.ephemeral = false;
         _this.foreignKeys = [
             {
@@ -104,9 +105,10 @@ var Control = (function (_super) {
 Control.tableStr = "controls";
 // usertype and control_type values
 Control.CONTROL_TYPE_BOOLEAN = "boolean";
-Control.CONTROL_TYPE_STRING = "string";
-Control.CONTROL_TYPE_RANGE = "range";
+Control.CONTROL_TYPE_ECHO = "echo"; // For echo controls, ncontrol just returns the value specified
 Control.CONTROL_TYPE_INT = "int";
+Control.CONTROL_TYPE_RANGE = "range";
+Control.CONTROL_TYPE_STRING = "string";
 Control.CONTROL_TYPE_XY = "xy";
 Control.USERTYPE_BUTTON = "button";
 Control.USERTYPE_BUTTON_SET = "button-set";

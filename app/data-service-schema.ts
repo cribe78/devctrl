@@ -147,12 +147,12 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "type": "select-static",
                 "label": "Control Type",
                 options: [
-                    { name: "boolean", value: "boolean"},
-                    { name: "int", value: "int"},
-                    { name: "range", value: "range"},
-                    { name: "rtlevel", value: "rtlevel"},
-                    { name: "string", value: "string"},
-                    { name: "object", value: "object"},
+                    { name: "boolean", value: Control.CONTROL_TYPE_BOOLEAN},
+                    { name: "echo", value: Control.CONTROL_TYPE_ECHO},
+                    { name: "int", value: Control.CONTROL_TYPE_INT},
+                    { name: "range", value: Control.CONTROL_TYPE_RANGE},
+                    { name: "string", value: Control.CONTROL_TYPE_STRING},
+                    { name: "xy", value: Control.CONTROL_TYPE_XY}
                 ]
             },
             {

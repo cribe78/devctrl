@@ -70,6 +70,16 @@ var EndpointStatusComponent = (function () {
         }
         return classes;
     };
+    EndpointStatusComponent.prototype.statusIconColor = function () {
+        var status = this.status();
+        if (status == Endpoint_1.EndpointStatus.Online) {
+            return 'primary';
+        }
+        if (status == Endpoint_1.EndpointStatus.Offline) {
+            return 'warn';
+        }
+        return '';
+    };
     return EndpointStatusComponent;
 }());
 __decorate([
@@ -83,7 +93,8 @@ __decorate([
 EndpointStatusComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint-status',
-        template: "\n<md-icon [ngClass]=\"statusIconClasses()\" md-tooltip=\"{{statusStr()}}\">{{statusIcon()}}</md-icon>\n",
+        template: "\n<md-icon [color]=\"statusIconColor()\" [ngClass]=\"statusIconClasses()\" md-tooltip=\"{{statusStr()}}\">{{statusIcon()}}</md-icon>\n",
+        //language=CSS
         styles: ["\n.devctrl-icon-disabled {\n    color: #bdbdbd;\n}    \n"]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService, core_1.Injector])

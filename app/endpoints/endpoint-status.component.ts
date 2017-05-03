@@ -5,8 +5,9 @@ import {DataService} from "../data.service";
 @Component({
     selector: 'devctrl-endpoint-status',
     template: `
-<md-icon [ngClass]="statusIconClasses()" md-tooltip="{{statusStr()}}">{{statusIcon()}}</md-icon>
+<md-icon [color]="statusIconColor()" [ngClass]="statusIconClasses()" md-tooltip="{{statusStr()}}">{{statusIcon()}}</md-icon>
 `,
+    //language=CSS
     styles: [`
 .devctrl-icon-disabled {
     color: #bdbdbd;
@@ -84,5 +85,19 @@ export class EndpointStatusComponent implements OnInit {
         }
 
         return classes;
+    }
+
+    statusIconColor() {
+        let status = this.status();
+
+        if (status == EndpointStatus.Online) {
+            return 'primary';
+        }
+
+        if (status == EndpointStatus.Offline) {
+            return 'warn';
+        }
+
+        return '';
     }
 }

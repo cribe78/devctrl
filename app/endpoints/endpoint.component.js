@@ -56,7 +56,9 @@ var EndpointComponent = (function () {
     };
     EndpointComponent.prototype.addControl = function ($event) {
         this.recordService.editRecord($event, '0', 'controls', {
-            'endpoint_type_id': this.obj.endpoint_type_id
+            endpoint: this.obj,
+            ctid: this.endpointId + "-",
+            poll: false
         });
     };
     EndpointComponent.prototype.editEndpoint = function ($event) {

@@ -3,8 +3,11 @@ TODO: Add documentation for databaase tables/table editors
 TODO: add log view
 TODO: save settings sets
 TODO: roll back data model changes on error
-TODO: hyperlink control type
 TODO: reorder device controls
 TODO: Add login page for unauthenticated or unauthorized users
-
+TODO: dummy control for triggering watcher actions
+TODO: retain selected tab in Room
+TODO: configurable log levels - make ncontrol quieter at runtime
+TODO: edit client name
+TODO: Field labels missing in record editor
 

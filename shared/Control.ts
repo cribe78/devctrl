@@ -28,7 +28,7 @@ export class Control extends DCSerializable {
     usertype: string;
     control_type: string;
     poll: number;
-    config: any;
+    config: any = {};
     private _value: any;
     ephemeral: boolean = false;
     option_set_id: string;
@@ -53,9 +53,10 @@ export class Control extends DCSerializable {
 
     // usertype and control_type values
     static CONTROL_TYPE_BOOLEAN = "boolean";
-    static CONTROL_TYPE_STRING = "string";
-    static CONTROL_TYPE_RANGE = "range";
+    static CONTROL_TYPE_ECHO = "echo"; // For echo controls, ncontrol just returns the value specified
     static CONTROL_TYPE_INT = "int";
+    static CONTROL_TYPE_RANGE = "range";
+    static CONTROL_TYPE_STRING = "string";
     static CONTROL_TYPE_XY = "xy";
 
     static USERTYPE_BUTTON = "button";

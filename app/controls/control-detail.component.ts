@@ -6,7 +6,7 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {IndexedDataSet} from "../../shared/DCDataModel";
 import {DSTableDefinition} from "../data-service-schema";
 import {RecordEditorService} from "../data-editor/record-editor.service";
-import {WatcherRule} from "../../shared/WatcherRule";
+import {ActionTrigger} from "../../shared/ActionTrigger";
 
 @Component({
     moduleId: module.id,
@@ -76,20 +76,52 @@ import {WatcherRule} from "../../shared/WatcherRule";
                     </div>        
                 </form>     
             </md-tab>
-            <md-tab label="Watcher Rules">
+            <md-tab [label]="triggerLabel()">
                 <md-list>
-                    <h3 md-subheader>Rules triggered by this control</h3>
-                    <ng-template ngFor let-watcherRule [ngForOf]="triggeredList()">
+                    <div class="action-subhead">
+                        <h3 md-subheader>Rules triggered by this control</h3>
+                        <button md-icon-button 
+                                (click)="addTrigger($event)"
+                                color="primary"
+                                tooltip="Add action">
+                            <md-icon>add</md-icon>
+                        </button>
+                    </div>
+                    <ng-template ngFor let-actionTrigger [ngForOf]="triggeredList()">
                         <md-list-item>
                             <h3 md-line class="triggered-detail">
-                                {{watcherRule.action_control.endpoint.name}}
+                                {{actionTrigger.action_control.endpoint.name}}
                                 :&nbsp;
-                                {{watcherRule.action_control.name}}
+                                {{actionTrigger.action_control.name}}
                             </h3>
                             <div md-line>
-                                {{watcherRule.valueDescription}}
+                                {{actionTrigger.valueDescription}}
                             </div>
                             <button md-icon-button (click)="editWatcherRule($event, watcherRule)">
+                                <md-icon>create</md-icon>
+                            </button>
+                        </md-list-item>
+                    </ng-template>
+                    <div class="action-subhead">
+                        <h3 md-subheader>Rules modifying this control</h3>
+                        <button md-icon-button
+                                (click)="addAction($event)"
+                                color="primary"
+                                tooltip="Add action">
+                            <md-icon>add</md-icon>
+                        </button>
+                    </div>
+                    <ng-template ngFor let-actionTrigger [ngForOf]="actionList()">
+                        <md-list-item>
+                            <h3 md-line class="triggered-detail">
+                                {{actionTrigger.trigger_control.endpoint.name}}
+                                :&nbsp;
+                                {{actionTrigger.trigger_control.name}}
+                            </h3>
+                            <div md-line>
+                                {{actionTrigger.valueDescription}}
+                            </div>
+                            <button md-icon-button (click)="editWatcherRule($event, actionTrigger)">
                                 <md-icon>create</md-icon>
                             </button>
                         </md-list-item>
@@ -104,6 +136,10 @@ import {WatcherRule} from "../../shared/WatcherRule";
     `,
     //language=CSS
     styles: [`
+        .action-subhead {
+            display: flex;
+            flex-direction: row;
+        }
         .devctrl-card {
             max-width: 1600px;
             flex: 1 1;
@@ -143,7 +179,7 @@ import {WatcherRule} from "../../shared/WatcherRule";
 export class ControlDetailComponent implements OnInit {
     control : Control;
     schema : DSTableDefinition;
-    watcherRules : IndexedDataSet<WatcherRule>;
+    actionTriggers : IndexedDataSet<ActionTrigger>;
     constructor(private route : ActivatedRoute,
                 private ds: DataService,
                 private recordService: RecordEditorService,
@@ -151,7 +187,7 @@ export class ControlDetailComponent implements OnInit {
 
     ngOnInit() {
         this.schema = this.ds.getSchema(Control.tableStr);
-        this.watcherRules = this.ds.getTable(WatcherRule.tableStr) as IndexedDataSet<WatcherRule>;
+        this.actionTriggers = this.ds.getTable(ActionTrigger.tableStr) as IndexedDataSet<ActionTrigger>;
         this.route.data.subscribe((data: { control: Control }) => {
             this.menu.currentTopLevel = MenuService.TOPLEVEL_DEVICES;
             this.control = data.control;
@@ -159,16 +195,48 @@ export class ControlDetailComponent implements OnInit {
             if (this.control) {
                 this.menu.pageTitle = this.control.name;
             }
-            //this.watcherRules = this.control.referenced[WatcherRule.tableStr] as IndexedDataSet<WatcherRule>;
+            //this.watcherRules = this.control.referenced[ActionTrigger.tableStr] as IndexedDataSet<ActionTrigger>;
         });
+    }
+
+    actionList() {
+        if (this.actionTriggers) {
+            return Object.keys(this.actionTriggers)
+                .map(id => this.actionTriggers[id])
+                .filter(rule => { return rule.action_control_id == this.control.id});
+        }
+        return [];
+    }
+
+    /**
+     * Add a new ActionTrigger, with this control as the action_control
+     */
+
+    addAction($event) {
+        this.recordService.addRecord($event, ActionTrigger.tableStr,
+            {
+                action_control: this.control
+            });
+    }
+
+    /**
+     * Add a new ActionTrigger, with this control as the trigger_control
+     * @param update
+     */
+
+    addTrigger($event) {
+        this.recordService.addRecord($event, ActionTrigger.tableStr,
+            {
+                trigger_control: this.control
+            });
     }
 
     controlUpdated(update) {
         this.control[update.name] = update.value;
     }
 
-    editWatcherRule($event, watcherRule) {
-        this.recordService.editRecord($event, watcherRule.id, watcherRule.table);
+    editWatcherRule($event, actionTrigger) {
+        this.recordService.editRecord($event, actionTrigger.id, actionTrigger.table);
     }
 
     openRecordEditor($event) {
@@ -176,11 +244,20 @@ export class ControlDetailComponent implements OnInit {
     }
 
     triggeredList() {
-        if (this.watcherRules) {
-            return Object.keys(this.watcherRules)
-                .map(id => this.watcherRules[id])
-                .filter(rule => { return rule.watched_control_id == this.control.id});
+        if (this.actionTriggers) {
+            return Object.keys(this.actionTriggers)
+                .map(id => this.actionTriggers[id])
+                .filter(rule => { return rule.trigger_control_id == this.control.id});
         }
         return [];
+    }
+
+
+
+    triggerLabel() {
+        let ruleCount = this.actionList().length + this.triggeredList().length;
+
+
+        return `Action Triggers (${ruleCount})`;
     }
 }

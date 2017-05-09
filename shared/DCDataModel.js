@@ -11,7 +11,7 @@ var Room_1 = require("./Room");
 var Endpoint_1 = require("./Endpoint");
 var EndpointType_1 = require("./EndpointType");
 var Control_1 = require("./Control");
-var WatcherRule_1 = require("./WatcherRule");
+var ActionTrigger_1 = require("./ActionTrigger");
 var OptionSet_1 = require("./OptionSet");
 var DCDataModel = (function () {
     function DCDataModel() {
@@ -32,7 +32,7 @@ var DCDataModel = (function () {
             panels: Panel_1.Panel,
             panel_controls: PanelControl_1.PanelControl,
             rooms: Room_1.Room,
-            watcher_rules: WatcherRule_1.WatcherRule,
+            watcher_rules: ActionTrigger_1.ActionTrigger,
         };
         this.debug = console.log;
     }
@@ -70,7 +70,7 @@ var DCDataModel = (function () {
                 this.loadTableData(add.rooms, this.rooms, Room_1.Room);
             }
             if (add.watcher_rules) {
-                this.loadTableData(add.watcher_rules, this.watcher_rules, WatcherRule_1.WatcherRule);
+                this.loadTableData(add.watcher_rules, this.watcher_rules, ActionTrigger_1.ActionTrigger);
             }
             // Call indexForeignKeys if relevant tables have been updated
             if (add.endpoints || add.endpoint_types) {
@@ -172,7 +172,7 @@ var DCDataModel = (function () {
                 return this.getItem(id, table);
             case Control_1.Control.tableStr:
                 return this.getItem(id, table);
-            case WatcherRule_1.WatcherRule.tableStr:
+            case ActionTrigger_1.ActionTrigger.tableStr:
                 return this.getItem(id, table);
         }
     };

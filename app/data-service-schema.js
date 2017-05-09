@@ -240,7 +240,7 @@ exports.dataServiceSchema = {
         ]
     },
     watcher_rules: {
-        label: "Watcher Rules",
+        label: "Action Triggers",
         foreign_keys: {
             watched_control_id: "controls",
             action_control_id: "controls"
@@ -248,9 +248,9 @@ exports.dataServiceSchema = {
         fields: [
             nameField,
             {
-                name: "watched_control_id",
+                name: "trigger_control_id",
                 type: "fk",
-                label: "Watched Control"
+                label: "Trigger Control"
             },
             {
                 name: "action_control_id",

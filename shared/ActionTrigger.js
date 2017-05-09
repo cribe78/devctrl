@@ -6,17 +6,17 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DCSerializable_1 = require("./DCSerializable");
 var Control_1 = require("./Control");
-var WatcherRule = (function (_super) {
-    __extends(WatcherRule, _super);
-    function WatcherRule(_id, data) {
+var ActionTrigger = (function (_super) {
+    __extends(ActionTrigger, _super);
+    function ActionTrigger(_id, data) {
         var _this = _super.call(this, _id) || this;
-        _this.watch_value = 'any';
+        _this.trigger_value = 'any';
         _this.action_control_value = {};
         _this.enabled = false;
-        _this.table = WatcherRule.tableStr;
+        _this.table = ActionTrigger.tableStr;
         _this.requiredProperties = [
-            'watched_control_id',
-            'watch_value',
+            'trigger_control_id',
+            'trigger_value',
             'value_test',
             'action_control_id',
             'action_control_value',
@@ -25,8 +25,8 @@ var WatcherRule = (function (_super) {
         _this.foreignKeys = [
             {
                 type: Control_1.Control,
-                fkObjProp: "watched_control",
-                fkIdProp: "watched_control_id",
+                fkObjProp: "trigger_control",
+                fkIdProp: "trigger_control_id",
                 fkTable: Control_1.Control.tableStr
             },
             {
@@ -41,7 +41,7 @@ var WatcherRule = (function (_super) {
         }
         return _this;
     }
-    Object.defineProperty(WatcherRule.prototype, "action_control", {
+    Object.defineProperty(ActionTrigger.prototype, "action_control", {
         get: function () {
             return this._action_control;
         },
@@ -52,45 +52,45 @@ var WatcherRule = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(WatcherRule.prototype, "watched_control", {
+    Object.defineProperty(ActionTrigger.prototype, "trigger_control", {
         get: function () {
-            return this._watched_control;
+            return this._trigger_control;
         },
         set: function (val) {
-            this._watched_control = val;
-            this.watched_control_id = val._id;
+            this._trigger_control = val;
+            this.trigger_control_id = val._id;
         },
         enumerable: true,
         configurable: true
     });
-    WatcherRule.prototype.getDataObject = function () {
+    ActionTrigger.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
-    WatcherRule.prototype.generateControlUpdate = function (update, guid, checkStatus) {
+    ActionTrigger.prototype.generateControlUpdate = function (update, guid, checkStatus) {
         if (checkStatus === void 0) { checkStatus = true; }
         if (checkStatus && update.status != 'observed') {
             return "statusCheck failed, status: " + update.status;
         }
-        if (update.control_id != this.watched_control_id) {
+        if (update.control_id != this.trigger_control_id) {
             return "control_id check failed";
         }
         // Perform value test
-        if (this.value_test == WatcherRule.VALUE_TEST_EQUALS) {
-            if (update.value != this.watch_value) {
-                return "value test equals failed, " + update.value + " != " + this.watch_value;
+        if (this.value_test == ActionTrigger.VALUE_TEST_EQUALS) {
+            if (update.value != this.trigger_value) {
+                return "value test equals failed, " + update.value + " != " + this.trigger_value;
             }
         }
-        else if (this.value_test == WatcherRule.VALUE_TEST_GREATER_THAN) {
-            if (!(parseFloat(update.value) > parseFloat(this.watch_value))) {
-                return "value test gt failed, " + update.value + " <= " + this.watch_value;
+        else if (this.value_test == ActionTrigger.VALUE_TEST_GREATER_THAN) {
+            if (!(parseFloat(update.value) > parseFloat(this.trigger_value))) {
+                return "value test gt failed, " + update.value + " <= " + this.trigger_value;
             }
         }
-        else if (this.value_test == WatcherRule.VALUE_TEST_LESS_THAN) {
-            if (!(parseFloat(update.value) < parseFloat(this.watch_value))) {
-                return "value test lt failed, " + update.value + " >= " + this.watch_value;
+        else if (this.value_test == ActionTrigger.VALUE_TEST_LESS_THAN) {
+            if (!(parseFloat(update.value) < parseFloat(this.trigger_value))) {
+                return "value test lt failed, " + update.value + " >= " + this.trigger_value;
             }
         }
-        else if (this.value_test == WatcherRule.VALUE_TEST_ANY) { }
+        else if (this.value_test == ActionTrigger.VALUE_TEST_ANY) { }
         else {
             return "unknown value test type " + this.value_test;
         }
@@ -117,7 +117,7 @@ var WatcherRule = (function (_super) {
         };
         return outputUpdateData;
     };
-    Object.defineProperty(WatcherRule.prototype, "valueDescription", {
+    Object.defineProperty(ActionTrigger.prototype, "valueDescription", {
         get: function () {
             var _this = this;
             if (typeof this.action_control_value.value !== 'undefined') {
@@ -127,7 +127,7 @@ var WatcherRule = (function (_super) {
                 var map_1 = this.action_control_value.map;
                 var valStr = Object.keys(map_1)
                     .map(function (key) {
-                    return _this.watched_control.selectValueName(key) + " => " + _this.action_control.selectValueName(map_1[key]);
+                    return _this.trigger_control.selectValueName(key) + " => " + _this.action_control.selectValueName(map_1[key]);
                 })
                     .join(", ");
                 return valStr;
@@ -137,12 +137,12 @@ var WatcherRule = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    return WatcherRule;
+    return ActionTrigger;
 }(DCSerializable_1.DCSerializable));
-WatcherRule.tableStr = "watcher_rules";
-WatcherRule.VALUE_TEST_EQUALS = "=";
-WatcherRule.VALUE_TEST_LESS_THAN = "<";
-WatcherRule.VALUE_TEST_GREATER_THAN = ">";
-WatcherRule.VALUE_TEST_ANY = "any";
-exports.WatcherRule = WatcherRule;
-//# sourceMappingURL=WatcherRule.js.map
+ActionTrigger.tableStr = "watcher_rules";
+ActionTrigger.VALUE_TEST_EQUALS = "=";
+ActionTrigger.VALUE_TEST_LESS_THAN = "<";
+ActionTrigger.VALUE_TEST_GREATER_THAN = ">";
+ActionTrigger.VALUE_TEST_ANY = "any";
+exports.ActionTrigger = ActionTrigger;
+//# sourceMappingURL=ActionTrigger.js.map

@@ -1,6 +1,6 @@
 import { TCPCommunicator } from "../TCPCommunicator";
 import { commands } from "./AP400Controls";
-import {TCPCommand, ITCPTemplateConfig} from "../TCPCommand";
+import {TCPCommand} from "../TCPCommand";
 import {IClearOneCommandConfig, ClearOneCommand} from "./ClearOneCommand";
 
 import * as debugMod from "debug";
@@ -15,7 +15,7 @@ export interface IAP400CommandConfig {
     usertype: string;
     readonly?: boolean;
     updateTerminator?: string;
-    templateConfig?: ITCPTemplateConfig;
+    templateConfig?: any;
 }
 
 class AP400Communicator extends TCPCommunicator {

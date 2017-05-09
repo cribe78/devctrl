@@ -12,7 +12,7 @@ var core_1 = require("@angular/core");
 var data_service_1 = require("../data.service");
 var record_editor_service_1 = require("data-editor/record-editor.service");
 var Control_1 = require("shared/Control");
-var WatcherRule_1 = require("shared/WatcherRule");
+var ActionTrigger_1 = require("shared/ActionTrigger");
 var router_1 = require("@angular/router");
 var ControlService = (function () {
     function ControlService(dataService, recordService, router) {
@@ -85,7 +85,7 @@ var ControlService = (function () {
         configurable: true
     });
     ControlService.prototype.addWatcherRule = function ($event) {
-        this.recordService.editRecord($event, '0', WatcherRule_1.WatcherRule.tableStr, { watched_control_id: this.control._id });
+        this.recordService.editRecord($event, '0', ActionTrigger_1.ActionTrigger.tableStr, { watched_control_id: this.control._id });
     };
     ControlService.prototype.config = function (key) {
         if (typeof this.control.config == 'object' && this.control.config[key]) {

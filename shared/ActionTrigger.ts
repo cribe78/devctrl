@@ -2,12 +2,12 @@ import {DCSerializableData, DCSerializable} from "./DCSerializable";
 import {Control} from "./Control";
 import {ControlUpdate, ControlUpdateData} from "./ControlUpdate";
 /**
- * A WatcherRule defines and action in response to a change in a control value
+ * A ActionTrigger defines and action in response to a change in a control value
  */
 
-export interface WatcherRuleData extends DCSerializableData {
-    watched_control_id: string,
-    watch_value: any,
+export interface ActionTriggerData extends DCSerializableData {
+    trigger_control_id: string,
+    trigger_value: any,
     value_test: string,
     action_control_id: string,
     action_control_value: any,
@@ -21,10 +21,10 @@ export interface WatcherActionValue {
     }
 }
 
-export class WatcherRule extends DCSerializable {
-    watched_control_id: string;
-    _watched_control: Control;
-    watch_value: any = 'any';
+export class ActionTrigger extends DCSerializable {
+    trigger_control_id: string;
+    _trigger_control: Control;
+    trigger_value: any = 'any';
     value_test: string;
     action_control_id: string;
     _action_control: Control;
@@ -38,12 +38,12 @@ export class WatcherRule extends DCSerializable {
     static VALUE_TEST_ANY = "any";
 
 
-    constructor(_id: string, data?: WatcherRuleData) {
+    constructor(_id: string, data?: ActionTriggerData) {
         super(_id);
-        this.table = WatcherRule.tableStr;
+        this.table = ActionTrigger.tableStr;
         this.requiredProperties = [
-            'watched_control_id',
-            'watch_value',
+            'trigger_control_id',
+            'trigger_value',
             'value_test',
             'action_control_id',
             'action_control_value',
@@ -53,8 +53,8 @@ export class WatcherRule extends DCSerializable {
         this.foreignKeys = [
             {
                 type: Control,
-                fkObjProp: "watched_control",
-                fkIdProp: "watched_control_id",
+                fkObjProp: "trigger_control",
+                fkIdProp: "trigger_control_id",
                 fkTable: Control.tableStr
             },
             {
@@ -79,18 +79,18 @@ export class WatcherRule extends DCSerializable {
         this.action_control_id = val._id;
     }
 
-    get watched_control() {
-        return this._watched_control;
+    get trigger_control() {
+        return this._trigger_control;
     }
 
-    set watched_control(val: Control) {
-        this._watched_control = val;
-        this.watched_control_id = val._id;
+    set trigger_control(val: Control) {
+        this._trigger_control = val;
+        this.trigger_control_id = val._id;
     }
 
 
-    getDataObject() : WatcherRuleData {
-        return (<WatcherRuleData>DCSerializable.defaultDataObject(this));
+    getDataObject() : ActionTriggerData {
+        return (<ActionTriggerData>DCSerializable.defaultDataObject(this));
     }
 
     generateControlUpdate(update : ControlUpdate, guid : string, checkStatus : boolean = true)
@@ -99,27 +99,27 @@ export class WatcherRule extends DCSerializable {
             return `statusCheck failed, status: ${update.status}`;
         }
 
-        if (update.control_id != this.watched_control_id) {
+        if (update.control_id != this.trigger_control_id) {
             return `control_id check failed`;
         }
 
         // Perform value test
-        if (this.value_test == WatcherRule.VALUE_TEST_EQUALS) {
-            if (update.value != this.watch_value) {
-                return `value test equals failed, ${update.value} != ${this.watch_value}`;
+        if (this.value_test == ActionTrigger.VALUE_TEST_EQUALS) {
+            if (update.value != this.trigger_value) {
+                return `value test equals failed, ${update.value} != ${this.trigger_value}`;
             }
         }
-        else if (this.value_test == WatcherRule.VALUE_TEST_GREATER_THAN) {
-            if (! (parseFloat(update.value) > parseFloat(this.watch_value))) {
-                return `value test gt failed, ${update.value} <= ${this.watch_value}`;
+        else if (this.value_test == ActionTrigger.VALUE_TEST_GREATER_THAN) {
+            if (! (parseFloat(update.value) > parseFloat(this.trigger_value))) {
+                return `value test gt failed, ${update.value} <= ${this.trigger_value}`;
             }
         }
-        else if (this.value_test == WatcherRule.VALUE_TEST_LESS_THAN) {
-            if (! (parseFloat(update.value) < parseFloat(this.watch_value))) {
-                return `value test lt failed, ${update.value} >= ${this.watch_value}`;
+        else if (this.value_test == ActionTrigger.VALUE_TEST_LESS_THAN) {
+            if (! (parseFloat(update.value) < parseFloat(this.trigger_value))) {
+                return `value test lt failed, ${update.value} >= ${this.trigger_value}`;
             }
         }
-        else if (this.value_test == WatcherRule.VALUE_TEST_ANY) {}
+        else if (this.value_test == ActionTrigger.VALUE_TEST_ANY) {}
         else {
             return `unknown value test type ${this.value_test}`;
         }
@@ -159,7 +159,7 @@ export class WatcherRule extends DCSerializable {
             let map = this.action_control_value.map;
             let valStr = Object.keys(map)
                 .map( key => {
-                    return `${this.watched_control.selectValueName(key)} => ${this.action_control.selectValueName(map[key])}`
+                    return `${this.trigger_control.selectValueName(key)} => ${this.action_control.selectValueName(map[key])}`
                 })
                 .join(", ");
 

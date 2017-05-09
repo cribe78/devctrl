@@ -267,7 +267,7 @@ export let dataServiceSchema : DSSchemaDefinition = {
         ]
     },
     watcher_rules : {
-        label: "Watcher Rules",
+        label: "Action Triggers",
         foreign_keys: {
             watched_control_id: "controls",
             action_control_id: "controls"
@@ -275,9 +275,9 @@ export let dataServiceSchema : DSSchemaDefinition = {
         fields : [
             nameField,
             {
-                name: "watched_control_id",
+                name: "trigger_control_id",
                 type: "fk",
-                label: "Watched Control"
+                label: "Trigger Control"
             },
 
             {

@@ -3,7 +3,7 @@ import {DataService} from "../data.service";
 import {RecordEditorService} from "data-editor/record-editor.service";
 import {PanelControl} from "shared/PanelControl";
 import {Control} from "shared/Control";
-import {WatcherRule} from "shared/WatcherRule";
+import {ActionTrigger} from "shared/ActionTrigger";
 import {Router} from '@angular/router';
 
 @Injectable()
@@ -70,7 +70,7 @@ export class ControlService {
 
 
     addWatcherRule($event) {
-        this.recordService.editRecord($event, '0', WatcherRule.tableStr,
+        this.recordService.editRecord($event, '0', ActionTrigger.tableStr,
             { watched_control_id : this.control._id});
     }
 

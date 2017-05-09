@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import {Control} from "../../shared/Control";
-import {WatcherRule} from "../../shared/WatcherRule";
+import {ActionTrigger} from "../../shared/ActionTrigger";
 import {DataService} from "../data.service";
 
 @Component({
@@ -117,7 +117,7 @@ import {DataService} from "../data.service";
 })
 export class WatcherActionValueComponent implements OnInit {
     @Input() actionValue;
-    @Input() contextObject : WatcherRule;
+    @Input() contextObject : ActionTrigger;
     @Output() onUpdate = new EventEmitter<any>();
     newTriggerValue;
 
@@ -156,7 +156,7 @@ export class WatcherActionValueComponent implements OnInit {
     }
 
     get triggerControl() {
-        return this.contextObject.watched_control;
+        return this.contextObject.trigger_control;
     }
 
     addNewTriggerValue() {

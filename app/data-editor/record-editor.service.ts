@@ -29,4 +29,14 @@ export class RecordEditorService {
         recRef.componentInstance.schema = this.dataService.getSchema(tableName);
     }
 
+    /**
+     * Add a record by calling editRecord with an id of '0'
+     * @param $event
+     * @param string tableName
+     * @param recordDefaults
+     */
+
+    addRecord($event, tableName : string, recordDefaults = {}) {
+        this.editRecord($event, '0', tableName, recordDefaults);
+    }
 }

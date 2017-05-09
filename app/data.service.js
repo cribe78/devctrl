@@ -23,7 +23,7 @@ var OptionSet_1 = require("../shared/OptionSet");
 var Panel_1 = require("../shared/Panel");
 var PanelControl_1 = require("../shared/PanelControl");
 var Room_1 = require("../shared/Room");
-var WatcherRule_1 = require("../shared/WatcherRule");
+var ActionTrigger_1 = require("../shared/ActionTrigger");
 var ActionLog_1 = require("../shared/ActionLog");
 var DataService = (function () {
     function DataService(http, snackBar, mdDialog) {
@@ -406,7 +406,7 @@ var DataService = (function () {
                 _this.getMData(Panel_1.Panel.tableStr, {});
                 _this.getMData(PanelControl_1.PanelControl.tableStr, {});
                 _this.getMData(Room_1.Room.tableStr, {});
-                _this.getMData(WatcherRule_1.WatcherRule.tableStr, {});
+                _this.getMData(ActionTrigger_1.ActionTrigger.tableStr, {});
             });
         });
         this.getUserInfo();

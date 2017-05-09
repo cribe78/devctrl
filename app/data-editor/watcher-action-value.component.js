@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var WatcherRule_1 = require("../../shared/WatcherRule");
+var ActionTrigger_1 = require("../../shared/ActionTrigger");
 var data_service_1 = require("../data.service");
 var WatcherActionValueComponent = (function () {
     function WatcherActionValueComponent(ds) {
@@ -50,7 +50,7 @@ var WatcherActionValueComponent = (function () {
     });
     Object.defineProperty(WatcherActionValueComponent.prototype, "triggerControl", {
         get: function () {
-            return this.contextObject.watched_control;
+            return this.contextObject.trigger_control;
         },
         enumerable: true,
         configurable: true
@@ -90,7 +90,7 @@ __decorate([
 ], WatcherActionValueComponent.prototype, "actionValue", void 0);
 __decorate([
     core_1.Input(),
-    __metadata("design:type", WatcherRule_1.WatcherRule)
+    __metadata("design:type", ActionTrigger_1.ActionTrigger)
 ], WatcherActionValueComponent.prototype, "contextObject", void 0);
 __decorate([
     core_1.Output(),

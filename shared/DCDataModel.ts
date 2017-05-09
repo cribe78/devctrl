@@ -13,7 +13,7 @@ import {Endpoint, EndpointData} from "./Endpoint";
 import {EndpointType, EndpointTypeData} from "./EndpointType";
 import {Control, ControlData} from "./Control";
 import {DCSerializable, IDCForeignKeyDef, DCSerializableData, IDCDataDelete} from "./DCSerializable";
-import {WatcherRule, WatcherRuleData} from "./WatcherRule";
+import {ActionTrigger, ActionTriggerData} from "./ActionTrigger";
 import {OptionSet, OptionSetData} from "./OptionSet";
 
 
@@ -28,7 +28,7 @@ export class DCDataModel {
     panels: IndexedDataSet<Panel> = {};
     panel_controls: IndexedDataSet<PanelControl> = {};
     rooms: IndexedDataSet<Room> = {};
-    watcher_rules: IndexedDataSet<WatcherRule> = {};
+    watcher_rules: IndexedDataSet<ActionTrigger> = {};
     option_sets: IndexedDataSet<OptionSet> = {};
     debug: (message: any, ...args: any[]) => void;
     sortedArrays : any = {};
@@ -41,7 +41,7 @@ export class DCDataModel {
         panels: Panel,
         panel_controls: PanelControl,
         rooms: Room,
-        watcher_rules: WatcherRule,
+        watcher_rules: ActionTrigger,
     };
 
 
@@ -97,8 +97,8 @@ export class DCDataModel {
                 );
             }
             if (add.watcher_rules) {
-                this.loadTableData<WatcherRule, WatcherRuleData>(
-                    add.watcher_rules, this.watcher_rules, WatcherRule
+                this.loadTableData<ActionTrigger, ActionTriggerData>(
+                    add.watcher_rules, this.watcher_rules, ActionTrigger
                 );
             }
 
@@ -222,8 +222,8 @@ export class DCDataModel {
                 return this.getItem<PanelControl>(id, table);
             case Control.tableStr:
                 return this.getItem<Control>(id, table);
-            case WatcherRule.tableStr:
-                return this.getItem<WatcherRule>(id, table);
+            case ActionTrigger.tableStr:
+                return this.getItem<ActionTrigger>(id, table);
         }
     }
 

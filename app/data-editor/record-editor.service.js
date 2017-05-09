@@ -36,6 +36,16 @@ var RecordEditorService = (function () {
         recRef.componentInstance.obj = record;
         recRef.componentInstance.schema = this.dataService.getSchema(tableName);
     };
+    /**
+     * Add a record by calling editRecord with an id of '0'
+     * @param $event
+     * @param string tableName
+     * @param recordDefaults
+     */
+    RecordEditorService.prototype.addRecord = function ($event, tableName, recordDefaults) {
+        if (recordDefaults === void 0) { recordDefaults = {}; }
+        this.editRecord($event, '0', tableName, recordDefaults);
+    };
     return RecordEditorService;
 }());
 RecordEditorService = __decorate([

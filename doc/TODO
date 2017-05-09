@@ -10,4 +10,5 @@ TODO: retain selected tab in Room
 TODO: configurable log levels - make ncontrol quieter at runtime
 TODO: edit client name
 TODO: Field labels missing in record editor
-
+TODO: resolve routes based on partial GUIDs
+TODO: cahnge "watcher rules" to "Action Triggers"

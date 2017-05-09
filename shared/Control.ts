@@ -143,6 +143,42 @@ export class Control extends DCSerializable {
     getDataObject() : ControlData {
         return (<ControlData>DCSerializable.defaultDataObject(this));
     }
+
+    selectOptions() {
+        let options;
+        if (this.option_set && this.option_set.options) {
+            options = this.option_set.options;
+        }
+        else {
+            options = !!this.config.options ? this.config.options : {};
+        }
+
+        return options;
+    }
+
+    selectOptionsArray() {
+        let options = this.selectOptions();
+
+        let optionsArray = Object.keys(options).map( value => {
+            return { name: options[value], value: value };
+        });
+
+        return optionsArray;
+    }
+
+    selectValueName(val = null) {
+        if (val == null) {
+            val = this.value;
+        }
+        let opts = this.selectOptions();
+        let value = '' + val;
+
+        if (opts[value]) {
+            return opts[value];
+        }
+
+        return value;
+    }
 }
 
 export class ControlXYValue {

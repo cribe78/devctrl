@@ -41,6 +41,8 @@ var media_service_1 = require("./layout/media.service");
 var layout_service_1 = require("./layout/layout.service");
 var action_history_component_1 = require("./layout/action-history.component");
 var dc_material_module_1 = require("./dc-material.module");
+var control_detail_component_1 = require("./controls/control-detail.component");
+var watcher_action_value_component_1 = require("./data-editor/watcher-action-value.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -65,6 +67,7 @@ AppModule = __decorate([
             app_component_1.AppComponent,
             config_component_1.ConfigComponent,
             config_data_component_1.ConfigDataComponent,
+            control_detail_component_1.ControlDetailComponent,
             endpoint_component_1.EndpointComponent,
             endpoints_component_1.EndpointsComponent,
             endpoint_status_component_1.EndpointStatusComponent,
@@ -76,7 +79,8 @@ AppModule = __decorate([
             rooms_component_1.RoomsComponent,
             table_component_1.TableComponent,
             toolbar_component_1.ToolbarComponent,
-            action_history_component_1.ActionHistoryComponent
+            action_history_component_1.ActionHistoryComponent,
+            watcher_action_value_component_1.WatcherActionValueComponent
         ],
         entryComponents: [
             alert_dialog_component_1.AlertDialog,

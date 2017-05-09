@@ -24,7 +24,7 @@ export interface WatcherActionValue {
 export class WatcherRule extends DCSerializable {
     watched_control_id: string;
     _watched_control: Control;
-    watch_value: any = '';
+    watch_value: any = 'any';
     value_test: string;
     action_control_id: string;
     _action_control: Control;
@@ -149,5 +149,22 @@ export class WatcherRule extends DCSerializable {
         };
         
         return outputUpdateData;
+    }
+
+    get valueDescription() {
+        if (typeof this.action_control_value.value !== 'undefined') {
+            return this.action_control_value.value;
+        }
+        else if (this.action_control_value.map) {
+            let map = this.action_control_value.map;
+            let valStr = Object.keys(map)
+                .map( key => {
+                    return `${this.watched_control.selectValueName(key)} => ${this.action_control.selectValueName(map[key])}`
+                })
+                .join(", ");
+
+            return valStr;
+        }
+        return 'unknown value';
     }
 }

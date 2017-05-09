@@ -30,7 +30,7 @@
                                [placeholder]="field.label"
                                [(ngModel)]="obj[field.name]"
                                name="{{field.name}}"
-                               style="margin-top: 20px;">
+                               style="margin-top: 20px; margin-bottom: 6px;">
                         <md-option [value]="option.value"
                                    *ngFor="let option of field.options">
                             {{option.name}}
@@ -47,6 +47,11 @@
                                            [fname]="field.name"
                                            (onUpdate)="objectUpdated($event)">
                     </devctrl-object-editor>
+                    <devctrl-watcher-action-value *ngSwitchCase="'watcher-action-value'"
+                            [actionValue]="obj[field.name]"
+                            [contextObject]="obj"
+                            (onUpdate)="objectUpdated($event)">
+                    </devctrl-watcher-action-value>
                     <div *ngSwitchDefault>
                         Unknown field type {{field.type}}
                     </div>

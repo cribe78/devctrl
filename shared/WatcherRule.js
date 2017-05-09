@@ -10,7 +10,7 @@ var WatcherRule = (function (_super) {
     __extends(WatcherRule, _super);
     function WatcherRule(_id, data) {
         var _this = _super.call(this, _id) || this;
-        _this.watch_value = '';
+        _this.watch_value = 'any';
         _this.action_control_value = {};
         _this.enabled = false;
         _this.table = WatcherRule.tableStr;
@@ -117,6 +117,26 @@ var WatcherRule = (function (_super) {
         };
         return outputUpdateData;
     };
+    Object.defineProperty(WatcherRule.prototype, "valueDescription", {
+        get: function () {
+            var _this = this;
+            if (typeof this.action_control_value.value !== 'undefined') {
+                return this.action_control_value.value;
+            }
+            else if (this.action_control_value.map) {
+                var map_1 = this.action_control_value.map;
+                var valStr = Object.keys(map_1)
+                    .map(function (key) {
+                    return _this.watched_control.selectValueName(key) + " => " + _this.action_control.selectValueName(map_1[key]);
+                })
+                    .join(", ");
+                return valStr;
+            }
+            return 'unknown value';
+        },
+        enumerable: true,
+        configurable: true
+    });
     return WatcherRule;
 }(DCSerializable_1.DCSerializable));
 WatcherRule.tableStr = "watcher_rules";

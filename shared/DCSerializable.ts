@@ -57,6 +57,10 @@ export abstract class DCSerializable {
         this.referenced = {};
     };
 
+    get id() {
+        return this._id;
+    }
+
     get name() {
         if (typeof this._name !== 'undefined') {
             return this._name;

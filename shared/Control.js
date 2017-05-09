@@ -100,6 +100,35 @@ var Control = (function (_super) {
     Control.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
+    Control.prototype.selectOptions = function () {
+        var options;
+        if (this.option_set && this.option_set.options) {
+            options = this.option_set.options;
+        }
+        else {
+            options = !!this.config.options ? this.config.options : {};
+        }
+        return options;
+    };
+    Control.prototype.selectOptionsArray = function () {
+        var options = this.selectOptions();
+        var optionsArray = Object.keys(options).map(function (value) {
+            return { name: options[value], value: value };
+        });
+        return optionsArray;
+    };
+    Control.prototype.selectValueName = function (val) {
+        if (val === void 0) { val = null; }
+        if (val == null) {
+            val = this.value;
+        }
+        var opts = this.selectOptions();
+        var value = '' + val;
+        if (opts[value]) {
+            return opts[value];
+        }
+        return value;
+    };
     return Control;
 }(DCSerializable_1.DCSerializable));
 Control.tableStr = "controls";

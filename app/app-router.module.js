@@ -18,6 +18,8 @@ var config_data_component_1 = require("./data-editor/config-data.component");
 var room_resolver_1 = require("./rooms/room.resolver");
 var endpoint_resolver_1 = require("./endpoints/endpoint.resolver");
 var table_component_1 = require("./data-editor/table.component");
+var control_detail_component_1 = require("./controls/control-detail.component");
+var control_resolver_1 = require("./controls/control.resolver");
 exports.appRoutes = [
     {
         path: '',
@@ -67,6 +69,23 @@ exports.appRoutes = [
         ]
     },
     {
+        path: 'controls',
+        children: [
+            {
+                path: '',
+                redirectTo: '/config/controls',
+                pathMatch: 'full'
+            },
+            {
+                path: ':id',
+                component: control_detail_component_1.ControlDetailComponent,
+                resolve: {
+                    control: control_resolver_1.ControlResolver
+                }
+            }
+        ]
+    },
+    {
         path: 'config',
         children: [
             {
@@ -100,7 +119,8 @@ AppRoutingModule = __decorate([
         ],
         providers: [
             room_resolver_1.RoomResolver,
-            endpoint_resolver_1.EndpointResolver
+            endpoint_resolver_1.EndpointResolver,
+            control_resolver_1.ControlResolver
         ]
     }),
     __metadata("design:paramtypes", [])

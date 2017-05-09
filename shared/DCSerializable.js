@@ -16,6 +16,13 @@ var DCSerializable = (function () {
         this.referenced = {};
     }
     ;
+    Object.defineProperty(DCSerializable.prototype, "id", {
+        get: function () {
+            return this._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DCSerializable.prototype, "name", {
         get: function () {
             if (typeof this._name !== 'undefined') {

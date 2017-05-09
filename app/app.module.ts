@@ -32,6 +32,8 @@ import {MediaService} from "./layout/media.service";
 import {LayoutService} from "./layout/layout.service";
 import {ActionHistoryComponent} from "./layout/action-history.component";
 import {DCMaterialModule} from "./dc-material.module";
+import {ControlDetailComponent} from "./controls/control-detail.component";
+import {WatcherActionValueComponent} from "./data-editor/watcher-action-value.component";
 
 
 
@@ -53,6 +55,7 @@ import {DCMaterialModule} from "./dc-material.module";
         AppComponent,
         ConfigComponent,
         ConfigDataComponent,
+        ControlDetailComponent,
         EndpointComponent,
         EndpointsComponent,
         EndpointStatusComponent,
@@ -64,7 +67,8 @@ import {DCMaterialModule} from "./dc-material.module";
         RoomsComponent,
         TableComponent,
         ToolbarComponent,
-        ActionHistoryComponent
+        ActionHistoryComponent,
+        WatcherActionValueComponent
         ],
     entryComponents: [
         AlertDialog,

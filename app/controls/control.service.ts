@@ -4,6 +4,7 @@ import {RecordEditorService} from "data-editor/record-editor.service";
 import {PanelControl} from "shared/PanelControl";
 import {Control} from "shared/Control";
 import {WatcherRule} from "shared/WatcherRule";
+import {Router} from '@angular/router';
 
 @Injectable()
 export class ControlService {
@@ -12,7 +13,8 @@ export class ControlService {
     panelContext = false;
 
     constructor(private dataService : DataService,
-                private recordService : RecordEditorService) {}
+                private recordService : RecordEditorService,
+                private router: Router) {}
 
 
     get panelControl() : PanelControl {
@@ -81,7 +83,8 @@ export class ControlService {
     }
 
     editControl($event) {
-        this.recordService.editRecord($event, this.control._id, this.control.table);
+        //this.recordService.editRecord($event, this.control._id, this.control.table);
+        this.router.navigate(['/controls', this.control.id]);
     }
 
     editOptions($event) {
@@ -128,25 +131,11 @@ export class ControlService {
     }
 
     selectOptions() {
-        let options;
-        if (this.control.option_set && this.control.option_set.options) {
-            options = this.control.option_set.options;
-        }
-        else {
-            options = !!this.control.config.options ? this.control.config.options : {};
-        }
-
-        return options;
+        return this.control.selectOptions();
     }
 
     selectOptionsArray() {
-        let options = this.selectOptions();
-
-        let optionsArray = Object.keys(options).map( value => {
-            return { name: options[value], value: value };
-        });
-
-        return optionsArray;
+        return this.control.selectOptionsArray();
     }
 
     setValue(val) {
@@ -155,14 +144,7 @@ export class ControlService {
     }
 
     selectValueName() {
-        let opts = this.selectOptions();
-        let value = '' + this.value;
-
-        if (opts[value]) {
-            return opts[value];
-        }
-
-        return value;
+        return this.control.selectValueName();
     }
 
     showLog($event) {

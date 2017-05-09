@@ -7,6 +7,8 @@ import {ControlComponent} from "./control.component";
 import {CommonModule} from "@angular/common";
 import {F32ControlsModule} from "./f32/f32-controls.module";
 import {PanasonicControlsModule} from "./panasonic/panasonic-controls.module";
+import {ControlDetailComponent} from "./control-detail.component";
+import {ControlValueSelectorComponent} from "./control-value-selector.component";
 
 @NgModule({
     imports:      [
@@ -18,12 +20,14 @@ import {PanasonicControlsModule} from "./panasonic/panasonic-controls.module";
         CommonModule
     ],
     declarations: [
-        ControlComponent
+        ControlComponent,
+        ControlValueSelectorComponent
     ],
     exports: [
         BasicControlsModule,
         F32ControlsModule,
         ControlComponent,
+        ControlValueSelectorComponent,
         PanasonicControlsModule
     ]
 

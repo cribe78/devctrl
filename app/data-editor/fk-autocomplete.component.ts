@@ -29,7 +29,8 @@ import {DSFieldDefinition} from "../data-service-schema";
     </md-list>
 </div>
 `,
-    styles: [`
+    //language=CSS
+    styles: [`        
 .ac-menu { 
     position: absolute;
     z-index: 1002;

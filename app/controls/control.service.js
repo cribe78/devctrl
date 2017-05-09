@@ -13,10 +13,12 @@ var data_service_1 = require("../data.service");
 var record_editor_service_1 = require("data-editor/record-editor.service");
 var Control_1 = require("shared/Control");
 var WatcherRule_1 = require("shared/WatcherRule");
+var router_1 = require("@angular/router");
 var ControlService = (function () {
-    function ControlService(dataService, recordService) {
+    function ControlService(dataService, recordService, router) {
         this.dataService = dataService;
         this.recordService = recordService;
+        this.router = router;
         this.panelContext = false;
     }
     Object.defineProperty(ControlService.prototype, "panelControl", {
@@ -92,7 +94,8 @@ var ControlService = (function () {
         return '';
     };
     ControlService.prototype.editControl = function ($event) {
-        this.recordService.editRecord($event, this.control._id, this.control.table);
+        //this.recordService.editRecord($event, this.control._id, this.control.table);
+        this.router.navigate(['/controls', this.control.id]);
     };
     ControlService.prototype.editOptions = function ($event) {
         if (this.control.option_set) {
@@ -123,33 +126,17 @@ var ControlService = (function () {
         this.setValue(val);
     };
     ControlService.prototype.selectOptions = function () {
-        var options;
-        if (this.control.option_set && this.control.option_set.options) {
-            options = this.control.option_set.options;
-        }
-        else {
-            options = !!this.control.config.options ? this.control.config.options : {};
-        }
-        return options;
+        return this.control.selectOptions();
     };
     ControlService.prototype.selectOptionsArray = function () {
-        var options = this.selectOptions();
-        var optionsArray = Object.keys(options).map(function (value) {
-            return { name: options[value], value: value };
-        });
-        return optionsArray;
+        return this.control.selectOptionsArray();
     };
     ControlService.prototype.setValue = function (val) {
         this.value = val;
         this.updateValue();
     };
     ControlService.prototype.selectValueName = function () {
-        var opts = this.selectOptions();
-        var value = '' + this.value;
-        if (opts[value]) {
-            return opts[value];
-        }
-        return value;
+        return this.control.selectValueName();
     };
     ControlService.prototype.showLog = function ($event) {
         this.dataService.showControlLog($event, this.control);
@@ -166,7 +153,8 @@ var ControlService = (function () {
 ControlService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [data_service_1.DataService,
-        record_editor_service_1.RecordEditorService])
+        record_editor_service_1.RecordEditorService,
+        router_1.Router])
 ], ControlService);
 exports.ControlService = ControlService;
 //# sourceMappingURL=control.service.js.map

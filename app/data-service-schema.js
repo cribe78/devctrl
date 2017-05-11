@@ -246,7 +246,6 @@ exports.dataServiceSchema = {
             action_control_id: "controls"
         },
         fields: [
-            nameField,
             {
                 name: "trigger_control_id",
                 type: "fk",
@@ -279,9 +278,9 @@ exports.dataServiceSchema = {
                 ]
             },
             {
-                name: "watch_value",
+                name: "trigger_value",
                 type: "string",
-                label: "Watch Value"
+                label: "Trigger Value"
             },
         ]
     }

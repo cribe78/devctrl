@@ -97,7 +97,7 @@ import {ActionTrigger} from "../../shared/ActionTrigger";
                             <div md-line>
                                 {{actionTrigger.valueDescription}}
                             </div>
-                            <button md-icon-button (click)="editWatcherRule($event, watcherRule)">
+                            <button md-icon-button (click)="editWatcherRule($event, actionTrigger)">
                                 <md-icon>create</md-icon>
                             </button>
                         </md-list-item>
@@ -215,7 +215,8 @@ export class ControlDetailComponent implements OnInit {
     addAction($event) {
         this.recordService.addRecord($event, ActionTrigger.tableStr,
             {
-                action_control: this.control
+                action_control: this.control,
+                enabled: true
             });
     }
 
@@ -227,7 +228,8 @@ export class ControlDetailComponent implements OnInit {
     addTrigger($event) {
         this.recordService.addRecord($event, ActionTrigger.tableStr,
             {
-                trigger_control: this.control
+                trigger_control: this.control,
+                enabled: true
             });
     }
 

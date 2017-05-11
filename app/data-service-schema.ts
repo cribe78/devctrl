@@ -273,7 +273,6 @@ export let dataServiceSchema : DSSchemaDefinition = {
             action_control_id: "controls"
         },
         fields : [
-            nameField,
             {
                 name: "trigger_control_id",
                 type: "fk",
@@ -307,9 +306,9 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 ]
             },
             {
-                name: "watch_value",
+                name: "trigger_value",
                 type: "string",
-                label: "Watch Value"
+                label: "Trigger Value"
             },
         ]
     }

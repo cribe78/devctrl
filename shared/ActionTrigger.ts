@@ -25,7 +25,7 @@ export class ActionTrigger extends DCSerializable {
     trigger_control_id: string;
     _trigger_control: Control;
     trigger_value: any = 'any';
-    value_test: string;
+    value_test: string = ActionTrigger.VALUE_TEST_ANY;
     action_control_id: string;
     _action_control: Control;
     action_control_value: WatcherActionValue = {};
@@ -88,6 +88,19 @@ export class ActionTrigger extends DCSerializable {
         this.trigger_control_id = val._id;
     }
 
+    /**
+     * Just assign a name based on controls
+     */
+    get name() : string {
+        if (this.trigger_control && this.action_control) {
+            return this.trigger_control.fkSelectName() + " - " + this.action_control.fkSelectName();
+        }
+        return 'ActionTrigger ' + this._id;
+    }
+
+    set name(value) {
+        // Haha! you can't do that!
+    }
 
     getDataObject() : ActionTriggerData {
         return (<ActionTriggerData>DCSerializable.defaultDataObject(this));

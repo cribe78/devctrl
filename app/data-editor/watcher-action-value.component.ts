@@ -7,9 +7,9 @@ import {DataService} from "../data.service";
     moduleId: module.id,
     selector: 'devctrl-watcher-action-value',
     template: `
-<div class="wav-editor">
+<div class="wav-editor" *ngIf="controlsSelected()">
     <label class="wav-label">Action Value</label>
-    <div *ngIf="controlsSelected()">
+    <div>
         <md-radio-group [(ngModel)]="valueType">
             <md-radio-button value="value">Fixed value</md-radio-button>
             <md-radio-button value="map">Value Map</md-radio-button>
@@ -20,9 +20,6 @@ import {DataService} from "../data.service";
             [(controlValue)]="actionValue.value">
         </devctrl-control-value-selector>
         <div class="map-editor" *ngIf="valueType == 'map'">
-            <div class="map-editor-row">
-               
-            </div>
             <div class="map-editor-row" *ngFor="let triggerVal of mapKeys()">
                 <div class="map-key">
                     <label class="trigger-label">Trigger Value</label>

@@ -11,6 +11,7 @@ var ActionTrigger = (function (_super) {
     function ActionTrigger(_id, data) {
         var _this = _super.call(this, _id) || this;
         _this.trigger_value = 'any';
+        _this.value_test = ActionTrigger.VALUE_TEST_ANY;
         _this.action_control_value = {};
         _this.enabled = false;
         _this.table = ActionTrigger.tableStr;
@@ -59,6 +60,22 @@ var ActionTrigger = (function (_super) {
         set: function (val) {
             this._trigger_control = val;
             this.trigger_control_id = val._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ActionTrigger.prototype, "name", {
+        /**
+         * Just assign a name based on controls
+         */
+        get: function () {
+            if (this.trigger_control && this.action_control) {
+                return this.trigger_control.fkSelectName() + " - " + this.action_control.fkSelectName();
+            }
+            return 'ActionTrigger ' + this._id;
+        },
+        set: function (value) {
+            // Haha! you can't do that!
         },
         enumerable: true,
         configurable: true

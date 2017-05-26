@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ClearOneCommand_1 = require("./ClearOneCommand");
 var inputChannels = {
     "1 M": "Input 1",

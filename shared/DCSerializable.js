@@ -1,9 +1,10 @@
+"use strict";
 /**
  * The abstract DCSerializable class represents the basic unit of data interchange for the application.
  * DCSerializable objects correspond to MongoDB documents in the database.  Subtypes of the abstract class
  * correspond to collections in the database, and the application schema is defined in the subtype definitions.
  */
-"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var DCSerializable = (function () {
     function DCSerializable(_id) {
         this._id = _id;

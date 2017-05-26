@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var io = require("socket.io-client");
 var DCDataModel_1 = require("./shared/DCDataModel");
 var debugMod = require("debug"); // see https://www.npmjs.com/package/debug

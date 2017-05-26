@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Control_1 = require("../shared/Control");
 var debug = console.log;
 var EndpointCommunicator = (function () {

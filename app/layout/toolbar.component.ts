@@ -52,6 +52,7 @@ import {LayoutService} from "./layout.service";
                 <button md-menu-item *devctrlAdminOnly (click)="revokeAdmin()">
                         Admin Logout 
                 </button>
+                
                 <button md-menu-item *devctrlAdminOnly (click)="editClient($event)">
                         Edit Client
                 </button>

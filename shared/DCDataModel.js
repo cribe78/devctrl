@@ -1,10 +1,11 @@
+"use strict";
 /*
 DCDataModel
 
 The data model shared by the various DevCtrl components
 
  */
-"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Panel_1 = require("./Panel");
 var PanelControl_1 = require("./PanelControl");
 var Room_1 = require("./Room");

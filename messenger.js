@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ioMod = require("socket.io");
 var http = require("http");
 var url = require("url");

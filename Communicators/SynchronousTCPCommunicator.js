@@ -50,7 +50,7 @@ var SynchronousTCPCommunicator = (function (_super) {
         else if (this.commsMode == 'hex') {
             strData = data.toString('hex');
         }
-        debug("data recieved: " + strData);
+        //debug("data recieved: " + strData);
         this.inputBuffer += strData;
         var lines = this.inputBuffer.split(this.inputLineTerminator);
         while (lines.length > 1) {
@@ -95,9 +95,14 @@ var SynchronousTCPCommunicator = (function (_super) {
         var logCommand = command.replace(/\r?\n|\r/g, '');
         debug("sending command: " + logCommand);
         this.writeToSocket(command);
-        this.commandTimeoutTimer = setTimeout(function () {
-            _this.runNextCommand();
-        }, 400);
+        if (expectedResponse[0] == '') {
+            expectedResponse[1]('');
+        }
+        else {
+            this.commandTimeoutTimer = setTimeout(function () {
+                _this.runNextCommand();
+            }, 400);
+        }
     };
     return SynchronousTCPCommunicator;
 }(TCPCommunicator_1.TCPCommunicator));

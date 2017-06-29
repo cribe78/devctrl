@@ -47,7 +47,7 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
             strData = data.toString('hex');
         }
 
-        debug("data recieved: " + strData);
+        //debug("data recieved: " + strData);
 
         this.inputBuffer += strData;
         let lines = this.inputBuffer.split(this.inputLineTerminator);
@@ -108,8 +108,13 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
         debug("sending command: " + logCommand);
         this.writeToSocket(command);
 
-        this.commandTimeoutTimer = setTimeout(() => {
-            this.runNextCommand()
-        }, 400);
+        if (expectedResponse[0] == '') {
+            expectedResponse[1]('');
+        }
+        else {
+            this.commandTimeoutTimer = setTimeout(() => {
+                this.runNextCommand()
+            }, 400);
+        }
     }
 }

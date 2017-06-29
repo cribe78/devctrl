@@ -22,6 +22,7 @@ var image_control_1 = require("./image.control");
 var slder2d_control_1 = require("./slder2d.control");
 var hyperlink_control_1 = require("./hyperlink.control");
 var switch_readonly_control_1 = require("./switch-readonly.control");
+var readonly_control_1 = require("./readonly.control");
 var BasicControlsModule = (function () {
     function BasicControlsModule() {
     }
@@ -41,6 +42,7 @@ BasicControlsModule = __decorate([
             hyperlink_control_1.HyperlinkControl,
             image_control_1.ImageControl,
             level_control_1.LevelControl,
+            readonly_control_1.ReadonlyControl,
             select_control_1.SelectControl,
             select_readonly_control_1.SelectReadonlyControl,
             slider_control_1.SliderControl,
@@ -55,6 +57,7 @@ BasicControlsModule = __decorate([
             hyperlink_control_1.HyperlinkControl,
             image_control_1.ImageControl,
             level_control_1.LevelControl,
+            readonly_control_1.ReadonlyControl,
             select_control_1.SelectControl,
             select_readonly_control_1.SelectReadonlyControl,
             slider_control_1.SliderControl,

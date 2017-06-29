@@ -107,7 +107,7 @@ var TCPCommand = (function () {
         return '';
     };
     TCPCommand.prototype.parseQueryResponse = function (control, line) {
-        var matches = line.match(this.cmdQueryResponseRE);
+        var matches = line.match(this.queryResponseMatchString());
         if (matches) {
             return this.parseValue(matches[1]);
         }

@@ -15,6 +15,7 @@ var net = require("net");
 var Endpoint_1 = require("../shared/Endpoint");
 //let debug = debugMod("comms");
 var debug = console.log;
+//TODO: convert expectedResponse from an array to a proper object
 var TCPCommunicator = (function (_super) {
     __extends(TCPCommunicator, _super);
     function TCPCommunicator() {
@@ -260,7 +261,13 @@ var TCPCommunicator = (function (_super) {
      */
     TCPCommunicator.prototype.queueCommand = function (cmdStr, expectedResponse) {
         this.writeToSocket(cmdStr);
-        this.expectedResponses.push(expectedResponse);
+        if (expectedResponse[0] == '') {
+            // Get on with it
+            expectedResponse[1]('');
+        }
+        else {
+            this.expectedResponses.push(expectedResponse);
+        }
     };
     /**
      * Query all controls, regardless of poll setting.

@@ -147,6 +147,7 @@ Control.CONTROL_TYPE_STRING = "string";
 Control.CONTROL_TYPE_XY = "xy";
 Control.USERTYPE_BUTTON = "button";
 Control.USERTYPE_BUTTON_SET = "button-set";
+Control.USERTYPE_CLQL_FADER = "clql-fader";
 Control.USERTYPE_HYPERLINK = "hyperlink";
 Control.USERTYPE_IMAGE = "image";
 Control.USERTYPE_F32_MULTIBUTTON = "f32-multibutton";

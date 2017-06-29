@@ -1,0 +1,133 @@
+import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
+import {TCPCommand} from "../TCPCommand";
+import {Control} from "../../shared/Control";
+import {CLQLCommand} from "./CLQLCommand";
+import {EndpointStatus} from "../../shared/Endpoint";
+import {TCPCommunicator} from "../TCPCommunicator";
+import {sprintf} from "sprintf-js";
+
+class CLQLCommunicator extends TCPCommunicator {
+
+    private alvPacket = "f043103e197f";
+    private deviceType = "CL";
+
+    constructor() {
+        super();
+        this.inputLineTerminator = "f7";
+        this.outputLineTerminator = "f7";
+        this.commsMode = "hex";
+    }
+
+    buildCommandList() {
+        let inputCount = 72;
+        let mixCount = 16;
+
+        if (this.deviceType == "QL") {
+            inputCount = 48;
+            mixCount = 16;
+        }
+
+        // Input Controls
+        for (let i = 0; i < inputCount; i++) {
+            let chnStr = sprintf("%04x", i);
+            this.registerSetupCommand(`InputOn.${i}`, "0035", "0000", chnStr,
+                Control.CONTROL_TYPE_BOOLEAN, Control.USERTYPE_SWITCH);
+            this.registerSetupCommand(`InputFader.${i}`, "0037", "0000", chnStr,
+                Control.CONTROL_TYPE_RANGE, Control.USERTYPE_CLQL_FADER,
+                { min: 0, max: 1023});
+        }
+
+        // Mix Controls
+        for (let i = 0; i < mixCount; i++) {
+            let chnStr = sprintf("%04x", i);
+            this.registerSetupCommand(`MixOn.${i}`, "004b", "0000", chnStr,
+                Control.CONTROL_TYPE_BOOLEAN, Control.USERTYPE_SWITCH);
+            this.registerSetupCommand(`MixFader.${i}`, "004d", "0000", chnStr,
+                Control.CONTROL_TYPE_RANGE, Control.USERTYPE_CLQL_FADER,
+                { min: 0, max: 1023});
+        }
+
+        // Matrix Controls
+        for (let i = 0; i < 8; i++) {
+            let chnStr = sprintf("%04x", i);
+            this.registerSetupCommand(`MatrixOn.${i}`, "0063", "0000", chnStr,
+                Control.CONTROL_TYPE_BOOLEAN, Control.USERTYPE_SWITCH);
+            this.registerSetupCommand(`MatrixFader.${i}`, "0065", "0000", chnStr,
+                Control.CONTROL_TYPE_RANGE, Control.USERTYPE_CLQL_FADER,
+                { min: 0, max: 1023});
+        }
+
+    }
+
+    doDeviceLogon() {
+        this.socket.on('data', data => {
+            if (this.connected) return;
+
+            let strData = data.toString('hex');
+
+            if (strData == this.alvPacket + "f7") {
+                console.log("connection string received, sending ACK");
+                //this.writeToSocket("f043303e1932f7f043303e193100f7");
+                this.writeToSocket("f043303e1932f7"
+                                + "f043303e193100f7"
+                                //+ "f043303e1901037000000000f7"
+                                //+ "f043303e1901037000010000f7"
+                                //+ "f043303e1901035800000000f7"
+                                //+ "f043303e1901035800010000f7"
+                                //+ "f043303e1901032a00000000f7"
+                                //+ "f043303e1901032a00010000f7"
+                                //+ "f043303e1901032a00020000f7"
+                                //+ "f043303e1901015c00010000f7"
+                                //+ "f043303e1901015c00010001f7"
+                                //+ "f043303e1901015c00010002f7"
+                                //+ "f043303e1901015c00010003f7"
+                                //+ "f043303e1901015c00010004f7"
+                                //+ "f043303e1901015c00010005f7"
+                                //+ "f043303e1901015d00000000f7"
+                                //+ "f043303e1901015d00000001f7"
+                                //+ "f043303e1901015d00000002f7"
+                                //+ "f043303e1901015d00000003f7"
+                                //+ "f043303e1901015d00000004f7"
+                                //+ "f043303e1901015d00000005f7"
+                                //+ "f043303e1901035e00000000f7"
+                                //+ "f043303e1901035e00000001f7"
+                                //+ "f043303e1901035e00000002f7"
+                );
+                this.connected = true;
+                this.config.statusUpdateCallback(EndpointStatus.Online);
+                this.online();
+            }
+        });
+    }
+
+    preprocessLine(line: string) : string {
+        if (line == this.alvPacket) {
+            console.log("ALV received");
+            return '';
+        }
+
+        return line;
+    }
+
+    registerSetupCommand(name: string, command: string, subCommand: string, channel: string,
+                            controlType = Control.CONTROL_TYPE_INT,
+                            usertype = Control.USERTYPE_READONLY,
+                            controlConfig = {}) {
+
+        this.commands[name] = new CLQLCommand({
+            cmdStr: name,
+            endpoint_id: this.endpoint_id,
+            control_type: controlType,
+            usertype: usertype,
+            templateConfig: controlConfig,
+            poll: 1,
+            commandGroup: CLQLCommand.CGROUP_SETUP,
+            command: command,
+            subCommand: subCommand,
+            channel: channel
+        });
+    }
+}
+
+let communicator = new CLQLCommunicator();
+module.exports = communicator;

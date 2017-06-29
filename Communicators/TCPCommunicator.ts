@@ -12,6 +12,8 @@ let debug = console.log;
 
 export type TCPCommEncoding = "string" | "hex";
 
+//TODO: convert expectedResponse from an array to a proper object
+
 export class TCPCommunicator extends EndpointCommunicator {
     host: string;
     port : number;
@@ -325,7 +327,14 @@ export class TCPCommunicator extends EndpointCommunicator {
 
     queueCommand(cmdStr : string, expectedResponse: [string | RegExp, (line: string) => any]) {
         this.writeToSocket(cmdStr);
-        this.expectedResponses.push(expectedResponse);
+
+        if (expectedResponse[0] == '') {
+            // Get on with it
+            expectedResponse[1]('');
+        }
+        else {
+            this.expectedResponses.push(expectedResponse);
+        }
     }
 
     /**

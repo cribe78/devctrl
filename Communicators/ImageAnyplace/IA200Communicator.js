@@ -10,11 +10,10 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var debugMod = require("debug");
 var TCPCommand_1 = require("../TCPCommand");
 var Control_1 = require("../../shared/Control");
 var SynchronousTCPCommunicator_1 = require("../SynchronousTCPCommunicator");
-var debug = debugMod("comms");
+var EndpointCommunicator_1 = require("../EndpointCommunicator");
 var IA200Communicator = (function (_super) {
     __extends(IA200Communicator, _super);
     function IA200Communicator() {
@@ -185,7 +184,7 @@ var IA200Communicator = (function (_super) {
             var str = data.slice(0, data.search("\r") + 1);
             return str;
         }
-        debug("Error: unmatched IA200 start char:" + data);
+        this.log("Error: unmatched IA200 start char:" + data, EndpointCommunicator_1.EndpointCommunicator.LOG_MATCHING);
         this.inputBuffer = this.inputBuffer.slice(1);
         return '';
     };

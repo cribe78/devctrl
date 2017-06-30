@@ -13,8 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var EndpointCommunicator_1 = require("./EndpointCommunicator");
 var net = require("net");
 var Endpoint_1 = require("../shared/Endpoint");
-//let debug = debugMod("comms");
-var debug = console.log;
 //TODO: convert expectedResponse from an array to a proper object
 var TCPCommunicator = (function (_super) {
     __extends(TCPCommunicator, _super);
@@ -43,11 +41,11 @@ var TCPCommunicator = (function (_super) {
             host: this.config.endpoint.ip
         };
         this.socket = net.connect(connectOpts, function () {
-            debug("connected to " + connectOpts.host + ":" + connectOpts.port);
+            self.log("connected to " + connectOpts.host + ":" + connectOpts.port, EndpointCommunicator_1.EndpointCommunicator.LOG_CONNECTION);
             self.doDeviceLogon();
         });
         this.socket.on('error', function (e) {
-            debug("caught socket error: " + e.message);
+            this.log("caught socket error: " + e.message, EndpointCommunicator_1.EndpointCommunicator.LOG_CONNECTION);
             self.onEnd();
         });
         this.socket.on('data', function (data) {
@@ -82,7 +80,7 @@ var TCPCommunicator = (function (_super) {
         }
         var self = this;
         var queryStr = cmd.queryString();
-        debug("sending query: " + queryStr);
+        this.log("sending query: " + queryStr, EndpointCommunicator_1.EndpointCommunicator.LOG_POLLING);
         this.writeToSocket(queryStr + this.outputLineTerminator);
         this.expectedResponses.push([
             cmd.queryResponseMatchString(),
@@ -121,7 +119,7 @@ var TCPCommunicator = (function (_super) {
         var command = this.commandsByTemplate[control.ctid];
         if (command) {
             var updateStr = command.updateString(control, request);
-            debug("sending update: " + updateStr);
+            this.log("sending update: " + updateStr, EndpointCommunicator_1.EndpointCommunicator.LOG_UPDATES);
             this.queueCommand(updateStr + this.outputLineTerminator, [
                 command.updateResponseMatchString(request),
                 function (line) {
@@ -137,7 +135,7 @@ var TCPCommunicator = (function (_super) {
         for (var cmdStr in this.commands) {
             var cmd = this.commands[cmdStr];
             if (cmd.matchesReport(line)) {
-                debug("read: " + line + ", matches cmd " + cmd.name);
+                this.log("read: " + line + ", matches cmd " + cmd.name, EndpointCommunicator_1.EndpointCommunicator.LOG_MATCHING);
                 return cmd;
             }
         }
@@ -150,7 +148,7 @@ var TCPCommunicator = (function (_super) {
         for (var idx = 0; idx < this.expectedResponses.length; idx++) {
             var eresp = this.expectedResponses[idx];
             if (line.search(eresp[0]) > -1) {
-                debug(line + " matched expected response \"" + eresp[0] + "\" at [" + idx + "]");
+                this.log(line + " matched expected response \"" + eresp[0] + "\" at [" + idx + "]", EndpointCommunicator_1.EndpointCommunicator.LOG_MATCHING);
                 //Execute expected response callback
                 eresp[1](line);
                 this.expectedResponses = this.expectedResponses.slice(idx + 1);
@@ -170,7 +168,7 @@ var TCPCommunicator = (function (_super) {
         this.inputBuffer += strData;
         var lines = this.inputBuffer.split(this.inputLineTerminator);
         while (lines.length > 1) {
-            debug("data recieved: " + lines[0]);
+            this.log("data recieved: " + lines[0], EndpointCommunicator_1.EndpointCommunicator.LOG_RAW_DATA);
             this.processLine(lines[0]);
             lines.splice(0, 1);
         }
@@ -179,11 +177,11 @@ var TCPCommunicator = (function (_super) {
     TCPCommunicator.prototype.onEnd = function () {
         var self = this;
         if (this.config.endpoint.enabled) {
-            debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
+            this.log("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms", "connection");
             this.connected = false;
             this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Offline);
             if (!this.socket["destroyed"]) {
-                debug("destroying socket");
+                this.log("destroying socket", EndpointCommunicator_1.EndpointCommunicator.LOG_CONNECTION);
                 this.socket.destroy();
             }
             setTimeout(function () {
@@ -194,7 +192,7 @@ var TCPCommunicator = (function (_super) {
             }
         }
         else {
-            debug("successfully disconnected from " + this.host);
+            this.log("successfully disconnected from " + this.host, EndpointCommunicator_1.EndpointCommunicator.LOG_CONNECTION);
         }
     };
     /**
@@ -209,7 +207,7 @@ var TCPCommunicator = (function (_super) {
         }
         var exd = this.expectedResponses.length;
         if (exd > 1000) {
-            debug("WARNING polling device, expected response queue has reached length of " + exd);
+            this.log("WARNING polling device, expected response queue has reached length of " + exd);
         }
         for (var id in this.controls) {
             var control = this.controls[id];
@@ -219,7 +217,7 @@ var TCPCommunicator = (function (_super) {
                     this.executeCommandQuery(cmd);
                 }
                 else {
-                    debug("command not found for poll control " + control.ctid);
+                    this.log("command not found for poll control " + control.ctid);
                 }
             }
         }
@@ -252,7 +250,7 @@ var TCPCommunicator = (function (_super) {
             this.connectionConfirmed();
         }
         else {
-            debug("read, unmatched: " + line);
+            this.log("read, unmatched: " + line, EndpointCommunicator_1.EndpointCommunicator.LOG_MATCHING);
         }
     };
     /**
@@ -286,6 +284,7 @@ var TCPCommunicator = (function (_super) {
         if (this.commsMode == 'hex') {
             bufMode = 'hex';
         }
+        this.log("sending data: " + val, EndpointCommunicator_1.EndpointCommunicator.LOG_RAW_DATA);
         var bufferToSend = Buffer.from(val, bufMode);
         this.socket.write(bufferToSend);
     };

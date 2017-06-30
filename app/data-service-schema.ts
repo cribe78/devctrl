@@ -58,6 +58,11 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "label": "Port"
             },
             {
+                "name" : "commLogOptions",
+                type: "string",
+                label: "Ncontrol Log Options"
+            },
+            {
                 "name": "status",
                 "type": "string",
                 "label": "Status",

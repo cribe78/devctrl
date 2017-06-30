@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Control_1 = require("../shared/Control");
-var debug = console.log;
 var EndpointCommunicator = (function () {
     function EndpointCommunicator() {
         this.controlsByCtid = {};
@@ -34,6 +33,24 @@ var EndpointCommunicator = (function () {
         this._connected = false;
     };
     ;
+    /**
+     * A function to log messages.  Determine which messages to log by setting the commLogOptions value on a
+     * per-device basis through the application UI.  commLogOptions should be a comma separated list of tags.
+     * Tags used by base classes are: polling, updates, matching, rawData, connection, updates
+     *
+     * @param msg  message to be logged
+     * @param tag  message tag, message will only be logged if tag is matched in commLogOptions
+     */
+    EndpointCommunicator.prototype.log = function (msg, tag) {
+        if (tag === void 0) { tag = "default"; }
+        var opts = this.config.endpoint.commLogOptionsObj;
+        if (opts[tag]) {
+            console.log(msg);
+        }
+        else if (opts["all"]) {
+            console.log(msg);
+        }
+    };
     EndpointCommunicator.prototype.setConfig = function (config) {
         this.config = config;
     };
@@ -75,7 +92,7 @@ var EndpointCommunicator = (function () {
         }
         if (valDiff || this.indeterminateControls[control._id]) {
             this.indeterminateControls[control._id] = false;
-            debug("control update: " + control.name + " = " + val);
+            this.log("control update: " + control.name + " = " + val, "updates");
             this.config.controlUpdateCallback(control, val);
             control.value = val;
         }
@@ -87,7 +104,7 @@ var EndpointCommunicator = (function () {
             var localControl = this.controlsByCtid[ctid];
             this.controlsByCtid[ctid] = controls[id];
             if (!localControl) {
-                debug("setTemplates: No control located for ctid " + ctid);
+                this.log("setTemplates: No control located for ctid " + ctid);
             }
             else {
                 // Set value of remote control to match local
@@ -97,5 +114,10 @@ var EndpointCommunicator = (function () {
     };
     return EndpointCommunicator;
 }());
+EndpointCommunicator.LOG_POLLING = "polling";
+EndpointCommunicator.LOG_MATCHING = "matching";
+EndpointCommunicator.LOG_RAW_DATA = "rawData";
+EndpointCommunicator.LOG_CONNECTION = "connection";
+EndpointCommunicator.LOG_UPDATES = "updates";
 exports.EndpointCommunicator = EndpointCommunicator;
 //# sourceMappingURL=EndpointCommunicator.js.map

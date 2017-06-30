@@ -10,10 +10,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var debugMod = require("debug");
 var TCPCommunicator_1 = require("../TCPCommunicator");
 var TCPCommand_1 = require("../TCPCommand");
-var debug = debugMod("comms");
 var ExtronSWUSBCommunicator = (function (_super) {
     __extends(ExtronSWUSBCommunicator, _super);
     function ExtronSWUSBCommunicator() {

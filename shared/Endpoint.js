@@ -43,13 +43,15 @@ var Endpoint = (function (_super) {
             'status',
             'ip',
             'port',
-            'enabled'
+            'enabled',
+            'commLogOptions'
         ]);
         _this.defaultProperties = {
             status: EndpointStatus.Offline,
             ip: "",
             port: 0,
-            enabled: false
+            enabled: false,
+            commLogOptions: "default"
         };
         if (data) {
             _this.loadData(data);
@@ -62,6 +64,22 @@ var Endpoint = (function (_super) {
         },
         set: function (address) {
             this.ip = address;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Endpoint.prototype, "commLogOptions", {
+        get: function () {
+            return this._commLogOptions;
+        },
+        set: function (val) {
+            this._commLogOptions = val;
+            var optionsList = val.split(",");
+            this.commLogOptionsObj = {};
+            for (var _i = 0, optionsList_1 = optionsList; _i < optionsList_1.length; _i++) {
+                var opt = optionsList_1[_i];
+                this.commLogOptionsObj[opt] = true;
+            }
         },
         enumerable: true,
         configurable: true

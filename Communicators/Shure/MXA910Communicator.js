@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var TCPCommunicator_1 = require("../TCPCommunicator");
 var MXA910Command_1 = require("./MXA910Command");
 var Control_1 = require("../../shared/Control");
-var debug = console.log;
 var MXA910Communicator = (function (_super) {
     __extends(MXA910Communicator, _super);
     function MXA910Communicator() {

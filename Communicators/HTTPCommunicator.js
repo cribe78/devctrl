@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var Endpoint_1 = require("../shared/Endpoint");
 var EndpointCommunicator_1 = require("./EndpointCommunicator");
 var http = require("http");
-var debug = console.log;
 var HTTPCommunicator = (function (_super) {
     __extends(HTTPCommunicator, _super);
     function HTTPCommunicator() {
@@ -42,7 +41,7 @@ var HTTPCommunicator = (function (_super) {
     HTTPCommunicator.prototype.executeCommandQuery = function (cmd) {
         var _this = this;
         if (cmd.writeonly) {
-            debug("not querying writeonly command " + cmd.name);
+            this.log("not querying writeonly command " + cmd.name, EndpointCommunicator_1.EndpointCommunicator.LOG_POLLING);
         }
         var control = this.controlsByCtid[cmd.controlData.ctid];
         var requestOptions = {
@@ -50,10 +49,10 @@ var HTTPCommunicator = (function (_super) {
             path: cmd.queryPath()
         };
         var requestPath = "http://" + requestOptions.hostname + requestOptions.path;
-        debug("sending request:" + requestPath);
+        this.log("sending request:" + requestPath, EndpointCommunicator_1.EndpointCommunicator.LOG_RAW_DATA);
         http.get(requestPath, function (res) {
             if (res.statusCode !== 200) {
-                debug("invalid status code response: " + res.statusCode);
+                _this.log("invalid status code response: " + res.statusCode);
             }
             else {
                 //debug(`cmd ${cmd.name} successfully queried`);
@@ -63,17 +62,17 @@ var HTTPCommunicator = (function (_super) {
                 res.on('end', function () {
                     var val = cmd.parseQueryResponse(body_1);
                     if (typeof val !== 'undefined') {
-                        debug(cmd.name + " response parsed: " + body_1 + "," + val);
+                        _this.log(cmd.name + " response parsed: " + body_1 + "," + val, EndpointCommunicator_1.EndpointCommunicator.LOG_POLLING);
                         _this.config.controlUpdateCallback(control, val);
                     }
                     else {
-                        debug(cmd.name + " update response did not match: " + body_1);
+                        _this.log(cmd.name + " update response did not match: " + body_1, EndpointCommunicator_1.EndpointCommunicator.LOG_MATCHING);
                     }
                 });
             }
         })
             .on('error', function (e) {
-            debug("Error on query: " + e.message);
+            _this.log("Error on query: " + e.message);
             _this.disconnect();
         });
     };
@@ -99,7 +98,7 @@ var HTTPCommunicator = (function (_super) {
         var control = this.controls[update.control_id];
         var command = this.commands[control.ctid];
         if (!command) {
-            debug("No command found for control " + control.name);
+            this.log("No command found for control " + control.name);
             return;
         }
         var requestOptions = {
@@ -107,10 +106,10 @@ var HTTPCommunicator = (function (_super) {
             path: command.commandPath(update.value)
         };
         var requestPath = "http://" + requestOptions.hostname + requestOptions.path;
-        debug("sending request:" + requestPath);
+        this.log("sending request:" + requestPath, EndpointCommunicator_1.EndpointCommunicator.LOG_RAW_DATA);
         http.get(requestPath, function (res) {
             if (res.statusCode !== 200) {
-                debug("invalid status code response: " + res.statusCode);
+                _this.log("invalid status code response: " + res.statusCode);
             }
             else {
                 //debug(`${command.name} set to ${update.value} successfully`);
@@ -120,16 +119,16 @@ var HTTPCommunicator = (function (_super) {
                 res.on('end', function () {
                     if (command.matchResponse(body_2)) {
                         var newVal = command.parseCommandResponse(body_2, update.value);
-                        debug(control.name + " response successful, value: " + newVal);
+                        _this.log(control.name + " response successful, value: " + newVal, EndpointCommunicator_1.EndpointCommunicator.LOG_UPDATES);
                         _this.config.controlUpdateCallback(control, newVal);
                     }
                     else {
-                        debug(control.name + " update response did not match: " + body_2);
+                        _this.log(control.name + " update response did not match: " + body_2, EndpointCommunicator_1.EndpointCommunicator.LOG_MATCHING);
                     }
                 });
             }
         }).on('error', function (e) {
-            debug("Error on update request: " + e.message);
+            _this.log("Error on update request: " + e.message);
             _this.disconnect();
         });
     };
@@ -137,7 +136,7 @@ var HTTPCommunicator = (function (_super) {
         if (!this.connected) {
             return;
         }
-        debug("polling device");
+        this.log("polling device", EndpointCommunicator_1.EndpointCommunicator.LOG_POLLING);
         for (var id in this.controls) {
             var control = this.controls[id];
             if (control.poll) {
@@ -146,7 +145,7 @@ var HTTPCommunicator = (function (_super) {
                     this.executeCommandQuery(cmd);
                 }
                 else {
-                    debug("command not found for poll control " + control.ctid);
+                    this.log("command not found for poll control " + control.ctid);
                 }
             }
         }

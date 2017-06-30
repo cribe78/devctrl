@@ -13,8 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var EviD31Command_1 = require("./EviD31Command");
 var Control_1 = require("../../shared/Control");
 var SynchronousTCPCommunicator_1 = require("../SynchronousTCPCommunicator");
-//TODO: This communicator seems to have issues with order of commands and responses.  Query responses sometimes
-// come back out of order.
 var EviD31Communicator = (function (_super) {
     __extends(EviD31Communicator, _super);
     function EviD31Communicator() {

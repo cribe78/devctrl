@@ -6,7 +6,6 @@ import * as http from "http";
 import {sprintf} from "sprintf-js";
 import {IHTTPCommandConfig, HTTPCommand} from "../HTTPCommand";
 
-let debug = console.log;
 
 class AWHE130Communicator extends HTTPCommunicator {
     // /cgi-bin/aw_ptz?cmd=#R14&res=1

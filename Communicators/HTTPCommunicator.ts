@@ -7,8 +7,6 @@ import {EndpointCommunicator} from "./EndpointCommunicator";
 import {HTTPCommand} from "./HTTPCommand";
 import * as http from "http";
 
-let debug = console.log;
-
 export class HTTPCommunicator extends EndpointCommunicator {
     commands: IndexedDataSet<HTTPCommand> = {};
     commandsByControl: IndexedDataSet<HTTPCommand> = {};
@@ -38,7 +36,7 @@ export class HTTPCommunicator extends EndpointCommunicator {
 
     executeCommandQuery(cmd: HTTPCommand) {
         if (cmd.writeonly) {
-            debug(`not querying writeonly command ${cmd.name}`);
+            this.log(`not querying writeonly command ${cmd.name}`, EndpointCommunicator.LOG_POLLING);
         }
 
 
@@ -49,11 +47,11 @@ export class HTTPCommunicator extends EndpointCommunicator {
         };
 
         let requestPath = "http://" + requestOptions.hostname + requestOptions.path;
-        debug("sending request:" + requestPath);
+        this.log("sending request:" + requestPath, EndpointCommunicator.LOG_RAW_DATA);
 
         http.get(requestPath, (res) => {
             if (res.statusCode !== 200) {
-                debug("invalid status code response: " + res.statusCode);
+                this.log("invalid status code response: " + res.statusCode);
             }
             else {
                 //debug(`cmd ${cmd.name} successfully queried`);
@@ -63,17 +61,17 @@ export class HTTPCommunicator extends EndpointCommunicator {
                 res.on('end', () => {
                     let val = cmd.parseQueryResponse(body);
                     if (typeof val !== 'undefined') {
-                        debug(`${cmd.name} response parsed: ${body},${val}`);
+                        this.log(`${cmd.name} response parsed: ${body},${val}`, EndpointCommunicator.LOG_POLLING);
                         this.config.controlUpdateCallback(control, val);
                     }
                     else {
-                        debug(`${cmd.name} update response did not match: ${body}`);
+                        this.log(`${cmd.name} update response did not match: ${body}`, EndpointCommunicator.LOG_MATCHING);
                     }
                 });
             }
         })
             .on('error', (e) => {
-                debug(`Error on query: ${e.message}`);
+                this.log(`Error on query: ${e.message}`);
                 this.disconnect();
             });
     }
@@ -103,7 +101,7 @@ export class HTTPCommunicator extends EndpointCommunicator {
         let command = this.commands[control.ctid];
 
         if (! command) {
-            debug(`No command found for control ${control.name}`);
+            this.log(`No command found for control ${control.name}`);
             return;
         }
 
@@ -113,11 +111,11 @@ export class HTTPCommunicator extends EndpointCommunicator {
         };
 
         let requestPath = "http://" + requestOptions.hostname + requestOptions.path;
-        debug("sending request:" + requestPath);
+        this.log("sending request:" + requestPath, EndpointCommunicator.LOG_RAW_DATA);
 
         http.get(requestPath, (res) => {
             if (res.statusCode !== 200) {
-                debug("invalid status code response: " + res.statusCode);
+                this.log("invalid status code response: " + res.statusCode);
             }
             else {
                 //debug(`${command.name} set to ${update.value} successfully`);
@@ -127,16 +125,16 @@ export class HTTPCommunicator extends EndpointCommunicator {
                 res.on('end', () => {
                     if (command.matchResponse(body)) {
                         let newVal = command.parseCommandResponse(body, update.value);
-                        debug(`${control.name} response successful, value: ${newVal}`);
+                        this.log(`${control.name} response successful, value: ${newVal}`, EndpointCommunicator.LOG_UPDATES);
                         this.config.controlUpdateCallback(control, newVal);
                     }
                     else {
-                        debug(`${control.name} update response did not match: ${body}`);
+                        this.log(`${control.name} update response did not match: ${body}`, EndpointCommunicator.LOG_MATCHING);
                     }
                 });
             }
         }).on('error', (e) => {
-            debug(`Error on update request: ${e.message}`);
+            this.log(`Error on update request: ${e.message}`);
             this.disconnect();
         });
     }
@@ -146,7 +144,7 @@ export class HTTPCommunicator extends EndpointCommunicator {
             return;
         }
 
-        debug("polling device");
+        this.log("polling device", EndpointCommunicator.LOG_POLLING);
 
         for (let id in this.controls) {
             let control = this.controls[id];
@@ -158,7 +156,7 @@ export class HTTPCommunicator extends EndpointCommunicator {
                     this.executeCommandQuery(cmd);
                 }
                 else {
-                    debug("command not found for poll control " + control.ctid);
+                    this.log("command not found for poll control " + control.ctid);
                 }
             }
         }

@@ -1,8 +1,7 @@
 import {TCPCommand} from "./TCPCommand";
 import {TCPCommunicator} from "./TCPCommunicator";
 import {ControlUpdateData} from "../shared/ControlUpdate";
-
-let debug = console.log;
+import {EndpointCommunicator} from "./EndpointCommunicator";
 
 
 export class SynchronousTCPCommunicator extends TCPCommunicator {
@@ -18,7 +17,7 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
 
         let self = this;
         let queryStr = cmd.queryString();
-        debug("queueing query: " + queryStr);
+        this.log("queueing query: " + queryStr, EndpointCommunicator.LOG_POLLING);
 
         this.queueCommand(queryStr + this.outputLineTerminator,
             [
@@ -47,7 +46,7 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
             strData = data.toString('hex');
         }
 
-        //debug("data recieved: " + strData);
+        this.log("data recieved: " + strData, EndpointCommunicator.LOG_RAW_DATA);
 
         this.inputBuffer += strData;
         let lines = this.inputBuffer.split(this.inputLineTerminator);
@@ -105,7 +104,7 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
 
 
         let logCommand = command.replace(/\r?\n|\r/g, '');
-        debug("sending command: " + logCommand);
+        this.log("sending command: " + logCommand, EndpointCommunicator.LOG_RAW_DATA);
         this.writeToSocket(command);
 
         if (expectedResponse[0] == '') {

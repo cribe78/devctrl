@@ -11,7 +11,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var TCPCommunicator_1 = require("./TCPCommunicator");
-var debug = console.log;
+var EndpointCommunicator_1 = require("./EndpointCommunicator");
 var SynchronousTCPCommunicator = (function (_super) {
     __extends(SynchronousTCPCommunicator, _super);
     function SynchronousTCPCommunicator() {
@@ -28,7 +28,7 @@ var SynchronousTCPCommunicator = (function (_super) {
         }
         var self = this;
         var queryStr = cmd.queryString();
-        debug("queueing query: " + queryStr);
+        this.log("queueing query: " + queryStr, EndpointCommunicator_1.EndpointCommunicator.LOG_POLLING);
         this.queueCommand(queryStr + this.outputLineTerminator, [
             cmd.queryResponseMatchString(),
             function (line) {
@@ -50,7 +50,7 @@ var SynchronousTCPCommunicator = (function (_super) {
         else if (this.commsMode == 'hex') {
             strData = data.toString('hex');
         }
-        //debug("data recieved: " + strData);
+        this.log("data recieved: " + strData, EndpointCommunicator_1.EndpointCommunicator.LOG_RAW_DATA);
         this.inputBuffer += strData;
         var lines = this.inputBuffer.split(this.inputLineTerminator);
         while (lines.length > 1) {
@@ -93,7 +93,7 @@ var SynchronousTCPCommunicator = (function (_super) {
         this.expectedResponsesQueue.splice(0, 1);
         this.expectedResponses = [expectedResponse];
         var logCommand = command.replace(/\r?\n|\r/g, '');
-        debug("sending command: " + logCommand);
+        this.log("sending command: " + logCommand, EndpointCommunicator_1.EndpointCommunicator.LOG_RAW_DATA);
         this.writeToSocket(command);
         if (expectedResponse[0] == '') {
             expectedResponse[1]('');

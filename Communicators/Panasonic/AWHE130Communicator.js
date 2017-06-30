@@ -14,7 +14,6 @@ var HTTPCommunicator_1 = require("../HTTPCommunicator");
 var Control_1 = require("../../shared/Control");
 var sprintf_js_1 = require("sprintf-js");
 var HTTPCommand_1 = require("../HTTPCommand");
-var debug = console.log;
 var AWHE130Communicator = (function (_super) {
     __extends(AWHE130Communicator, _super);
     // /cgi-bin/aw_ptz?cmd=#R14&res=1

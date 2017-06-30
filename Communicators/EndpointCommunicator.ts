@@ -11,8 +11,6 @@ export interface IEndpointCommunicatorConfig {
     statusUpdateCallback: (status: EndpointStatus) => void;
 }
 
-let debug = console.log;
-
 export class EndpointCommunicator {
     controlsByCtid: IndexedDataSet<Control> = {};
     controls: IndexedDataSet<Control> = {};
@@ -47,7 +45,30 @@ export class EndpointCommunicator {
         this._connected = false;
     };
 
+    static LOG_POLLING  = "polling";
+    static LOG_MATCHING = "matching";
+    static LOG_RAW_DATA = "rawData";
+    static LOG_CONNECTION = "connection";
+    static LOG_UPDATES = "updates";
 
+    /**
+     * A function to log messages.  Determine which messages to log by setting the commLogOptions value on a
+     * per-device basis through the application UI.  commLogOptions should be a comma separated list of tags.
+     * Tags used by base classes are: polling, updates, matching, rawData, connection, updates
+     *
+     * @param msg  message to be logged
+     * @param tag  message tag, message will only be logged if tag is matched in commLogOptions
+     */
+    log(msg: string, tag = "default") {
+       let opts = this.config.endpoint.commLogOptionsObj;
+
+       if (opts[tag]) {
+           console.log(msg);
+       }
+       else if (opts["all"]) {
+           console.log(msg);
+       }
+    }
 
     setConfig(config: IEndpointCommunicatorConfig) {
         this.config = config;
@@ -97,7 +118,7 @@ export class EndpointCommunicator {
         if (valDiff || this.indeterminateControls[control._id]) {
             this.indeterminateControls[control._id] = false;
 
-            debug(`control update: ${control.name} = ${val}`);
+            this.log(`control update: ${control.name} = ${val}`, "updates");
             this.config.controlUpdateCallback(control, val);
             control.value = val;
         }
@@ -114,7 +135,7 @@ export class EndpointCommunicator {
             this.controlsByCtid[ctid] = controls[id];
 
             if (! localControl) {
-                debug("setTemplates: No control located for ctid " + ctid);
+                this.log("setTemplates: No control located for ctid " + ctid);
             }
             else {
                 // Set value of remote control to match local

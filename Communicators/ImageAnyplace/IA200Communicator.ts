@@ -1,11 +1,8 @@
-import * as debugMod from "debug";
-import {TCPCommunicator} from "../TCPCommunicator";
 import {ITCPCommandConfig, TCPCommand} from "../TCPCommand";
 import keys = require("core-js/fn/array/keys");
 import {Control} from "../../shared/Control";
 import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
-
-let debug = debugMod("comms");
+import {EndpointCommunicator} from "../EndpointCommunicator";
 
 class IA200Communicator extends SynchronousTCPCommunicator {
     inputLineTerminator = '';
@@ -256,7 +253,7 @@ class IA200Communicator extends SynchronousTCPCommunicator {
             return str;
         }
 
-        debug("Error: unmatched IA200 start char:" + data);
+        this.log("Error: unmatched IA200 start char:" + data, EndpointCommunicator.LOG_MATCHING);
         this.inputBuffer = this.inputBuffer.slice(1);
 
         return '';

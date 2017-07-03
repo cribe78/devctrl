@@ -118,6 +118,12 @@ export abstract class DCSerializable {
         this.dataLoaded = true;
     };
 
+    loadDefaults() {
+        for ( let prop in this.defaultProperties) {
+            this[prop] = this.defaultProperties[prop];
+        }
+    }
+
     objectPropertyName(idProperty: string) {
         for (let fkDef of this.foreignKeys) {
             if (fkDef.fkIdProp == idProperty) {

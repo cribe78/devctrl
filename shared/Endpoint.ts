@@ -29,9 +29,10 @@ export class Endpoint extends DCSerializable {
     status: EndpointStatus;
     ip: string;
     port: number;
+    config: any;
     enabled: boolean;
     private _commLogOptions : string;
-    commLogOptionsObj : {}
+    commLogOptionsObj : {};
 
     static tableStr = "endpoints";
     table: string;
@@ -57,6 +58,7 @@ export class Endpoint extends DCSerializable {
             'status',
             'ip',
             'port',
+            'config',
             'enabled',
             'commLogOptions'
         ]);
@@ -65,6 +67,7 @@ export class Endpoint extends DCSerializable {
             status : EndpointStatus.Offline,
             ip : "",
             port : 0,
+            config: {},
             enabled : false,
             commLogOptions : "default"
         };

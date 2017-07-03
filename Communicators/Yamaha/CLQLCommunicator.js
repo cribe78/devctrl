@@ -15,12 +15,12 @@ var CLQLCommand_1 = require("./CLQLCommand");
 var Endpoint_1 = require("../../shared/Endpoint");
 var TCPCommunicator_1 = require("../TCPCommunicator");
 var sprintf_js_1 = require("sprintf-js");
+var EndpointCommunicator_1 = require("../EndpointCommunicator");
 var CLQLCommunicator = (function (_super) {
     __extends(CLQLCommunicator, _super);
     function CLQLCommunicator() {
         var _this = _super.call(this) || this;
         _this.alvPacket = "f043103e197f";
-        _this.deviceType = "CL";
         _this.inputLineTerminator = "f7";
         _this.outputLineTerminator = "f7";
         _this.commsMode = "hex";
@@ -29,7 +29,7 @@ var CLQLCommunicator = (function (_super) {
     CLQLCommunicator.prototype.buildCommandList = function () {
         var inputCount = 72;
         var mixCount = 16;
-        if (this.deviceType == "QL") {
+        if (this.config.endpoint.config.model == "QL1") {
             inputCount = 48;
             mixCount = 16;
         }
@@ -59,33 +59,10 @@ var CLQLCommunicator = (function (_super) {
                 return;
             var strData = data.toString('hex');
             if (strData == _this.alvPacket + "f7") {
-                console.log("connection string received, sending ACK");
+                _this.log("connection string received, sending ACK", EndpointCommunicator_1.EndpointCommunicator.LOG_CONNECTION);
                 //this.writeToSocket("f043303e1932f7f043303e193100f7");
                 _this.writeToSocket("f043303e1932f7"
-                    + "f043303e193100f7"
-                //+ "f043303e1901037000000000f7"
-                //+ "f043303e1901037000010000f7"
-                //+ "f043303e1901035800000000f7"
-                //+ "f043303e1901035800010000f7"
-                //+ "f043303e1901032a00000000f7"
-                //+ "f043303e1901032a00010000f7"
-                //+ "f043303e1901032a00020000f7"
-                //+ "f043303e1901015c00010000f7"
-                //+ "f043303e1901015c00010001f7"
-                //+ "f043303e1901015c00010002f7"
-                //+ "f043303e1901015c00010003f7"
-                //+ "f043303e1901015c00010004f7"
-                //+ "f043303e1901015c00010005f7"
-                //+ "f043303e1901015d00000000f7"
-                //+ "f043303e1901015d00000001f7"
-                //+ "f043303e1901015d00000002f7"
-                //+ "f043303e1901015d00000003f7"
-                //+ "f043303e1901015d00000004f7"
-                //+ "f043303e1901015d00000005f7"
-                //+ "f043303e1901035e00000000f7"
-                //+ "f043303e1901035e00000001f7"
-                //+ "f043303e1901035e00000002f7"
-                );
+                    + "f043303e193100f7");
                 _this.connected = true;
                 _this.config.statusUpdateCallback(Endpoint_1.EndpointStatus.Online);
                 _this.online();
@@ -94,7 +71,7 @@ var CLQLCommunicator = (function (_super) {
     };
     CLQLCommunicator.prototype.preprocessLine = function (line) {
         if (line == this.alvPacket) {
-            console.log("ALV received");
+            this.log("ALV received", "heartbeat");
             return '';
         }
         return line;

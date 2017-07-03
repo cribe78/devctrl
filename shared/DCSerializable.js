@@ -74,6 +74,11 @@ var DCSerializable = (function () {
         this.dataLoaded = true;
     };
     ;
+    DCSerializable.prototype.loadDefaults = function () {
+        for (var prop in this.defaultProperties) {
+            this[prop] = this.defaultProperties[prop];
+        }
+    };
     DCSerializable.prototype.objectPropertyName = function (idProperty) {
         for (var _i = 0, _a = this.foreignKeys; _i < _a.length; _i++) {
             var fkDef = _a[_i];

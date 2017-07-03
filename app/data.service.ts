@@ -319,6 +319,7 @@ module.exports = {
         let ctor = this.dataModel.types[tableName];
 
         let newRow = new ctor("0");
+        newRow.loadDefaults();
         Object.assign(newRow, newData);
 
         return newRow;

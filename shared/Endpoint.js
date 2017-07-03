@@ -43,6 +43,7 @@ var Endpoint = (function (_super) {
             'status',
             'ip',
             'port',
+            'config',
             'enabled',
             'commLogOptions'
         ]);
@@ -50,6 +51,7 @@ var Endpoint = (function (_super) {
             status: EndpointStatus.Offline,
             ip: "",
             port: 0,
+            config: {},
             enabled: false,
             commLogOptions: "default"
         };

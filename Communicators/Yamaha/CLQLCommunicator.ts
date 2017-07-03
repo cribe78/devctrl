@@ -5,11 +5,11 @@ import {CLQLCommand} from "./CLQLCommand";
 import {EndpointStatus} from "../../shared/Endpoint";
 import {TCPCommunicator} from "../TCPCommunicator";
 import {sprintf} from "sprintf-js";
+import {EndpointCommunicator} from "../EndpointCommunicator";
 
 class CLQLCommunicator extends TCPCommunicator {
 
     private alvPacket = "f043103e197f";
-    private deviceType = "CL";
 
     constructor() {
         super();
@@ -22,7 +22,7 @@ class CLQLCommunicator extends TCPCommunicator {
         let inputCount = 72;
         let mixCount = 16;
 
-        if (this.deviceType == "QL") {
+        if (this.config.endpoint.config.model == "QL1") {
             inputCount = 48;
             mixCount = 16;
         }
@@ -66,32 +66,10 @@ class CLQLCommunicator extends TCPCommunicator {
             let strData = data.toString('hex');
 
             if (strData == this.alvPacket + "f7") {
-                console.log("connection string received, sending ACK");
+                this.log("connection string received, sending ACK", EndpointCommunicator.LOG_CONNECTION);
                 //this.writeToSocket("f043303e1932f7f043303e193100f7");
                 this.writeToSocket("f043303e1932f7"
                                 + "f043303e193100f7"
-                                //+ "f043303e1901037000000000f7"
-                                //+ "f043303e1901037000010000f7"
-                                //+ "f043303e1901035800000000f7"
-                                //+ "f043303e1901035800010000f7"
-                                //+ "f043303e1901032a00000000f7"
-                                //+ "f043303e1901032a00010000f7"
-                                //+ "f043303e1901032a00020000f7"
-                                //+ "f043303e1901015c00010000f7"
-                                //+ "f043303e1901015c00010001f7"
-                                //+ "f043303e1901015c00010002f7"
-                                //+ "f043303e1901015c00010003f7"
-                                //+ "f043303e1901015c00010004f7"
-                                //+ "f043303e1901015c00010005f7"
-                                //+ "f043303e1901015d00000000f7"
-                                //+ "f043303e1901015d00000001f7"
-                                //+ "f043303e1901015d00000002f7"
-                                //+ "f043303e1901015d00000003f7"
-                                //+ "f043303e1901015d00000004f7"
-                                //+ "f043303e1901015d00000005f7"
-                                //+ "f043303e1901035e00000000f7"
-                                //+ "f043303e1901035e00000001f7"
-                                //+ "f043303e1901035e00000002f7"
                 );
                 this.connected = true;
                 this.config.statusUpdateCallback(EndpointStatus.Online);
@@ -102,7 +80,7 @@ class CLQLCommunicator extends TCPCommunicator {
 
     preprocessLine(line: string) : string {
         if (line == this.alvPacket) {
-            console.log("ALV received");
+            this.log("ALV received", "heartbeat");
             return '';
         }
 

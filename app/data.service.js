@@ -263,6 +263,7 @@ var DataService = (function () {
         if (newData === void 0) { newData = {}; }
         var ctor = this.dataModel.types[tableName];
         var newRow = new ctor("0");
+        newRow.loadDefaults();
         Object.assign(newRow, newData);
         return newRow;
     };

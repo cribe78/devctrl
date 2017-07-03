@@ -45,7 +45,7 @@ var TCPCommunicator = (function (_super) {
             self.doDeviceLogon();
         });
         this.socket.on('error', function (e) {
-            this.log("caught socket error: " + e.message, EndpointCommunicator_1.EndpointCommunicator.LOG_CONNECTION);
+            self.log("caught socket error: " + e.message, EndpointCommunicator_1.EndpointCommunicator.LOG_CONNECTION);
             self.onEnd();
         });
         this.socket.on('data', function (data) {

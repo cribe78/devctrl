@@ -54,7 +54,7 @@ export class TCPCommunicator extends EndpointCommunicator {
         });
 
         this.socket.on('error', function(e) {
-            this.log("caught socket error: " + e.message, EndpointCommunicator.LOG_CONNECTION);
+            self.log("caught socket error: " + e.message, EndpointCommunicator.LOG_CONNECTION);
             self.onEnd();
         });
 

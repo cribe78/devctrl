@@ -74,6 +74,9 @@ var EndpointStatusComponent = (function () {
     EndpointStatusComponent.prototype.statusIconColor = function () {
         var status = this.status();
         if (status == Endpoint_1.EndpointStatus.Online) {
+            if (this.backgroundColor == 'primary') {
+                return 'currentColor';
+            }
             return 'primary';
         }
         if (status == Endpoint_1.EndpointStatus.Offline) {

@@ -91,6 +91,9 @@ export class EndpointStatusComponent implements OnInit {
         let status = this.status();
 
         if (status == EndpointStatus.Online) {
+            if (this.backgroundColor == 'primary') {
+                return 'currentColor';
+            }
             return 'primary';
         }
 

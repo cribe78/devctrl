@@ -19,12 +19,17 @@ import {LayoutService} from "../layout/layout.service";
                 <button md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
                 <button md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
                 <span class="devctrl-spacer">&nbsp;</span>
+                <form class="search-input">
+                    <md-input-container>
+                        <input mdInput name="search" placeholder="Search Controls" [(ngModel)]="searchTerm">
+                    </md-input-container>
+                </form>
                 <devctrl-endpoint-status [endpointId]="obj._id" backgroundColor="primary"></devctrl-endpoint-status>
             </div>
         </md-toolbar>
         
         <md-list>
-            <ng-template ngFor let-controlId [ngForOf]="controlIds()">
+            <ng-template ngFor let-controlId [ngForOf]="filteredControls()">
                 <md-list-item class="devctrl-ctrl-list-item"><devctrl-ctrl [controlId]="controlId"></devctrl-ctrl></md-list-item>
                 <md-divider></md-divider>
             </ng-template>
@@ -40,12 +45,17 @@ import {LayoutService} from "../layout/layout.service";
             max-width: 900px;
             flex: 1 1;
         }
+        
+        .search-input {
+            margin-bottom: 0;
+        }
     `]
 })
 export class EndpointComponent implements OnInit {
     endpointId: string;
     obj: Endpoint;
     controls: IndexedDataSet<Control>;
+    searchTerm: string;
 
 
     constructor(private route : ActivatedRoute,
@@ -100,6 +110,20 @@ export class EndpointComponent implements OnInit {
     editEndpoint($event) {
         this.recordService.editRecord($event, this.endpointId, 'endpoints');
     }
+
+    filteredControls() {
+        if (! this.searchTerm) {
+            return this.controlIds();
+        }
+
+        let searchTerm = this.searchTerm.toLowerCase();
+        let controlIds = this.controlIds();
+
+        return  controlIds.filter(id => {
+            return this.controls[id].name.toLowerCase().includes(searchTerm);
+        });
+    }
+
 
     generateConfig($event) {
         this.dataService.generateEndpointConfig($event, this.endpointId);

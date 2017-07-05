@@ -8,7 +8,7 @@ import {sprintf} from "sprintf-js";
 import {EndpointCommunicator} from "../EndpointCommunicator";
 
 class CLQLCommunicator extends TCPCommunicator {
-
+    static USERTYPE_FADER_COMBO = "clql-fader-combo";
     private alvPacket = "f043103e197f";
 
     constructor() {
@@ -29,12 +29,17 @@ class CLQLCommunicator extends TCPCommunicator {
 
         // Input Controls
         for (let i = 0; i < inputCount; i++) {
+            let chnName = sprintf("%02d", i + 1);
             let chnStr = sprintf("%04x", i);
-            this.registerSetupCommand(`InputOn.${i}`, "0035", "0000", chnStr,
+            this.registerSetupCommand(`InputOn.${chnName}`, "0035", "0000", chnStr,
                 Control.CONTROL_TYPE_BOOLEAN, Control.USERTYPE_SWITCH);
-            this.registerSetupCommand(`InputFader.${i}`, "0037", "0000", chnStr,
+            this.registerSetupCommand(`InputFader.${chnName}`, "0037", "0000", chnStr,
                 Control.CONTROL_TYPE_RANGE, Control.USERTYPE_CLQL_FADER,
                 { min: 0, max: 1023});
+
+            this.registerFaderComboControl(`fader-combo-${chnName}`, `Input ${chnName}`,
+                                            `InputFader.${chnName}`,
+                                            `InputOn.${chnName}`);
         }
 
         // Mix Controls
@@ -104,6 +109,31 @@ class CLQLCommunicator extends TCPCommunicator {
             subCommand: subCommand,
             channel: channel
         });
+    }
+
+
+    registerFaderComboControl(ctidStr : string, name : string, faderId: string, onOffId: string) {
+        let ctid = this.endpoint_id + "-" + ctidStr;
+        let faderCtid = this.endpoint_id + "-" + faderId;
+        let onOffCtid = this.endpoint_id + "-" + onOffId;
+        let control = new Control(ctid, {
+            _id: ctid,
+            endpoint_id: this.endpoint_id,
+            ctid: ctid,
+            name: name,
+            usertype: CLQLCommunicator.USERTYPE_FADER_COMBO,
+            control_type: Control.CONTROL_TYPE_STRING,
+            poll: 0,
+            value: "",
+            config : {
+                componentControls: {
+                    fader: faderCtid,
+                    onOff: onOffCtid
+                }
+            }
+        });
+
+        this.registerControl(control);
     }
 }
 

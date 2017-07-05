@@ -65,6 +65,12 @@ var EndpointCommunicator = (function () {
     EndpointCommunicator.prototype.handleControlUpdateRequest = function (request) {
         throw new Error("handleControlUpdateRequest must be implemented by Communicator");
     };
+    EndpointCommunicator.prototype.registerControl = function (control) {
+        if (this.controlsByCtid[control.ctid]) {
+            throw new Error("duplicate ctid " + control.ctid + " registered");
+        }
+        this.controlsByCtid[control.ctid] = control;
+    };
     EndpointCommunicator.prototype.registerHyperlinkControl = function (config, name, cmd) {
         if (name === void 0) { name = "Device Web Interface"; }
         if (cmd === void 0) { cmd = "hyperlink"; }

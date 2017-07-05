@@ -20,6 +20,8 @@ var ControlService = (function () {
         this.dataService = dataService;
         this.recordService = recordService;
         this.router = router;
+        this._siblings = {};
+        this.components = {};
         this.panelContext = false;
     }
     Object.defineProperty(ControlService.prototype, "panelControl", {
@@ -109,11 +111,19 @@ var ControlService = (function () {
     ControlService.prototype.editPanelControl = function ($event) {
         this.recordService.editRecord($event, this.panelControl._id, this.panelControl.table);
     };
-    ControlService.prototype.intConfig = function (key) {
-        if (this.config(key)) {
-            return parseInt(this.config(key));
+    ControlService.prototype.findSiblingByCtid = function (ctid) {
+        if (this._siblings[ctid]) {
+            return this._siblings[ctid];
         }
-        return 0;
+        var controls = this.control.endpoint.referenced.controls;
+        for (var _i = 0, _a = Object.keys(controls); _i < _a.length; _i++) {
+            var id = _a[_i];
+            if (controls[id].ctid == ctid) {
+                this._siblings[ctid] = controls[id];
+                return controls[id];
+            }
+        }
+        throw new Error("sibling control not located: " + ctid);
     };
     ControlService.prototype.floatConfig = function (key, defVal) {
         if (defVal === void 0) { defVal = 0; }
@@ -122,6 +132,33 @@ var ControlService = (function () {
             return defVal;
         }
         return parseFloat(this.control.config[key]);
+    };
+    ControlService.prototype.intConfig = function (key, component) {
+        if (component === void 0) { component = ""; }
+        if (component) {
+            if (this.components[component].config[key]) {
+                return parseInt(this.components[component].config[key]);
+            }
+            else {
+                return 0;
+            }
+        }
+        if (this.config(key)) {
+            return parseInt(this.config(key));
+        }
+        return 0;
+    };
+    ControlService.prototype.loadComponentControls = function () {
+        var componentConfig = this.control.config.componentControls;
+        this.components = {};
+        if (!componentConfig) {
+            return {};
+        }
+        for (var _i = 0, _a = Object.keys(componentConfig); _i < _a.length; _i++) {
+            var component = _a[_i];
+            this.components[component] = this.findSiblingByCtid(componentConfig[component]);
+        }
+        return this.components;
     };
     ControlService.prototype.selectMenuItem = function (val) {
         this.setValue(val);
@@ -144,6 +181,13 @@ var ControlService = (function () {
     };
     ControlService.prototype.trackByValue = function (idx, obj) {
         return obj.value;
+    };
+    ControlService.prototype.updateComponentValue = function (componentName) {
+        if (this.components[componentName]) {
+            var control = this.components[componentName];
+            this.dataService.updateControlValue(control);
+            this.dataService.logAction("Control update requested: set " + control.fkSelectName() + " to " + control.value, ['control update requested'], [control._id, control.endpoint_id]);
+        }
     };
     ControlService.prototype.updateValue = function () {
         this.dataService.updateControlValue(this.control);

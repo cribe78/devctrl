@@ -5,11 +5,14 @@ import {PanelControl} from "shared/PanelControl";
 import {Control} from "shared/Control";
 import {ActionTrigger} from "shared/ActionTrigger";
 import {Router} from '@angular/router';
+import {IndexedDataSet} from "../../shared/DCDataModel";
 
 @Injectable()
 export class ControlService {
     private _panelControl : PanelControl;
     private _control : Control;
+    private _siblings : { [ctid : string]: Control } = {};
+    components : { [name: string] : Control} = {};
     panelContext = false;
 
     constructor(private dataService : DataService,
@@ -107,13 +110,23 @@ export class ControlService {
         this.recordService.editRecord($event, this.panelControl._id, this.panelControl.table);
     }
 
-    intConfig(key) {
-        if (this.config(key)) {
-            return parseInt(this.config(key));
+    findSiblingByCtid(ctid: string) {
+        if (this._siblings[ctid]) {
+            return this._siblings[ctid];
         }
 
-        return 0;
+        let controls = this.control.endpoint.referenced.controls as IndexedDataSet<Control>;
+        for (let id of Object.keys(controls)) {
+            if (controls[id].ctid == ctid) {
+                this._siblings[ctid] = controls[id];
+                return controls[id];
+            }
+        }
+
+        throw new Error(`sibling control not located: ${ctid}`);
     }
+
+
 
     floatConfig(key, defVal : number = 0) {
         if (typeof this.control.config !== 'object' ||
@@ -125,6 +138,38 @@ export class ControlService {
     }
 
 
+    intConfig(key, component = "") {
+        if (component) {
+            if (this.components[component].config[key]) {
+                return parseInt(this.components[component].config[key]);
+            }
+            else {
+                return 0;
+            }
+        }
+        if (this.config(key)) {
+            return parseInt(this.config(key));
+        }
+
+        return 0;
+    }
+
+
+    loadComponentControls() {
+        let componentConfig = this.control.config.componentControls;
+        this.components = {};
+
+        if (! componentConfig) {
+            return {};
+        }
+
+
+        for (let component of Object.keys(componentConfig)) {
+            this.components[component] = this.findSiblingByCtid(componentConfig[component]);
+        }
+
+        return this.components;
+    }
 
     selectMenuItem(val) {
         this.setValue(val);
@@ -153,6 +198,17 @@ export class ControlService {
 
     trackByValue(idx, obj) {
         return obj.value;
+    }
+
+    updateComponentValue(componentName : string) {
+        if (this.components[componentName]) {
+            let control = this.components[componentName];
+            this.dataService.updateControlValue(control);
+            this.dataService.logAction(
+                `Control update requested: set ${control.fkSelectName()} to ${control.value}`,
+                ['control update requested'],
+                [control._id, control.endpoint_id]);
+        }
     }
 
     updateValue() {

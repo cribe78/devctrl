@@ -87,6 +87,16 @@ export class EndpointCommunicator {
         throw new Error("handleControlUpdateRequest must be implemented by Communicator");
     }
 
+    registerControl(control: Control) {
+        if (this.controlsByCtid[control.ctid]) {
+            throw new Error(`duplicate ctid ${control.ctid} registered`);
+        }
+
+        this.controlsByCtid[control.ctid] = control;
+
+    }
+
+
     registerHyperlinkControl(config: any, name = "Device Web Interface", cmd = "hyperlink") {
         let ctid = this.endpoint_id + "-" + cmd;
 

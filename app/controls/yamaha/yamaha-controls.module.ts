@@ -3,6 +3,7 @@ import {FormsModule} from "@angular/forms";
 import {NgModule} from "@angular/core";
 import {CommonModule, DecimalPipe} from "@angular/common";
 import {CLQLFaderControl} from "./clql-fader.control";
+import {CLQLFaderComboControl} from "./clql-fader-combo.control";
 
 
 
@@ -14,10 +15,12 @@ import {CLQLFaderControl} from "./clql-fader.control";
         CommonModule
     ],
     declarations: [
-        CLQLFaderControl
+        CLQLFaderControl,
+        CLQLFaderComboControl
     ],
     exports: [
-        CLQLFaderControl
+        CLQLFaderControl,
+        CLQLFaderComboControl
     ],
     providers: [
         DecimalPipe

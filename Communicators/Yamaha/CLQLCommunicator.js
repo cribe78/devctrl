@@ -35,9 +35,11 @@ var CLQLCommunicator = (function (_super) {
         }
         // Input Controls
         for (var i = 0; i < inputCount; i++) {
+            var chnName = sprintf_js_1.sprintf("%02d", i + 1);
             var chnStr = sprintf_js_1.sprintf("%04x", i);
-            this.registerSetupCommand("InputOn." + i, "0035", "0000", chnStr, Control_1.Control.CONTROL_TYPE_BOOLEAN, Control_1.Control.USERTYPE_SWITCH);
-            this.registerSetupCommand("InputFader." + i, "0037", "0000", chnStr, Control_1.Control.CONTROL_TYPE_RANGE, Control_1.Control.USERTYPE_CLQL_FADER, { min: 0, max: 1023 });
+            this.registerSetupCommand("InputOn." + chnName, "0035", "0000", chnStr, Control_1.Control.CONTROL_TYPE_BOOLEAN, Control_1.Control.USERTYPE_SWITCH);
+            this.registerSetupCommand("InputFader." + chnName, "0037", "0000", chnStr, Control_1.Control.CONTROL_TYPE_RANGE, Control_1.Control.USERTYPE_CLQL_FADER, { min: 0, max: 1023 });
+            this.registerFaderComboControl("fader-combo-" + chnName, "Input " + chnName, "InputFader." + chnName, "InputOn." + chnName);
         }
         // Mix Controls
         for (var i = 0; i < mixCount; i++) {
@@ -93,8 +95,31 @@ var CLQLCommunicator = (function (_super) {
             channel: channel
         });
     };
+    CLQLCommunicator.prototype.registerFaderComboControl = function (ctidStr, name, faderId, onOffId) {
+        var ctid = this.endpoint_id + "-" + ctidStr;
+        var faderCtid = this.endpoint_id + "-" + faderId;
+        var onOffCtid = this.endpoint_id + "-" + onOffId;
+        var control = new Control_1.Control(ctid, {
+            _id: ctid,
+            endpoint_id: this.endpoint_id,
+            ctid: ctid,
+            name: name,
+            usertype: CLQLCommunicator.USERTYPE_FADER_COMBO,
+            control_type: Control_1.Control.CONTROL_TYPE_STRING,
+            poll: 0,
+            value: "",
+            config: {
+                componentControls: {
+                    fader: faderCtid,
+                    onOff: onOffCtid
+                }
+            }
+        });
+        this.registerControl(control);
+    };
     return CLQLCommunicator;
 }(TCPCommunicator_1.TCPCommunicator));
+CLQLCommunicator.USERTYPE_FADER_COMBO = "clql-fader-combo";
 var communicator = new CLQLCommunicator();
 module.exports = communicator;
 //# sourceMappingURL=CLQLCommunicator.js.map

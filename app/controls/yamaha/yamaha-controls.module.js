@@ -11,6 +11,7 @@ var forms_1 = require("@angular/forms");
 var core_1 = require("@angular/core");
 var common_1 = require("@angular/common");
 var clql_fader_control_1 = require("./clql-fader.control");
+var clql_fader_combo_control_1 = require("./clql-fader-combo.control");
 var YamahaControlsModule = (function () {
     function YamahaControlsModule() {
     }
@@ -24,10 +25,12 @@ YamahaControlsModule = __decorate([
             common_1.CommonModule
         ],
         declarations: [
-            clql_fader_control_1.CLQLFaderControl
+            clql_fader_control_1.CLQLFaderControl,
+            clql_fader_combo_control_1.CLQLFaderComboControl
         ],
         exports: [
-            clql_fader_control_1.CLQLFaderControl
+            clql_fader_control_1.CLQLFaderControl,
+            clql_fader_combo_control_1.CLQLFaderComboControl
         ],
         providers: [
             common_1.DecimalPipe

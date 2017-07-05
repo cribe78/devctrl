@@ -90,7 +90,16 @@ var ControlService = (function () {
     ControlService.prototype.addWatcherRule = function ($event) {
         this.recordService.editRecord($event, '0', ActionTrigger_1.ActionTrigger.tableStr, { watched_control_id: this.control._id });
     };
-    ControlService.prototype.config = function (key) {
+    ControlService.prototype.config = function (key, component) {
+        if (component === void 0) { component = ""; }
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && this.components[component].config[key]) {
+                return this.components[component].config[key];
+            }
+            return '';
+        }
         if (typeof this.control.config == 'object' && this.control.config[key]) {
             return this.control.config[key];
         }
@@ -125,8 +134,17 @@ var ControlService = (function () {
         }
         throw new Error("sibling control not located: " + ctid);
     };
-    ControlService.prototype.floatConfig = function (key, defVal) {
+    ControlService.prototype.floatConfig = function (key, defVal, component) {
         if (defVal === void 0) { defVal = 0; }
+        if (component === void 0) { component = ""; }
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && typeof this.components[component].config[key] != 'undefined') {
+                return parseFloat(this.components[component].config[key]);
+            }
+            return defVal;
+        }
         if (typeof this.control.config !== 'object' ||
             typeof this.control.config[key] == 'undefined') {
             return defVal;

@@ -77,7 +77,16 @@ export class ControlService {
             { watched_control_id : this.control._id});
     }
 
-    config(key) {
+    config(key, component = "") {
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && this.components[component].config[key]) {
+                return this.components[component].config[key];
+            }
+            return '';
+        }
+
         if (typeof this.control.config == 'object' && this.control.config[key]) {
             return this.control.config[key];
         }
@@ -128,7 +137,17 @@ export class ControlService {
 
 
 
-    floatConfig(key, defVal : number = 0) {
+    floatConfig(key, defVal : number = 0, component = "") {
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && typeof this.components[component].config[key] != 'undefined') {
+                return parseFloat(this.components[component].config[key]);
+            }
+
+            return defVal;
+        }
+
         if (typeof this.control.config !== 'object' ||
             typeof this.control.config[key] == 'undefined') {
             return defVal;

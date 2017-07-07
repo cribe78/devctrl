@@ -66,7 +66,7 @@ import * as url from "url";
 import * as debugMod from "debug";
 import * as mongo from "mongodb";
 import * as querystring from "querystring";
-import {UserSession} from "./shared/UserSession";
+import {UserSession} from "../shared/UserSession";
 
 let debug = console.log; //debugMod("auth");
 

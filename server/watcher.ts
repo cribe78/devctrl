@@ -1,8 +1,8 @@
 "use strict";
 
 import * as io from "socket.io-client";
-import {DCDataModel, IndexedDataSet} from "./shared/DCDataModel";
-import {IDCDataRequest, IDCDataUpdate} from "./shared/DCSerializable";
+import {DCDataModel, IndexedDataSet} from "../shared/DCDataModel";
+import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
 import * as debugMod from "debug"; // see https://www.npmjs.com/package/debug
 import {Control} from "./shared/Control";
 import {ControlUpdateData, ControlUpdate} from "./shared/ControlUpdate";

@@ -7,7 +7,7 @@ TODO: reorder device controls
 TODO: Add login page for unauthenticated or unauthorized users
 TODO: dummy control for triggering watcher actions
 TODO: retain selected tab in Room
-TODO: configurable log levels - make ncontrol quieter at runtime
 TODO: edit client name
 TODO: Field labels missing in record editor
 TODO: resolve routes based on partial GUIDs
+TODO: remove JS files from repo

@@ -9,4 +9,5 @@ config/
 config.local.js
 typings/
 conf/
-app/main.js
+app/**/*.js
+app/**/*.js.map

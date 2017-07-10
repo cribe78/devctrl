@@ -28,8 +28,18 @@ if (typeof process.argv[2] !== 'undefined') {
     var configArg = process.argv[2];
     var configPath = "./conf/" + configArg + ".js";
     if (fs.existsSync(configPath)) {
-        console.log(loading, $, (_a = [");\n    customConfig = require(\"./conf/\" + configArg);\n  }\n  else {\n    console.log("], _a.raw = [");\n    customConfig = require(\"./conf/\" + configArg);\n  }\n  else {\n    console.log("], { configPath: configPath }(_a)), $, { configPath: configPath }, not, (_b = [");\n  }\n}\n\nfor (opt in customConfig) {\n    config[opt] = customConfig[opt];\n}\n\nif (typeof process.argv[3] !== 'undefined') {\n  config.endpointId = process.argv[3];\n}\n\nmodule.exports =  config;"], _b.raw = [");\n  }\n}\n\nfor (opt in customConfig) {\n    config[opt] = customConfig[opt];\n}\n\nif (typeof process.argv[3] !== 'undefined') {\n  config.endpointId = process.argv[3];\n}\n\nmodule.exports =  config"], found(_b)));
+        console.log("loading " + configPath);
+        customConfig = require("./conf/" + configArg);
+    }
+    else {
+        console.log(configPath + " not found");
     }
 }
-var _a, _b;
+for (opt in customConfig) {
+    config[opt] = customConfig[opt];
+}
+if (typeof process.argv[3] !== 'undefined') {
+    config.endpointId = process.argv[3];
+}
+module.exports = config;
 //# sourceMappingURL=config.js.map

@@ -15,3 +15,4 @@ Communicators/**/*.js.map
 server/**/*.js
 server/**/*.js.map
 !server/app.js
+!app/systemjs.config.js

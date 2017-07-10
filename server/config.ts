@@ -36,7 +36,7 @@ if (typeof process.argv[2] !== 'undefined') {
   var configPath = "./conf/" + configArg + ".js";
 
   if (fs.existsSync(configPath)) {
-    console.log(loading ${configPath}`);
+    console.log(`loading ${configPath}`);
     customConfig = require("./conf/" + configArg);
   }
   else {

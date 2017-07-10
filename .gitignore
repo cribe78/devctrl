@@ -5,7 +5,7 @@ npm-debug.log
 config/
 config.local.js
 typings/
-conf/
+server/conf/
 app/**/*.js
 app/**/*.js.map
 shared/**/*.js

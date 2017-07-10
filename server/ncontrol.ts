@@ -1,15 +1,13 @@
 "use strict";
 
 import * as io from "socket.io-client";
-import {DCDataModel} from "./shared/DCDataModel";
-import { EndpointCommunicator } from "./Communicators/EndpointCommunicator";
-import {IDCDataRequest, IDCDataUpdate} from "./shared/DCSerializable";
-import * as debugMod from "debug"; // see https://www.npmjs.com/package/debug
-import {Control} from "./shared/Control";
-import {ControlUpdateData} from "./shared/ControlUpdate";
-import {Endpoint, EndpointStatus} from "./shared/Endpoint";
+import {DCDataModel} from "../shared/DCDataModel";
+import { EndpointCommunicator } from "../Communicators/EndpointCommunicator";
+import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
+import {Control} from "../shared/Control";
+import {ControlUpdateData} from "../shared/ControlUpdate";
+import {Endpoint, EndpointStatus} from "../shared/Endpoint";
 
-//let debug = debugMod('ncontrol');
 let debug = console.log;
 
 interface NControlConfig {
@@ -34,7 +32,7 @@ class NControl {
 
     constructor() {
         this.dataModel = new DCDataModel();
-        this.dataModel.debug = debugMod("dataModel");
+        this.dataModel.debug = console.log;
     }
 
     run(config: any) {
@@ -234,7 +232,7 @@ class NControl {
 
         if (! this.communicator) {
             let commClass = this.endpoint.type.communicatorClass;
-            let requirePath = "./Communicators/" + commClass;
+            let requirePath = "../Communicators/" + commClass;
 
             debug(`instantiating communicator ${requirePath}`);
 

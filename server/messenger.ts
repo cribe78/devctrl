@@ -6,12 +6,12 @@ import * as http from "http";
 import * as url from "url";
 import * as debugMod from "debug";
 import * as mongo from "mongodb";
-import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "./shared/DCSerializable";
-import {DCDataModel} from "./shared/DCDataModel";
-import {ControlUpdateData} from "./shared/ControlUpdate";
-import {Control} from "./shared/Control";
-import {UserSession} from "./shared/UserSession";
-import {Endpoint, EndpointStatus} from "./shared/Endpoint";
+import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "../shared/DCSerializable";
+import {DCDataModel} from "../shared/DCDataModel";
+import {ControlUpdateData} from "../shared/ControlUpdate";
+import {Control} from "../shared/Control";
+import {UserSession} from "../shared/UserSession";
+import {Endpoint, EndpointStatus} from "../shared/Endpoint";
 
 //let debug = debugMod("messenger");
 let debug = console.log;

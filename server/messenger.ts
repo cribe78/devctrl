@@ -18,103 +18,48 @@ let debug = console.log;
 //let mongoDebug = debugMod("mongodb");
 let mongoDebug = console.log;
 
-let app = http.createServer(handler);
-let io :SocketIO.Server;
-
-function handler(req: any, res: any) {
-
-
-
-    let parts = url.parse(req.url);
-    let pathComponents = parts.pathname.split("/");
-
-    debug(`http request: ${parts.pathname}`);
-
-    if (pathComponents[0] == '') {
-        pathComponents= pathComponents.slice(1);
-    }
-
-    let [api, endpoint, ...path] = pathComponents;
-
-    //TODO: implement REST API for all data functions
-    if (api == "api") {
-        if (endpoint == "data") {
-            if (req.method == 'DELETE') {
-                let [table, _id] = path;
-
-                Messenger.deleteData({ table: table, _id: _id}, function(data) {
-                    if (data.error) {
-                        res.writeHead(400);
-                        res.end(JSON.stringify(data));
-                        return;
-                    }
-
-                    res.writeHead(200);
-                    res.end(JSON.stringify(data));
-                    return;
-                });
-                
-                return;
-            }
-        }
-        else if (endpoint == "test") {
-            res.writeHead(200);
-            res.end("yeah, I'm alive");
-            return;
-        }
-        else {
-            res.writeHead(400);
-            res.end("api endpoint not recognized");
-            return;
-        }
-    }
-    else {
-        res.writeHead(200);
-        res.end("API missed");
-        return;
-    }
-
-    debug(`api call to ${req.url} unhandled`);
-    res.writeHead(500);
-    res.end("unhandled api call");
-
-}
-
-
 class Messenger {
-    static mongodb: mongo.Db;
-    static dataModel: DCDataModel;
+    mongodb: mongo.Db;
+    dataModel: DCDataModel;
     config : any;
+    app: http.Server;
+    io :SocketIO.Server;
 
-    constructor() {
-    }
+    constructor() {}
 
     run(config: any) {
-        Messenger.dataModel = new DCDataModel();
+        this.dataModel = new DCDataModel();
         this.config = config;
+
+        this.app = http.createServer((req, response) => {
+            this.httpHandler(req, response);
+        });
+
 
         // Connect to mongodb
         let mongoConnStr = "mongodb://" + config.mongoHost + ":" + config.mongoPort
             + "/" + config.mongoDB;
 
-        mongo.MongoClient.connect( mongoConnStr, function(err, db) {
+        mongo.MongoClient.connect( mongoConnStr, (err, db) =>{
             debug("mongodb connected");
-            Messenger.mongodb = db;
-            Messenger.setEndpointsDisconnected();
+            this.mongodb = db;
+            this.setEndpointsDisconnected();
         });
 
-        app.listen(config.ioPort);
-        io = ioMod(app, { path: config.ioPath});
+        this.app.listen(config.ioPort);
+        this.io = ioMod(this.app, { path: config.ioPath});
         debug(`socket.io listening at ${config.ioPath} on port ${config.ioPort}`);
-        io.on('connection', Messenger.ioConnection);
+        this.io.on('connection', (socket) => {
+            this.ioConnection(socket);
+        });
 
         // Set authorization function
-        io.use((socket,next) => {
+        this.io.use((socket,next) => {
             let id = this.socketAuthId(socket);
             //debug("authenticating user " + id);
             if (id) {
-                let col = Messenger.mongodb.collection("sessions");
-                col.findOne({_id : id}, function(err, res) {
+                let col = this.mongodb.collection("sessions");
+                col.findOne({_id : id}, (err, res) => {
                     if (err) {
                         debug(`mongodb error during auth for ${id}: ${err.message}`);
                         next(new Error("Authentication error"));
@@ -136,23 +81,22 @@ class Messenger {
     }
 
 
-    static addData(request: any, fn: any) {
+    addData(request: any, fn: any) {
         let resp = { add : {}};
         let request_handled = false;
 
-        for (let table in Messenger.dataModel.types) {
+        for (let table in this.dataModel.types) {
             if (request[table]) {
-                let col = Messenger.mongodb.collection(table);
+                let col = this.mongodb.collection(table);
                 resp.add[table] = {};
                 if (Array.isArray(request[table])) {
                     // Add an array of documents
                     let addDocs = [];
-                    for (let idx in request[table]) {
+                    for (let data of request[table]) {
                         // Sanitize data by creating objects and serializing them
                         try {
-                            let data = request[table][idx];
                             data._id = (new mongo.ObjectID()).toString();
-                            let obj = new Messenger.dataModel.types[table](data._id, data);
+                            let obj = new this.dataModel.types[table](data._id, data);
                             let doc = obj.getDataObject();
                             addDocs.push(doc);
                         }
@@ -164,7 +108,7 @@ class Messenger {
                         }
                     }
 
-                    col.insertMany(addDocs, function(err, r) {
+                    col.insertMany(addDocs, (err, r) => {
                         if (err) {
                             mongoDebug(err.message);
                             fn({ error: err.message});
@@ -178,8 +122,8 @@ class Messenger {
                         for (let doc of addDocs) {
                             resp.add[table][doc._id] = doc;
                         }
-                        Messenger.dataModel.loadData(resp);
-                        io.emit('control-data', resp);
+                        this.dataModel.loadData(resp);
+                        this.io.emit('control-data', resp);
                         fn(resp);
                     });
                 }
@@ -190,7 +134,7 @@ class Messenger {
                     try {
                         let data = request[table];
                         data._id = (new mongo.ObjectID()).toString();
-                        let obj = new Messenger.dataModel.types[table](data._id, data);
+                        let obj = new this.dataModel.types[table](data._id, data);
                         doc = obj.getDataObject();
                     }
                     catch (e) {
@@ -200,7 +144,7 @@ class Messenger {
                         return;
                     }
 
-                    col.insertOne(doc, function(err, r) {
+                    col.insertOne(doc, (err, r) => {
                         if (err) {
                             mongoDebug(err.message);
                             fn({ error: err.message});
@@ -212,8 +156,8 @@ class Messenger {
                         resp.add[table][request[table]._id] = request[table];
 
                         // Keep local dataModel in sync
-                        Messenger.dataModel.loadData(resp);
-                        io.emit('control-data', resp);
+                        this.dataModel.loadData(resp);
+                        this.io.emit('control-data', resp);
                         fn(resp);
                     });
                 }
@@ -231,7 +175,7 @@ class Messenger {
         }
     }
 
-    static adminAuthCheck(socket : SocketIO.Socket) {
+    adminAuthCheck(socket : SocketIO.Socket) {
         let authCheckPromise = new Promise((resolve, reject) => {
             let session = socket["session"];
 
@@ -248,7 +192,7 @@ class Messenger {
             }
 
             // Check for updated session info
-            let col = Messenger.mongodb.collection("sessions");
+            let col = this.mongodb.collection("sessions");
 
             col.findOne({_id : session._id}, (err, res) => {
                 if (err) {
@@ -280,9 +224,9 @@ class Messenger {
     }
 
 
-    static broadcastControlValues(updates: ControlUpdateData[], fn: any, socket : SocketIO.Socket) {
-        let controlsCollection = Messenger.mongodb.collection(Control.tableStr);
-        let controls = Messenger.dataModel.controls;
+    broadcastControlValues(updates: ControlUpdateData[], fn: any, socket : SocketIO.Socket) {
+        let controlsCollection = this.mongodb.collection(Control.tableStr);
+        let controls = this.dataModel.controls;
 
 
         // Commit value to database for non-ephemeral controls
@@ -307,22 +251,22 @@ class Messenger {
             }
         }
 
-        io.emit('control-updates', updates);
+        this.io.emit('control-updates', updates);
     }
 
-    static deleteData(data: IDCDataDelete, fn: any) {
+    deleteData(data: IDCDataDelete, fn: any) {
         debug(`delete ${data._id} from ${data.table}`);
 
-        if (! Messenger.dataModel.types[data.table]) {
+        if (! this.dataModel.types[data.table]) {
             let errmsg = `deleteData: invalid table name ${data.table}`;
             debug(errmsg);
             fn({ error: errmsg});
             return;
         }
 
-        let col = Messenger.mongodb.collection(data.table);
+        let col = this.mongodb.collection(data.table);
 
-        col.deleteOne({ _id : data._id }, function(err, res) {
+        col.deleteOne({ _id : data._id }, (err, res) => {
             if (err) {
                 let errmsg = "deleteData: mongo error: " + err.message;
                 debug(errmsg);
@@ -333,25 +277,25 @@ class Messenger {
             if (res.result.n == 0) {
                 let errmsg = "deleteData: doc not found: " + data._id;
                 debug(errmsg);
-                fn({error: errmsg})
+                fn({error: errmsg});
                 return;
             }
 
-            let resp = { "delete": data }
+            let resp = { "delete": data };
             fn(resp);
-            io.emit("control-data", resp);
-            Messenger.dataModel.loadData(resp);
+            this.io.emit("control-data", resp);
+            this.dataModel.loadData(resp);
         });
 
     }
 
 
-    static disconnectSocket(socket : SocketIO.Socket) {
+    disconnectSocket(socket : SocketIO.Socket) {
         if (socket["endpoint_id"]) {
             let _id = socket["endpoint_id"];
 
             debug(`client disconnected: setting endpoint ${_id} to offline`);
-            let col = Messenger.mongodb.collection(Endpoint.tableStr);
+            let col = this.mongodb.collection(Endpoint.tableStr);
 
             col.updateOne({ _id : _id }, { '$set' : { status : EndpointStatus.Offline }},
                 (err, r) => {
@@ -371,7 +315,7 @@ class Messenger {
                         table[doc._id] = doc;
                         let data = {add: {}};
                         data.add[Endpoint.tableStr] = table;
-                        io.emit('control-data', data);
+                        this.io.emit('control-data', data);
                     });
                 }
             );
@@ -387,60 +331,119 @@ class Messenger {
         }
     }
 
-    static getData(request: IDCDataRequest, fn: any) {
+    getData(request: IDCDataRequest, fn: any) {
 
         debug("data requested from " + request.table);
-        let col = Messenger.mongodb.collection(request.table);
+        let col = this.mongodb.collection(request.table);
 
         let table = {};
         col.find(request.params).forEach(
-            function(doc) {
+            (doc) => {
                 table[doc._id] = doc;
             },
-            function() {
+            () => {
                 let data = { add : {} };
                 data.add[request.table] = table;
                 fn(data);
-                Messenger.dataModel.loadData(data);
+                this.dataModel.loadData(data);
             }
         );
     }
 
-    static ioConnection(socket: SocketIO.Socket) {
+    httpHandler(req: any, res: any) {
+
+        let parts = url.parse(req.url);
+        let pathComponents = parts.pathname.split("/");
+
+        debug(`http request: ${parts.pathname}`);
+
+        if (pathComponents[0] == '') {
+            pathComponents= pathComponents.slice(1);
+        }
+
+        let [api, endpoint, ...path] = pathComponents;
+
+        //TODO: implement REST API for all data functions
+        if (api == "api") {
+            if (endpoint == "data") {
+                if (req.method == 'DELETE') {
+                    let [table, _id] = path;
+
+                    this.deleteData({ table: table, _id: _id}, (data) => {
+                        if (data.error) {
+                            res.writeHead(400);
+                            res.end(JSON.stringify(data));
+                            return;
+                        }
+
+                        res.writeHead(200);
+                        res.end(JSON.stringify(data));
+                        return;
+                    });
+
+                    return;
+                }
+            }
+            else if (endpoint == "test") {
+                res.writeHead(200);
+                res.end("yeah, I'm alive");
+                return;
+            }
+            else {
+                res.writeHead(400);
+                res.end("api endpoint not recognized");
+                return;
+            }
+        }
+        else {
+            res.writeHead(200);
+            res.end("API missed");
+            return;
+        }
+
+        debug(`api call to ${req.url} unhandled`);
+        res.writeHead(500);
+        res.end("unhandled api call");
+    }
+
+
+    ioConnection(socket: SocketIO.Socket) {
         let clientIp = socket.request.connection.remoteAddress;
         if (socket.request.headers['x-forwarded-for']) {
             clientIp = socket.request.headers['x-forwarded-for'];
         }
 
         debug('a user connected from ' + clientIp);
-        socket.on('get-data', Messenger.getData);
+        socket.on('get-data', (req, fn) => {
+            this.getData(req, fn);
+        });
         socket.on('add-data', (req, fn) => {
-            Messenger.adminAuthCheck(socket)
+            this.adminAuthCheck(socket)
                 .then(() => {
-                    Messenger.addData(req, fn);
+                    this.addData(req, fn);
                 })
                 .catch((msg) => { fn(msg) });
         });
         socket.on('update-data', (req, fn) => {
-            Messenger.adminAuthCheck(socket)
+            this.adminAuthCheck(socket)
                 .then(() => {
-                    Messenger.updateData(req, fn);
+                    this.updateData(req, fn);
                 })
                 .catch((msg) => { fn(msg) });
         });
         socket.on('control-updates', (req, fn) => {
-            Messenger.broadcastControlValues(req, fn, socket);
+            this.broadcastControlValues(req, fn, socket);
         });
         socket.on('register-endpoint', (req, fn) => {
-            Messenger.adminAuthCheck(socket)
+            this.adminAuthCheck(socket)
                 .then(() => {
-                    Messenger.registerEndpoint(req, fn, socket);
+                    this.registerEndpoint(req, fn, socket);
                 })
                 .catch((msg) => { fn(msg) });
         });
 
         socket.on('disconnect', () => {
-            Messenger.disconnectSocket(socket);
+            this.disconnectSocket(socket);
         });
     }
 
@@ -454,7 +457,7 @@ class Messenger {
      * @socket socket SocketIO.Socket the socket this message was sent on
      */
 
-    static registerEndpoint(request, fn : any, socket : SocketIO.Socket) {
+    registerEndpoint(request, fn : any, socket : SocketIO.Socket) {
         if (! request.endpoint_id) {
             debug('register endpoint: endpoint_id not specified');
             fn({ error: "endpoint_id not specified"});
@@ -469,8 +472,8 @@ class Messenger {
      * At startup, set all endpoints to a disconnected status
      */
 
-    static setEndpointsDisconnected() {
-        let col = Messenger.mongodb.collection(Endpoint.tableStr);
+    setEndpointsDisconnected() {
+        let col = this.mongodb.collection(Endpoint.tableStr);
         return col.updateMany({}, { '$set' : { status : EndpointStatus.Offline}});
     }
 
@@ -500,8 +503,8 @@ class Messenger {
     }
 
 
-    static updateData(request: IDCDataUpdate, fn: any) {
-        let col = Messenger.mongodb.collection(request.table);
+    updateData(request: IDCDataUpdate, fn: any) {
+        let col = this.mongodb.collection(request.table);
 
         if (request.set._id) {
             delete request.set._id;
@@ -520,15 +523,15 @@ class Messenger {
                 // Get the updated object and broadcast the changes.
                 let table = {};
                 col.find({_id: request._id}).forEach(
-                    function (doc) {
+                    (doc) => {
                         table[doc._id] = doc;
                     },
-                    function () {
+                    () =>{
                         let data = {add: {}};
                         data.add[request.table] = table;
-                        io.emit('control-data', data);
+                        this.io.emit('control-data', data);
                         fn(data);
-                        Messenger.dataModel.loadData(data);
+                        this.dataModel.loadData(data);
                     }
                 );
             }

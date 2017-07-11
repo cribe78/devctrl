@@ -1,14 +1,19 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 var HTTPCommunicator_1 = require("../HTTPCommunicator");
 var Control_1 = require("../../shared/Control");
 var sprintf_js_1 = require("sprintf-js");
 var HTTPCommand_1 = require("../HTTPCommand");
-var debug = console.log;
 var AWHE130Communicator = (function (_super) {
     __extends(AWHE130Communicator, _super);
     // /cgi-bin/aw_ptz?cmd=#R14&res=1
@@ -174,6 +179,10 @@ var AWHE130Communicator = (function (_super) {
             value: ""
         };
         this.controlsByCtid[ctid] = new Control_1.Control(ctid, viewControlData);
+        this.registerHyperlinkControl({
+            relativeUrl: "/live/index.html",
+            linkProto: "http"
+        });
         return this.controlsByCtid;
     };
     return AWHE130Communicator;

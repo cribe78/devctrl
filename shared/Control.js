@@ -1,14 +1,20 @@
+"use strict";
 /**
  *
  * The Control is the basic unit of the DevCtrl application.  A Control represents and individual setting or value
  * on a device (Endpoint).  The frontend provides an interface for users to view and change the values of controls.
  */
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 var DCSerializable_1 = require("./DCSerializable");
 var Endpoint_1 = require("./Endpoint");
 var OptionSet_1 = require("./OptionSet");
@@ -16,6 +22,7 @@ var Control = (function (_super) {
     __extends(Control, _super);
     function Control(_id, data) {
         var _this = _super.call(this, _id) || this;
+        _this.config = {};
         _this.ephemeral = false;
         _this.foreignKeys = [
             {
@@ -99,21 +106,54 @@ var Control = (function (_super) {
     Control.prototype.getDataObject = function () {
         return DCSerializable_1.DCSerializable.defaultDataObject(this);
     };
+    Control.prototype.selectOptions = function () {
+        var options;
+        if (this.option_set && this.option_set.options) {
+            options = this.option_set.options;
+        }
+        else {
+            options = !!this.config.options ? this.config.options : {};
+        }
+        return options;
+    };
+    Control.prototype.selectOptionsArray = function () {
+        var options = this.selectOptions();
+        var optionsArray = Object.keys(options).map(function (value) {
+            return { name: options[value], value: value };
+        });
+        return optionsArray;
+    };
+    Control.prototype.selectValueName = function (val) {
+        if (val === void 0) { val = null; }
+        if (val == null) {
+            val = this.value;
+        }
+        var opts = this.selectOptions();
+        var value = '' + val;
+        if (opts[value]) {
+            return opts[value];
+        }
+        return value;
+    };
     return Control;
 }(DCSerializable_1.DCSerializable));
 Control.tableStr = "controls";
 // usertype and control_type values
 Control.CONTROL_TYPE_BOOLEAN = "boolean";
-Control.CONTROL_TYPE_STRING = "string";
-Control.CONTROL_TYPE_RANGE = "range";
+Control.CONTROL_TYPE_ECHO = "echo"; // For echo controls, ncontrol just returns the value specified
 Control.CONTROL_TYPE_INT = "int";
+Control.CONTROL_TYPE_RANGE = "range";
+Control.CONTROL_TYPE_STRING = "string";
 Control.CONTROL_TYPE_XY = "xy";
 Control.USERTYPE_BUTTON = "button";
 Control.USERTYPE_BUTTON_SET = "button-set";
+Control.USERTYPE_CLQL_FADER = "clql-fader";
+Control.USERTYPE_HYPERLINK = "hyperlink";
 Control.USERTYPE_IMAGE = "image";
 Control.USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
 Control.USERTYPE_SLIDER_2D = "slider2d";
 Control.USERTYPE_SWITCH = "switch";
+Control.USERTYPE_SWITCH_READONLY = "switch-readonly";
 Control.USERTYPE_SLIDER = "slider";
 Control.USERTYPE_READONLY = "readonly";
 Control.USERTYPE_LEVEL = "level";

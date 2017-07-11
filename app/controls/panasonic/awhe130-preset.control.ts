@@ -8,7 +8,7 @@ import { ControlService } from '../control.service';
 <div class="devctrl-ctrl">
     <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
     <md-input-container>
-        <input md-input #presetNum type="number" 
+        <input mdInput #presetNum type="number" 
                 min=0 max=99 
                 placeholder="Preset Number">
     </md-input-container>     

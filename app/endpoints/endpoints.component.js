@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
 var Endpoint_1 = require("../../shared/Endpoint");
@@ -39,7 +40,9 @@ var EndpointsComponent = (function () {
 EndpointsComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoints',
-        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex=\"none\" fxFlex.gt-xs=\"800px\" class=\"devctrl-card\">\n        <md-toolbar color=\"primary\">\n            <div fxLayout=\"row\" fxLayoutAlign=\"start center\">\n                <button md-button *devctrlAdminOnly (click)=\"addEndpoint($event)\">Add Endpoint</button>\n                <button md-button *devctrlAdminOnly (click)=\"addEndpointType($event)\">Add Endpoint Type</button>\n            </div>\n        </md-toolbar>\n        <md-nav-list>\n            <template ngFor let-endpoint [ngForOf]=\"endpointsList\">\n                 <a md-list-item \n                    (click)=\"menu.go(['devices', endpoint._id])\">\n                    {{endpoint.name}}\n                    <span fxFlex></span>\n                    <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                    <md-icon>chevron_right</md-icon>\n                </a>\n                <md-divider></md-divider>           \n            </template>       \n        </md-nav-list>\n</div>\n"
+        template: "\n<div id=\"devctrl-content-canvas\">\n    <div class=\"devctrl-card\">\n        <md-toolbar color=\"primary\">\n            <div class=\"devctrl-toolbar-test\">\n                <button md-button *devctrlAdminOnly (click)=\"addEndpoint($event)\">Add Endpoint</button>\n                <button md-button *devctrlAdminOnly (click)=\"addEndpointType($event)\">Add Endpoint Type</button>\n            </div>\n        </md-toolbar>\n        <md-nav-list>\n            <ng-template ngFor let-endpoint [ngForOf]=\"endpointsList\">\n                 <a md-list-item \n                    (click)=\"menu.go(['devices', endpoint._id])\">\n                    {{endpoint.name}}\n                    <span class=\"devctrl-spacer\"></span>\n                    <devctrl-endpoint-status [endpointId]=\"endpoint._id\"></devctrl-endpoint-status>\n                    <md-icon>chevron_right</md-icon>\n                </a>\n                <md-divider></md-divider>           \n            </ng-template>       \n        </md-nav-list>\n</div>\n",
+        //language=CSS
+        styles: ["\n        .devctrl-card {\n            max-width: 900px;\n            flex: 1 1;\n        }\n    "]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService,
         router_1.ActivatedRoute,

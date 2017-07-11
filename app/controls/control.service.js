@@ -8,15 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var data_service_1 = require("../data.service");
 var record_editor_service_1 = require("data-editor/record-editor.service");
 var Control_1 = require("shared/Control");
-var WatcherRule_1 = require("shared/WatcherRule");
+var ActionTrigger_1 = require("shared/ActionTrigger");
+var router_1 = require("@angular/router");
 var ControlService = (function () {
-    function ControlService(dataService, recordService) {
+    function ControlService(dataService, recordService, router) {
         this.dataService = dataService;
         this.recordService = recordService;
+        this.router = router;
+        this._siblings = {};
+        this.components = {};
         this.panelContext = false;
     }
     Object.defineProperty(ControlService.prototype, "panelControl", {
@@ -83,16 +88,26 @@ var ControlService = (function () {
         configurable: true
     });
     ControlService.prototype.addWatcherRule = function ($event) {
-        this.recordService.editRecord($event, '0', WatcherRule_1.WatcherRule.tableStr, { watched_control_id: this.control._id });
+        this.recordService.editRecord($event, '0', ActionTrigger_1.ActionTrigger.tableStr, { watched_control_id: this.control._id });
     };
-    ControlService.prototype.config = function (key) {
+    ControlService.prototype.config = function (key, component) {
+        if (component === void 0) { component = ""; }
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && this.components[component].config[key]) {
+                return this.components[component].config[key];
+            }
+            return '';
+        }
         if (typeof this.control.config == 'object' && this.control.config[key]) {
             return this.control.config[key];
         }
         return '';
     };
     ControlService.prototype.editControl = function ($event) {
-        this.recordService.editRecord($event, this.control._id, this.control.table);
+        //this.recordService.editRecord($event, this.control._id, this.control.table);
+        this.router.navigate(['/controls', this.control.id]);
     };
     ControlService.prototype.editOptions = function ($event) {
         if (this.control.option_set) {
@@ -105,57 +120,92 @@ var ControlService = (function () {
     ControlService.prototype.editPanelControl = function ($event) {
         this.recordService.editRecord($event, this.panelControl._id, this.panelControl.table);
     };
-    ControlService.prototype.intConfig = function (key) {
-        if (this.config(key)) {
-            return parseInt(this.config(key));
+    ControlService.prototype.findSiblingByCtid = function (ctid) {
+        if (this._siblings[ctid]) {
+            return this._siblings[ctid];
         }
-        return 0;
+        var controls = this.control.endpoint.referenced.controls;
+        for (var _i = 0, _a = Object.keys(controls); _i < _a.length; _i++) {
+            var id = _a[_i];
+            if (controls[id].ctid == ctid) {
+                this._siblings[ctid] = controls[id];
+                return controls[id];
+            }
+        }
+        throw new Error("sibling control not located: " + ctid);
     };
-    ControlService.prototype.floatConfig = function (key, defVal) {
+    ControlService.prototype.floatConfig = function (key, defVal, component) {
         if (defVal === void 0) { defVal = 0; }
+        if (component === void 0) { component = ""; }
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && typeof this.components[component].config[key] != 'undefined') {
+                return parseFloat(this.components[component].config[key]);
+            }
+            return defVal;
+        }
         if (typeof this.control.config !== 'object' ||
             typeof this.control.config[key] == 'undefined') {
             return defVal;
         }
         return parseFloat(this.control.config[key]);
     };
+    ControlService.prototype.intConfig = function (key, component) {
+        if (component === void 0) { component = ""; }
+        if (component) {
+            if (this.components[component].config[key]) {
+                return parseInt(this.components[component].config[key]);
+            }
+            else {
+                return 0;
+            }
+        }
+        if (this.config(key)) {
+            return parseInt(this.config(key));
+        }
+        return 0;
+    };
+    ControlService.prototype.loadComponentControls = function () {
+        var componentConfig = this.control.config.componentControls;
+        this.components = {};
+        if (!componentConfig) {
+            return {};
+        }
+        for (var _i = 0, _a = Object.keys(componentConfig); _i < _a.length; _i++) {
+            var component = _a[_i];
+            this.components[component] = this.findSiblingByCtid(componentConfig[component]);
+        }
+        return this.components;
+    };
     ControlService.prototype.selectMenuItem = function (val) {
         this.setValue(val);
     };
     ControlService.prototype.selectOptions = function () {
-        var options;
-        if (this.control.option_set && this.control.option_set.options) {
-            options = this.control.option_set.options;
-        }
-        else {
-            options = !!this.control.config.options ? this.control.config.options : {};
-        }
-        return options;
+        return this.control.selectOptions();
     };
     ControlService.prototype.selectOptionsArray = function () {
-        var options = this.selectOptions();
-        var optionsArray = Object.keys(options).map(function (value) {
-            return { name: options[value], value: value };
-        });
-        return optionsArray;
+        return this.control.selectOptionsArray();
     };
     ControlService.prototype.setValue = function (val) {
         this.value = val;
         this.updateValue();
     };
     ControlService.prototype.selectValueName = function () {
-        var opts = this.selectOptions();
-        var value = '' + this.value;
-        if (opts[value]) {
-            return opts[value];
-        }
-        return value;
+        return this.control.selectValueName();
     };
     ControlService.prototype.showLog = function ($event) {
         this.dataService.showControlLog($event, this.control);
     };
     ControlService.prototype.trackByValue = function (idx, obj) {
         return obj.value;
+    };
+    ControlService.prototype.updateComponentValue = function (componentName) {
+        if (this.components[componentName]) {
+            var control = this.components[componentName];
+            this.dataService.updateControlValue(control);
+            this.dataService.logAction("Control update requested: set " + control.fkSelectName() + " to " + control.value, ['control update requested'], [control._id, control.endpoint_id]);
+        }
     };
     ControlService.prototype.updateValue = function () {
         this.dataService.updateControlValue(this.control);
@@ -166,7 +216,8 @@ var ControlService = (function () {
 ControlService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [data_service_1.DataService,
-        record_editor_service_1.RecordEditorService])
+        record_editor_service_1.RecordEditorService,
+        router_1.Router])
 ], ControlService);
 exports.ControlService = ControlService;
 //# sourceMappingURL=control.service.js.map

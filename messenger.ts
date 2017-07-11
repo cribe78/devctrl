@@ -178,7 +178,7 @@ class Messenger {
                         for (let doc of addDocs) {
                             resp.add[table][doc._id] = doc;
                         }
-
+                        Messenger.dataModel.loadData(resp);
                         io.emit('control-data', resp);
                         fn(resp);
                     });
@@ -284,8 +284,10 @@ class Messenger {
         let controlsCollection = Messenger.mongodb.collection(Control.tableStr);
         let controls = Messenger.dataModel.controls;
 
+
         // Commit value to database for non-ephemeral controls
         for (let update of updates) {
+            //debug(`control update received: ${update.control_id} = ${update.value}`);
             if (! controls[update.control_id]) {
                 debug(`dropping update of invalid control_id ${update.control_id} from ${socket["session"].client_name}`);
                 return;

@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var material_1 = require("@angular/material");
 var data_service_1 = require("../data.service");
 var core_1 = require("@angular/core");
@@ -35,6 +36,16 @@ var RecordEditorService = (function () {
         recRef.componentInstance.newRow = id == "0";
         recRef.componentInstance.obj = record;
         recRef.componentInstance.schema = this.dataService.getSchema(tableName);
+    };
+    /**
+     * Add a record by calling editRecord with an id of '0'
+     * @param $event
+     * @param string tableName
+     * @param recordDefaults
+     */
+    RecordEditorService.prototype.addRecord = function ($event, tableName, recordDefaults) {
+        if (recordDefaults === void 0) { recordDefaults = {}; }
+        this.editRecord($event, '0', tableName, recordDefaults);
     };
     return RecordEditorService;
 }());

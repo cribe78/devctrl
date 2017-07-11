@@ -5,9 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
 var rooms_component_1 = require("./rooms/rooms.component");
@@ -18,6 +16,8 @@ var config_data_component_1 = require("./data-editor/config-data.component");
 var room_resolver_1 = require("./rooms/room.resolver");
 var endpoint_resolver_1 = require("./endpoints/endpoint.resolver");
 var table_component_1 = require("./data-editor/table.component");
+var control_detail_component_1 = require("./controls/control-detail.component");
+var control_resolver_1 = require("./controls/control.resolver");
 exports.appRoutes = [
     {
         path: '',
@@ -67,6 +67,23 @@ exports.appRoutes = [
         ]
     },
     {
+        path: 'controls',
+        children: [
+            {
+                path: '',
+                redirectTo: '/config/controls',
+                pathMatch: 'full'
+            },
+            {
+                path: ':id',
+                component: control_detail_component_1.ControlDetailComponent,
+                resolve: {
+                    control: control_resolver_1.ControlResolver
+                }
+            }
+        ]
+    },
+    {
         path: 'config',
         children: [
             {
@@ -100,10 +117,10 @@ AppRoutingModule = __decorate([
         ],
         providers: [
             room_resolver_1.RoomResolver,
-            endpoint_resolver_1.EndpointResolver
+            endpoint_resolver_1.EndpointResolver,
+            control_resolver_1.ControlResolver
         ]
-    }),
-    __metadata("design:paramtypes", [])
+    })
 ], AppRoutingModule);
 exports.AppRoutingModule = AppRoutingModule;
 //# sourceMappingURL=app-router.module.js.map

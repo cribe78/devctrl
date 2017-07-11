@@ -6,7 +6,6 @@ import * as http from "http";
 import {sprintf} from "sprintf-js";
 import {IHTTPCommandConfig, HTTPCommand} from "../HTTPCommand";
 
-let debug = console.log;
 
 class AWHE130Communicator extends HTTPCommunicator {
     // /cgi-bin/aw_ptz?cmd=#R14&res=1
@@ -189,6 +188,11 @@ class AWHE130Communicator extends HTTPCommunicator {
         };
 
         this.controlsByCtid[ctid] = new Control(ctid, viewControlData);
+
+        this.registerHyperlinkControl({
+            relativeUrl: "/live/index.html",
+            linkProto: "http"
+        });
 
         return this.controlsByCtid;
     }

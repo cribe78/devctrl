@@ -9,6 +9,8 @@ import {ConfigDataComponent} from "./data-editor/config-data.component";
 import {RoomResolver} from "./rooms/room.resolver";
 import {EndpointResolver} from "./endpoints/endpoint.resolver";
 import {TableComponent} from "./data-editor/table.component";
+import {ControlDetailComponent} from "./controls/control-detail.component";
+import {ControlResolver} from "./controls/control.resolver";
 
 
 export const appRoutes: Routes = [
@@ -60,6 +62,25 @@ export const appRoutes: Routes = [
         ]
     },
     {
+        path: 'controls',
+        children: [
+            {
+                path: '',
+                redirectTo: '/config/controls',
+                pathMatch: 'full'
+            },
+            {
+                path: ':id',
+                component: ControlDetailComponent,
+                resolve: {
+                    control: ControlResolver
+                }
+            }
+
+
+        ]
+    },
+    {
         path: 'config',
         children: [
             {
@@ -88,7 +109,8 @@ export const appRoutes: Routes = [
     ],
     providers: [
         RoomResolver,
-        EndpointResolver
+        EndpointResolver,
+        ControlResolver
     ]
 })
 export class AppRoutingModule {}

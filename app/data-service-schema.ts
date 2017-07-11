@@ -3,7 +3,7 @@
 import {Control} from "../shared/Control";
 import {Endpoint} from "../shared/Endpoint";
 import {OptionSet} from "../shared/OptionSet";
-export type DSFieldType = "string" | "int" | "bool" | "select-static" | "fk" | "object";
+export type DSFieldType = "string" | "int" | "bool" | "select-static" | "fk" | "object" | "watcher-action-value";
 
 export interface DSFieldDefinition {
     name: string;
@@ -56,6 +56,16 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "name": "port",
                 "type": "int",
                 "label": "Port"
+            },
+            {
+                "name": "config",
+                "type": "object",
+                "label": "Device Specific Config"
+            },
+            {
+                "name" : "commLogOptions",
+                type: "string",
+                label: "Ncontrol Log Options"
             },
             {
                 "name": "status",
@@ -131,6 +141,9 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 label: "UI Type",
                 options: [
                     { name: "button", value: Control.USERTYPE_BUTTON},
+                    { name: "button set", value: Control.USERTYPE_BUTTON_SET },
+                    { name: "Hyperlink", value: Control.USERTYPE_HYPERLINK },
+                    { name: "Image", value: Control.USERTYPE_IMAGE },
                     { name: "F32 Multibutton", value: Control.USERTYPE_F32_MULTIBUTTON},
                     { name: "Level Meter", value: Control.USERTYPE_LEVEL},
                     { name: "Text (readonly)", value: Control.USERTYPE_READONLY },
@@ -138,8 +151,7 @@ export let dataServiceSchema : DSSchemaDefinition = {
                     { name: "Select (readonly)", value: Control.USERTYPE_SELECT_READONLY},
                     { name: "Slider", value: Control.USERTYPE_SLIDER},
                     { name: "2D Slider", value: Control.USERTYPE_SLIDER_2D},
-                    { name: "Switch", value: Control.USERTYPE_SWITCH},
-                    { name: "button set", value: Control.USERTYPE_BUTTON_SET }
+                    { name: "Switch", value: Control.USERTYPE_SWITCH}
                 ]
             },
             {
@@ -147,12 +159,12 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "type": "select-static",
                 "label": "Control Type",
                 options: [
-                    { name: "boolean", value: "boolean"},
-                    { name: "int", value: "int"},
-                    { name: "range", value: "range"},
-                    { name: "rtlevel", value: "rtlevel"},
-                    { name: "string", value: "string"},
-                    { name: "object", value: "object"},
+                    { name: "boolean", value: Control.CONTROL_TYPE_BOOLEAN},
+                    { name: "echo", value: Control.CONTROL_TYPE_ECHO},
+                    { name: "int", value: Control.CONTROL_TYPE_INT},
+                    { name: "range", value: Control.CONTROL_TYPE_RANGE},
+                    { name: "string", value: Control.CONTROL_TYPE_STRING},
+                    { name: "xy", value: Control.CONTROL_TYPE_XY}
                 ]
             },
             {
@@ -250,6 +262,11 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 "name": "panel_id",
                 "type": "fk",
                 "label": "Panel"
+            },
+            {
+                name: "idx",
+                type: "int",
+                label: "Order"
             }
         ]
     },
@@ -260,22 +277,32 @@ export let dataServiceSchema : DSSchemaDefinition = {
         ]
     },
     watcher_rules : {
-        label: "Watcher Rules",
+        label: "Action Triggers",
         foreign_keys: {
             watched_control_id: "controls",
             action_control_id: "controls"
         },
         fields : [
-            nameField,
             {
-                name: "watched_control_id",
+                name: "trigger_control_id",
                 type: "fk",
-                label: "Watched Control"
+                label: "Trigger Control"
+            },
+
+            {
+                name: "action_control_id",
+                type: "fk",
+                label: "Action Control"
             },
             {
-                name: "watch_value",
-                type: "string",
-                label: "Watch Value"
+                name: "action_control_value",
+                type: "watcher-action-value",
+                label: "Action Value"
+            },
+            {
+                name: "enabled",
+                type: "bool",
+                label: "Enabled?"
             },
             {
                 name: "value_test",
@@ -289,20 +316,10 @@ export let dataServiceSchema : DSSchemaDefinition = {
                 ]
             },
             {
-                name: "action_control_id",
-                type: "fk",
-                label: "Action Control"
+                name: "trigger_value",
+                type: "string",
+                label: "Trigger Value"
             },
-            {
-                name: "action_control_value",
-                type: "object",
-                label: "Action Value"
-            },
-            {
-                name: "enabled",
-                type: "bool",
-                label: "Enabled?"
-            }
         ]
     }
 };

@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var menu_service_1 = require("./menu.service");
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
@@ -26,7 +27,7 @@ MenuComponent = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'devctrl-menu',
-        template: "\n<md-nav-list>\n    <template ngFor let-item [ngForOf]=\"menu.menuItems()\" [ngForTrackBy]=\"trackByName\">\n        <md-list-item>\n            <a md-line (click)=\"menu.go(item.route)\">{{item.name}}</a>\n            <button md-icon-button class=\"toggle-icon\" \n                    [class.toggled]=\"item.isOpened\" \n                    (click)=\"menu.toggleTopLevel($event, item)\">\n                <md-icon md-font-set=\"material-icons\" >expand_more</md-icon>\n            </button>\n        </md-list-item>\n        <a md-list-item [hidden]=\"! item.isOpened\"\n                        *ngFor=\"let subitem of item.children\" \n                        (click)=\"menu.go(subitem.route)\">\n            <span flex=\"5\"></span>\n            <p>{{subitem.name}}</p>\n        </a>\n        <md-divider></md-divider>\n    </template>\n</md-nav-list>\n",
+        template: "\n<md-nav-list>\n    <ng-template ngFor let-item [ngForOf]=\"menu.menuItems()\" [ngForTrackBy]=\"trackByName\">\n        <md-list-item (click)=\"menu.go(item.route)\">\n            <a md-line >{{item.name}}</a>\n            <button md-icon-button class=\"toggle-icon\" \n                    [class.toggled]=\"item.isOpened\" \n                    (click)=\"menu.toggleTopLevel($event, item)\">\n                <md-icon md-font-set=\"material-icons\" >expand_more</md-icon>\n            </button>\n        </md-list-item>\n        <a md-list-item [hidden]=\"! item.isOpened\"\n                        *ngFor=\"let subitem of item.children\" \n                        (click)=\"menu.go(subitem.route)\">\n            <span flex=\"5\"></span>\n            <p>{{subitem.name}}</p>\n        </a>\n        <md-divider></md-divider>\n    </ng-template>\n</md-nav-list>\n",
         styles: ["\nbutton.toggle-icon {\n    display: block;\n    margin-left: auto;\n    vertical-align: middle;\n    transform: rotate(180deg);\n    transition: transform 0.3s ease-in-out;\n}\n\nbutton.toggle-icon.toggled {\n    transform: rotate(0deg);\n}\n"]
     }),
     __metadata("design:paramtypes", [menu_service_1.MenuService, router_1.ActivatedRoute])

@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var Endpoint_1 = require("../../shared/Endpoint");
 var data_service_1 = require("../data.service");
@@ -70,6 +71,19 @@ var EndpointStatusComponent = (function () {
         }
         return classes;
     };
+    EndpointStatusComponent.prototype.statusIconColor = function () {
+        var status = this.status();
+        if (status == Endpoint_1.EndpointStatus.Online) {
+            if (this.backgroundColor == 'primary') {
+                return 'currentColor';
+            }
+            return 'primary';
+        }
+        if (status == Endpoint_1.EndpointStatus.Offline) {
+            return 'warn';
+        }
+        return '';
+    };
     return EndpointStatusComponent;
 }());
 __decorate([
@@ -83,7 +97,8 @@ __decorate([
 EndpointStatusComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint-status',
-        template: "\n<md-icon [ngClass]=\"statusIconClasses()\" md-tooltip=\"{{statusStr()}}\">{{statusIcon()}}</md-icon>\n",
+        template: "\n<md-icon [color]=\"statusIconColor()\" [ngClass]=\"statusIconClasses()\" md-tooltip=\"{{statusStr()}}\">{{statusIcon()}}</md-icon>\n",
+        //language=CSS
         styles: ["\n.devctrl-icon-disabled {\n    color: #bdbdbd;\n}    \n"]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService, core_1.Injector])

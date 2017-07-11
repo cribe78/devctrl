@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
 var Endpoint_1 = require("../../shared/Endpoint");
@@ -56,11 +57,24 @@ var EndpointComponent = (function () {
     };
     EndpointComponent.prototype.addControl = function ($event) {
         this.recordService.editRecord($event, '0', 'controls', {
-            'endpoint_type_id': this.obj.endpoint_type_id
+            endpoint: this.obj,
+            ctid: this.endpointId + "-",
+            poll: false
         });
     };
     EndpointComponent.prototype.editEndpoint = function ($event) {
         this.recordService.editRecord($event, this.endpointId, 'endpoints');
+    };
+    EndpointComponent.prototype.filteredControls = function () {
+        var _this = this;
+        if (!this.searchTerm) {
+            return this.controlIds();
+        }
+        var searchTerm = this.searchTerm.toLowerCase();
+        var controlIds = this.controlIds();
+        return controlIds.filter(function (id) {
+            return _this.controls[id].name.toLowerCase().includes(searchTerm);
+        });
     };
     EndpointComponent.prototype.generateConfig = function ($event) {
         this.dataService.generateEndpointConfig($event, this.endpointId);
@@ -73,7 +87,9 @@ var EndpointComponent = (function () {
 EndpointComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-endpoint',
-        template: "\n<div fxLayout=\"row\" fxLayoutAlign=\"center start\" id=\"devctrl-content-canvas\">\n    <div fxFlex=\"none\" fxFlex.gt-xs=\"800px\" class=\"devctrl-card\">\n        <md-toolbar color=\"primary\">\n            <div  fxFill fxLayout=\"row\" fxLayoutAlign=\"start center\" class=\"md-toolbar-tools\">\n                <button fxFlex=\"none\"  md-button *devctrlAdminOnly (click)=\"addControl($event)\">Add Control</button>\n                <button fxFlex=\"none\"  md-button *devctrlAdminOnly (click)=\"editEndpoint($event)\">Edit Device</button>\n                <button fxFlex=\"none\"  md-button *devctrlAdminOnly (click)=\"generateConfig($event)\">Generate Config</button>\n                <span fxFlex>&nbsp;</span>\n                <devctrl-endpoint-status fxFlex=\"none\" [endpointId]=\"obj._id\" backgroundColor=\"primary\"></devctrl-endpoint-status>\n            </div>\n        </md-toolbar>\n        \n        <md-list>\n            <template ngFor let-controlId [ngForOf]=\"controlIds()\">\n                <md-list-item class=\"devctrl-ctrl-list-item\"><devctrl-ctrl [controlId]=\"controlId\"></devctrl-ctrl></md-list-item>\n                <md-divider></md-divider>\n            </template>\n        </md-list>\n    </div>\n    <devctrl-action-history [hidden]=\"!ls.desktopWide\"></devctrl-action-history>\n </div>\n\n"
+        template: "\n<div id=\"devctrl-content-canvas\">\n    <div class=\"devctrl-card\">\n        <md-toolbar color=\"primary\">\n            <div class=\"devctrl-toolbar-tools\">\n                <button md-button *devctrlAdminOnly (click)=\"addControl($event)\">Add Control</button>\n                <button md-button *devctrlAdminOnly (click)=\"editEndpoint($event)\">Edit Device</button>\n                <button md-button *devctrlAdminOnly (click)=\"generateConfig($event)\">Generate Config</button>\n                <span class=\"devctrl-spacer\">&nbsp;</span>\n                <form class=\"search-input\">\n                    <md-input-container>\n                        <input mdInput name=\"search\" placeholder=\"Search Controls\" [(ngModel)]=\"searchTerm\">\n                    </md-input-container>\n                </form>\n                <devctrl-endpoint-status [endpointId]=\"obj._id\" backgroundColor=\"primary\"></devctrl-endpoint-status>\n            </div>\n        </md-toolbar>\n        \n        <md-list>\n            <ng-template ngFor let-controlId [ngForOf]=\"filteredControls()\">\n                <md-list-item class=\"devctrl-ctrl-list-item\"><devctrl-ctrl [controlId]=\"controlId\"></devctrl-ctrl></md-list-item>\n                <md-divider></md-divider>\n            </ng-template>\n        </md-list>\n    </div>\n    <devctrl-action-history [hidden]=\"!ls.desktopWide\"></devctrl-action-history>\n </div>\n\n",
+        //language=CSS
+        styles: ["\n        .devctrl-card {\n            max-width: 900px;\n            flex: 1 1;\n        }\n        \n        .search-input {\n            margin-bottom: 0;\n        }\n    "]
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,
         data_service_1.DataService,

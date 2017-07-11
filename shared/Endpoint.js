@@ -1,12 +1,18 @@
+"use strict";
 /**
  * Created by chris on 8/17/16.
  */
-"use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
 var DCSerializable_1 = require("./DCSerializable");
 var EndpointType_1 = require("./EndpointType");
 var EndpointStatus;
@@ -37,13 +43,17 @@ var Endpoint = (function (_super) {
             'status',
             'ip',
             'port',
-            'enabled'
+            'config',
+            'enabled',
+            'commLogOptions'
         ]);
         _this.defaultProperties = {
             status: EndpointStatus.Offline,
             ip: "",
             port: 0,
-            enabled: false
+            config: {},
+            enabled: false,
+            commLogOptions: "default"
         };
         if (data) {
             _this.loadData(data);
@@ -56,6 +66,22 @@ var Endpoint = (function (_super) {
         },
         set: function (address) {
             this.ip = address;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Endpoint.prototype, "commLogOptions", {
+        get: function () {
+            return this._commLogOptions;
+        },
+        set: function (val) {
+            this._commLogOptions = val;
+            var optionsList = val.split(",");
+            this.commLogOptionsObj = {};
+            for (var _i = 0, optionsList_1 = optionsList; _i < optionsList_1.length; _i++) {
+                var opt = optionsList_1[_i];
+                this.commLogOptionsObj[opt] = true;
+            }
         },
         enumerable: true,
         configurable: true

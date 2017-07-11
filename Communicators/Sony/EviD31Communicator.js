@@ -1,14 +1,18 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var TCPCommunicator_1 = require("./TCPCommunicator");
-var EviD31Command_1 = require("./Sony/EviD31Command");
-var Control_1 = require("../shared/Control");
-//TODO: This communicator seems to have issues with order of commands and responses.  Query responses sometimes
-// come back out of order.
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var EviD31Command_1 = require("./EviD31Command");
+var Control_1 = require("../../shared/Control");
+var SynchronousTCPCommunicator_1 = require("../SynchronousTCPCommunicator");
 var EviD31Communicator = (function (_super) {
     __extends(EviD31Communicator, _super);
     function EviD31Communicator() {
@@ -73,7 +77,7 @@ var EviD31Communicator = (function (_super) {
         this.commands[zoomConfig.cmdStr] = new EviD31Command_1.EviD31Command(zoomConfig);
     };
     return EviD31Communicator;
-}(TCPCommunicator_1.TCPCommunicator));
+}(SynchronousTCPCommunicator_1.SynchronousTCPCommunicator));
 var communicator = new EviD31Communicator();
 module.exports = communicator;
 //# sourceMappingURL=EviD31Communicator.js.map

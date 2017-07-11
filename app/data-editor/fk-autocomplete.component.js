@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var DCSerializable_1 = require("../../shared/DCSerializable");
 var data_service_1 = require("../data.service");
@@ -107,8 +108,9 @@ __decorate([
 FkAutocompleteComponent = __decorate([
     core_1.Component({
         selector: 'fk-autocomplete',
-        template: "\n<md-input-container>\n    <input md-input\n            #fkauto\n           [placeholder]=\"field.label\"\n           [(ngModel)]=\"inputText\"\n           (focus)=\"openAcMenu()\"\n           (blur)=\"focusLost()\"\n           [name]=\"field.name\" >\n</md-input-container>\n\n<div class=\"ac-menu\" [style.visibility]=\"menuVisibility\" #acmenu>\n    <md-list>\n        <a md-list-item\n            *ngFor=\"let fkobj of getMatches(); trackBy: trackById\"\n            (click)=\"selectItem(fkobj)\">\n         {{fkobj.fkSelectName()}}\n        </a>\n    </md-list>\n</div>\n",
-        styles: ["\n.ac-menu { \n    position: absolute;\n    z-index: 1002;\n    background-color: white;\n    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);\n    cursor: pointer;\n    max-height: 300px;\n    overflow-y: auto;\n}\n\ninput {\n    min-width: 300px;\n}\n"]
+        template: "\n<md-input-container>\n    <input mdInput\n            #fkauto\n           [placeholder]=\"field.label\"\n           [(ngModel)]=\"inputText\"\n           (focus)=\"openAcMenu()\"\n           (blur)=\"focusLost()\"\n           [name]=\"field.name\" >\n</md-input-container>\n\n<div class=\"ac-menu\" [style.visibility]=\"menuVisibility\" #acmenu>\n    <md-list>\n        <a md-list-item\n            *ngFor=\"let fkobj of getMatches(); trackBy: trackById\"\n            (click)=\"selectItem(fkobj)\">\n         {{fkobj.fkSelectName()}}\n        </a>\n    </md-list>\n</div>\n",
+        //language=CSS
+        styles: ["        \n.ac-menu { \n    position: absolute;\n    z-index: 1002;\n    background-color: white;\n    box-shadow: 0 3px 1px -2px rgba(0,0,0,.2), 0 2px 2px 0 rgba(0,0,0,.14), 0 1px 5px 0 rgba(0,0,0,.12);\n    cursor: pointer;\n    max-height: 300px;\n    overflow-y: auto;\n}\n\ninput {\n    min-width: 300px;\n}\n"]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService])
 ], FkAutocompleteComponent);

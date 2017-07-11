@@ -7,7 +7,7 @@ import * as debugMod from "debug"; // see https://www.npmjs.com/package/debug
 import {Control} from "./shared/Control";
 import {ControlUpdateData, ControlUpdate} from "./shared/ControlUpdate";
 import {Endpoint, EndpointStatus} from "./shared/Endpoint";
-import {WatcherRule} from "./shared/WatcherRule";
+import {ActionTrigger} from "./shared/ActionTrigger";
 
 //let debug = debugMod('watcher');
 let debug = console.log;
@@ -21,9 +21,9 @@ class Watcher {
     config: any;
     dataModel: DCDataModel;
     io : SocketIOClient.Socket;
-    // watcherRules is the set of WatcherRules, indexed by watched_control_id
+    // watcherRules is the set of WatcherRules, indexed by trigger_control_id
     watcherRules : {
-        [index: string] : IndexedDataSet<WatcherRule>
+        [index: string] : IndexedDataSet<ActionTrigger>
     } = {};
 
 
@@ -44,7 +44,7 @@ class Watcher {
             }
             else {
                 self.dataModel.loadData(data);
-                if (data.add && data.add[WatcherRule.tableStr]) {
+                if (data.add && data.add[ActionTrigger.tableStr]) {
                     this.loadWatcherRules();
                 }
             }
@@ -65,14 +65,14 @@ class Watcher {
         this.io.on('connect', () => {
             debug("websocket client connected");
 
-            let reqData : IDCDataRequest = {table: WatcherRule.tableStr, params: {}};
+            let reqData : IDCDataRequest = {table: ActionTrigger.tableStr, params: {}};
             this.getData(reqData);
         });
 
         this.io.on('control-data', (data) => {
             this.dataModel.loadData(data);
-            if ((data.add && data.add[WatcherRule.tableStr]) ||
-                data.delete && data.delete.table == WatcherRule.tableStr) {
+            if ((data.add && data.add[ActionTrigger.tableStr]) ||
+                data.delete && data.delete.table == ActionTrigger.tableStr) {
                 this.loadWatcherRules();
             }
         });
@@ -173,11 +173,11 @@ class Watcher {
         for (let id in this.dataModel.watcher_rules) {
             let rule = this.dataModel.watcher_rules[id];
 
-            if (! this.watcherRules[rule.watched_control_id]) {
-                this.watcherRules[rule.watched_control_id] = {};
+            if (! this.watcherRules[rule.trigger_control_id]) {
+                this.watcherRules[rule.trigger_control_id] = {};
             }
 
-            this.watcherRules[rule.watched_control_id][id] = rule;
+            this.watcherRules[rule.trigger_control_id][id] = rule;
         }
     }
 }

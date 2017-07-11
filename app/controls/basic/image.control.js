@@ -8,14 +8,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var control_service_1 = require("../control.service");
 var ImageControl = (function () {
     function ImageControl(cs) {
         this.cs = cs;
+        this.loadingError = false;
     }
     ImageControl.prototype.ngOnInit = function () { };
+    ImageControl.prototype.imgError = function ($event) {
+        this.loadingError = true;
+    };
     ImageControl.prototype.source = function () {
+        if (this.loadingError) {
+            return "/images/loading-error.svg";
+        }
         if (this.cs.config("url")) {
             return this.cs.config("url");
         }
@@ -35,7 +43,9 @@ ImageControl = __decorate([
     core_1.Component({
         moduleId: module.id,
         selector: 'ctrl-image',
-        template: "\n<div class=\"devctrl-ctrl\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <img [src]=\"source()\" width=\"100%\"/>\n</div> \n    "
+        template: "\n<div class=\"devctrl-ctrl\">\n    <label class=\"text-menu devctrl-ctrl-label\">{{cs.name}}</label>\n    <img [src]=\"source()\" width=\"100%\" (error)=\"imgError($event)\"/>\n</div> \n    ",
+        //language=CSS
+        styles: ["        \n    "]
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService])
 ], ImageControl);

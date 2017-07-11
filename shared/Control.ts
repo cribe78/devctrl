@@ -28,7 +28,7 @@ export class Control extends DCSerializable {
     usertype: string;
     control_type: string;
     poll: number;
-    config: any;
+    config: any = {};
     private _value: any;
     ephemeral: boolean = false;
     option_set_id: string;
@@ -53,17 +53,21 @@ export class Control extends DCSerializable {
 
     // usertype and control_type values
     static CONTROL_TYPE_BOOLEAN = "boolean";
-    static CONTROL_TYPE_STRING = "string";
-    static CONTROL_TYPE_RANGE = "range";
+    static CONTROL_TYPE_ECHO = "echo"; // For echo controls, ncontrol just returns the value specified
     static CONTROL_TYPE_INT = "int";
+    static CONTROL_TYPE_RANGE = "range";
+    static CONTROL_TYPE_STRING = "string";
     static CONTROL_TYPE_XY = "xy";
 
     static USERTYPE_BUTTON = "button";
     static USERTYPE_BUTTON_SET = "button-set";
+    static USERTYPE_CLQL_FADER = "clql-fader";
+    static USERTYPE_HYPERLINK = "hyperlink";
     static USERTYPE_IMAGE = "image";
     static USERTYPE_F32_MULTIBUTTON = "f32-multibutton";
     static USERTYPE_SLIDER_2D = "slider2d";
     static USERTYPE_SWITCH = "switch";
+    static USERTYPE_SWITCH_READONLY = "switch-readonly";
     static USERTYPE_SLIDER = "slider";
     static USERTYPE_READONLY = "readonly";
     static USERTYPE_LEVEL = "level";
@@ -139,6 +143,42 @@ export class Control extends DCSerializable {
 
     getDataObject() : ControlData {
         return (<ControlData>DCSerializable.defaultDataObject(this));
+    }
+
+    selectOptions() {
+        let options;
+        if (this.option_set && this.option_set.options) {
+            options = this.option_set.options;
+        }
+        else {
+            options = !!this.config.options ? this.config.options : {};
+        }
+
+        return options;
+    }
+
+    selectOptionsArray() {
+        let options = this.selectOptions();
+
+        let optionsArray = Object.keys(options).map( value => {
+            return { name: options[value], value: value };
+        });
+
+        return optionsArray;
+    }
+
+    selectValueName(val = null) {
+        if (val == null) {
+            val = this.value;
+        }
+        let opts = this.selectOptions();
+        let value = '' + val;
+
+        if (opts[value]) {
+            return opts[value];
+        }
+
+        return value;
     }
 }
 

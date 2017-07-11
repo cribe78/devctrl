@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var data_service_schema_1 = require("./data-service-schema");
 var io = require("socket.io-client");
 var DCDataModel_1 = require("../shared/DCDataModel");
@@ -23,7 +24,7 @@ var OptionSet_1 = require("../shared/OptionSet");
 var Panel_1 = require("../shared/Panel");
 var PanelControl_1 = require("../shared/PanelControl");
 var Room_1 = require("../shared/Room");
-var WatcherRule_1 = require("../shared/WatcherRule");
+var ActionTrigger_1 = require("../shared/ActionTrigger");
 var ActionLog_1 = require("../shared/ActionLog");
 var DataService = (function () {
     function DataService(http, snackBar, mdDialog) {
@@ -262,6 +263,7 @@ var DataService = (function () {
         if (newData === void 0) { newData = {}; }
         var ctor = this.dataModel.types[tableName];
         var newRow = new ctor("0");
+        newRow.loadDefaults();
         Object.assign(newRow, newData);
         return newRow;
     };
@@ -406,7 +408,7 @@ var DataService = (function () {
                 _this.getMData(Panel_1.Panel.tableStr, {});
                 _this.getMData(PanelControl_1.PanelControl.tableStr, {});
                 _this.getMData(Room_1.Room.tableStr, {});
-                _this.getMData(WatcherRule_1.WatcherRule.tableStr, {});
+                _this.getMData(ActionTrigger_1.ActionTrigger.tableStr, {});
             });
         });
         this.getUserInfo();

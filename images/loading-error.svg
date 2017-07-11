@@ -1,0 +1,21 @@
+<svg id="loading_error" data-name="Loading Error" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style>
+            .err-txt {
+                font-size: 28px;
+                font-family: Roboto, "sans-serif";
+            }
+
+            .err-triangle {
+                fill: #ffff00;
+                stroke-width: 2px;
+                stroke: #000000;
+            }
+        </style>
+    </defs>
+    <g>
+        <polygon class="err-triangle" points="10,50 50,50 30,22"></polygon>
+        <text class="err-txt" transform="translate(26 48)">!</text>
+        <text class="err-txt" transform="translate(52 48)">Error loading image</text>
+    </g>
+</svg>

@@ -19,6 +19,7 @@ export interface EndpointData extends DCSerializableData {
     ip: string;
     port: number;
     enabled: boolean;
+    commLogOptions: string;
 }
 
 
@@ -28,7 +29,10 @@ export class Endpoint extends DCSerializable {
     status: EndpointStatus;
     ip: string;
     port: number;
+    config: any;
     enabled: boolean;
+    private _commLogOptions : string;
+    commLogOptionsObj : {};
 
     static tableStr = "endpoints";
     table: string;
@@ -54,14 +58,18 @@ export class Endpoint extends DCSerializable {
             'status',
             'ip',
             'port',
-            'enabled'
+            'config',
+            'enabled',
+            'commLogOptions'
         ]);
 
         this.defaultProperties = {
             status : EndpointStatus.Offline,
             ip : "",
             port : 0,
-            enabled : false
+            config: {},
+            enabled : false,
+            commLogOptions : "default"
         };
 
         if (data) {
@@ -75,6 +83,21 @@ export class Endpoint extends DCSerializable {
 
     set address(address: string) {
         this.ip = address;
+    }
+
+    get commLogOptions() {
+        return this._commLogOptions;
+    }
+
+    set commLogOptions(val) {
+        this._commLogOptions = val;
+
+        let optionsList = val.split(",");
+        this.commLogOptionsObj = {};
+
+        for( let opt of optionsList) {
+            this.commLogOptionsObj[opt] = true;
+        }
     }
 
     get type(): EndpointType {

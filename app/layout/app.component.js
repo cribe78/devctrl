@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var data_service_1 = require("../data.service");
 var menu_service_1 = require("./menu.service");
@@ -48,7 +49,7 @@ var AppComponent = (function () {
 AppComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-app',
-        template: "\n<body fxLayout=\"column\" (window:resize)=\"ls.resized($event)\">\n    <devctrl-toolbar></devctrl-toolbar>    \n    <md-sidenav-container>\n        <md-sidenav class=\"dc-sidenav\"\n                    [opened]=\"menu.isSidenavOpen()\"\n                    [mode]=\"sidenavMode()\">\n            <devctrl-menu></devctrl-menu>\n        </md-sidenav>\n        <router-outlet></router-outlet>\n    </md-sidenav-container>\n</body>\n",
+        template: "\n<body (window:resize)=\"ls.resized($event)\">\n    <devctrl-toolbar></devctrl-toolbar>    \n    <md-sidenav-container>\n        <md-sidenav class=\"dc-sidenav\"\n                    [opened]=\"menu.isSidenavOpen()\"\n                    [mode]=\"sidenavMode()\">\n            <devctrl-menu></devctrl-menu>\n        </md-sidenav>\n        <router-outlet></router-outlet>\n    </md-sidenav-container>\n</body>\n",
         styles: ["\n.dc-sidenav {\n    width: 270px;\n}\n"]
     }),
     __metadata("design:paramtypes", [router_1.ActivatedRoute,

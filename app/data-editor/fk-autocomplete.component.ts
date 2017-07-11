@@ -10,7 +10,7 @@ import {DSFieldDefinition} from "../data-service-schema";
     selector: 'fk-autocomplete',
     template: `
 <md-input-container>
-    <input md-input
+    <input mdInput
             #fkauto
            [placeholder]="field.label"
            [(ngModel)]="inputText"
@@ -29,7 +29,8 @@ import {DSFieldDefinition} from "../data-service-schema";
     </md-list>
 </div>
 `,
-    styles: [`
+    //language=CSS
+    styles: [`        
 .ac-menu { 
     position: absolute;
     z-index: 1002;

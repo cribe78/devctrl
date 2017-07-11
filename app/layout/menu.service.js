@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var data_service_1 = require("../data.service");
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
@@ -150,6 +151,7 @@ var MenuService = (function () {
         this.dataService.updateConfig();
     };
     MenuService.prototype.toggleTopLevel = function ($event, item) {
+        $event.stopPropagation();
         if (!item.isOpened) {
             this.openTopLevel((item));
         }

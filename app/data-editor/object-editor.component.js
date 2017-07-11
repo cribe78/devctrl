@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var ObjectEditorComponent = (function () {
     function ObjectEditorComponent() {
@@ -34,7 +35,7 @@ var ObjectEditorComponent = (function () {
     };
     ObjectEditorComponent.prototype.deleteValue = function (key) {
         delete this.object[key];
-        this.onUpdate.emit({ object: this.object, name: this.fname });
+        this.onUpdate.emit({ value: this.object, name: this.fname });
     };
     ObjectEditorComponent.prototype.keys = function () {
         return Object.keys(this.object);
@@ -93,7 +94,9 @@ __decorate([
 ObjectEditorComponent = __decorate([
     core_1.Component({
         selector: 'devctrl-object-editor',
-        template: "\n<div>\n    <span class=\"text-menu\">\n        {{keyPath()}}\n    </span>\n    <div style=\"margin-left: 24px;\">\n        <template ngFor let-key [ngForOf]=\"keys()\">\n            <div fxLayout=\"row\" *ngIf=\"valueType(object[key]) != 'object'\">\n                <md-input-container>\n                    <input md-input \n                            [placeholder]=\"keyPath(key)\" \n                            [(ngModel)]=\"object[key]\" \n                            (change)=\"updateValue($event, key)\">\n                </md-input-container>  \n                <button type=\"button\" md-icon-button (click)=\"deleteValue(key)\">\n                    <md-icon>delete</md-icon>\n                </button>\n            </div>\n            <devctrl-object-editor fxFlex *ngIf=\"valueType(object[key]) == 'object'\"\n                            [object]=\"object[key]\"\n                            [fname]=\"key\"\n                            [pathPrefix]=\"keyPath()\"\n                            (onUpdate)=\"updateItem($event)\">\n            </devctrl-object-editor>\n        </template>\n        <div fxLayout=\"row\">\n            <md-input-container>\n                <input md-input [placeholder]=\"newKeyPlaceholder()\" [(ngModel)]=\"newKey\" name=\"new-key\">\n            </md-input-container>\n            <md-input-container>\n                <input md-input placeholder=\"Value\" [(ngModel)]=\"newVal\" name=\"new-val\">\n            </md-input-container>\n            <button md-icon-button\n                    type=\"button\" \n                    (click)=\"addItem()\"\n                    color=\"primary\">\n                <md-icon>add</md-icon>\n            </button>\n        </div>\n    </div>\n</div>    \n"
+        template: "\n<div>\n    <span class=\"text-menu\">\n        {{keyPath()}}\n    </span>\n    <div style=\"margin-left: 24px;\">\n        <ng-template ngFor let-key [ngForOf]=\"keys()\">\n            <div class=\"prop-row\" *ngIf=\"valueType(object[key]) != 'object'\">\n                <md-input-container>\n                    <input mdInput \n                            [placeholder]=\"keyPath(key)\" \n                            [(ngModel)]=\"object[key]\" \n                            (change)=\"updateValue($event, key)\">\n                </md-input-container>  \n                <button type=\"button\" md-icon-button (click)=\"deleteValue(key)\">\n                    <md-icon>delete</md-icon>\n                </button>\n            </div>\n            <devctrl-object-editor *ngIf=\"valueType(object[key]) == 'object'\"\n                            [object]=\"object[key]\"\n                            [fname]=\"key\"\n                            [pathPrefix]=\"keyPath()\"\n                            (onUpdate)=\"updateItem($event)\">\n            </devctrl-object-editor>\n        </ng-template>\n        <div class=\"new-prop-row\">\n            <md-input-container>\n                <input mdInput [placeholder]=\"newKeyPlaceholder()\" [(ngModel)]=\"newKey\" name=\"new-key\">\n            </md-input-container>\n            <md-input-container>\n                <input mdInput placeholder=\"Value\" [(ngModel)]=\"newVal\" name=\"new-val\">\n            </md-input-container>\n            <button md-icon-button\n                    type=\"button\" \n                    (click)=\"addItem()\"\n                    color=\"primary\">\n                <md-icon>add</md-icon>\n            </button>\n        </div>\n    </div>\n</div>    \n",
+        //language=CSS
+        styles: ["\n        devctrl-object-editor {\n            flex: 1 1;\n        }\n        \n        .new-prop-row {\n            display: flex;\n            flex-direction: row;\n        }\n        \n        .prop-row {\n            display: flex;\n            flex-direction: row;\n        }\n    "]
     }),
     __metadata("design:paramtypes", [])
 ], ObjectEditorComponent);

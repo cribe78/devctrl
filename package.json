@@ -8,16 +8,16 @@
   },
   "description": "Node based reimplementation of pcontrol daemon",
   "dependencies": {
-    "@angular/common": "^2.4.1",
-    "@angular/compiler": "^2.4.1",
-    "@angular/core": "^2.4.1",
-    "@angular/forms": "^2.4.1",
-    "@angular/http": "^2.4.1",
-    "@angular/material": "^2.0.0-beta.1",
-    "@angular/platform-browser": "^2.4.1",
-    "@angular/platform-browser-dynamic": "^2.4.1",
-    "@angular/router": "^3.4.1",
-    "@angular/upgrade": "^2.4.1",
+    "@angular/animations": "^4.0.1",
+    "@angular/common": "^4.0.1",
+    "@angular/compiler": "^4.0.1",
+    "@angular/core": "^4.0.1",
+    "@angular/forms": "^4.0.1",
+    "@angular/http": "^4.0.1",
+    "@angular/material": "^2.0.0-beta.3",
+    "@angular/platform-browser": "^4.0.1",
+    "@angular/platform-browser-dynamic": "^4.0.1",
+    "@angular/router": "^4.0.1",
     "@types/hammerjs": "^2.0.33",
     "body-parser": "^1.15.2",
     "bootstrap": "^3.3.6",
@@ -32,9 +32,8 @@
     "socket.io-client": "^1.4",
     "sprintf-js": "^1.0.3",
     "systemjs": "^0.19",
-    "zone.js": "^0.7.2"
+    "typescript": "^2.2.2",
+    "zone.js": "^0.8.4"
   },
-  "devDependencies": {
-    "@angular/flex-layout": "^2.0.0-beta.1"
-  }
+  "devDependencies": {}
 }

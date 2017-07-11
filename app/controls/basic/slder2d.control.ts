@@ -19,7 +19,7 @@ import { ControlService } from '../control.service';
                    (change)="cs.updateValue()">
         </md-slider>
         <md-input-container>
-            <input md-input 
+            <input mdInput 
                    class="devctrl-slider-input" type="number"
                    [(ngModel)]="xVal"
                    (change)="cs.updateValue()">
@@ -36,7 +36,7 @@ import { ControlService } from '../control.service';
                    (change)="cs.updateValue()">
         </md-slider>
         <md-input-container>
-            <input md-input 
+            <input mdInput 
                    class="devctrl-slider-input" type="number"
                    [(ngModel)]="yVal"
                    (change)="cs.updateValue()">

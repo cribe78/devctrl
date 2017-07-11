@@ -9,10 +9,10 @@ import {Router, ActivatedRoute} from '@angular/router';
         {{keyPath()}}
     </span>
     <div style="margin-left: 24px;">
-        <template ngFor let-key [ngForOf]="keys()">
-            <div fxLayout="row" *ngIf="valueType(object[key]) != 'object'">
+        <ng-template ngFor let-key [ngForOf]="keys()">
+            <div class="prop-row" *ngIf="valueType(object[key]) != 'object'">
                 <md-input-container>
-                    <input md-input 
+                    <input mdInput 
                             [placeholder]="keyPath(key)" 
                             [(ngModel)]="object[key]" 
                             (change)="updateValue($event, key)">
@@ -21,19 +21,19 @@ import {Router, ActivatedRoute} from '@angular/router';
                     <md-icon>delete</md-icon>
                 </button>
             </div>
-            <devctrl-object-editor fxFlex *ngIf="valueType(object[key]) == 'object'"
+            <devctrl-object-editor *ngIf="valueType(object[key]) == 'object'"
                             [object]="object[key]"
                             [fname]="key"
                             [pathPrefix]="keyPath()"
                             (onUpdate)="updateItem($event)">
             </devctrl-object-editor>
-        </template>
-        <div fxLayout="row">
+        </ng-template>
+        <div class="new-prop-row">
             <md-input-container>
-                <input md-input [placeholder]="newKeyPlaceholder()" [(ngModel)]="newKey" name="new-key">
+                <input mdInput [placeholder]="newKeyPlaceholder()" [(ngModel)]="newKey" name="new-key">
             </md-input-container>
             <md-input-container>
-                <input md-input placeholder="Value" [(ngModel)]="newVal" name="new-val">
+                <input mdInput placeholder="Value" [(ngModel)]="newVal" name="new-val">
             </md-input-container>
             <button md-icon-button
                     type="button" 
@@ -44,7 +44,23 @@ import {Router, ActivatedRoute} from '@angular/router';
         </div>
     </div>
 </div>    
-`
+`,
+    //language=CSS
+    styles: [`
+        devctrl-object-editor {
+            flex: 1 1;
+        }
+        
+        .new-prop-row {
+            display: flex;
+            flex-direction: row;
+        }
+        
+        .prop-row {
+            display: flex;
+            flex-direction: row;
+        }
+    `]
 })
 export class ObjectEditorComponent
 {
@@ -84,7 +100,7 @@ export class ObjectEditorComponent
 
     deleteValue(key) {
         delete this.object[key];
-        this.onUpdate.emit({object: this.object, name: this.fname});
+        this.onUpdate.emit({value: this.object, name: this.fname});
     }
 
     keys() {

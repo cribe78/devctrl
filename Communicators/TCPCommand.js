@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Control_1 = require("../shared/Control");
 var sprintf_js_1 = require("sprintf-js");
 //let debug = debugMod("comms");
@@ -106,7 +107,7 @@ var TCPCommand = (function () {
         return '';
     };
     TCPCommand.prototype.parseQueryResponse = function (control, line) {
-        var matches = line.match(this.cmdQueryResponseRE);
+        var matches = line.match(this.queryResponseMatchString());
         if (matches) {
             return this.parseValue(matches[1]);
         }

@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var DCSerializable_1 = require("shared/DCSerializable");
 var data_service_1 = require("../data.service");
@@ -80,6 +81,8 @@ RecordComponent = __decorate([
         moduleId: module.id,
         selector: 'devctrl-record',
         templateUrl: 'record.html',
+        //language=CSS
+        styles: ["\n        .field-container {\n            flex: 1 1;\n        }\n        \n        .form-container {\n            display: flex;\n            flex-direction: column;\n            flex: 1 1;\n        }\n        \n        .record-container {\n            display: flex;\n            flex-direction: column;\n        }    \n    "]
     }),
     __metadata("design:paramtypes", [data_service_1.DataService,
         material_1.MdDialogRef])

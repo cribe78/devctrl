@@ -11,34 +11,51 @@ import {LayoutService} from "../layout/layout.service";
 @Component({
     selector: 'devctrl-endpoint',
     template: `
-<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
-    <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
+<div id="devctrl-content-canvas">
+    <div class="devctrl-card">
         <md-toolbar color="primary">
-            <div  fxFill fxLayout="row" fxLayoutAlign="start center" class="md-toolbar-tools">
-                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
-                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
-                <button fxFlex="none"  md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
-                <span fxFlex>&nbsp;</span>
-                <devctrl-endpoint-status fxFlex="none" [endpointId]="obj._id" backgroundColor="primary"></devctrl-endpoint-status>
+            <div class="devctrl-toolbar-tools">
+                <button md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
+                <button md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
+                <button md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
+                <span class="devctrl-spacer">&nbsp;</span>
+                <form class="search-input">
+                    <md-input-container>
+                        <input mdInput name="search" placeholder="Search Controls" [(ngModel)]="searchTerm">
+                    </md-input-container>
+                </form>
+                <devctrl-endpoint-status [endpointId]="obj._id" backgroundColor="primary"></devctrl-endpoint-status>
             </div>
         </md-toolbar>
         
         <md-list>
-            <template ngFor let-controlId [ngForOf]="controlIds()">
+            <ng-template ngFor let-controlId [ngForOf]="filteredControls()">
                 <md-list-item class="devctrl-ctrl-list-item"><devctrl-ctrl [controlId]="controlId"></devctrl-ctrl></md-list-item>
                 <md-divider></md-divider>
-            </template>
+            </ng-template>
         </md-list>
     </div>
     <devctrl-action-history [hidden]="!ls.desktopWide"></devctrl-action-history>
  </div>
 
-`
+`,
+    //language=CSS
+    styles: [`
+        .devctrl-card {
+            max-width: 900px;
+            flex: 1 1;
+        }
+        
+        .search-input {
+            margin-bottom: 0;
+        }
+    `]
 })
 export class EndpointComponent implements OnInit {
     endpointId: string;
     obj: Endpoint;
     controls: IndexedDataSet<Control>;
+    searchTerm: string;
 
 
     constructor(private route : ActivatedRoute,
@@ -83,7 +100,9 @@ export class EndpointComponent implements OnInit {
     addControl($event) {
         this.recordService.editRecord($event, '0', 'controls',
             {
-                'endpoint_type_id' : this.obj.endpoint_type_id
+                endpoint: this.obj,
+                ctid: this.endpointId + "-",
+                poll: false
             }
         );
     }
@@ -91,6 +110,20 @@ export class EndpointComponent implements OnInit {
     editEndpoint($event) {
         this.recordService.editRecord($event, this.endpointId, 'endpoints');
     }
+
+    filteredControls() {
+        if (! this.searchTerm) {
+            return this.controlIds();
+        }
+
+        let searchTerm = this.searchTerm.toLowerCase();
+        let controlIds = this.controlIds();
+
+        return  controlIds.filter(id => {
+            return this.controls[id].name.toLowerCase().includes(searchTerm);
+        });
+    }
+
 
     generateConfig($event) {
         this.dataService.generateEndpointConfig($event, this.endpointId);

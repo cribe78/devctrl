@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ioMod = require("socket.io");
 var http = require("http");
 var url = require("url");
@@ -140,6 +141,7 @@ var Messenger = (function () {
                             var doc = addDocs_2[_i];
                             resp.add[table][doc._id] = doc;
                         }
+                        Messenger.dataModel.loadData(resp);
                         io.emit('control-data', resp);
                         fn(resp);
                     });
@@ -234,6 +236,7 @@ var Messenger = (function () {
         var controlsCollection = Messenger.mongodb.collection(Control_1.Control.tableStr);
         var controls = Messenger.dataModel.controls;
         var _loop_2 = function (update) {
+            //debug(`control update received: ${update.control_id} = ${update.value}`);
             if (!controls[update.control_id]) {
                 debug("dropping update of invalid control_id " + update.control_id + " from " + socket["session"].client_name);
                 return { value: void 0 };

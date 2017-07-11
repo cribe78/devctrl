@@ -7,16 +7,29 @@ import { ControlService } from '../control.service';
     template: `
 <div class="devctrl-ctrl">
     <label class="text-menu devctrl-ctrl-label">{{cs.name}}</label>
-    <img [src]="source()" width="100%"/>
+    <img [src]="source()" width="100%" (error)="imgError($event)"/>
 </div> 
-    `
+    `,
+    //language=CSS
+    styles: [`        
+    `]
 })
 export class ImageControl implements OnInit {
+    loadingError = false;
+
     constructor(private cs : ControlService) { }
 
     ngOnInit() { }
 
+    imgError($event) {
+        this.loadingError = true;
+    }
+
     source() {
+        if (this.loadingError) {
+            return "/images/loading-error.svg";
+        }
+
         if (this.cs.config("url")) {
             return this.cs.config("url");
         }

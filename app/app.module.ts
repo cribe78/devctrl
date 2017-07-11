@@ -1,11 +1,11 @@
 import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent }   from './layout/app.component';
 import { MaterialModule, MdSnackBarModule, MdDialogModule} from '@angular/material';
 import { HttpModule } from '@angular/http';
 import 'hammerjs';
 
-import { UpgradeModule } from '@angular/upgrade/static';
 import {MenuComponent} from "./layout/menu.component";
 import {MenuService} from "./layout/menu.service";
 import {ToolbarComponent} from "./layout/toolbar.component";
@@ -23,30 +23,30 @@ import {AlertDialog} from "./alert-dialog.component";
 import {RecordEditorService} from "./data-editor/record-editor.service";
 import {TableComponent} from "./data-editor/table.component";
 import {FormsModule} from "@angular/forms";
-//import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
 import {ControlsModule} from "./controls/controls.module";
 import {RoomComponent} from "./rooms/room.component";
 import {RoomsComponent} from "./rooms/rooms.component";
 import {PanelComponent} from "./rooms/panel.component";
 import {ObjectEditorComponent} from "./data-editor/object-editor.component";
-import {FlexLayoutModule} from "@angular/flex-layout";
 import {MediaService} from "./layout/media.service";
 import {LayoutService} from "./layout/layout.service";
 import {ActionHistoryComponent} from "./layout/action-history.component";
+import {DCMaterialModule} from "./dc-material.module";
+import {ControlDetailComponent} from "./controls/control-detail.component";
+import {WatcherActionValueComponent} from "./data-editor/watcher-action-value.component";
 
 
 
 @NgModule({
     imports:      [
         BrowserModule,
-        FlexLayoutModule.forRoot(),
-        MaterialModule.forRoot(),
+        BrowserAnimationsModule,
+        DCMaterialModule,
         MdSnackBarModule,
-        MdDialogModule.forRoot(),
+        MdDialogModule,
         HttpModule,
         AppRoutingModule,
         FormsModule,
-        UpgradeModule,
         ControlsModule,
     ],
     declarations: [ MenuComponent,
@@ -55,6 +55,7 @@ import {ActionHistoryComponent} from "./layout/action-history.component";
         AppComponent,
         ConfigComponent,
         ConfigDataComponent,
+        ControlDetailComponent,
         EndpointComponent,
         EndpointsComponent,
         EndpointStatusComponent,
@@ -66,7 +67,8 @@ import {ActionHistoryComponent} from "./layout/action-history.component";
         RoomsComponent,
         TableComponent,
         ToolbarComponent,
-        ActionHistoryComponent
+        ActionHistoryComponent,
+        WatcherActionValueComponent
         ],
     entryComponents: [
         AlertDialog,

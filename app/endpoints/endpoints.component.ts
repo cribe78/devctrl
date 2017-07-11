@@ -10,28 +10,35 @@ import {RecordEditorService} from "../data-editor/record-editor.service";
 @Component({
     selector: 'devctrl-endpoints',
     template: `
-<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
-    <div fxFlex="none" fxFlex.gt-xs="800px" class="devctrl-card">
+<div id="devctrl-content-canvas">
+    <div class="devctrl-card">
         <md-toolbar color="primary">
-            <div fxLayout="row" fxLayoutAlign="start center">
+            <div class="devctrl-toolbar-test">
                 <button md-button *devctrlAdminOnly (click)="addEndpoint($event)">Add Endpoint</button>
                 <button md-button *devctrlAdminOnly (click)="addEndpointType($event)">Add Endpoint Type</button>
             </div>
         </md-toolbar>
         <md-nav-list>
-            <template ngFor let-endpoint [ngForOf]="endpointsList">
+            <ng-template ngFor let-endpoint [ngForOf]="endpointsList">
                  <a md-list-item 
                     (click)="menu.go(['devices', endpoint._id])">
                     {{endpoint.name}}
-                    <span fxFlex></span>
+                    <span class="devctrl-spacer"></span>
                     <devctrl-endpoint-status [endpointId]="endpoint._id"></devctrl-endpoint-status>
                     <md-icon>chevron_right</md-icon>
                 </a>
                 <md-divider></md-divider>           
-            </template>       
+            </ng-template>       
         </md-nav-list>
 </div>
-`
+`,
+    //language=CSS
+    styles: [`
+        .devctrl-card {
+            max-width: 900px;
+            flex: 1 1;
+        }
+    `]
 })
 export class EndpointsComponent implements OnInit {
     endpoints : IndexedDataSet<Endpoint>;

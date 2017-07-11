@@ -16,7 +16,7 @@ import {OptionSet} from "../shared/OptionSet";
 import {Panel} from "../shared/Panel";
 import {PanelControl} from "../shared/PanelControl";
 import {Room} from "../shared/Room";
-import {WatcherRule} from "../shared/WatcherRule";
+import {ActionTrigger} from "../shared/ActionTrigger";
 import {ActionLog} from "../shared/ActionLog";
 
 @Injectable()
@@ -319,6 +319,7 @@ module.exports = {
         let ctor = this.dataModel.types[tableName];
 
         let newRow = new ctor("0");
+        newRow.loadDefaults();
         Object.assign(newRow, newData);
 
         return newRow;
@@ -494,7 +495,7 @@ module.exports = {
                 this.getMData(Panel.tableStr, {});
                 this.getMData(PanelControl.tableStr, {});
                 this.getMData(Room.tableStr, {});
-                this.getMData(WatcherRule.tableStr, {});
+                this.getMData(ActionTrigger.tableStr, {});
             });
         });
 

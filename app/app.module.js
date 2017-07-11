@@ -5,16 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var platform_browser_1 = require("@angular/platform-browser");
+var animations_1 = require("@angular/platform-browser/animations");
 var app_component_1 = require("./layout/app.component");
 var material_1 = require("@angular/material");
 var http_1 = require("@angular/http");
 require("hammerjs");
-var static_1 = require("@angular/upgrade/static");
 var menu_component_1 = require("./layout/menu.component");
 var menu_service_1 = require("./layout/menu.service");
 var toolbar_component_1 = require("./layout/toolbar.component");
@@ -32,16 +30,17 @@ var alert_dialog_component_1 = require("./alert-dialog.component");
 var record_editor_service_1 = require("./data-editor/record-editor.service");
 var table_component_1 = require("./data-editor/table.component");
 var forms_1 = require("@angular/forms");
-//import {ObjectEditorComponentNg2} from "./ng1/object-editor.component";
 var controls_module_1 = require("./controls/controls.module");
 var room_component_1 = require("./rooms/room.component");
 var rooms_component_1 = require("./rooms/rooms.component");
 var panel_component_1 = require("./rooms/panel.component");
 var object_editor_component_1 = require("./data-editor/object-editor.component");
-var flex_layout_1 = require("@angular/flex-layout");
 var media_service_1 = require("./layout/media.service");
 var layout_service_1 = require("./layout/layout.service");
 var action_history_component_1 = require("./layout/action-history.component");
+var dc_material_module_1 = require("./dc-material.module");
+var control_detail_component_1 = require("./controls/control-detail.component");
+var watcher_action_value_component_1 = require("./data-editor/watcher-action-value.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -51,14 +50,13 @@ AppModule = __decorate([
     core_1.NgModule({
         imports: [
             platform_browser_1.BrowserModule,
-            flex_layout_1.FlexLayoutModule.forRoot(),
-            material_1.MaterialModule.forRoot(),
+            animations_1.BrowserAnimationsModule,
+            dc_material_module_1.DCMaterialModule,
             material_1.MdSnackBarModule,
-            material_1.MdDialogModule.forRoot(),
+            material_1.MdDialogModule,
             http_1.HttpModule,
             app_router_module_1.AppRoutingModule,
             forms_1.FormsModule,
-            static_1.UpgradeModule,
             controls_module_1.ControlsModule,
         ],
         declarations: [menu_component_1.MenuComponent,
@@ -67,6 +65,7 @@ AppModule = __decorate([
             app_component_1.AppComponent,
             config_component_1.ConfigComponent,
             config_data_component_1.ConfigDataComponent,
+            control_detail_component_1.ControlDetailComponent,
             endpoint_component_1.EndpointComponent,
             endpoints_component_1.EndpointsComponent,
             endpoint_status_component_1.EndpointStatusComponent,
@@ -78,7 +77,8 @@ AppModule = __decorate([
             rooms_component_1.RoomsComponent,
             table_component_1.TableComponent,
             toolbar_component_1.ToolbarComponent,
-            action_history_component_1.ActionHistoryComponent
+            action_history_component_1.ActionHistoryComponent,
+            watcher_action_value_component_1.WatcherActionValueComponent
         ],
         entryComponents: [
             alert_dialog_component_1.AlertDialog,
@@ -93,8 +93,7 @@ AppModule = __decorate([
             layout_service_1.LayoutService
         ],
         bootstrap: [app_component_1.AppComponent]
-    }),
-    __metadata("design:paramtypes", [])
+    })
 ], AppModule);
 exports.AppModule = AppModule;
 //# sourceMappingURL=app.module.js.map

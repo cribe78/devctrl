@@ -2,15 +2,13 @@ import {EndpointCommunicator, IEndpointCommunicatorConfig} from "./EndpointCommu
 import { TCPCommand } from "./TCPCommand";
 import * as net from "net";
 import {Control} from "../shared/Control";
-
-import * as debugMod from "debug";
 import {ControlUpdateData} from "../shared/ControlUpdate";
 import {EndpointStatus} from "../shared/Endpoint";
 import {IndexedDataSet} from "../shared/DCDataModel";
-//let debug = debugMod("comms");
-let debug = console.log;
 
 export type TCPCommEncoding = "string" | "hex";
+
+//TODO: convert expectedResponse from an array to a proper object
 
 export class TCPCommunicator extends EndpointCommunicator {
     host: string;
@@ -26,7 +24,7 @@ export class TCPCommunicator extends EndpointCommunicator {
     backoffTime: number = 1000;
     expectedResponses: [string | RegExp, (line: string) => any][] = [];
     commsMode : TCPCommEncoding = "string";
-    indeterminateControls : { [idx: string] : boolean} = {};
+
 
 
     constructor() {
@@ -50,13 +48,13 @@ export class TCPCommunicator extends EndpointCommunicator {
 
 
         this.socket = net.connect(connectOpts, function() {
-            debug("connected to " + connectOpts.host + ":" + connectOpts.port);
+            self.log("connected to " + connectOpts.host + ":" + connectOpts.port, EndpointCommunicator.LOG_CONNECTION);
 
             self.doDeviceLogon();
         });
 
         this.socket.on('error', function(e) {
-            debug("caught socket error: " + e.message);
+            self.log("caught socket error: " + e.message, EndpointCommunicator.LOG_CONNECTION);
             self.onEnd();
         });
 
@@ -97,7 +95,7 @@ export class TCPCommunicator extends EndpointCommunicator {
 
         let self = this;
         let queryStr = cmd.queryString();
-        debug("sending query: " + queryStr);
+        this.log("sending query: " + queryStr, EndpointCommunicator.LOG_POLLING);
         this.writeToSocket(queryStr + this.outputLineTerminator);
 
         this.expectedResponses.push([
@@ -105,7 +103,7 @@ export class TCPCommunicator extends EndpointCommunicator {
             (line) => {
                 for (let ctid of cmd.ctidList) {
                     let control = self.controlsByCtid[ctid];
-
+                    //debug("control id is " + control._id);
                     let val = cmd.parseQueryResponse(control, line);
                     self.setControlValue(control, val);
                 }
@@ -133,28 +131,31 @@ export class TCPCommunicator extends EndpointCommunicator {
     }
 
     handleControlUpdateRequest(request: ControlUpdateData) {
+        let control = this.controls[request.control_id];
+
         if (! this.connected) {
             return;
         }
 
-        let control = this.controls[request.control_id];
         let command = this.commandsByTemplate[control.ctid];
 
-        let updateStr = command.updateString(control, request);
-        debug("sending update: " + updateStr);
-        this.writeToSocket(updateStr + this.outputLineTerminator);
+        if (command) {
+            let updateStr = command.updateString(control, request);
+            this.log("sending update: " + updateStr, EndpointCommunicator.LOG_UPDATES);
 
-        this.expectedResponses.push([
-            command.updateResponseMatchString(request),
-            (line) => {
-                this.setControlValue(control, request.value);
-            }
-        ]);
+            this.queueCommand(updateStr + this.outputLineTerminator,
+                [
+                    command.updateResponseMatchString(request),
+                    (line) => {
+                        this.setControlValue(control, request.value);
+                    }
+                ]
+            );
 
-        // Mark this control as indeterminate, in case we see a query or other update
-        // regarding it but the expected response never comes
-        this.indeterminateControls[request.control_id] = true;
-
+            // Mark this control as indeterminate, in case we see a query or other update
+            // regarding it but the expected response never comes
+            this.indeterminateControls[request.control_id] = true;
+        }
     }
 
 
@@ -163,7 +164,7 @@ export class TCPCommunicator extends EndpointCommunicator {
             let cmd = this.commands[cmdStr];
 
             if (cmd.matchesReport(line)) {
-                debug("read: " + line + ", matches cmd " + cmd.name);
+                this.log("read: " + line + ", matches cmd " + cmd.name, EndpointCommunicator.LOG_MATCHING);
                 return cmd;
             }
         }
@@ -181,7 +182,7 @@ export class TCPCommunicator extends EndpointCommunicator {
             let eresp = this.expectedResponses[idx];
 
             if (line.search(<string>eresp[0]) > -1 ) {
-                debug(`${line} matched expected response "${eresp[0]}" at [${idx}]`);
+                this.log(`${line} matched expected response "${eresp[0]}" at [${idx}]`, EndpointCommunicator.LOG_MATCHING);
                 //Execute expected response callback
                 eresp[1](line);
 
@@ -206,7 +207,7 @@ export class TCPCommunicator extends EndpointCommunicator {
         let lines = this.inputBuffer.split(this.inputLineTerminator);
 
         while (lines.length > 1) {
-            debug("data recieved: " + lines[0]);
+            this.log("data recieved: " + lines[0], EndpointCommunicator.LOG_RAW_DATA);
             this.processLine(lines[0]);
 
             lines.splice(0,1);
@@ -218,13 +219,13 @@ export class TCPCommunicator extends EndpointCommunicator {
     onEnd() {
         let self = this;
         if (this.config.endpoint.enabled) {
-            debug("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms");
+            this.log("device disconnected " + this.host + ", reconnect in " + this.backoffTime + "ms", "connection");
             this.connected = false;
 
             this.config.statusUpdateCallback(EndpointStatus.Offline);
 
             if (! this.socket["destroyed"]) {  // socket.destroyed is missing from Typings file
-                debug("destroying socket");
+                this.log("destroying socket", EndpointCommunicator.LOG_CONNECTION);
                 this.socket.destroy();
             }
 
@@ -237,7 +238,7 @@ export class TCPCommunicator extends EndpointCommunicator {
             }
         }
         else {
-            debug("successfully disconnected from " + this.host);
+            this.log("successfully disconnected from " + this.host, EndpointCommunicator.LOG_CONNECTION);
         }
     }
 
@@ -255,7 +256,7 @@ export class TCPCommunicator extends EndpointCommunicator {
 
         let exd = this.expectedResponses.length;
         if (exd > 1000) {
-            debug(`WARNING polling device, expected response queue has reached length of ${exd}`);
+            this.log(`WARNING polling device, expected response queue has reached length of ${exd}`);
         }
 
         for (let id in this.controls) {
@@ -268,7 +269,7 @@ export class TCPCommunicator extends EndpointCommunicator {
                     this.executeCommandQuery(cmd);
                 }
                 else {
-                    debug("command not found for poll control " + control.ctid);
+                    this.log("command not found for poll control " + control.ctid);
                 }
             }
         }
@@ -311,7 +312,24 @@ export class TCPCommunicator extends EndpointCommunicator {
 
         }
         else {
-            debug("read, unmatched: " + line );
+            this.log("read, unmatched: " + line, EndpointCommunicator.LOG_MATCHING);
+        }
+    }
+
+    /**
+     * This implementation just writes the command to the socket.  Child classes
+     * can do fancier things
+     */
+
+    queueCommand(cmdStr : string, expectedResponse: [string | RegExp, (line: string) => any]) {
+        this.writeToSocket(cmdStr);
+
+        if (expectedResponse[0] == '') {
+            // Get on with it
+            expectedResponse[1]('');
+        }
+        else {
+            this.expectedResponses.push(expectedResponse);
         }
     }
 
@@ -329,21 +347,7 @@ export class TCPCommunicator extends EndpointCommunicator {
         }
     }
 
-    setControlValue(control: Control, val: any) {
-        let valDiff = control.value != val;
-        if (typeof val == 'object') {
-            // Don't send update if nothing will change
-            valDiff = JSON.stringify(control.value) != JSON.stringify(val);
-        }
 
-        if (valDiff || this.indeterminateControls[control._id]) {
-            this.indeterminateControls[control._id] = false;
-
-            debug(`control update: ${control.name} = ${val}`);
-            this.config.controlUpdateCallback(control, val);
-            control.value = val;
-        }
-    }
 
 
     writeToSocket(val: string) {
@@ -351,6 +355,8 @@ export class TCPCommunicator extends EndpointCommunicator {
         if (this.commsMode == 'hex') {
             bufMode = 'hex';
         }
+
+        this.log(`sending data: ${val}`, EndpointCommunicator.LOG_RAW_DATA);
         let bufferToSend = Buffer.from(val, bufMode);
         this.socket.write(bufferToSend);
     }

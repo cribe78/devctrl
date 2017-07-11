@@ -10,12 +10,13 @@ import {PanelControl} from "shared/PanelControl";
 import 'rxjs/add/operator/switchMap';
 import {RecordEditorService} from "data-editor/record-editor.service";
 import {LayoutService} from "../layout/layout.service";
+//TODO: remember selected tab
 
 @Component({
     selector: 'devctrl-room',
     template: `
-<div fxLayout="row" fxLayoutAlign="center start" id="devctrl-content-canvas">
-    <div fxFlex="none" fxFlex.gt-xs="900px" class="devctrl-card">
+<div id="devctrl-content-canvas">
+    <div class="devctrl-card">
         <!-- TODO: initial tab selection is not working -->
         <md-tab-group #tabgroup 
             [selectedIndex]="selectedGroup" 
@@ -31,22 +32,20 @@ import {LayoutService} from "../layout/layout.service";
             </md-tab>
             <md-tab label="Devices">
                 <md-nav-list class="devices">
-                    <template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
+                    <ng-template ngFor let-endpoint [ngForOf]="getRoomEndpoints()" [ngForTrackBy]="trackById">
                         <a md-list-item
-                            fxLayout="row"
                                   (click)="menu.go(['devices', endpoint._id])">
                             <span md-line>{{endpoint.name}}</span>
-                            <span fxFlex>&nbsp;</span>
+                            <span>&nbsp;</span>
                             <devctrl-endpoint-status [endpointId]="endpoint._id"></devctrl-endpoint-status>
                             <md-icon md-font-set="material-icons">keyboard_arrow_right</md-icon>
                         </a>
                         <md-divider></md-divider>
-                    </template>
+                    </ng-template>
                 </md-nav-list>
             </md-tab>
         </md-tab-group>
-        <div flex layout="row" *devctrlAdminOnly>
-            <span flex></span>
+        <div class="devctrl-card-bottom" *devctrlAdminOnly>
             <button md-button
                     (click)="addPanel($event)"
                     class="md-primary">
@@ -54,14 +53,30 @@ import {LayoutService} from "../layout/layout.service";
             </button>
         </div>
     </div>
-    <devctrl-action-history *ngIf="ls.desktopWide" fxFlex></devctrl-action-history>
+    <devctrl-action-history *ngIf="ls.desktopWide"></devctrl-action-history>
 </div>
     
 `,
-    styles: [`
-:host /deep/ .devices .md-list-item {
-    width: 100%;
-}
+    //language=CSS
+    styles: [`        
+        .devctrl-card {
+            max-width: 900px;
+            flex: 1 1;
+        }
+        
+        .devctrl-card-bottom {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+
+        md-tab-group /deep/ .mat-tab-body-content {
+            height: auto;
+        }
+        
+        :host /deep/ .devices .mat-list-item {
+            width: 100%;
+        }
 `]
 })
 export class RoomComponent implements OnInit {

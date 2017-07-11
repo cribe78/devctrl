@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var menu_service_1 = require("../layout/menu.service");
 var PanelControl_1 = require("../../shared/PanelControl");
@@ -48,7 +49,8 @@ ControlComponent = __decorate([
         selector: 'devctrl-ctrl',
         providers: [control_service_1.ControlService],
         templateUrl: 'control.html',
-        styles: ["\n.devctrl-ctrl-item {\n    min-height: 48px;\n    width: 100%;\n    display: flex;\n}\n\n.devctrl-ctrl-admin-placeholder {\n    width: 48px;\n}\n\n:host {\n    width: 100%;\n}\n\n:host /deep/ .devctrl-ctrl-flex-layout {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n }\n \n:host /deep/ .devctrl-ctrl-label {\n    min-height: 32px;\n    margin-right: 12px;\n    width: 180px;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n}\n\n:host /deep/ .devctrl-ctrl {\n    min-height: 48px;\n}\n\n"]
+        //language=CSS
+        styles: ["        \n        .control-wrapper {\n            flex: 1 1;\n        }\n.devctrl-ctrl-item {\n    min-height: 48px;\n    width: 100%;\n    display: flex;\n    flex-direction: row;\n}\n\n.devctrl-ctrl-admin-placeholder {\n    width: 48px;\n}\n\n:host {\n    width: 100%;\n}\n\n:host /deep/ .devctrl-ctrl-flex-layout {\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: space-between;\n }\n \n:host /deep/ .devctrl-ctrl-label {\n    min-height: 32px;\n    margin-right: 12px;\n    width: 180px;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n    overflow: hidden;\n}\n\n:host /deep/ .devctrl-ctrl {\n    min-height: 48px;\n}\n\n"]
     }),
     __metadata("design:paramtypes", [control_service_1.ControlService,
         menu_service_1.MenuService])

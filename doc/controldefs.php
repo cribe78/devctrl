@@ -189,7 +189,7 @@ $commands = array(
             'type' => "boolean"
         ),
         'FFC' => array(
-            'name' => "Edge Blend Right On/Off",
+            'name' => "Edge Blend Right On/Off
             'type' => "booolean"
         ),
         'FFD' => array(

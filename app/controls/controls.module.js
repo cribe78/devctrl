@@ -5,9 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
+Object.defineProperty(exports, "__esModule", { value: true });
 var material_1 = require("@angular/material");
 var forms_1 = require("@angular/forms");
 var core_1 = require("@angular/core");
@@ -16,6 +14,8 @@ var control_component_1 = require("./control.component");
 var common_1 = require("@angular/common");
 var f32_controls_module_1 = require("./f32/f32-controls.module");
 var panasonic_controls_module_1 = require("./panasonic/panasonic-controls.module");
+var control_value_selector_component_1 = require("./control-value-selector.component");
+var yamaha_controls_module_1 = require("./yamaha/yamaha-controls.module");
 var ControlsModule = (function () {
     function ControlsModule() {
     }
@@ -29,19 +29,22 @@ ControlsModule = __decorate([
             basic_controls_module_1.BasicControlsModule,
             f32_controls_module_1.F32ControlsModule,
             panasonic_controls_module_1.PanasonicControlsModule,
+            yamaha_controls_module_1.YamahaControlsModule,
             common_1.CommonModule
         ],
         declarations: [
-            control_component_1.ControlComponent
+            control_component_1.ControlComponent,
+            control_value_selector_component_1.ControlValueSelectorComponent
         ],
         exports: [
             basic_controls_module_1.BasicControlsModule,
             f32_controls_module_1.F32ControlsModule,
             control_component_1.ControlComponent,
-            panasonic_controls_module_1.PanasonicControlsModule
+            control_value_selector_component_1.ControlValueSelectorComponent,
+            panasonic_controls_module_1.PanasonicControlsModule,
+            yamaha_controls_module_1.YamahaControlsModule
         ]
-    }),
-    __metadata("design:paramtypes", [])
+    })
 ], ControlsModule);
 exports.ControlsModule = ControlsModule;
 //# sourceMappingURL=controls.module.js.map

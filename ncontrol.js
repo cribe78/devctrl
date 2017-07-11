@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var io = require("socket.io-client");
 var DCDataModel_1 = require("./shared/DCDataModel");
 var debugMod = require("debug"); // see https://www.npmjs.com/package/debug
@@ -158,6 +159,13 @@ var NControl = (function () {
                 if (control.endpoint_id && control.endpoint_id == this.endpoint._id
                     && update.status == "requested") {
                     debug("control update: " + control.name + " : " + update.value);
+                    if (control.control_type == Control_1.Control.CONTROL_TYPE_ECHO) {
+                        // Just update the value and kick it back to the messenger
+                        // This is a "dummy" command that can be used to trigger other
+                        // actions
+                        this.pushControlUpdate(control, update.value);
+                        return;
+                    }
                     this.communicator.handleControlUpdateRequest(update);
                 }
             }
@@ -230,26 +238,29 @@ var NControl = (function () {
         if (this.syncControlsPassNumber > 2) {
             throw new Error("failed to sync control templates");
         }
-        // Get ControlTemplates from communicator
-        var controlTemplates = this.communicator.getControlTemplates();
-        var newControls = [];
-        var ctByCtid = {};
-        for (var id in this.dataModel.controls) {
-            var ct = this.dataModel.controls[id];
-            ctByCtid[ct.ctid] = ct;
-        }
-        // Match communicator control templates to server control templates by ctid
-        for (var ctid in controlTemplates) {
-            if (!ctByCtid[ctid]) {
-                newControls.push(controlTemplates[ctid].getDataObject());
+        // Don't do this part twice
+        if (this.syncControlsPassNumber == 1) {
+            // Get ControlTemplates from communicator
+            var controlTemplates = this.communicator.getControlTemplates();
+            var newControls = [];
+            var controlsByCtid = {};
+            for (var id in this.dataModel.controls) {
+                var ct = this.dataModel.controls[id];
+                controlsByCtid[ct.ctid] = ct;
             }
-        }
-        // newControls is an array of templates to create
-        // Create new ControlTemplates on server
-        if (newControls.length > 0) {
-            debug("adding new controls");
-            this.addData({ controls: newControls }, this.syncControls);
-            return;
+            // Match communicator control templates to server control templates by ctid
+            for (var ctid in controlTemplates) {
+                if (!controlsByCtid[ctid]) {
+                    newControls.push(controlTemplates[ctid].getDataObject());
+                }
+            }
+            // newControls is an array of templates to create
+            // Create new ControlTemplates on server
+            if (newControls.length > 0) {
+                debug("adding new controls");
+                this.addData({ controls: newControls }, this.syncControls);
+                return;
+            }
         }
         debug("controls successfully synced!");
         // Pass completed ControlTemplate set to communicator

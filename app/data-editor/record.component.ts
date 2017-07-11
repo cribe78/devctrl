@@ -8,6 +8,23 @@ import { MdDialogRef } from '@angular/material';
     moduleId: module.id,
     selector: 'devctrl-record',
     templateUrl: 'record.html',
+    //language=CSS
+    styles: [`
+        .field-container {
+            flex: 1 1;
+        }
+        
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1;
+        }
+        
+        .record-container {
+            display: flex;
+            flex-direction: column;
+        }    
+    `]
 })
 export class RecordComponent {
     newRow : boolean;

@@ -3,16 +3,21 @@ import {DataService} from "../data.service";
 import {RecordEditorService} from "data-editor/record-editor.service";
 import {PanelControl} from "shared/PanelControl";
 import {Control} from "shared/Control";
-import {WatcherRule} from "shared/WatcherRule";
+import {ActionTrigger} from "shared/ActionTrigger";
+import {Router} from '@angular/router';
+import {IndexedDataSet} from "../../shared/DCDataModel";
 
 @Injectable()
 export class ControlService {
     private _panelControl : PanelControl;
     private _control : Control;
+    private _siblings : { [ctid : string]: Control } = {};
+    components : { [name: string] : Control} = {};
     panelContext = false;
 
     constructor(private dataService : DataService,
-                private recordService : RecordEditorService) {}
+                private recordService : RecordEditorService,
+                private router: Router) {}
 
 
     get panelControl() : PanelControl {
@@ -68,11 +73,20 @@ export class ControlService {
 
 
     addWatcherRule($event) {
-        this.recordService.editRecord($event, '0', WatcherRule.tableStr,
+        this.recordService.editRecord($event, '0', ActionTrigger.tableStr,
             { watched_control_id : this.control._id});
     }
 
-    config(key) {
+    config(key, component = "") {
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && this.components[component].config[key]) {
+                return this.components[component].config[key];
+            }
+            return '';
+        }
+
         if (typeof this.control.config == 'object' && this.control.config[key]) {
             return this.control.config[key];
         }
@@ -81,7 +95,8 @@ export class ControlService {
     }
 
     editControl($event) {
-        this.recordService.editRecord($event, this.control._id, this.control.table);
+        //this.recordService.editRecord($event, this.control._id, this.control.table);
+        this.router.navigate(['/controls', this.control.id]);
     }
 
     editOptions($event) {
@@ -104,15 +119,35 @@ export class ControlService {
         this.recordService.editRecord($event, this.panelControl._id, this.panelControl.table);
     }
 
-    intConfig(key) {
-        if (this.config(key)) {
-            return parseInt(this.config(key));
+    findSiblingByCtid(ctid: string) {
+        if (this._siblings[ctid]) {
+            return this._siblings[ctid];
         }
 
-        return 0;
+        let controls = this.control.endpoint.referenced.controls as IndexedDataSet<Control>;
+        for (let id of Object.keys(controls)) {
+            if (controls[id].ctid == ctid) {
+                this._siblings[ctid] = controls[id];
+                return controls[id];
+            }
+        }
+
+        throw new Error(`sibling control not located: ${ctid}`);
     }
 
-    floatConfig(key, defVal : number = 0) {
+
+
+    floatConfig(key, defVal : number = 0, component = "") {
+        if (component) {
+            if (this.components[component]
+                && typeof this.components[component].config == 'object'
+                && typeof this.components[component].config[key] != 'undefined') {
+                return parseFloat(this.components[component].config[key]);
+            }
+
+            return defVal;
+        }
+
         if (typeof this.control.config !== 'object' ||
             typeof this.control.config[key] == 'undefined') {
             return defVal;
@@ -122,31 +157,49 @@ export class ControlService {
     }
 
 
+    intConfig(key, component = "") {
+        if (component) {
+            if (this.components[component].config[key]) {
+                return parseInt(this.components[component].config[key]);
+            }
+            else {
+                return 0;
+            }
+        }
+        if (this.config(key)) {
+            return parseInt(this.config(key));
+        }
+
+        return 0;
+    }
+
+
+    loadComponentControls() {
+        let componentConfig = this.control.config.componentControls;
+        this.components = {};
+
+        if (! componentConfig) {
+            return {};
+        }
+
+
+        for (let component of Object.keys(componentConfig)) {
+            this.components[component] = this.findSiblingByCtid(componentConfig[component]);
+        }
+
+        return this.components;
+    }
 
     selectMenuItem(val) {
         this.setValue(val);
     }
 
     selectOptions() {
-        let options;
-        if (this.control.option_set && this.control.option_set.options) {
-            options = this.control.option_set.options;
-        }
-        else {
-            options = !!this.control.config.options ? this.control.config.options : {};
-        }
-
-        return options;
+        return this.control.selectOptions();
     }
 
     selectOptionsArray() {
-        let options = this.selectOptions();
-
-        let optionsArray = Object.keys(options).map( value => {
-            return { name: options[value], value: value };
-        });
-
-        return optionsArray;
+        return this.control.selectOptionsArray();
     }
 
     setValue(val) {
@@ -155,14 +208,7 @@ export class ControlService {
     }
 
     selectValueName() {
-        let opts = this.selectOptions();
-        let value = '' + this.value;
-
-        if (opts[value]) {
-            return opts[value];
-        }
-
-        return value;
+        return this.control.selectValueName();
     }
 
     showLog($event) {
@@ -171,6 +217,17 @@ export class ControlService {
 
     trackByValue(idx, obj) {
         return obj.value;
+    }
+
+    updateComponentValue(componentName : string) {
+        if (this.components[componentName]) {
+            let control = this.components[componentName];
+            this.dataService.updateControlValue(control);
+            this.dataService.logAction(
+                `Control update requested: set ${control.fkSelectName()} to ${control.value}`,
+                ['control update requested'],
+                [control._id, control.endpoint_id]);
+        }
     }
 
     updateValue() {

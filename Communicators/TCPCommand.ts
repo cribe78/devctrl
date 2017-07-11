@@ -169,7 +169,7 @@ export class TCPCommand {
     }
 
     parseQueryResponse(control: Control, line: string) : any {
-        let matches = line.match(this.cmdQueryResponseRE);
+        let matches = line.match(this.queryResponseMatchString());
 
         if (matches) {
             return this.parseValue(matches[1]);

@@ -5,9 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
+Object.defineProperty(exports, "__esModule", { value: true });
 var material_1 = require("@angular/material");
 var forms_1 = require("@angular/forms");
 var core_1 = require("@angular/core");
@@ -22,6 +20,9 @@ var button_set_control_1 = require("./button-set.control");
 var level_control_1 = require("./level.control");
 var image_control_1 = require("./image.control");
 var slder2d_control_1 = require("./slder2d.control");
+var hyperlink_control_1 = require("./hyperlink.control");
+var switch_readonly_control_1 = require("./switch-readonly.control");
+var readonly_control_1 = require("./readonly.control");
 var BasicControlsModule = (function () {
     function BasicControlsModule() {
     }
@@ -38,28 +39,33 @@ BasicControlsModule = __decorate([
             button_control_1.ButtonControl,
             button_set_control_1.ButtonSetControl,
             default_control_1.DefaultControl,
+            hyperlink_control_1.HyperlinkControl,
             image_control_1.ImageControl,
             level_control_1.LevelControl,
+            readonly_control_1.ReadonlyControl,
             select_control_1.SelectControl,
             select_readonly_control_1.SelectReadonlyControl,
             slider_control_1.SliderControl,
             slder2d_control_1.Slider2dControl,
-            switch_control_1.SwitchControl
+            switch_control_1.SwitchControl,
+            switch_readonly_control_1.SwitchReadonlyControl
         ],
         exports: [
             button_control_1.ButtonControl,
             button_set_control_1.ButtonSetControl,
             default_control_1.DefaultControl,
+            hyperlink_control_1.HyperlinkControl,
             image_control_1.ImageControl,
             level_control_1.LevelControl,
+            readonly_control_1.ReadonlyControl,
             select_control_1.SelectControl,
             select_readonly_control_1.SelectReadonlyControl,
             slider_control_1.SliderControl,
             slder2d_control_1.Slider2dControl,
-            switch_control_1.SwitchControl
+            switch_control_1.SwitchControl,
+            switch_readonly_control_1.SwitchReadonlyControl
         ]
-    }),
-    __metadata("design:paramtypes", [])
+    })
 ], BasicControlsModule);
 exports.BasicControlsModule = BasicControlsModule;
 //# sourceMappingURL=basic-controls.module.js.map

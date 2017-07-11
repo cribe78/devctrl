@@ -1,12 +1,10 @@
-import {TCPCommunicator, TCPCommEncoding} from "./TCPCommunicator";
-import {ITCPCommandConfig} from "./TCPCommand";
-import {EviD31Command} from "./Sony/EviD31Command";
-import {Control} from "../shared/Control";
+import {TCPCommunicator, TCPCommEncoding} from "../TCPCommunicator";
+import {ITCPCommandConfig} from "../TCPCommand";
+import {EviD31Command} from "./EviD31Command";
+import {Control} from "../../shared/Control";
+import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
 
-//TODO: This communicator seems to have issues with order of commands and responses.  Query responses sometimes
-// come back out of order.
-
-class EviD31Communicator extends TCPCommunicator {
+class EviD31Communicator extends SynchronousTCPCommunicator {
 
     constructor() {
         super();

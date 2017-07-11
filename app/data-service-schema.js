@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Control_1 = require("../shared/Control");
 var Endpoint_1 = require("../shared/Endpoint");
 var OptionSet_1 = require("../shared/OptionSet");
@@ -29,6 +30,16 @@ exports.dataServiceSchema = {
                 "name": "port",
                 "type": "int",
                 "label": "Port"
+            },
+            {
+                "name": "config",
+                "type": "object",
+                "label": "Device Specific Config"
+            },
+            {
+                "name": "commLogOptions",
+                type: "string",
+                label: "Ncontrol Log Options"
             },
             {
                 "name": "status",
@@ -104,6 +115,9 @@ exports.dataServiceSchema = {
                 label: "UI Type",
                 options: [
                     { name: "button", value: Control_1.Control.USERTYPE_BUTTON },
+                    { name: "button set", value: Control_1.Control.USERTYPE_BUTTON_SET },
+                    { name: "Hyperlink", value: Control_1.Control.USERTYPE_HYPERLINK },
+                    { name: "Image", value: Control_1.Control.USERTYPE_IMAGE },
                     { name: "F32 Multibutton", value: Control_1.Control.USERTYPE_F32_MULTIBUTTON },
                     { name: "Level Meter", value: Control_1.Control.USERTYPE_LEVEL },
                     { name: "Text (readonly)", value: Control_1.Control.USERTYPE_READONLY },
@@ -111,8 +125,7 @@ exports.dataServiceSchema = {
                     { name: "Select (readonly)", value: Control_1.Control.USERTYPE_SELECT_READONLY },
                     { name: "Slider", value: Control_1.Control.USERTYPE_SLIDER },
                     { name: "2D Slider", value: Control_1.Control.USERTYPE_SLIDER_2D },
-                    { name: "Switch", value: Control_1.Control.USERTYPE_SWITCH },
-                    { name: "button set", value: Control_1.Control.USERTYPE_BUTTON_SET }
+                    { name: "Switch", value: Control_1.Control.USERTYPE_SWITCH }
                 ]
             },
             {
@@ -120,12 +133,12 @@ exports.dataServiceSchema = {
                 "type": "select-static",
                 "label": "Control Type",
                 options: [
-                    { name: "boolean", value: "boolean" },
-                    { name: "int", value: "int" },
-                    { name: "range", value: "range" },
-                    { name: "rtlevel", value: "rtlevel" },
-                    { name: "string", value: "string" },
-                    { name: "object", value: "object" },
+                    { name: "boolean", value: Control_1.Control.CONTROL_TYPE_BOOLEAN },
+                    { name: "echo", value: Control_1.Control.CONTROL_TYPE_ECHO },
+                    { name: "int", value: Control_1.Control.CONTROL_TYPE_INT },
+                    { name: "range", value: Control_1.Control.CONTROL_TYPE_RANGE },
+                    { name: "string", value: Control_1.Control.CONTROL_TYPE_STRING },
+                    { name: "xy", value: Control_1.Control.CONTROL_TYPE_XY }
                 ]
             },
             {
@@ -223,6 +236,11 @@ exports.dataServiceSchema = {
                 "name": "panel_id",
                 "type": "fk",
                 "label": "Panel"
+            },
+            {
+                name: "idx",
+                type: "int",
+                label: "Order"
             }
         ]
     },
@@ -233,22 +251,31 @@ exports.dataServiceSchema = {
         ]
     },
     watcher_rules: {
-        label: "Watcher Rules",
+        label: "Action Triggers",
         foreign_keys: {
             watched_control_id: "controls",
             action_control_id: "controls"
         },
         fields: [
-            nameField,
             {
-                name: "watched_control_id",
+                name: "trigger_control_id",
                 type: "fk",
-                label: "Watched Control"
+                label: "Trigger Control"
             },
             {
-                name: "watch_value",
-                type: "string",
-                label: "Watch Value"
+                name: "action_control_id",
+                type: "fk",
+                label: "Action Control"
+            },
+            {
+                name: "action_control_value",
+                type: "watcher-action-value",
+                label: "Action Value"
+            },
+            {
+                name: "enabled",
+                type: "bool",
+                label: "Enabled?"
             },
             {
                 name: "value_test",
@@ -262,20 +289,10 @@ exports.dataServiceSchema = {
                 ]
             },
             {
-                name: "action_control_id",
-                type: "fk",
-                label: "Action Control"
+                name: "trigger_value",
+                type: "string",
+                label: "Trigger Value"
             },
-            {
-                name: "action_control_value",
-                type: "object",
-                label: "Action Value"
-            },
-            {
-                name: "enabled",
-                type: "bool",
-                label: "Enabled?"
-            }
         ]
     }
 };

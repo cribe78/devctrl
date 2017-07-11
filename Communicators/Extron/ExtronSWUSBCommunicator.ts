@@ -1,9 +1,6 @@
-import * as debugMod from "debug";
 import {TCPCommunicator} from "../TCPCommunicator";
 import {ITCPCommandConfig, TCPCommand} from "../TCPCommand";
 
-
-let debug = debugMod("comms");
 
 class ExtronSWUSBCommunicator extends TCPCommunicator {
     inputLineTerminator = '\r\n';

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var ClearOneCommand_1 = require("./ClearOneCommand");
 var AP400GateCommand_1 = require("./AP400GateCommand");
 exports.chWchannels = {

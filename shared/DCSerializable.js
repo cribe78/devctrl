@@ -1,9 +1,10 @@
+"use strict";
 /**
  * The abstract DCSerializable class represents the basic unit of data interchange for the application.
  * DCSerializable objects correspond to MongoDB documents in the database.  Subtypes of the abstract class
  * correspond to collections in the database, and the application schema is defined in the subtype definitions.
  */
-"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var DCSerializable = (function () {
     function DCSerializable(_id) {
         this._id = _id;
@@ -16,6 +17,13 @@ var DCSerializable = (function () {
         this.referenced = {};
     }
     ;
+    Object.defineProperty(DCSerializable.prototype, "id", {
+        get: function () {
+            return this._id;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DCSerializable.prototype, "name", {
         get: function () {
             if (typeof this._name !== 'undefined') {
@@ -66,6 +74,11 @@ var DCSerializable = (function () {
         this.dataLoaded = true;
     };
     ;
+    DCSerializable.prototype.loadDefaults = function () {
+        for (var prop in this.defaultProperties) {
+            this[prop] = this.defaultProperties[prop];
+        }
+    };
     DCSerializable.prototype.objectPropertyName = function (idProperty) {
         for (var _i = 0, _a = this.foreignKeys; _i < _a.length; _i++) {
             var fkDef = _a[_i];

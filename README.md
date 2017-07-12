@@ -21,7 +21,7 @@ MongoDB is used as the data store for the project
 
 `sudo apt-get install mongodb`
 
-The application backend consists of multiple components. See [wiki](/ufdwi/devctrl/wiki/Components) for details. 
+The application backend consists of multiple components. See [wiki](https://bitbucket.org/ufdwi/devctrl/wiki/Components) for details. 
 
 ### Application Structure ###
 

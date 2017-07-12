@@ -8,7 +8,7 @@ import {MenuService} from "../layout/menu.service";
 import {Endpoint} from "shared/Endpoint";
 import {PanelControl} from "shared/PanelControl";
 import 'rxjs/add/operator/switchMap';
-import {RecordEditorService} from "data-editor/record-editor.service";
+import {RecordEditorService} from "../data-editor/record-editor.service";
 import {LayoutService} from "../layout/layout.service";
 //TODO: remember selected tab
 

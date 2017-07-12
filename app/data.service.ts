@@ -138,7 +138,7 @@ export class DataService {
     doAdminLogon(allowExpiration : boolean = false) {
         // First, check current login status
         if (this.userSession.login_expires > Date.now()) {
-            let url = "/auth/admin_auth";
+            let url = "/auth/admin/get_auth";
             this.http.get(url).toPromise().then(
                 //Success
                 response => {
@@ -255,7 +255,7 @@ export class DataService {
         let endpointName = endpoint.name.toLowerCase();
         endpointName = endpointName.replace(/ /g, '-');
 
-        let url = `/auth/create_endpoint_session?${endpointName}`;
+        let url = `/auth/admin/create_endpoint_session?${endpointName}`;
         this.http.get(url).toPromise().then(
             //Success
             response => {

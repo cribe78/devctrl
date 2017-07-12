@@ -4,8 +4,8 @@
 import * as ioMod from "socket.io";
 import * as http from "http";
 import * as url from "url";
-import * as debugMod from "debug";
 import * as mongo from "mongodb";
+import * as querystring from "querystring";
 import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "../shared/DCSerializable";
 import {DCDataModel} from "../shared/DCDataModel";
 import {ControlUpdateData} from "../shared/ControlUpdate";
@@ -13,9 +13,8 @@ import {Control} from "../shared/Control";
 import {UserSession} from "../shared/UserSession";
 import {Endpoint, EndpointStatus} from "../shared/Endpoint";
 
-//let debug = debugMod("messenger");
+
 let debug = console.log;
-//let mongoDebug = debugMod("mongodb");
 let mongoDebug = console.log;
 
 class Messenger {
@@ -24,6 +23,7 @@ class Messenger {
     config : any;
     app: http.Server;
     io :SocketIO.Server;
+    sessions: mongo.Collection;
 
     constructor() {}
 
@@ -43,10 +43,11 @@ class Messenger {
         mongo.MongoClient.connect( mongoConnStr, (err, db) =>{
             debug("mongodb connected");
             this.mongodb = db;
+            this.sessions = this.mongodb.collection("sessions");
             this.setEndpointsDisconnected();
         });
 
-        this.app.listen(config.ioPort);
+        this.app.listen(config.ioPort, "localhost");
         this.io = ioMod(this.app, { path: config.ioPath});
         debug(`socket.io listening at ${config.ioPath} on port ${config.ioPort}`);
         this.io.on('connection', (socket) => {
@@ -175,6 +176,53 @@ class Messenger {
         }
     }
 
+    adminAuth(req: http.IncomingMessage, response: http.ServerResponse, identifier: string) {
+        if (! identifier) {
+            this.errorResponse(response, 400, "Don't come here without a session");
+            return;
+        }
+
+        let adminExpires = Date.now() + (1000 * 120); // 2 minutes from now
+        let expDate = new Date(adminExpires);
+        let expStr = expDate.toTimeString();
+
+        debug("admin expiration set to " + expStr);
+        let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+
+
+        let session : UserSession = {
+            login_expires: loginExpires,
+            auth: true,
+            admin_auth: true,
+            admin_auth_expires: adminExpires,
+            admin_auth_requested: false,
+            username: req.headers["oidc_claim_preferred_username"]
+        };
+
+
+        this.sessions.findOneAndUpdate({ _id : identifier }, { '$set' : session },
+            { returnOriginal: false},
+            (err, r) => {
+                if (err) {
+                    this.errorResponse(response, 503, "mongodb error: " + err.message);
+                    return;
+                }
+
+                if (r.value) {
+                    debug("auth_requested set to " + r.value.admin_auth_requested);
+                    response.setHeader('Content-Type', 'application/json');
+                    response.writeHead(200);
+                    response.end(JSON.stringify({ session: r.value}));
+                }
+                else {
+                    this.errorResponse(response, 503, "failed to update user session");
+                }
+            }
+        );
+    }
+
+
+
     adminAuthCheck(socket : SocketIO.Socket) {
         let authCheckPromise = new Promise((resolve, reject) => {
             let session = socket["session"];
@@ -254,6 +302,39 @@ class Messenger {
         this.io.emit('control-updates', updates);
     }
 
+    createEndpointSession(req: http.IncomingMessage, response: http.ServerResponse) {
+        let  identifier = (new mongo.ObjectID()).toString();
+
+        let parts = url.parse(req.url);
+        let clientName = parts.query;
+
+        // New session
+        let session : UserSession = {
+            _id: identifier,
+            login_expires: 0,
+            auth: true,
+            admin_auth: true,
+            admin_auth_expires: -1,
+            client_name: clientName
+        };
+
+
+        if (req.headers["oidc_claim_preferred_username"]) {
+            session.username = req.headers["oidc_claim_preferred_username"];
+        }
+
+        this.sessions.insertOne(session, (err, result) => {
+            if (err) {
+                this.errorResponse(response, 503, "mongodb error: " + err.message);
+                return;
+            }
+
+            response.writeHead(200);
+            response.end(JSON.stringify({ session: session}));
+        });
+
+    }
+
     deleteData(data: IDCDataDelete, fn: any) {
         debug(`delete ${data._id} from ${data.table}`);
 
@@ -331,6 +412,71 @@ class Messenger {
         }
     }
 
+    doLogon(req: http.IncomingMessage, response: http.ServerResponse, identifier: string) {
+        if (! identifier) {
+            this.errorResponse(response, 400, "Don't come here without a session");
+            return;
+        }
+
+        let parts = url.parse(req.url);
+        let queryVars = querystring.parse(parts.query);
+
+        let admin_auth_requested = false;
+        if (queryVars['admin_auth_requested']) {
+            admin_auth_requested = true;
+        }
+
+        debug("do_logon, admin_auth_requested = " + admin_auth_requested);
+
+        let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+        let loginExpiresTime = new Date(loginExpires);
+        let nowDate = new Date();
+        let nowTimeStr = nowDate.toTimeString().substr(0, 17);
+        debug(`loginExpires: ${loginExpiresTime.toTimeString().substr(0, 17)}, Now: ${nowTimeStr}`);
+
+        this.sessions.findOneAndUpdate({ _id: identifier},
+            { '$set' : {
+                login_expires : loginExpires,
+                auth: true,
+                admin_auth_requested: admin_auth_requested,
+                username: req.headers["oidc_claim_preferred_username"]
+            }},
+            (err, doc) => {
+                if (err) {
+                    this.errorResponse(response, 503, "mongodb error: " + err.message);
+                    return;
+                }
+
+                // Redirect to the location specified in the query string
+                if (doc.value) {
+                    let location = '/';
+                    if (queryVars.location) {
+                        location = queryVars.location;
+                    }
+
+                    debug(`logon complete, redirecting to ${location}, aar=${admin_auth_requested}`);
+
+                    response.setHeader('Location', location);
+                    response.writeHead(302);
+                    response.end();
+                }
+                else {
+                    // No session found
+                    this.errorResponse(response, 400, "Session not found for identifier " + identifier);
+                }
+            }
+        );
+    }
+
+
+    errorResponse(res: http.ServerResponse, code: number, message: string) {
+        res.writeHead(code);
+        res.end(message);
+
+        debug(`error: ${message}`);
+    }
+
+
     getData(request: IDCDataRequest, fn: any) {
 
         debug("data requested from " + request.table);
@@ -348,6 +494,25 @@ class Messenger {
                 this.dataModel.loadData(data);
             }
         );
+    }
+
+    getIdentifier(req: http.IncomingMessage) : string {
+        let cookies = {};
+
+        if (req.headers['cookie']) {
+            let cstrs = req.headers['cookie'].split(';');
+
+            for (let cstr of cstrs) {
+                let [name, value] = cstr.split("=");
+                cookies[name.trim()] = value;
+            }
+        }
+
+        if (cookies[this.config.identifierName]) {
+            return cookies[this.config.identifierName];
+        }
+
+        return '';
     }
 
     httpHandler(req: any, res: any) {
@@ -392,6 +557,45 @@ class Messenger {
             else {
                 res.writeHead(400);
                 res.end("api endpoint not recognized");
+                return;
+            }
+        }
+        else if (api == "auth") {
+            let identifier = this.getIdentifier(req);
+
+
+            if (endpoint == 'admin') {
+                /**
+                 * admin location should be protected by the proxying webserver
+                 * admin authorization will be granted to any user who hits the location
+                 */
+                if (path[0] == 'get_auth') {
+                    this.adminAuth(req, res, identifier);
+                    return;
+                }
+                else if (path[0] == 'create_endpoint_session') {
+                    /**
+                     * This endpoint requires the same protection as the admin_auth endpoint
+                     * https://devctrl.dwi.ufl.edu/auth/create_endpoint_session?endpoint-name
+                     */
+                    this.createEndpointSession(req, res);
+                    return;
+                }
+            }
+            else if (endpoint == 'do_logon') {
+                /**
+                 * This endpoint should be protected.  Only users authorized to access the application
+                 * should be able to access it
+                 */
+                this.doLogon(req, res, identifier);
+                return;
+            }
+            else if (endpoint == 'user_session') {
+                this.userSession(req, res, identifier);
+                return;
+            }
+            else if (endpoint == 'revoke_admin') {
+                this.revokeAdminAuth(req, res, identifier);
                 return;
             }
         }
@@ -468,6 +672,51 @@ class Messenger {
         socket["endpoint_id"] = request.endpoint_id;
     }
 
+
+    revokeAdminAuth(req: http.IncomingMessage, response: http.ServerResponse, identifier: string) {
+        // This endpoint sets removes the admin auth from the session
+        // Additional actions will be required to ensure that users cannot regain admin auth
+        // without resupplying credentials
+        if (! identifier) {
+            this.errorResponse(response, 400, "Don't come here without a session");
+            return;
+        }
+
+        let adminExpires = Date.now(); // now
+        let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+
+
+        let session : UserSession = {
+            login_expires: loginExpires,
+            auth: true,
+            admin_auth: false,
+            admin_auth_expires: adminExpires,
+            admin_auth_requested: false,
+            username: req.headers["oidc_claim_preferred_username"]
+        };
+
+
+        this.sessions.findOneAndUpdate({ _id : identifier }, { '$set' : session },
+            { returnOriginal: false},
+            (err, r) => {
+                if (err) {
+                    this.errorResponse(response, 503, "mongodb error: " + err.message);
+                    return;
+                }
+
+                if (r.value) {
+                    debug("auth_requested set to " + r.value.admin_auth_requested);
+                    response.setHeader('Content-Type', 'application/json');
+                    response.writeHead(200);
+                    response.end(JSON.stringify({ session: r.value}));
+                }
+                else {
+                    this.errorResponse(response, 503, "failed to update user session");
+                }
+            }
+        );
+    }
+
     /**
      * At startup, set all endpoints to a disconnected status
      */
@@ -511,9 +760,9 @@ class Messenger {
         }
 
         col.updateOne({ _id : request._id }, { '$set' : request.set },
-            function(err, r) {
+            (err, r) => {
                 if (err) {
-                    mongoDebug(`update { request.table } error: { err.message }`);
+                    mongoDebug(`update ${request.table} error: ${err.message}`);
                     fn({error: err.message});
 
                     return;
@@ -536,6 +785,69 @@ class Messenger {
                 );
             }
         );
+    }
+
+    userSession(req: http.IncomingMessage, response: http.ServerResponse, identifier: string) {
+        // This endpoint returns the current user session or creates a new one if necessary
+        let idProvided = true;
+
+        if (! identifier) {
+            idProvided = false;
+            identifier = (new mongo.ObjectID()).toString();
+        }
+
+        if (idProvided) {
+            this.sessions.findOne({ _id: identifier}, (err, doc) => {
+                if (err) {
+                    this.errorResponse(response, 503, "mongodb error: " + err.message);
+                    return;
+                }
+
+                if (doc) {
+                    let session:UserSession = (<UserSession>doc);
+                    response.writeHead(200);
+                    response.end(JSON.stringify({ session: session }));
+                }
+                else {
+                    // No session found
+                    this.errorResponse(response, 400, "Session not found for identifier " + identifier);
+                }
+            });
+        }
+        else {
+            // New session
+            let session : UserSession = {
+                _id: identifier,
+                login_expires: 0,
+                auth: false,
+                admin_auth: false,
+                admin_auth_expires: 0
+            };
+
+            if (req.headers['x-forwarded-for']) {
+                session.client_name = req.headers['x-forwarded-for'];
+            }
+
+            if (req.headers["oidc_claim_preferred_username"]) {
+                session.username = req.headers["oidc_claim_preferred_username"];
+            }
+
+            this.sessions.insertOne(session, (err, result) => {
+                if (err) {
+                    this.errorResponse(response, 503, "mongodb error: " + err.message);
+                    return;
+                }
+
+                let oneYear = 1000 * 3600 * 24 * 365;
+                let cookieExpire = new Date(Date.now() + oneYear);
+                let expStr = cookieExpire.toUTCString();
+                let idCookie = `${this.config.identifierName}=${identifier};expires=${expStr};path=/`;
+
+                response.setHeader('Set-Cookie', [idCookie]);
+                response.writeHead(200);
+                response.end(JSON.stringify({ session: session}));
+            });
+        }
     }
 }
 

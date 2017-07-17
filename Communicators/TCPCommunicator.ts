@@ -16,7 +16,7 @@ export class TCPCommunicator extends EndpointCommunicator {
     socket: net.Socket;
     commands: IndexedDataSet<TCPCommand> = {};
     commandsByTemplate: IndexedDataSet<TCPCommand> = {};
-    inputLineTerminator = '\r\n';
+    inputLineTerminator : string | RegExp = '\r\n';
     outputLineTerminator = '\r\n';
     socketEncoding = 'utf8';
     inputBuffer: string = '';
@@ -353,6 +353,7 @@ export class TCPCommunicator extends EndpointCommunicator {
     writeToSocket(val: string) {
         let bufMode = 'ascii';
         if (this.commsMode == 'hex') {
+            val = val.replace(/[\s:]/g, '');  // Allow definitions of hex strings to include byte delimeters
             bufMode = 'hex';
         }
 

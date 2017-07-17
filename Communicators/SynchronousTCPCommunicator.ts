@@ -9,6 +9,7 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
     expectedResponsesQueue: [string | RegExp, (line: string) => any][] = [];
     commandQueueRunning = false;
     commandTimeoutTimer : any = 0;
+    commandTimeoutDuration : number = 400;
 
     executeCommandQuery(cmd: TCPCommand) {
         if (! cmd.queryString()) {
@@ -112,8 +113,10 @@ export class SynchronousTCPCommunicator extends TCPCommunicator {
         }
         else {
             this.commandTimeoutTimer = setTimeout(() => {
+                //TODO: if this timeout is reached, things get fucked up if responses come in eventually
+                this.log(`response timeout reached, nothing heard`, EndpointCommunicator.LOG_POLLING);
                 this.runNextCommand()
-            }, 400);
+            }, this.commandTimeoutDuration);
         }
     }
 }

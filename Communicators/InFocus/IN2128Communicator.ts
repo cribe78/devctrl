@@ -14,6 +14,7 @@ class IN2128Communicator extends SynchronousTCPCommunicator {
     buildCommandList() {
         this.registerSwitchCommand("Power", "PWR");
         this.registerSwitchCommand("Mute", "MTE");
+        this.registerSwitchCommand("Video Mute", "BLK");
         this.registerStringCommand("Lamp Hours", "LMP");
     }
 

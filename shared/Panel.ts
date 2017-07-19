@@ -60,6 +60,10 @@ export class Panel extends DCSerializable {
         this.room_id = room._id;
     }
 
+    fkSelectName() {
+        return `${this.room.name}: ${this.grouping}: ${this.name}`;
+    }
+
     getDataObject() : PanelData {
         return (<PanelData>DCSerializable.defaultDataObject(this));
     }

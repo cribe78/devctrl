@@ -22,7 +22,7 @@ import {DSFieldDefinition} from "../data-service-schema";
 <div class="ac-menu" [style.visibility]="menuVisibility" #acmenu>
     <md-list>
         <a md-list-item
-            *ngFor="let fkobj of getMatches(); trackBy: trackById"
+            *ngFor="let fkobj of matches; trackBy: trackById"
             (click)="selectItem(fkobj)">
          {{fkobj.fkSelectName()}}
         </a>
@@ -54,10 +54,11 @@ export class FkAutocompleteComponent implements OnInit
     @Output() onUpdate = new EventEmitter<any>();
 
     menuVisibility = "hidden";
-    inputText = '';
+    _inputText = '';
     dataTable : IndexedDataSet<DCSerializable>;
     objProp; // The property name of object which holds the foreign object
     selectedItem : DCSerializable;
+    matches : DCSerializable[];
 
     constructor(private dataService: DataService) {}
 
@@ -79,10 +80,18 @@ export class FkAutocompleteComponent implements OnInit
         this.objProp = fkDef.fkObjProp;
         if (this.object[this.objProp]) {
             this.selectedItem = this.object[this.objProp];
-            this.inputText = this.selectedItem.fkSelectName();
+            this._inputText = this.selectedItem.fkSelectName();
         }
     }
 
+    get inputText() {
+        return this._inputText;
+    }
+
+    set inputText(value) {
+        this._inputText = value;
+        this.matches = this.getMatches();
+    }
 
     focusLost() {
         // This timeout is necessary because otherwise the click event from selecting
@@ -122,7 +131,6 @@ export class FkAutocompleteComponent implements OnInit
 
         return matches;
     }
-
 
     openAcMenu() {
         this.menuVisibility = "visible";

@@ -4,7 +4,7 @@
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "git+https://chrisribe@bitbucket.org/ufdwi/devctrl.git"
+    "url": "git://github.org/cribe78/devctrl.git"
   },
   "description": "Node based reimplementation of pcontrol daemon",
   "dependencies": {

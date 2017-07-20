@@ -8,7 +8,7 @@ import {Control} from "../../shared/Control";
 @Injectable()
 export class ControlResolver implements Resolve<Control> {
     constructor(private ds: DataService, private router: Router) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Room> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Control> {
         let id = route.params['id'];
 
         let controlsPromise = this.ds.getTablePromise(Control.tableStr);

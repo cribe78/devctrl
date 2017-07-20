@@ -8,7 +8,7 @@ import {Endpoint} from "../../shared/Endpoint";
 @Injectable()
 export class EndpointResolver implements Resolve<Endpoint> {
     constructor(private ds: DataService, private router: Router) {}
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Room> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Endpoint> {
         let id = route.params['id'];
 
         let endpointsPromise = this.ds.getTablePromise(Endpoint.tableStr);

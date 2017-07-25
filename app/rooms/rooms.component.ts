@@ -13,8 +13,7 @@ import {LayoutService} from "../layout/layout.service";
         <md-grid-list [cols]="cols()"
                       rowHeight="1:1"
                       gutterSize="8px">
-            <md-grid-tile *ngFor="let room of list; let i = index;" 
-                        [class]="tileClass(i)" 
+            <md-grid-tile *ngFor="let room of list; let i = index;"     
                         (click)="menu.go(['rooms', room.name])">
                 <div class="devctrl-img">
                     <img [src]="imageUrl(room)" />
@@ -89,13 +88,5 @@ export class RoomsComponent implements OnInit {
 
     imageUrl(room) {
         return `/images/${room.name}.png`;
-    }
-
-    tileClass(i) {
-        if (RoomsComponent.colorClasses[i]) {
-            return RoomsComponent.colorClasses[i];
-        }
-
-        return 'gray';
     }
 }

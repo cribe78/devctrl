@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MenuService} from "../layout/menu.service";
-import {PanelControl} from "../../shared/PanelControl";
+import {PanelControl} from "../shared/PanelControl";
 import {ControlService} from "./control.service";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'devctrl-ctrl',
     providers: [ControlService],
     templateUrl: 'control.html',
@@ -57,8 +57,8 @@ export class ControlComponent implements OnInit {
     @Input()controlId;
     @Input()control;
 
-    constructor(private cs: ControlService,
-                private menu: MenuService) {}
+    constructor(public cs: ControlService,
+                public menu: MenuService) {}
 
     ngOnInit() {
         if (this.panelControl) {

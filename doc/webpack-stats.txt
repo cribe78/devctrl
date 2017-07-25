@@ -1,0 +1,2 @@
+Load time using SystemJS in debug mode:
+    - Gigantor: 3.16s

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-readonly',
     template: `
 <div class="devctrl-ctrl devctrl-ctrl-flex-layout">
@@ -12,7 +12,7 @@ import { ControlService } from '../control.service';
     `
 })
 export class ReadonlyControl implements OnInit {
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() { }
 }

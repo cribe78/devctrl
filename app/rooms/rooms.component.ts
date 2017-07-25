@@ -1,4 +1,4 @@
-import {Room} from "../../shared/Room";
+import {Room} from "../shared/Room";
 import {DataService} from "../data.service";
 import { Component, OnInit, Input } from '@angular/core';
 import {MenuService} from "../layout/menu.service";

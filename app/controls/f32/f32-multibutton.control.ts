@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-f32-multibutton',
     //TODO: SVG icons aren't loading
     template: `
@@ -39,7 +39,7 @@ import { ControlService } from '../control.service';
 `]
 })
 export class F32MultibuttonControl implements OnInit {
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() { }
 }

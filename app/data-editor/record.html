@@ -1,6 +1,6 @@
 <md-toolbar color="primary" layout-align="center center">
-    <span *ngIf="obj.id !== 0">{{schema.label}}[{{obj._id}}]</span>
-    <span *ngIf="obj.id == 0">New {{schema.label}} Record</span>
+    <span *ngIf="obj.id !== '0'">{{schema.label}}[{{obj._id}}]</span>
+    <span *ngIf="obj.id == '0'">New {{schema.label}} Record</span>
 </md-toolbar>
 <div class="record-container">
     <h3 md-subheader>Edit</h3>

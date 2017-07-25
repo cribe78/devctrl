@@ -3,7 +3,7 @@ import { DecimalPipe } from '@angular/common';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-clql-fader',
     template: `
 <div class="devctrl-ctrl">
@@ -30,7 +30,7 @@ import { ControlService } from '../control.service';
 `]
 })
 export class CLQLFaderControl implements OnInit {
-    constructor(private cs : ControlService, private pipe : DecimalPipe) { }
+    constructor(public cs: ControlService, private pipe : DecimalPipe) { }
 
     ngOnInit() { }
 

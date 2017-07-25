@@ -1,11 +1,11 @@
 import {Component, Input} from '@angular/core';
-import {DSTableDefinition} from "data-service-schema";
-import {DCSerializable} from "shared/DCSerializable";
+import {DSTableDefinition} from "../data-service-schema";
+import {DCSerializable} from "../shared/DCSerializable";
 import {DataService} from "../data.service";
 import { MdDialogRef } from '@angular/material';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'devctrl-record',
     templateUrl: 'record.html',
     //language=CSS
@@ -75,7 +75,7 @@ export class RecordComponent {
         });
     }
 
-    close(popStack) {
+    close(popStack = false) {
         if (popStack && this.editStack.length > 0) {
             this.obj = this.editStack.pop();
             this.schema = this.dataService.getSchema(this.obj.table);

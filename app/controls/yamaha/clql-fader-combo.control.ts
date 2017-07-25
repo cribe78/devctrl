@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ControlService } from '../control.service';
-import {Control} from "../../../shared/Control";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-clql-fader-combo',
     template: `
 <div class="devctrl-ctrl">
@@ -36,7 +35,7 @@ import {Control} from "../../../shared/Control";
 export class CLQLFaderComboControl implements OnInit {
     components : any;
 
-    constructor(private cs : ControlService, private pipe : DecimalPipe) {
+    constructor(public cs: ControlService, private pipe : DecimalPipe) {
     }
 
     ngOnInit() {

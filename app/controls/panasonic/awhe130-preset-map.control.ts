@@ -3,7 +3,7 @@ import { ControlService } from '../control.service';
 import {DataService} from "../../data.service";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-awhe130-preset-map',
     template: `
 <div class="devctrl-ctrl">
@@ -85,7 +85,7 @@ import {DataService} from "../../data.service";
 })
 export class AWHE130PresetMapControl implements OnInit {
 
-    constructor(private cs : ControlService,
+    constructor(public cs: ControlService,
                 private ds : DataService) { }
 
     ngOnInit() {}

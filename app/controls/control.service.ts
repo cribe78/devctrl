@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import {DataService} from "../data.service";
-import {RecordEditorService} from "data-editor/record-editor.service";
-import {PanelControl} from "shared/PanelControl";
-import {Control} from "shared/Control";
-import {ActionTrigger} from "shared/ActionTrigger";
+import {RecordEditorService} from "../data-editor/record-editor.service";
+import {PanelControl} from "../shared/PanelControl";
+import {Control} from "../shared/Control";
+import {ActionTrigger} from "../shared/ActionTrigger";
 import {Router} from '@angular/router';
-import {IndexedDataSet} from "../../shared/DCDataModel";
+import {IndexedDataSet} from "../shared/DCDataModel";
 
 @Injectable()
 export class ControlService {
@@ -15,8 +15,8 @@ export class ControlService {
     components : { [name: string] : Control} = {};
     panelContext = false;
 
-    constructor(private dataService : DataService,
-                private recordService : RecordEditorService,
+    constructor(public dataService : DataService,
+                public recordService : RecordEditorService,
                 private router: Router) {}
 
 

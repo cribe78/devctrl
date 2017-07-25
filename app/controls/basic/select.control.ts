@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-select',
     template: `
 <div class="devctrl-ctrl devctrl-ctrl-select devctrl-ctrl-flex-layout">
@@ -30,7 +30,7 @@ md-select {
 `]
 })
 export class SelectControl implements OnInit {
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() { }
 }

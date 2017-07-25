@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, Injector} from '@angular/core';
-import {EndpointStatus, Endpoint} from "../../shared/Endpoint";
+import {EndpointStatus, Endpoint} from "../shared/Endpoint";
 import {DataService} from "../data.service";
 
 @Component({

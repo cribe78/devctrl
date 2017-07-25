@@ -1,8 +1,8 @@
 
 
-import {Control} from "../shared/Control";
-import {Endpoint} from "../shared/Endpoint";
-import {OptionSet} from "../shared/OptionSet";
+import {Control} from "./shared/Control";
+import {Endpoint} from "./shared/Endpoint";
+import {OptionSet} from "./shared/OptionSet";
 export type DSFieldType = "string" | "int" | "bool" | "select-static" | "fk" | "object" | "watcher-action-value";
 
 export interface DSFieldDefinition {

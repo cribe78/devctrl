@@ -1,23 +1,23 @@
 import {dataServiceSchema} from "./data-service-schema";
-import {UserSession} from "../shared/UserSession";
+import {UserSession} from "./shared/UserSession";
 import * as io from "socket.io-client";
-import {IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData} from "../shared/DCSerializable";
-import {ControlUpdateData} from "../shared/ControlUpdate";
-import {DCDataModel, IndexedDataSet} from "../shared/DCDataModel";
-import {Control} from "../shared/Control";
-import {Endpoint} from "../shared/Endpoint";
+import {IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData} from "./shared/DCSerializable";
+import {ControlUpdateData} from "./shared/ControlUpdate";
+import {DCDataModel, IndexedDataSet} from "./shared/DCDataModel";
+import {Control} from "./shared/Control";
+import {Endpoint} from "./shared/Endpoint";
 import { Injectable, Inject } from "@angular/core";
 import { Headers, Http } from '@angular/http';
 import { MdSnackBar, MdDialog } from '@angular/material';
 import 'rxjs/add/operator/toPromise';
 import {AlertDialog} from "./alert-dialog.component";
-import {EndpointType} from "../shared/EndpointType";
-import {OptionSet} from "../shared/OptionSet";
-import {Panel} from "../shared/Panel";
-import {PanelControl} from "../shared/PanelControl";
-import {Room} from "../shared/Room";
-import {ActionTrigger} from "../shared/ActionTrigger";
-import {ActionLog} from "../shared/ActionLog";
+import {EndpointType} from "./shared/EndpointType";
+import {OptionSet} from "./shared/OptionSet";
+import {Panel} from "./shared/Panel";
+import {PanelControl} from "./shared/PanelControl";
+import {Room} from "./shared/Room";
+import {ActionTrigger} from "./shared/ActionTrigger";
+import {ActionLog} from "./shared/ActionLog";
 
 @Injectable()
 export class DataService {

@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {IndexedDataSet} from "../../shared/DCDataModel";
-import {Endpoint} from "../../shared/Endpoint";
+import {IndexedDataSet} from "../shared/DCDataModel";
+import {Endpoint} from "../shared/Endpoint";
 import {DataService} from "../data.service";
 import {MenuService} from "../layout/menu.service";
-import {Control} from "../../shared/Control";
+import {Control} from "../shared/Control";
 import {RecordEditorService} from "../data-editor/record-editor.service";
 import {LayoutService} from "../layout/layout.service";
 
@@ -62,7 +62,7 @@ export class EndpointComponent implements OnInit {
                 private dataService: DataService,
                 private menu : MenuService,
                 private recordService : RecordEditorService,
-                private ls : LayoutService) {}
+                public ls : LayoutService) {}
 
     ngOnInit() {
         this.controls = {};

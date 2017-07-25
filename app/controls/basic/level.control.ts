@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-level',
     template: `
 <div class="devctrl-ctrl devctrl-ctrl-flex-layout">
@@ -28,7 +28,7 @@ export class LevelControl implements OnInit {
     min : number;
     max : number;
 
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() {
         // Initialize min and max values

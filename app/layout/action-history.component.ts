@@ -2,7 +2,7 @@ import { OnInit, Component } from '@angular/core';
 import {DataService} from "../data.service";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'devctrl-action-history',
     template: `
 <div class="spacer" [class.closed]="closed">&nbsp;</div>
@@ -65,7 +65,7 @@ import {DataService} from "../data.service";
 export class ActionHistoryComponent implements OnInit {
     _open;
 
-    constructor(private ds : DataService) { }
+    constructor(public ds : DataService) { }
 
     ngOnInit() { }
 

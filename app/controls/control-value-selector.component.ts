@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import {Control} from "../../shared/Control";
+import {Control} from "../shared/Control";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'devctrl-control-value-selector',
     template: `
 <div class="value-selector-switch" [ngSwitch]="control.usertype">

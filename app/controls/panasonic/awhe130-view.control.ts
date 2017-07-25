@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-awhe130-view',
     template: `
 <div class="devctrl-ctrl">
@@ -27,7 +27,7 @@ img {
     ]
 })
 export class AWHE130ViewControl implements OnInit {
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() { }
 

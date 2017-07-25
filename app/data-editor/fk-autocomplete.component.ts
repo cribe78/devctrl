@@ -1,8 +1,8 @@
 import {Component, Input, Output, OnInit, EventEmitter, ViewChild} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {MdMenuTrigger} from '@angular/material';
-import {IndexedDataSet} from "../../shared/DCDataModel";
-import {DCSerializable} from "../../shared/DCSerializable";
+import {IndexedDataSet} from "../shared/DCDataModel";
+import {DCSerializable} from "../shared/DCSerializable";
 import {DataService} from "../data.service";
 import {DSFieldDefinition} from "../data-service-schema";
 

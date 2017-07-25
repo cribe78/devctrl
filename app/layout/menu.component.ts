@@ -4,7 +4,6 @@ import {  ActivatedRoute } from '@angular/router';
 
 
 @Component({
-    moduleId: module.id,
     selector: 'devctrl-menu',
     template: `
 <md-nav-list>

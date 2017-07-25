@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import {Control} from "../../shared/Control";
-import {ActionTrigger} from "../../shared/ActionTrigger";
+import {Control} from "../shared/Control";
+import {ActionTrigger} from "../shared/ActionTrigger";
 import {DataService} from "../data.service";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'devctrl-watcher-action-value',
     template: `
 <div class="wav-editor" *ngIf="controlsSelected()">

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-image',
     template: `
 <div class="devctrl-ctrl">
@@ -17,7 +17,7 @@ import { ControlService } from '../control.service';
 export class ImageControl implements OnInit {
     loadingError = false;
 
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() { }
 

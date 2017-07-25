@@ -3,7 +3,7 @@ import { ControlComponent } from '../control.component';
 import {ControlService} from "../control.service";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-button',
     template: `
 <div class="devctrl-ctrl devctrl-ctrl-flex-layout">
@@ -13,7 +13,7 @@ import {ControlService} from "../control.service";
 `
 })
 export class ButtonControl implements OnInit {
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() { }
 

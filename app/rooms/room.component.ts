@@ -1,12 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute, Params} from '@angular/router';
-import {IndexedDataSet} from "shared/DCDataModel";
-import {Room} from "shared/Room";
+import {IndexedDataSet} from "../shared/DCDataModel";
+import {Room} from "../shared/Room";
 import {DataService} from "../data.service";
-import {Panel} from "shared/Panel";
+import {Panel} from "../shared/Panel";
 import {MenuService} from "../layout/menu.service";
-import {Endpoint} from "shared/Endpoint";
-import {PanelControl} from "shared/PanelControl";
+import {Endpoint} from "../shared/Endpoint";
+import {PanelControl} from "../shared/PanelControl";
 import 'rxjs/add/operator/switchMap';
 import {RecordEditorService} from "../data-editor/record-editor.service";
 import {LayoutService} from "../layout/layout.service";
@@ -89,9 +89,9 @@ export class RoomComponent implements OnInit {
 
     constructor(private route : ActivatedRoute,
                 private dataService: DataService,
-                private menu : MenuService,
+                public menu : MenuService,
                 private recordService : RecordEditorService,
-                private ls : LayoutService) {
+                public ls : LayoutService) {
     }
 
     ngOnInit() {
@@ -174,7 +174,7 @@ export class RoomComponent implements OnInit {
         return Object.keys(this.roomConfig.groups);
     }
 
-    getRoomEndpoints(grouping) : Endpoint[] {
+    getRoomEndpoints(grouping = "") : Endpoint[] {
         let roomEndpoints : IndexedDataSet<Endpoint> = {};
         let roomEndpointList = [];
         let ignoreGrouping = ! grouping;

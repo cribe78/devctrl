@@ -12,12 +12,14 @@
     "@angular/cdk": "^2.0.0-beta.8",
     "@angular/common": "^4.3",
     "@angular/compiler": "^4.3",
+    "@angular/compiler-cli": "^4.3.1",
     "@angular/core": "^4.3",
     "@angular/forms": "^4.3",
     "@angular/http": "^4.3",
     "@angular/material": "^2.0.0-beta.8",
     "@angular/platform-browser": "^4.3",
     "@angular/platform-browser-dynamic": "^4.3",
+    "@angular/platform-server": "^4.3.1",
     "@angular/router": "^4.3",
     "@types/hammerjs": "^2.0.33",
     "@types/node": "^8.0.16",
@@ -38,5 +40,12 @@
     "typescript": "^2.3.0",
     "zone.js": "^0.8.4"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "rollup": "^0.45.2",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1"
+  }
 }

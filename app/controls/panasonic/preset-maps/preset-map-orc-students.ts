@@ -3,7 +3,7 @@ import { ControlService } from '../../control.service';
 import {DataService} from "../../../data.service";
 
 @Component({
-    moduleId: module.id,
+
     selector: '[preset-map-orc-students]',
     templateUrl: 'preset-map-orc-students.html',
     //language=CSS
@@ -13,7 +13,7 @@ import {DataService} from "../../../data.service";
 export class PresetMapOrcStudents implements OnInit {
     @Output()presetSelected = new EventEmitter<any>();
 
-    constructor(private cs : ControlService,
+    constructor(public cs: ControlService,
                 private ds : DataService) { }
 
     ngOnInit() { }

@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import {IndexedDataSet} from "../../shared/DCDataModel";
-import {Endpoint} from "../../shared/Endpoint";
+import {IndexedDataSet} from "../shared/DCDataModel";
+import {Endpoint} from "../shared/Endpoint";
 import {DataService} from "../data.service";
-import {EndpointType} from "../../shared/EndpointType";
+import {EndpointType} from "../shared/EndpointType";
 import {MenuService} from "../layout/menu.service";
 import {RecordEditorService} from "../data-editor/record-editor.service";
 

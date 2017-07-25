@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import {Control} from "../../shared/Control";
+import {Control} from "../shared/Control";
 import {DataService} from "../data.service";
 import {MenuService} from "../layout/menu.service";
 import {Router, ActivatedRoute} from '@angular/router';
-import {IndexedDataSet} from "../../shared/DCDataModel";
+import {IndexedDataSet} from "../shared/DCDataModel";
 import {DSTableDefinition} from "../data-service-schema";
 import {RecordEditorService} from "../data-editor/record-editor.service";
-import {ActionTrigger} from "../../shared/ActionTrigger";
+import {ActionTrigger} from "../shared/ActionTrigger";
 
 @Component({
-    moduleId: module.id,
+
     selector: 'devctrl-ctrl-detail',
     //language=HTML
     template: `

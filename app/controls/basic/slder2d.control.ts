@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ControlService } from '../control.service';
 
 @Component({
-    moduleId: module.id,
+
     selector: 'ctrl-slider2d',
     template: `
 <div class="devctrl-ctrl">
@@ -68,7 +68,7 @@ div.devctrl-ctrl {
 `]
 })
 export class Slider2dControl implements OnInit {
-    constructor(private cs : ControlService) { }
+    constructor(public cs: ControlService) { }
 
     ngOnInit() {
     }

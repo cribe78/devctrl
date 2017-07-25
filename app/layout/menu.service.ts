@@ -2,9 +2,9 @@ import {DataService} from "../data.service";
 import { Injectable, Inject } from '@angular/core';
 import {  Router, ActivatedRoute, Params, UrlSegment } from '@angular/router';
 import { appRoutes } from "../app-router.module";
-import {IndexedDataSet} from "../../shared/DCDataModel";
-import {Endpoint} from "../../shared/Endpoint";
-import {Room} from "../../shared/Room";
+import {IndexedDataSet} from "../shared/DCDataModel";
+import {Endpoint} from "../shared/Endpoint";
+import {Room} from "../shared/Room";
 
 export interface MSMenuItem {
     name: string;

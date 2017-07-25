@@ -1,12 +1,12 @@
 import {Component, Input} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
-import {Panel} from "shared/Panel";
+import {Panel} from "../shared/Panel";
 import {DataService} from "../data.service";
-import {RecordEditorService} from "data-editor/record-editor.service";
-import {PanelControl} from "shared/PanelControl";
-import {IndexedDataSet} from "shared/DCDataModel";
-import {Control} from "shared/Control";
-import {DCSerializable} from "shared/DCSerializable";
+import {RecordEditorService} from "../data-editor/record-editor.service";
+import {PanelControl} from "../shared/PanelControl";
+import {IndexedDataSet} from "../shared/DCDataModel";
+import {Control} from "../shared/Control";
+import {DCSerializable} from "../shared/DCSerializable";
 
 @Component({
     selector: 'devctrl-panel',

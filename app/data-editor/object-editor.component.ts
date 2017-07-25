@@ -107,7 +107,7 @@ export class ObjectEditorComponent
         return Object.keys(this.object);
     }
 
-    keyPath(key) {
+    keyPath(key = "") {
         let path = this.fname;
 
         if (key) {

@@ -1,12 +1,12 @@
 import {DataService} from "../data.service";
-import {UserSession} from "../../shared/UserSession";
+import {UserSession} from "../shared/UserSession";
 import {MenuService} from "./menu.service";
 import { Component, Inject, Input } from '@angular/core';
 import {LayoutService} from "./layout.service";
 
 
 @Component({
-    moduleId: module.id,
+
     selector: 'devctrl-toolbar',
     template: `
 <div class="outer-div">
@@ -156,7 +156,7 @@ export class ToolbarComponent {
 
     constructor(menuService : MenuService,
                 private dataService : DataService,
-                private ls : LayoutService) {
+                public ls : LayoutService) {
         this.menu = menuService;
         this.menuService = menuService;
         this.session = this.dataService['userSession'];

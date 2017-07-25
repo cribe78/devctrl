@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
                 private router : Router,
                 private dataService: DataService,
                 private menuService: MenuService,
-                private ls: LayoutService) {
+                public ls: LayoutService) {
         this.menu = menuService;
     };
 

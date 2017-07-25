@@ -187,7 +187,7 @@ class Messenger {
         let expStr = expDate.toTimeString();
 
         debug("admin expiration set to " + expStr);
-        let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+        let loginExpires = parseInt(req.headers['oidc_claim_exp'] as string) * 1000;
 
 
         let session : UserSession = {
@@ -196,7 +196,7 @@ class Messenger {
             admin_auth: true,
             admin_auth_expires: adminExpires,
             admin_auth_requested: false,
-            username: req.headers["oidc_claim_preferred_username"]
+            username: req.headers["oidc_claim_preferred_username"] as string
         };
 
 
@@ -320,7 +320,7 @@ class Messenger {
 
 
         if (req.headers["oidc_claim_preferred_username"]) {
-            session.username = req.headers["oidc_claim_preferred_username"];
+            session.username = req.headers["oidc_claim_preferred_username"] as string;
         }
 
         this.sessions.insertOne(session, (err, result) => {
@@ -428,7 +428,7 @@ class Messenger {
 
         debug("do_logon, admin_auth_requested = " + admin_auth_requested);
 
-        let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+        let loginExpires = parseInt(req.headers['oidc_claim_exp'] as string) * 1000;
         let loginExpiresTime = new Date(loginExpires);
         let nowDate = new Date();
         let nowTimeStr = nowDate.toTimeString().substr(0, 17);
@@ -498,9 +498,9 @@ class Messenger {
 
     getIdentifier(req: http.IncomingMessage) : string {
         let cookies = {};
-
-        if (req.headers['cookie']) {
-            let cstrs = req.headers['cookie'].split(';');
+        let cookieStr = req.headers['cookie'] as string;
+        if (cookieStr) {
+            let cstrs = cookieStr.split(';');
 
             for (let cstr of cstrs) {
                 let [name, value] = cstr.split("=");
@@ -683,7 +683,7 @@ class Messenger {
         }
 
         let adminExpires = Date.now(); // now
-        let loginExpires = parseInt(req.headers['oidc_claim_exp']) * 1000;
+        let loginExpires = parseInt(req.headers['oidc_claim_exp'] as string) * 1000;
 
 
         let session : UserSession = {
@@ -692,7 +692,7 @@ class Messenger {
             admin_auth: false,
             admin_auth_expires: adminExpires,
             admin_auth_requested: false,
-            username: req.headers["oidc_claim_preferred_username"]
+            username: req.headers["oidc_claim_preferred_username"] as string
         };
 
 
@@ -825,11 +825,11 @@ class Messenger {
             };
 
             if (req.headers['x-forwarded-for']) {
-                session.client_name = req.headers['x-forwarded-for'];
+                session.client_name = req.headers['x-forwarded-for'] as string;
             }
 
             if (req.headers["oidc_claim_preferred_username"]) {
-                session.username = req.headers["oidc_claim_preferred_username"];
+                session.username = req.headers["oidc_claim_preferred_username"] as string;
             }
 
             this.sessions.insertOne(session, (err, result) => {

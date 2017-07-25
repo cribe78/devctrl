@@ -11,12 +11,6 @@
     //"lib": ["dom"],
     "removeComments": false,
     "noImplicitAny": false,
-    "typeRoots": [
-      "node_modules/@types/"
-    ],
-    "types": [
-      "hammerjs"
-    ],
     "baseUrl": ".",
     "paths": {
       "*": ["*", "app/*"]

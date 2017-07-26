@@ -20,6 +20,11 @@ export const appRoutes: Routes = [
         pathMatch: 'full'
     },
     {
+        path: 'index-jit.html',
+        redirectTo: '/rooms',
+        pathMatch: 'full'
+    },
+    {
         path: 'rooms',
         data : {
             title: "Locations"

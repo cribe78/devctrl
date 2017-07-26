@@ -58,5 +58,9 @@
   },
   "scripts": {
     "build": "node_modules/.bin/tsc && node_modules/.bin/ngc -p tsconfig-aot.json && node_modules/.bin/rollup -c rollup-config.js"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^3.0.2",
+    "utf-8-validate": "^3.0.3"
   }
 }

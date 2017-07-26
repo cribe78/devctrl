@@ -7,8 +7,8 @@ import {AWHE130PresetMapControl} from "./awhe130-preset-map.control";
 import {PresetMapPictLControl} from "./preset-maps/preset-map-pict-l.control";
 import {PresetMapPictRControl} from "./preset-maps/preset-map-pict-r.control";
 import {PresetMapDefault} from "./preset-maps/preset-map-default.control";
-import {PresetMapOrcStudents} from "./preset-maps/preset-map-orc-students";
-import {PresetMapOrcInstructor} from "./preset-maps/preset-map-orc-instructor";
+import {PresetMapOrcStudents} from "./preset-maps/preset-map-orc-students.control";
+import {PresetMapOrcInstructor} from "./preset-maps/preset-map-orc-instructor.control";
 
 
 

@@ -7,12 +7,12 @@
         paths: {
             // paths serve as alias
             'npm:': '/node_modules/',
-            'shared:': '/shared/'
+
         },
         // map tells the System loader where to look for things
         map: {
             // our app is within the app folder
-            shared: 'shared',
+            //shared: 'shared',
             // angular bundles
             '@angular/cdk' : 'npm:@angular/cdk/bundles/cdk.umd.js',
             '@angular/core': 'npm:@angular/core/bundles/core.umd.js',
@@ -36,14 +36,22 @@
         packages: {
             '/': {
                 main: './main.js',
-                defaultExtension: 'js'
+                defaultExtension: 'js',
+                meta: {
+                    './*.component.js' : {
+                        loader: 'systemjs-angular-loader.js'
+                    },
+                    './*.control.js' : {
+                        loader: 'systemjs-angular-loader.js'
+                    }
+                }
             },
             rxjs: {
                 defaultExtension: 'js'
             },
-            '/shared' : {
-                defaultExtension: 'js'
-            }
+            //'/shared' : {
+            //    defaultExtension: 'js'
+            //}
         }
     });
 })(this);

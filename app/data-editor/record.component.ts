@@ -7,7 +7,7 @@ import { MdDialogRef } from '@angular/material';
 @Component({
 
     selector: 'devctrl-record',
-    templateUrl: 'record.html',
+    templateUrl: './record.html',
     //language=CSS
     styles: [`
         .field-container {

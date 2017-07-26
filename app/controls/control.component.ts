@@ -7,7 +7,7 @@ import {ControlService} from "./control.service";
 
     selector: 'devctrl-ctrl',
     providers: [ControlService],
-    templateUrl: 'control.html',
+    templateUrl: './control.html',
 
     //language=CSS
     styles: [`        

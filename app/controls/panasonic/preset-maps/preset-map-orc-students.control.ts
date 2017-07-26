@@ -5,7 +5,7 @@ import {DataService} from "../../../data.service";
 @Component({
 
     selector: '[preset-map-orc-students]',
-    templateUrl: 'preset-map-orc-students.html',
+    templateUrl: './preset-map-orc-students.html',
     //language=CSS
     styles: [`        
     `]

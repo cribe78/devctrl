@@ -1,6 +1,6 @@
 import {TCPCommand} from "../TCPCommand";
-import {Control} from "../../shared/Control";
-import {ControlUpdateData} from "../../shared/ControlUpdate";
+import {Control} from "../../app/shared/Control";
+import {ControlUpdateData} from "../../app/shared/ControlUpdate";
 export class NECCommand extends TCPCommand {
     /**
      * This implementation is specific to this protocol and is special cased for individual commands

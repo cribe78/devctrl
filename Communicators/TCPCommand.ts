@@ -1,6 +1,6 @@
 
-import {ControlUpdate, ControlUpdateData} from "../shared/ControlUpdate";
-import {Control, ControlData} from "../shared/Control";
+import {ControlUpdate, ControlUpdateData} from "../app/shared/ControlUpdate";
+import {Control, ControlData} from "../app/shared/Control";
 import {sprintf} from "sprintf-js";
 import * as debugMod from "debug";
 

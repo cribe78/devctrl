@@ -1,8 +1,8 @@
 
-import {Control} from "../shared/Control";
-import {ControlUpdateData} from "../shared/ControlUpdate";
-import {EndpointStatus, Endpoint} from "../shared/Endpoint";
-import {IndexedDataSet} from "../shared/DCDataModel";
+import {Control} from "../app/shared/Control";
+import {ControlUpdateData} from "../app/shared/ControlUpdate";
+import {EndpointStatus, Endpoint} from "../app/shared/Endpoint";
+import {IndexedDataSet} from "../app/shared/DCDataModel";
 import {EndpointCommunicator} from "./EndpointCommunicator";
 import {HTTPCommand} from "./HTTPCommand";
 import * as http from "http";

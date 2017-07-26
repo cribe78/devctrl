@@ -1,12 +1,12 @@
 "use strict";
 
 import * as io from "socket.io-client";
-import {DCDataModel} from "../shared/DCDataModel";
+import {DCDataModel} from "../app/shared/DCDataModel";
 import { EndpointCommunicator } from "../Communicators/EndpointCommunicator";
-import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
-import {Control} from "../shared/Control";
-import {ControlUpdateData} from "../shared/ControlUpdate";
-import {Endpoint, EndpointStatus} from "../shared/Endpoint";
+import {IDCDataRequest, IDCDataUpdate} from "../app/shared/DCSerializable";
+import {Control} from "../app/shared/Control";
+import {ControlUpdateData} from "../app/shared/ControlUpdate";
+import {Endpoint, EndpointStatus} from "../app/shared/Endpoint";
 
 let debug = console.log;
 

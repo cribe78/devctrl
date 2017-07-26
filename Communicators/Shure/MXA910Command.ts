@@ -1,5 +1,5 @@
 import {TCPCommand} from "../TCPCommand";
-import {Control} from "../../shared/Control";
+import {Control} from "../../app/shared/Control";
 import {sprintf} from "sprintf-js";
 
 let debug = console.log;

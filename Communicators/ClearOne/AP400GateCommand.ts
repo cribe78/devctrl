@@ -1,5 +1,5 @@
 import {ClearOneCommand, IClearOneCommandConfig} from "./ClearOneCommand";
-import {Control, ControlData} from "../../shared/Control";
+import {Control, ControlData} from "../../app/shared/Control";
 
 export class AP400GateCommand extends ClearOneCommand {
 

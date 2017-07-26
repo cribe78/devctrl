@@ -1,6 +1,6 @@
 import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
 import {TCPCommand} from "../TCPCommand";
-import {Control} from "../../shared/Control";
+import {Control} from "../../app/shared/Control";
 import {NECCommand} from "./NECCommand";
 class NECCommunicator extends SynchronousTCPCommunicator {
     // the NEC projector communications protocol is a binary protocol that doesn't map particularly well

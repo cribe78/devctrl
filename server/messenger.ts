@@ -6,12 +6,12 @@ import * as http from "http";
 import * as url from "url";
 import * as mongo from "mongodb";
 import * as querystring from "querystring";
-import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "../shared/DCSerializable";
-import {DCDataModel} from "../shared/DCDataModel";
-import {ControlUpdateData} from "../shared/ControlUpdate";
-import {Control} from "../shared/Control";
-import {UserSession} from "../shared/UserSession";
-import {Endpoint, EndpointStatus} from "../shared/Endpoint";
+import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "../app/shared/DCSerializable";
+import {DCDataModel} from "../app/shared/DCDataModel";
+import {ControlUpdateData} from "../app/shared/ControlUpdate";
+import {Control} from "../app/shared/Control";
+import {UserSession} from "../app/shared/UserSession";
+import {Endpoint, EndpointStatus} from "../app/shared/Endpoint";
 
 
 let debug = console.log;

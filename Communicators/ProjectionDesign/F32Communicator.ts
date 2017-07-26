@@ -1,6 +1,6 @@
 import {TCPCommunicator} from "../TCPCommunicator";
 import {ITCPCommandConfig, TCPCommand} from "../TCPCommand";
-import {Control} from "../../shared/Control";
+import {Control} from "../../app/shared/Control";
 import * as debugMod from "debug";
 //let debug = debugMod("comms");
 let debug = console.log;

@@ -1,6 +1,6 @@
 import {TCPCommand} from "./TCPCommand";
 import {TCPCommunicator} from "./TCPCommunicator";
-import {ControlUpdateData} from "../shared/ControlUpdate";
+import {ControlUpdateData} from "../app/shared/ControlUpdate";
 import {EndpointCommunicator} from "./EndpointCommunicator";
 
 

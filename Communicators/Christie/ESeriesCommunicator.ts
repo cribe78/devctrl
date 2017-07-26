@@ -1,6 +1,6 @@
 import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
 import {TCPCommand} from "../TCPCommand";
-import {Control} from "../../shared/Control";
+import {Control} from "../../app/shared/Control";
 class ESeriesCommunicator extends SynchronousTCPCommunicator {
     // Communications port is 3002
 

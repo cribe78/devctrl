@@ -1,7 +1,7 @@
 import {TCPCommunicator, TCPCommEncoding} from "../TCPCommunicator";
 import {ITCPCommandConfig} from "../TCPCommand";
 import {EviD31Command} from "./EviD31Command";
-import {Control} from "../../shared/Control";
+import {Control} from "../../app/shared/Control";
 import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
 
 class EviD31Communicator extends SynchronousTCPCommunicator {

@@ -1,10 +1,10 @@
 import {EndpointCommunicator} from "./EndpointCommunicator";
 import * as SerialPort from "serialport";
-import {IndexedDataSet} from "../shared/DCDataModel";
-import {Control, ControlData} from "../shared/Control";
-import {ControlUpdateData} from "../shared/ControlUpdate";
+import {IndexedDataSet} from "../app/shared/DCDataModel";
+import {Control, ControlData} from "../app/shared/Control";
+import {ControlUpdateData} from "../app/shared/ControlUpdate";
 import * as debugMod from "debug";
-import {EndpointStatus} from "../shared/Endpoint";
+import {EndpointStatus} from "../app/shared/Endpoint";
 
 let debug = debugMod("comms");
 

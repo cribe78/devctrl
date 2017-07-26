@@ -1,7 +1,7 @@
 import {TCPCommunicator} from "../TCPCommunicator";
 import {MXA910Command} from "./MXA910Command";
-import {Control} from "../../shared/Control";
-import {IndexedDataSet} from "../../shared/DCDataModel";
+import {Control} from "../../app/shared/Control";
+import {IndexedDataSet} from "../../app/shared/DCDataModel";
 
 class MXA910Communicator extends TCPCommunicator {
     inputLineTerminator = '>';

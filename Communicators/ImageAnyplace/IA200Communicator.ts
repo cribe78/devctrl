@@ -1,6 +1,6 @@
 import {ITCPCommandConfig, TCPCommand} from "../TCPCommand";
 import keys = require("core-js/fn/array/keys");
-import {Control} from "../../shared/Control";
+import {Control} from "../../app/shared/Control";
 import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
 import {EndpointCommunicator} from "../EndpointCommunicator";
 

@@ -1,7 +1,7 @@
 import { TCPCommunicator } from "../TCPCommunicator";
 import {IExtronDXPCommandConfig, ExtronDXPCommand} from "./ExtronDXPCommand";
 import {TCPCommand} from "../TCPCommand";
-import {EndpointStatus} from "../../shared/Endpoint";
+import {EndpointStatus} from "../../app/shared/Endpoint";
 
 let outputs = {};
 let inputs = {};

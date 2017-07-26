@@ -1,5 +1,5 @@
 import {TCPCommand} from "../TCPCommand";
-import {Control, ControlXYValue} from "../../shared/Control";
+import {Control, ControlXYValue} from "../../app/shared/Control";
 export class EviD31Command extends TCPCommand {
     expandTemplate(template: string, value: any) : string {
         // Use sprintf to expand the template

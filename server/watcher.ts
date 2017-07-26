@@ -1,10 +1,10 @@
 "use strict";
 
 import * as io from "socket.io-client";
-import {DCDataModel, IndexedDataSet} from "../shared/DCDataModel";
-import {IDCDataRequest, IDCDataUpdate} from "../shared/DCSerializable";
-import {ControlUpdateData, ControlUpdate} from "../shared/ControlUpdate";
-import {ActionTrigger} from "../shared/ActionTrigger";
+import {DCDataModel, IndexedDataSet} from "../app/shared/DCDataModel";
+import {IDCDataRequest, IDCDataUpdate} from "../app/shared/DCSerializable";
+import {ControlUpdateData, ControlUpdate} from "../app/shared/ControlUpdate";
+import {ActionTrigger} from "../app/shared/ActionTrigger";
 
 let debug = console.log;
 

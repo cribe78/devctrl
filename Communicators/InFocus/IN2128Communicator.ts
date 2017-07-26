@@ -1,6 +1,6 @@
 import {SynchronousTCPCommunicator} from "../SynchronousTCPCommunicator";
 import {TCPCommand} from "../TCPCommand";
-import {Control} from "../../shared/Control";
+import {Control} from "../../app/shared/Control";
 class IN2128Communicator extends SynchronousTCPCommunicator {
     // Network port is 23
 

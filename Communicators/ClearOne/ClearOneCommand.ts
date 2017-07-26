@@ -1,6 +1,6 @@
 import {TCPCommand, ITCPCommandConfig} from "../TCPCommand";
-import {Control} from "../../shared/Control";
-import {ControlUpdateData} from "../../shared/ControlUpdate";
+import {Control} from "../../app/shared/Control";
+import {ControlUpdateData} from "../../app/shared/ControlUpdate";
 
 export interface IClearOneCommandTemplate {
     cmdStr: string;

@@ -1,7 +1,7 @@
 import {HTTPCommunicator} from "../HTTPCommunicator";
-import {IndexedDataSet} from "../../shared/DCDataModel";
-import {Control, ControlData, ControlXYValue} from "../../shared/Control";
-import {ControlUpdateData} from "../../shared/ControlUpdate";
+import {IndexedDataSet} from "../../app/shared/DCDataModel";
+import {Control, ControlData, ControlXYValue} from "../../app/shared/Control";
+import {ControlUpdateData} from "../../app/shared/ControlUpdate";
 import * as http from "http";
 import {sprintf} from "sprintf-js";
 import {IHTTPCommandConfig, HTTPCommand} from "../HTTPCommand";

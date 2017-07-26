@@ -1,12 +1,14 @@
 {
-  "name": "devctrl",
-  "version": "1.0.6",
+  "name": "@devctrl/core",
+  "version": "1.0.7",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/cribe78/devctrl.git"
+    "url": "bitbucket:ufdwi/devctrl"
   },
-  "description": "Node based reimplementation of pcontrol daemon",
+  "description": "Webapp and node backend for control of serial and network devices",
+  "keywords": ["IOT", "Digital Worlds", "audio", "video", "projectors"],
+  "homepage": "https://bitbucket.org/dwi/devctrl",
   "dependencies": {
     "@angular/animations": "^4.3",
     "@angular/cdk": "^2.0.0-beta.8",
@@ -36,16 +38,19 @@
     "socket.io": "^1.4",
     "socket.io-client": "^1.4",
     "sprintf-js": "^1.0.3",
-    "systemjs": "^0.20.15",
-    "typescript": "^2.3.0",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
+    "systemjs": "^0.20.15",
+    "typescript": "^2.3.0",
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.1.0",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-uglify": "^2.0.1"
+  },
+  "scripts" : {
+    "prepare": "node_modules/.bin/tsc && node_modules/.bin/ngc -p tsconfig-aot.json && node_modules/.bin/rollup -c rollup-config.js"
   }
 }

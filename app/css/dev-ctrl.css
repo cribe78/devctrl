@@ -1,7 +1,9 @@
 body {
     margin: 0px;
     overflow: hidden;
+    min-height: 100vh;
 }
+
 
 #devctrl-content-canvas {
 /**    height:100%; **/

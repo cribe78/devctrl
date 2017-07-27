@@ -9,9 +9,9 @@ import {LayoutService} from "./layout.service";
 @Component({
     selector: 'devctrl-app',
     template: `
-<body (window:resize)="ls.resized($event)">
+<div (window:resize)="ls.resized($event)">
     <devctrl-toolbar></devctrl-toolbar>    
-    <md-sidenav-container>
+    <md-sidenav-container class="dc-sidenav-container">
         <md-sidenav class="dc-sidenav"
                     [opened]="menu.isSidenavOpen()"
                     [mode]="sidenavMode()">
@@ -19,12 +19,15 @@ import {LayoutService} from "./layout.service";
         </md-sidenav>
         <router-outlet></router-outlet>
     </md-sidenav-container>
-</body>
+</div>
 `,
     styles: [`
-.dc-sidenav {
-    width: 270px;
-}
+        .dc-sidenav {
+            width: 270px;
+        }
+        .dc-sidenav-container {
+            height: calc(100vh - 64px);
+        }
 `]
 })
 export class AppComponent implements OnInit {

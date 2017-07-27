@@ -1,13 +1,13 @@
 import nodeResolve from 'rollup-plugin-node-resolve';
 import commonjs    from 'rollup-plugin-commonjs';
-import uglify      from 'rollup-plugin-uglify';
 import globals     from 'rollup-plugin-node-globals';
 import builtins    from 'rollup-plugin-node-builtins';
 
 export default {
-    entry: 'app/main.js',
+    entry: 'aot/app/main.js',
     dest: 'app/build.js', // output a single application bundle
-    sourceMap: false,
+    sourceMap: true,
+    sourceMapFile: 'app/build.js.map',
     format: 'iife',
     onwarn: function(warning) {
         // Skip certain warnings
@@ -30,7 +30,6 @@ export default {
             ]
         }),
         globals(),
-        builtins(),
-        //uglify()
+        builtins()
     ]
 };

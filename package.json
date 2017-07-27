@@ -47,14 +47,14 @@
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
-    "systemjs": "^0.20.15",
-    "typescript": "^2.3.0",
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.1.0",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-uglify": "^2.0.1"
+    "rollup-plugin-uglify": "^2.0.1",
+    "systemjs": "^0.20.15",
+    "typescript": "^2.3.0"
   },
   "scripts": {
     "build": "node_modules/.bin/tsc && node_modules/.bin/ngc -p tsconfig-aot.json && node_modules/.bin/rollup -c rollup-config.js"

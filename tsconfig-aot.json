@@ -8,14 +8,14 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib" : ["es2015", "dom"],
-    //"lib": ["dom"],
+    "outDir" : "aot",
     "removeComments": false,
     "noImplicitAny": false,
     "suppressImplicitAnyIndexErrors": true,
     "baseUrl": "."
   },
   "exclude": [
-    "node_modules"
+    //"node_modules"
   ],
 
   "files": [
@@ -24,7 +24,7 @@
   ],
 
   "angularCompilerOptions": {
-    "genDir": "aot",
+    "genDir": "aot/ng",
     "skipMetadataEmit": true
   }
 }

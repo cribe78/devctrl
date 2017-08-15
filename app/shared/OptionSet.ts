@@ -1,28 +1,30 @@
-import {DCSerializable, DCSerializableData} from "./DCSerializable";
+import {DCFieldType, DCSerializable, DCSerializableData} from "./DCSerializable";
 
 export interface OptionSetData extends DCSerializableData {
     options : { [key: string] : string };
 }
 
 export class OptionSet extends DCSerializable {
-    options : { [key: string] : string};
+    options : { [key: string] : string} = {};
     static tableStr = "option_sets";
+    static tableLabel = "Option Sets";
 
     constructor(_id: string, data?: OptionSetData) {
         super(_id);
         this.table = OptionSet.tableStr;
 
-        this.requiredProperties = this.requiredProperties.concat([
-            'options'
+        this.fieldDefinitions = this.fieldDefinitions.concat([
+            {
+                name: 'options',
+                type: DCFieldType.object,
+                label: "Options"
+            }
         ]);
+
 
         if (data) {
             this.loadData(data);
         }
     }
 
-
-    getDataObject() : OptionSetData {
-        return (<OptionSetData>DCSerializable.defaultDataObject(this));
-    }
 }

@@ -1,4 +1,4 @@
-import {DCSerializableData, DCSerializable} from "./DCSerializable";
+import {DCSerializableData, DCSerializable, IDCFieldDefinition, DCFieldType} from "./DCSerializable";
 import {Room} from "./Room";
 
 export interface PanelData extends DCSerializableData {
@@ -12,39 +12,59 @@ export class Panel extends DCSerializable {
     private _room: Room;
     room_id: string;
     grouping: string;
-    type: string;
-    panel_index: number;
+    type: string = "list";
+    panel_index: number = 1;
 
     static tableStr = "panels";
+    static tableLabel = "Panels"
     table: string;
+
+    foreignKeys = [
+        {
+            type: Room,
+            fkObjProp: "room",
+            fkIdProp: "room_id",
+            fkTable: Room.tableStr
+        }
+    ];
+
+    ownFields : IDCFieldDefinition[] = [
+        {
+            name: "room_id",
+            type: DCFieldType.fk,
+            label: "Room"
+        },
+        {
+            name: "grouping",
+            type: DCFieldType.string,
+            label: "Subgroup"
+        },
+        {
+            name: "type",
+            type: DCFieldType.selectStatic,
+            label: "Type",
+            options: [
+                { name: "List", value: "list"},
+                { name: "Switch Group", value: "switch-group"},
+                { name: "Horizontal", value: "horizontal"}
+            ]
+        },
+        {
+            name: "panel_index",
+            type: DCFieldType.int,
+            label: "Order"
+        }
+    ];
 
     constructor(_id: string, data?: PanelData) {
         super(_id);
         this.table = Panel.tableStr;
 
-        this.foreignKeys = [
-            {
-                type: Room,
-                fkObjProp: "room",
-                fkIdProp: "room_id",
-                fkTable: Room.tableStr
-            }
-        ];
-
         this.referenced = {
             'panel_controls' : {}
         };
 
-        this.requiredProperties = this.requiredProperties.concat([
-            'room_id',
-            'grouping',
-            'type',
-            'panel_index'
-        ]);
-
-        this.defaultProperties = {
-            panel_index : "1"
-        };
+        this.fieldDefinitions = this.fieldDefinitions.concat(this.ownFields);
 
         if (data) {
             this.loadData(data);
@@ -62,9 +82,5 @@ export class Panel extends DCSerializable {
 
     fkSelectName() {
         return `${this.room.name}: ${this.grouping}: ${this.name}`;
-    }
-
-    getDataObject() : PanelData {
-        return (<PanelData>DCSerializable.defaultDataObject(this));
     }
 }

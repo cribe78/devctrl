@@ -6,7 +6,7 @@ import { EndpointCommunicator } from "../Communicators/EndpointCommunicator";
 import {IDCDataRequest, IDCDataUpdate} from "../app/shared/DCSerializable";
 import {Control} from "../app/shared/Control";
 import {ControlUpdateData} from "../app/shared/ControlUpdate";
-import {Endpoint, EndpointStatus} from "../app/shared/Endpoint";
+import {Endpoint, EndpointData, EndpointStatus} from "../app/shared/Endpoint";
 
 let debug = console.log;
 
@@ -72,7 +72,7 @@ class NControl {
         });
 
         this.io.on('control-data', data => {
-            self.oldEndpoint = new Endpoint(self.endpoint._id, self.endpoint.getDataObject());
+            self.oldEndpoint = new Endpoint(self.endpoint._id, <EndpointData>(self.endpoint.getDataObject()));
 
             // Discard control data not related to this endpoint
             if (data.add && data.add.controls) {

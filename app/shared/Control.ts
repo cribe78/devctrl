@@ -4,7 +4,7 @@
  * on a device (Endpoint).  The frontend provides an interface for users to view and change the values of controls.
  */
 
-import {DCSerializableData, DCSerializable} from "./DCSerializable";
+import {DCSerializableData, DCSerializable, IDCFieldDefinition, DCFieldType} from "./DCSerializable";
 import {Endpoint} from "./Endpoint";
 import {OptionSet} from "./OptionSet";
 
@@ -50,6 +50,7 @@ export class Control extends DCSerializable {
     ];
 
     static tableStr = "controls";
+    static tableLabel = "Controls";
 
     // usertype and control_type values
     static CONTROL_TYPE_BOOLEAN = "boolean";
@@ -74,6 +75,79 @@ export class Control extends DCSerializable {
     static USERTYPE_SELECT = "select";
     static USERTYPE_SELECT_READONLY = "select-readonly";
 
+    ownFields : IDCFieldDefinition[] = [
+        {
+            name: "endpoint_id",
+            type: DCFieldType.fk,
+            label: "Endpoint"
+        },
+        {
+            name: "ctid",
+            type: DCFieldType.string,
+            label: "CTID"
+        },
+        {
+            name: "usertype",
+            type: DCFieldType.selectStatic,
+            label: "UI Type",
+            options: [
+                { name: "button", value: Control.USERTYPE_BUTTON},
+                { name: "button set", value: Control.USERTYPE_BUTTON_SET },
+                { name: "Hyperlink", value: Control.USERTYPE_HYPERLINK },
+                { name: "Image", value: Control.USERTYPE_IMAGE },
+                { name: "F32 Multibutton", value: Control.USERTYPE_F32_MULTIBUTTON},
+                { name: "Level Meter", value: Control.USERTYPE_LEVEL},
+                { name: "Text (readonly)", value: Control.USERTYPE_READONLY },
+                { name: "Select", value: Control.USERTYPE_SELECT},
+                { name: "Select (readonly)", value: Control.USERTYPE_SELECT_READONLY},
+                { name: "Slider", value: Control.USERTYPE_SLIDER},
+                { name: "2D Slider", value: Control.USERTYPE_SLIDER_2D},
+                { name: "Switch", value: Control.USERTYPE_SWITCH}
+            ]
+        },
+        {
+            name: "control_type",
+            type: DCFieldType.selectStatic,
+            label: "Control Type",
+            options: [
+                { name: "boolean", value: Control.CONTROL_TYPE_BOOLEAN},
+                { name: "echo", value: Control.CONTROL_TYPE_ECHO},
+                { name: "int", value: Control.CONTROL_TYPE_INT},
+                { name: "range", value: Control.CONTROL_TYPE_RANGE},
+                { name: "string", value: Control.CONTROL_TYPE_STRING},
+                { name: "xy", value: Control.CONTROL_TYPE_XY}
+            ]
+        },
+        {
+            name: "poll",
+            type: DCFieldType.bool,
+            label: "Poll?"
+        },
+        {
+            name: "config",
+            type: DCFieldType.object,
+            label: "Default Config"
+        },
+        {
+            name: "option_set_id",
+            type: DCFieldType.fk,
+            label: "Option Set",
+            optional: true
+        },
+        {
+            name: "value",
+            type: DCFieldType.string,
+            label: "Value"
+        },
+        {
+            name: "ephemeral",
+            type: DCFieldType.bool,
+            label: "Ephemeral",
+            optional: true
+        }
+    ];
+
+
     constructor(_id: string, data?: ControlData) {
         super(_id);
         this.table = Control.tableStr;
@@ -82,17 +156,7 @@ export class Control extends DCSerializable {
             panel_controls : {}
         };
 
-        this.requiredProperties = this.requiredProperties.concat([
-            'endpoint_id',
-            'ctid',
-            'usertype',
-            'control_type',
-            'poll',
-            'config',
-            'value'
-        ]);
-
-        this.optionalProperties = ['ephemeral', 'option_set_id'];
+        this.fieldDefinitions = this.fieldDefinitions.concat(this.ownFields);
 
         if (data) {
             this.loadData(data);
@@ -141,9 +205,6 @@ export class Control extends DCSerializable {
         return this.name;
     }
 
-    getDataObject() : ControlData {
-        return (<ControlData>DCSerializable.defaultDataObject(this));
-    }
 
     selectOptions() {
         let options;

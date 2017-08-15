@@ -25,6 +25,29 @@ export interface DCSerializableData {
     name: string
 }
 
+export enum DCFieldType {
+    string = "string",
+    int = "int",
+    bool = "bool",
+    selectStatic = "select-static",
+    fk = "fk",
+    object = "object",
+    watcherActionValue = "watcher-action-value"
+}
+
+// The IDCFieldDefinition provides type information used by the application front end and DataModel
+export interface IDCFieldDefinition {
+    name: string;
+    type: DCFieldType;
+    optional?: boolean;
+    label: string;
+    options?: {
+        name : string;
+        value : string;
+    }[],
+    input_disabled?: boolean;
+}
+
 
 export interface IDCForeignKeyDef {
     type: any, // The class of the fk object
@@ -33,27 +56,28 @@ export interface IDCForeignKeyDef {
     fkTable: string // Name of foreign table
 }
 
+export let dcNameField : IDCFieldDefinition = {
+    name: "name",
+    type: DCFieldType.string,
+    label: "Name"
+};
+
+
 export abstract class DCSerializable {
     _name: string;
     dataLoaded: boolean;
     table : string;
-    fields: DCSerializable;  // This is a hack while we work through all the references to "fields"
     foreignKeys: IDCForeignKeyDef[];
     referenced: {
         [index: string]  : {
             [index: string] : DCSerializable
         }
     };
-    requiredProperties: string[] = [];
-    optionalProperties: string[] = [];
-    defaultProperties : {
-        [index: string] : any
-    } = {};
+    fieldDefinitions : IDCFieldDefinition[] = [dcNameField];
 
     constructor(public _id: string) {
         this.dataLoaded = false;
         this.foreignKeys = [];
-        this.fields = this;
         this.referenced = {};
     };
 
@@ -98,31 +122,21 @@ export abstract class DCSerializable {
     }
 
     loadData(data: DCSerializableData) {
-        if (typeof data.name == 'undefined') {
-            throw new Error("Name must be defined for " +this.table + "obj " + data._id);
-        }
-        this.name = data.name;
+        for (let field of this.fieldDefinitions) {
+            if (typeof data[field.name] == 'undefined') {
+                if (field.optional) {
+                    continue;
+                }
 
-        for (let prop of this.requiredProperties) {
-            if (typeof data[prop] == 'undefined') {
-                throw new Error("Invalid " + this.table + " object, " + prop + " must be defined for " + this.name);
+                throw new Error("Invalid " + this.table + " object, " + field.name + " must be defined for " + this.id);
             }
 
-            this[prop] = data[prop];
-        }
-
-        for (let prop of this.optionalProperties) {
-            this[prop] = data[prop];
+            this[field.name] = data[field.name];
         }
 
         this.dataLoaded = true;
     };
 
-    loadDefaults() {
-        for ( let prop in this.defaultProperties) {
-            this[prop] = this.defaultProperties[prop];
-        }
-    }
 
     objectPropertyName(idProperty: string) {
         for (let fkDef of this.foreignKeys) {
@@ -136,23 +150,16 @@ export abstract class DCSerializable {
     }
 
 
-    abstract getDataObject() : DCSerializableData;
+    getDataObject() : DCSerializableData {
+        return DCSerializable.defaultDataObject(this);
+    };
 
     static defaultDataObject(obj: DCSerializable) : DCSerializableData {
         let data = { _id: obj._id, name: obj.name };
 
-        for (let prop of obj.requiredProperties) {
-            if (typeof obj[prop] !== 'undefined') {
-                data[prop] = obj[prop];
-            }
-            else if (typeof obj.defaultProperties[prop] !== 'undefined') {
-                data[prop] = obj.defaultProperties[prop];
-            }
-        }
-
-        for (let prop of obj.optionalProperties) {
-            if (typeof obj[prop] !== 'undefined') {
-                data[prop] = obj[prop];
+        for (let field of obj.fieldDefinitions) {
+            if (typeof obj[field.name] !== 'undefined') {
+                data[field.name] = obj[field.name];
             }
         }
 

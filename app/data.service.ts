@@ -22,7 +22,6 @@ import {ActionLog} from "./shared/ActionLog";
 @Injectable()
 export class DataService {
     socket: SocketIOClient.Socket;
-    schema;
     //private http : Http;
     userSession : UserSession;
     private initialized = false;
@@ -45,8 +44,7 @@ export class DataService {
                 private http : Http,
                 private snackBar : MdSnackBar,
                 private mdDialog : MdDialog) {
-        this.schema = dataServiceSchema;
-
+        /**
         for (let table in this.schema) {
             let tschema = this.schema[table];
             if (tschema.foreign_keys) {
@@ -56,7 +54,7 @@ export class DataService {
                 }
             }
         }
-
+         **/
 
         this.userSession = {
             _id: '',
@@ -319,7 +317,6 @@ module.exports = {
         let ctor = this.dataModel.types[tableName];
 
         let newRow = new ctor("0");
-        newRow.loadDefaults();
         Object.assign(newRow, newData);
 
         return newRow;
@@ -346,10 +343,11 @@ module.exports = {
         return this.dataModel.getTableItem(key, tableName);
     }
 
-
+/**
     getSchema(table: string) {
         return this.schema[table];
     }
+ **/
 
     getTable(table: string) : IndexedDataSet<DCSerializable> {
         if (! this.tablePromises[table]) {

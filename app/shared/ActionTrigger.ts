@@ -1,4 +1,4 @@
-import {DCSerializableData, DCSerializable} from "./DCSerializable";
+import {DCSerializableData, DCSerializable, DCFieldType} from "./DCSerializable";
 import {Control} from "./Control";
 import {ControlUpdate, ControlUpdateData} from "./ControlUpdate";
 /**
@@ -32,38 +32,71 @@ export class ActionTrigger extends DCSerializable {
     enabled: boolean = false;
 
     static tableStr = "watcher_rules";
+    static tableLabel = "Action Triggers";
     static VALUE_TEST_EQUALS = "=";
     static VALUE_TEST_LESS_THAN = "<";
     static VALUE_TEST_GREATER_THAN = ">";
     static VALUE_TEST_ANY = "any";
 
+    foreignKeys = [
+        {
+            type: Control,
+            fkObjProp: "trigger_control",
+            fkIdProp: "trigger_control_id",
+            fkTable: Control.tableStr
+        },
+        {
+            type: Control,
+            fkObjProp: "action_control",
+            fkIdProp: "action_control_id",
+            fkTable: Control.tableStr
+        }
+    ];
+
 
     constructor(_id: string, data?: ActionTriggerData) {
         super(_id);
         this.table = ActionTrigger.tableStr;
-        this.requiredProperties = [
-            'trigger_control_id',
-            'trigger_value',
-            'value_test',
-            'action_control_id',
-            'action_control_value',
-            'enabled'
-        ];
 
-        this.foreignKeys = [
+
+        this.fieldDefinitions = this.fieldDefinitions.concat([
             {
-                type: Control,
-                fkObjProp: "trigger_control",
-                fkIdProp: "trigger_control_id",
-                fkTable: Control.tableStr
+                name: "trigger_control_id",
+                type: DCFieldType.fk,
+                label: "Trigger Control"
             },
             {
-                type: Control,
-                fkObjProp: "action_control",
-                fkIdProp: "action_control_id",
-                fkTable: Control.tableStr
+                name: "action_control_id",
+                type: DCFieldType.fk,
+                label: "Action Control"
+            },
+            {
+                name: "action_control_value",
+                type: DCFieldType.watcherActionValue,
+                label: "Action Value"
+            },
+            {
+                name: "enabled",
+                type: DCFieldType.bool,
+                label: "Enabled?"
+            },
+            {
+                name: "value_test",
+                type: DCFieldType.selectStatic,
+                label: "Value Test",
+                options: [
+                    { name: "any", value: "any"},
+                    { name: "=", value: "="},
+                    { name: "<", value: "<"},
+                    { name: ">", value: ">"}
+                ]
+            },
+            {
+                name: "trigger_value",
+                type: DCFieldType.string,
+                label: "Trigger Value"
             }
-        ];
+        ]);
 
         if (data) {
             this.loadData(data);

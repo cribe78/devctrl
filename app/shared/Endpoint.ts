@@ -2,7 +2,7 @@
  * Created by chris on 8/17/16.
  */
 
-import {DCSerializable, DCSerializableData} from "./DCSerializable";
+import {DCFieldType, DCSerializable, DCSerializableData} from "./DCSerializable";
 import {EndpointType} from "./EndpointType";
 
 export enum EndpointStatus {
@@ -26,16 +26,16 @@ export interface EndpointData extends DCSerializableData {
 export class Endpoint extends DCSerializable {
     private _type: EndpointType;
     endpoint_type_id: string;
-    status: EndpointStatus;
-    ip: string;
-    port: number;
-    config: any;
-    enabled: boolean;
-    private _commLogOptions : string;
+    status: EndpointStatus = EndpointStatus.Offline;
+    ip: string = "";
+    port: number = 0;
+    config: any = {};
+    enabled: boolean = false;
+    private _commLogOptions : string = "default";
     commLogOptionsObj : {};
 
     static tableStr = "endpoints";
-    table: string;
+    static tableLabel = "Endpoints";
     foreignKeys = [
         {
             type: EndpointType,
@@ -53,24 +53,46 @@ export class Endpoint extends DCSerializable {
             'controls' : {}
         };
 
-        this.requiredProperties = this.requiredProperties.concat([
-            'endpoint_type_id',
-            'status',
-            'ip',
-            'port',
-            'config',
-            'enabled',
-            'commLogOptions'
+
+        this.fieldDefinitions = this.fieldDefinitions.concat([
+            {
+                name: "endpoint_type_id",
+                type: DCFieldType.fk,
+                label: "Endpoint Type"
+            },
+            {
+                name: "ip",
+                type: DCFieldType.string,
+                label: "Address"
+            },
+            {
+                name: "port",
+                type: DCFieldType.int,
+                label: "Port"
+            },
+            {
+                name: "config",
+                type: DCFieldType.object,
+                label: "Device Specific Config"
+            },
+            {
+                name : "commLogOptions",
+                type: DCFieldType.string,
+                label: "Ncontrol Log Options"
+            },
+            {
+                name: "status",
+                type: DCFieldType.string,
+                label: "Status",
+                input_disabled: true
+            },
+            {
+                name: "enabled",
+                type: DCFieldType.bool,
+                label: "Enabled?"
+            }
         ]);
 
-        this.defaultProperties = {
-            status : EndpointStatus.Offline,
-            ip : "",
-            port : 0,
-            config: {},
-            enabled : false,
-            commLogOptions : "default"
-        };
 
         if (data) {
             this.loadData(data);

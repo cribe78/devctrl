@@ -124,6 +124,7 @@ export class RoomComponent implements OnInit {
             this.roomConfig['selectedGroup'] = 0;
             this.dataService.updateConfig();
         }
+        //console.log(`previously selected groupis ${this.roomConfig['selectedGroup']}`);
         return this.roomConfig['selectedGroup'];
     }
 
@@ -152,22 +153,26 @@ export class RoomComponent implements OnInit {
         let deleteGroups = {};
         let groupList = [];
 
-        for (let groupName in this.roomConfig.groups) {
-            deleteGroups[groupName] = true;
-        }
-
-        for (let panelId in this.panels) {
-            let panel = this.panels[panelId];
-            if (! this.roomConfig.groups[panel.grouping]) {
-                this.roomConfig.groups[panel.grouping] = { opened: false }
-                groupList.push(panel.grouping);
+        // Only update the groups list if the panels have been loaded
+        // This allows initial groupings to be loaded from local storage
+        if (Object.keys(this.panels).length > 0) {
+            for (let groupName in this.roomConfig.groups) {
+                deleteGroups[groupName] = true;
             }
-            deleteGroups[panel.grouping] = false;
-        }
 
-        for (let grouping in deleteGroups) {
-            if (deleteGroups[grouping]) {
-                delete this.roomConfig.groups[grouping];
+            for (let panelId in this.panels) {
+                let panel = this.panels[panelId];
+                if (!this.roomConfig.groups[panel.grouping]) {
+                    this.roomConfig.groups[panel.grouping] = {opened: false}
+                    groupList.push(panel.grouping);
+                }
+                deleteGroups[panel.grouping] = false;
+            }
+
+            for (let grouping in deleteGroups) {
+                if (deleteGroups[grouping]) {
+                    delete this.roomConfig.groups[grouping];
+                }
             }
         }
 

@@ -2,7 +2,6 @@ import {Room} from "../shared/Room";
 import {DataService} from "../data.service";
 import { Component, OnInit, Input } from '@angular/core';
 import {MenuService} from "../layout/menu.service";
-import { Router, ActivatedRoute, Params } from '@angular/router';
 import {LayoutService} from "../layout/layout.service";
 
 @Component({
@@ -65,7 +64,6 @@ export class RoomsComponent implements OnInit {
 
     constructor(private dataService: DataService,
                 private ls: LayoutService,
-                private route : ActivatedRoute,
                 private menu : MenuService) {
         console.log("rooms component created");
         this.list = this.dataService.sortedArray(Room.tableStr, "name") as Room[];

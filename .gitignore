@@ -15,4 +15,5 @@ server/**/*.js
 server/**/*.js.map
 !server/app.js
 !app/systemjs.config.js
+!app/systemjs-angular-loader.js
 !app/build.js

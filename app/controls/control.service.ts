@@ -211,9 +211,6 @@ export class ControlService {
         return this.control.selectValueName();
     }
 
-    showLog($event) {
-        this.dataService.showControlLog($event, this.control);
-    }
 
     trackByValue(idx, obj) {
         return obj.value;

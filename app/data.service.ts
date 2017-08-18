@@ -575,20 +575,6 @@ module.exports = {
         )
     }
 
-    showControlLog($event,ctrl) {
-        var qParams = {
-            'control_id' : ctrl.id
-        };
-
-        this.getMData('control_log', qParams).then(
-            () => {
-
-            },
-            (error) => {
-                this.errorToast(error);
-            }
-        );
-    }
 
     sortedArray(table : string, sortProp : string = 'name') : DCSerializable[] {
         return this.dataModel.sortedArray(table, sortProp);

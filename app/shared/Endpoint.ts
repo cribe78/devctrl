@@ -35,7 +35,7 @@ export class Endpoint extends DCSerializable {
     commLogOptionsObj : {};
 
     static tableStr = "endpoints";
-    static tableLabel = "Endpoints";
+    tableLabel = "Endpoints";
     foreignKeys = [
         {
             type: EndpointType,

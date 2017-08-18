@@ -1,9 +1,11 @@
-import {dataServiceSchema} from "./data-service-schema";
 import {UserSession} from "./shared/UserSession";
 import * as io from "socket.io-client";
-import {IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData} from "./shared/DCSerializable";
+import {
+    IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData,
+    IDCTableDefinition
+} from "./shared/DCSerializable";
 import {ControlUpdateData} from "./shared/ControlUpdate";
-import {DCDataModel, IndexedDataSet} from "./shared/DCDataModel";
+import {DCDataModel, IDCSchema, IndexedDataSet} from "./shared/DCDataModel";
 import {Control} from "./shared/Control";
 import {Endpoint} from "./shared/Endpoint";
 import { Injectable, Inject } from "@angular/core";
@@ -343,11 +345,11 @@ module.exports = {
         return this.dataModel.getTableItem(key, tableName);
     }
 
-/**
-    getSchema(table: string) {
-        return this.schema[table];
+
+    get schema() : IDCSchema {
+        return this.dataModel.schema;
     }
- **/
+
 
     getTable(table: string) : IndexedDataSet<DCSerializable> {
         if (! this.tablePromises[table]) {
@@ -356,6 +358,7 @@ module.exports = {
 
         return this.dataModel[table];
     }
+
 
     /**
      * Get a promise object representing a request for table data

@@ -32,7 +32,7 @@ export class ActionTrigger extends DCSerializable {
     enabled: boolean = false;
 
     static tableStr = "watcher_rules";
-    static tableLabel = "Action Triggers";
+    tableLabel = "Action Triggers";
     static VALUE_TEST_EQUALS = "=";
     static VALUE_TEST_LESS_THAN = "<";
     static VALUE_TEST_GREATER_THAN = ">";

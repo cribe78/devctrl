@@ -16,7 +16,7 @@ export class Panel extends DCSerializable {
     panel_index: number = 1;
 
     static tableStr = "panels";
-    static tableLabel = "Panels"
+    tableLabel = "Panels"
     table: string;
 
     foreignKeys = [

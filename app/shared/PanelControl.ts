@@ -17,7 +17,7 @@ export class PanelControl extends DCSerializable {
     idx: number;
 
     static tableStr = "panel_controls";
-    static tableLabel = "Panel Controls";
+    tableLabel = "Panel Controls";
     table: string;
 
     foreignKeys = [

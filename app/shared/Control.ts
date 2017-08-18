@@ -50,7 +50,7 @@ export class Control extends DCSerializable {
     ];
 
     static tableStr = "controls";
-    static tableLabel = "Controls";
+    tableLabel = "Controls";
 
     // usertype and control_type values
     static CONTROL_TYPE_BOOLEAN = "boolean";

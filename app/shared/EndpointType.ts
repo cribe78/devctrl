@@ -7,7 +7,7 @@ export interface EndpointTypeData extends DCSerializableData {
 export class EndpointType extends DCSerializable {
     communicatorClass: string;
     static tableStr = "endpoint_types";
-    static tableLabel = "Endpoint Types";
+    tableLabel = "Endpoint Types";
 
     ownFields : IDCFieldDefinition[] = [
         {

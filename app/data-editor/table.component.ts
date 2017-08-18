@@ -1,9 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {IndexedDataSet} from "../shared/DCDataModel";
-import {DSTableDefinition} from "../data-service-schema";
 import {DataService} from "../data.service";
-import {DCSerializable} from "../shared/DCSerializable";
+import {DCSerializable, IDCFieldDefinition, IDCTableDefinition} from "../shared/DCSerializable";
 import {RecordEditorService} from "./record-editor.service";
 import {MenuService} from "../layout/menu.service";
 
@@ -96,7 +95,7 @@ import {MenuService} from "../layout/menu.service";
 export class TableComponent implements OnInit {
     @Input()tableName;
     data : IndexedDataSet<DCSerializable>;
-    schema : DSTableDefinition;
+    public schema : IDCTableDefinition;
     newRow;
     sortColumn = 'id';
     sortReversed = false;
@@ -113,10 +112,10 @@ export class TableComponent implements OnInit {
             this.tableName = params['name'];
             this.data = this.dataService.getTable(this.tableName);
             this.dataArray = this.dataService.sortedArray(this.tableName);
-            this.schema = this.dataService.getSchema(this.tableName);
+            this.schema = this.dataService.schema[this.tableName];
             this.dataService.publishStatusUpdate("table " + this.tableName + " loaded");
 
-            this.ms.pageTitle = this.tableName;
+            this.ms.pageTitle = this.schema.label;
         });
     }
 
@@ -154,7 +153,7 @@ export class TableComponent implements OnInit {
         this.recordService.editRecord($event, id, this.tableName);
     };
 
-    setSortColumn(field) {
+    setSortColumn(field : IDCFieldDefinition) {
         if ( 'fields.' + field.name === this.sortColumn ) {
             this.sortReversed = !this.sortReversed;
         }

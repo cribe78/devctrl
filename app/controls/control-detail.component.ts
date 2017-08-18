@@ -4,7 +4,6 @@ import {DataService} from "../data.service";
 import {MenuService} from "../layout/menu.service";
 import {Router, ActivatedRoute} from '@angular/router';
 import {IndexedDataSet} from "../shared/DCDataModel";
-import {DSTableDefinition} from "../data-service-schema";
 import {RecordEditorService} from "../data-editor/record-editor.service";
 import {ActionTrigger} from "../shared/ActionTrigger";
 
@@ -31,7 +30,7 @@ import {ActionTrigger} from "../shared/ActionTrigger";
                 <form>
                     <div class="settings-container">
                         <fk-autocomplete [object]="control"
-                            [field]="schema.fields[0]"
+                            [field]="control.fieldDefinitions[1]"
                             (onUpdate)="controlUpdated($event)">    
                         </fk-autocomplete>
                         <md-input-container>
@@ -50,7 +49,7 @@ import {ActionTrigger} from "../shared/ActionTrigger";
                             [(ngModel)]="control.usertype"
                             name="usertype">
                             <md-option [value]="option.value"
-                                       *ngFor="let option of schema.fields[3].options">
+                                       *ngFor="let option of control.ownFields[2].options">
                                 {{option.name}}
                             </md-option>                            
                         </md-select>
@@ -58,7 +57,7 @@ import {ActionTrigger} from "../shared/ActionTrigger";
                             [(ngModel)]="control.control_type"
                             name="control_type">
                             <md-option [value]="option.value"
-                                       *ngFor="let option of schema.fields[4].options">
+                                       *ngFor="let option of control.ownFields[3].options">
                                 {{option.name}}
                             </md-option>                            
                         </md-select>
@@ -178,7 +177,6 @@ import {ActionTrigger} from "../shared/ActionTrigger";
 })
 export class ControlDetailComponent implements OnInit {
     control : Control;
-    schema : DSTableDefinition;
     actionTriggers : IndexedDataSet<ActionTrigger>;
     constructor(private route : ActivatedRoute,
                 private ds: DataService,
@@ -186,7 +184,6 @@ export class ControlDetailComponent implements OnInit {
                 private menu : MenuService,) { }
 
     ngOnInit() {
-        this.schema = this.ds.getSchema(Control.tableStr);
         this.actionTriggers = this.ds.getTable(ActionTrigger.tableStr) as IndexedDataSet<ActionTrigger>;
         this.route.data.subscribe((data: { control: Control }) => {
             this.menu.currentTopLevel = MenuService.TOPLEVEL_DEVICES;

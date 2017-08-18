@@ -7,7 +7,7 @@ export interface OptionSetData extends DCSerializableData {
 export class OptionSet extends DCSerializable {
     options : { [key: string] : string} = {};
     static tableStr = "option_sets";
-    static tableLabel = "Option Sets";
+    tableLabel = "Option Sets";
 
     constructor(_id: string, data?: OptionSetData) {
         super(_id);

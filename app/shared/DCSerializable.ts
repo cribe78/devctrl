@@ -32,7 +32,8 @@ export enum DCFieldType {
     selectStatic = "select-static",
     fk = "fk",
     object = "object",
-    watcherActionValue = "watcher-action-value"
+    watcherActionValue = "watcher-action-value",
+    any = "any"
 }
 
 // The IDCFieldDefinition provides type information used by the application front end and DataModel
@@ -48,6 +49,13 @@ export interface IDCFieldDefinition {
     input_disabled?: boolean;
 }
 
+
+export interface IDCTableDefinition {
+    name: string,
+    label: string
+    fields: IDCFieldDefinition[];
+    foreignKeys: IDCForeignKeyDef[];
+}
 
 export interface IDCForeignKeyDef {
     type: any, // The class of the fk object
@@ -67,7 +75,8 @@ export abstract class DCSerializable {
     _name: string;
     dataLoaded: boolean;
     table : string;
-    foreignKeys: IDCForeignKeyDef[];
+    tableLabel : string = "Table";
+    foreignKeys: IDCForeignKeyDef[] = [];
     referenced: {
         [index: string]  : {
             [index: string] : DCSerializable
@@ -105,6 +114,19 @@ export abstract class DCSerializable {
         this.referenced[refObj.table][refObj._id] = refObj;
     }
 
+
+    static defaultDataObject(obj: DCSerializable) : DCSerializableData {
+        let data = { _id: obj._id, name: obj.name };
+
+        for (let field of obj.fieldDefinitions) {
+            if (typeof obj[field.name] !== 'undefined') {
+                data[field.name] = obj[field.name];
+            }
+        }
+
+        return data;
+    }
+
     equals(obj: DCSerializable) {
         return obj && obj._id == this._id;
     }
@@ -112,6 +134,10 @@ export abstract class DCSerializable {
     fkSelectName() {
         return this.name;
     }
+
+    getDataObject() : DCSerializableData {
+        return DCSerializable.defaultDataObject(this);
+    };
 
 
     itemRequestData(): IDCDataRequest {
@@ -149,34 +175,35 @@ export abstract class DCSerializable {
             idProperty + " for " + this.table);
     }
 
-
-    getDataObject() : DCSerializableData {
-        return DCSerializable.defaultDataObject(this);
-    };
-
-    static defaultDataObject(obj: DCSerializable) : DCSerializableData {
-        let data = { _id: obj._id, name: obj.name };
-
-        for (let field of obj.fieldDefinitions) {
-            if (typeof obj[field.name] !== 'undefined') {
-                data[field.name] = obj[field.name];
-            }
+    removeReference(refObj: DCSerializable) {
+        if (this.referenced[refObj.table] && this.referenced[refObj.table][refObj._id]) {
+            delete this.referenced[refObj.table][refObj._id];
         }
-
-        return data;
     }
+
+
+    tableDefinition() : IDCTableDefinition {
+        return {
+            name: this.table,
+            label: this.tableLabel,
+            fields: this.fieldDefinitions,
+            foreignKeys: this.foreignKeys
+        }
+    }
+
+    static typeTableDefinition(ctor : { new(id) : DCSerializable}) : IDCTableDefinition {
+        let obj = new ctor("0");
+
+        return obj.tableDefinition();
+    }
+
+
 
     /**
      * For use as an the ngFor trackBy function
      */
     static trackById(idx : number, obj: DCSerializable) {
         return obj._id;
-    }
-
-    removeReference(refObj: DCSerializable) {
-        if (this.referenced[refObj.table] && this.referenced[refObj.table][refObj._id]) {
-            delete this.referenced[refObj.table][refObj._id];
-        }
     }
 
  }

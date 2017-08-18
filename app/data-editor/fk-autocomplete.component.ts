@@ -2,9 +2,8 @@ import {Component, Input, Output, OnInit, EventEmitter, ViewChild} from '@angula
 import {Router, ActivatedRoute} from '@angular/router';
 import {MdMenuTrigger} from '@angular/material';
 import {IndexedDataSet} from "../shared/DCDataModel";
-import {DCSerializable} from "../shared/DCSerializable";
+import {DCSerializable, IDCFieldDefinition} from "../shared/DCSerializable";
 import {DataService} from "../data.service";
-import {DSFieldDefinition} from "../data-service-schema";
 
 @Component({
     selector: 'fk-autocomplete',
@@ -49,7 +48,7 @@ input {
 export class FkAutocompleteComponent implements OnInit
 {
     @Input()object : DCSerializable;
-    @Input()field : DSFieldDefinition;
+    @Input()field : IDCFieldDefinition;
 
     @Output() onUpdate = new EventEmitter<any>();
 

@@ -12,14 +12,18 @@
                         <input mdInput
                                [placeholder]="field.label"
                                [(ngModel)]="obj[field.name]"
-                               name="{{field.name}}">
+                               name="{{field.name}}"
+                               [mdTooltip]="field.tooltip"
+                               [disabled]="field.inputDisabled">
                     </md-input-container>
                     <md-input-container  *ngSwitchCase="'int'">
                         <input mdInput
-                                  type="number"
-                                  [placeholder]="field.label"
-                                  [(ngModel)]="obj[field.name]"
-                                  name="{{field.name}}">
+                               type="number"
+                               [placeholder]="field.label"
+                               [(ngModel)]="obj[field.name]"
+                               name="{{field.name}}"
+                               [mdTooltip]="field.tooltip"
+                               [disabled]="field.inputDisabled">
                     </md-input-container>
                     <fk-autocomplete *ngSwitchCase="'fk'"
                                      [object]="obj"
@@ -30,7 +34,8 @@
                                [placeholder]="field.label"
                                [(ngModel)]="obj[field.name]"
                                name="{{field.name}}"
-                               style="margin-top: 20px; margin-bottom: 6px;">
+                               style="margin-top: 20px; margin-bottom: 6px;"
+                               [mdTooltip]="field.tooltip">
                         <md-option [value]="option.value"
                                    *ngFor="let option of field.options">
                             {{option.name}}
@@ -39,7 +44,8 @@
                     <md-checkbox  *ngSwitchCase="'bool'"
                                   class="md-primary"
                                   [(ngModel)]="obj[field.name]"
-                                  name="{{field.name}}">
+                                  name="{{field.name}}"
+                                  [mdTooltip]="field.tooltip">
                         {{field.label}}
                     </md-checkbox>
                     <devctrl-object-editor *ngSwitchCase="'object'"

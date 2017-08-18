@@ -32,12 +32,15 @@ export class Panel extends DCSerializable {
         {
             name: "room_id",
             type: DCFieldType.fk,
-            label: "Room"
+            label: "Room",
+            tooltip: "The Room this Panel appears in"
         },
         {
             name: "grouping",
             type: DCFieldType.string,
-            label: "Subgroup"
+            label: "Room Tab",
+            tooltip: "The tab that this panel appears on"
+
         },
         {
             name: "type",
@@ -47,12 +50,14 @@ export class Panel extends DCSerializable {
                 { name: "List", value: "list"},
                 { name: "Switch Group", value: "switch-group"},
                 { name: "Horizontal", value: "horizontal"}
-            ]
+            ],
+            tooltip: "The type of Panel"
         },
         {
             name: "panel_index",
             type: DCFieldType.int,
-            label: "Order"
+            label: "Order",
+            tooltip: "Panels within a tab are arranged by order"
         }
     ];
 

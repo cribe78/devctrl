@@ -79,12 +79,14 @@ export class Control extends DCSerializable {
         {
             name: "endpoint_id",
             type: DCFieldType.fk,
-            label: "Endpoint"
+            label: "Endpoint",
+            tooltip: "The Endpoint this control belongs to"
         },
         {
             name: "ctid",
             type: DCFieldType.string,
-            label: "CTID"
+            label: "CTID",
+            tooltip: "A unique identifier assigned by the NControl communicator"
         },
         {
             name: "usertype",
@@ -103,7 +105,8 @@ export class Control extends DCSerializable {
                 { name: "Slider", value: Control.USERTYPE_SLIDER},
                 { name: "2D Slider", value: Control.USERTYPE_SLIDER_2D},
                 { name: "Switch", value: Control.USERTYPE_SWITCH}
-            ]
+            ],
+            tooltip: "Determines how this Control is displayed in the UI"
         },
         {
             name: "control_type",
@@ -116,34 +119,41 @@ export class Control extends DCSerializable {
                 { name: "range", value: Control.CONTROL_TYPE_RANGE},
                 { name: "string", value: Control.CONTROL_TYPE_STRING},
                 { name: "xy", value: Control.CONTROL_TYPE_XY}
-            ]
+            ],
+            tooltip: "Defined and used by the NControl communicator",
+            inputDisabled: true
         },
         {
             name: "poll",
             type: DCFieldType.bool,
-            label: "Poll?"
+            label: "Poll?",
+            tooltip: "Should endpoint be periodically queried for value?"
         },
         {
             name: "config",
             type: DCFieldType.object,
-            label: "Default Config"
+            label: "Default Config",
+            tooltip: "A collection of Control specific settings"
         },
         {
             name: "option_set_id",
             type: DCFieldType.fk,
             label: "Option Set",
-            optional: true
+            optional: true,
+            tooltip: "The collection of options to use for a select Control"
         },
         {
             name: "value",
             type: DCFieldType.string,
-            label: "Value"
+            label: "Value",
+            tooltip: "The current value of this Control"
         },
         {
             name: "ephemeral",
             type: DCFieldType.bool,
             label: "Ephemeral",
-            optional: true
+            optional: true,
+            tooltip: "The Control value will not be stored in the database for ephemeral Controls"
         }
     ];
 

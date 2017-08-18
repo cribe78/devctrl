@@ -58,38 +58,45 @@ export class Endpoint extends DCSerializable {
             {
                 name: "endpoint_type_id",
                 type: DCFieldType.fk,
-                label: "Endpoint Type"
+                label: "Endpoint Type",
+                tooltip: "Determines the control protocol used for device communication"
             },
             {
                 name: "ip",
                 type: DCFieldType.string,
-                label: "Address"
+                label: "Address",
+                tooltip: "The IP or device address"
             },
             {
                 name: "port",
                 type: DCFieldType.int,
-                label: "Port"
+                label: "Port",
+                tooltip: "The TCP port number for a networked device"
             },
             {
                 name: "config",
                 type: DCFieldType.object,
-                label: "Device Specific Config"
+                label: "Device Specific Config",
+                tooltip: "A collection on device specific config options"
             },
             {
                 name : "commLogOptions",
                 type: DCFieldType.string,
-                label: "Ncontrol Log Options"
+                label: "Ncontrol Log Options",
+                tooltip: "comma seperated list.  options include: polling, matching, rawData, connection, updates"
             },
             {
                 name: "status",
                 type: DCFieldType.string,
                 label: "Status",
-                input_disabled: true
+                inputDisabled: true,
+                tooltip: "The current communications status of the Endpoint"
             },
             {
                 name: "enabled",
                 type: DCFieldType.bool,
-                label: "Enabled?"
+                label: "Enabled?",
+                tooltip: "Disable to prevent connection attempts to the Endpoint"
             }
         ]);
 

@@ -39,18 +39,21 @@ export class PanelControl extends DCSerializable {
         {
             name: "control_id",
             type: DCFieldType.fk,
-            label: "Control"
+            label: "Control",
+            tooltip: "The Control to be included"
         },
         {
             name: "panel_id",
             type: DCFieldType.fk,
-            label: "Panel"
+            label: "Panel",
+            tooltip: "The Panel which will include the Control"
         },
         {
             name: "idx",
             type: DCFieldType.int,
             label: "Order",
-            optional: true
+            optional: true,
+            tooltip: "The position of the Control within this Panel"
         }
     ];
 
@@ -59,6 +62,12 @@ export class PanelControl extends DCSerializable {
         this.table = PanelControl.tableStr;
 
         this.fieldDefinitions = this.fieldDefinitions.concat(this.ownFields);
+
+        // Set a custom value for the name tooltip
+        if (this.fieldDefinitions[0].name == "name") {
+            this.fieldDefinitions[0].tooltip = "Name of the Control in this context";
+        }
+
 
         if (data) {
             this.loadData(data);

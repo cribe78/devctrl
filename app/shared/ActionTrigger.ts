@@ -63,22 +63,26 @@ export class ActionTrigger extends DCSerializable {
             {
                 name: "trigger_control_id",
                 type: DCFieldType.fk,
-                label: "Trigger Control"
+                label: "Trigger Control",
+                tooltip: "The Control which will trigger an action"
             },
             {
                 name: "action_control_id",
                 type: DCFieldType.fk,
-                label: "Action Control"
+                label: "Action Control",
+                tooltip: "The Control which will be acted upon"
             },
             {
                 name: "action_control_value",
                 type: DCFieldType.watcherActionValue,
-                label: "Action Value"
+                label: "Action Value",
+                tooltip: "The value the Action Control will be set to"
             },
             {
                 name: "enabled",
                 type: DCFieldType.bool,
-                label: "Enabled?"
+                label: "Enabled?",
+                tooltip: "Disabling a rule prevents its execution"
             },
             {
                 name: "value_test",
@@ -89,12 +93,14 @@ export class ActionTrigger extends DCSerializable {
                     { name: "=", value: "="},
                     { name: "<", value: "<"},
                     { name: ">", value: ">"}
-                ]
+                ],
+                tooltip: "Test the trigger value against a criteria before triggering an action"
             },
             {
                 name: "trigger_value",
                 type: DCFieldType.string,
-                label: "Trigger Value"
+                label: "Trigger Value",
+                tooltip: "A value of the Trigger Control used in the value test"
             }
         ]);
 

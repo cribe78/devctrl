@@ -15,7 +15,8 @@ import {DataService} from "../data.service";
            [(ngModel)]="inputText"
            (focus)="openAcMenu()"
            (blur)="focusLost()"
-           [name]="field.name" >
+           [name]="field.name"
+           [mdTooltip]="field.tooltip">
 </md-input-container>
 
 <div class="ac-menu" [style.visibility]="menuVisibility" #acmenu>

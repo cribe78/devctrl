@@ -23,27 +23,32 @@ export class ActionLog extends DCSerializable {
         {
             name: "control_id",
             type: DCFieldType.fk,
-            label: "Control"
+            label: "Control",
+            tooltip: "The affected Control"
         },
         {
             name: "client_id",
             type: DCFieldType.string,
-            label: "Client"
+            label: "Client",
+            tooltip: "The client requesting the action"
         },
         {
             name: "new_value",
             type: DCFieldType.string,
-            label: "New Value"
+            label: "New Value",
+            tooltip: "The new Control value"
         },
         {
             name: "old_value",
             type: DCFieldType.string,
-            label: "Old Value"
+            label: "Old Value",
+            tooltip: "The old Control value"
         },
         {
             name: "ts",
             type: DCFieldType.int,
-            label: "Timestamp"
+            label: "Timestamp",
+            tooltip: "The time of the action"
         }
     ]
 

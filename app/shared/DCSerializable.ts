@@ -46,7 +46,8 @@ export interface IDCFieldDefinition {
         name : string;
         value : string;
     }[],
-    input_disabled?: boolean;
+    inputDisabled?: boolean;
+    tooltip: string;
 }
 
 
@@ -64,12 +65,6 @@ export interface IDCForeignKeyDef {
     fkTable: string // Name of foreign table
 }
 
-export let dcNameField : IDCFieldDefinition = {
-    name: "name",
-    type: DCFieldType.string,
-    label: "Name"
-};
-
 
 export abstract class DCSerializable {
     _name: string;
@@ -82,7 +77,12 @@ export abstract class DCSerializable {
             [index: string] : DCSerializable
         }
     };
-    fieldDefinitions : IDCFieldDefinition[] = [dcNameField];
+    fieldDefinitions : IDCFieldDefinition[] = [{
+        name: "name",
+        type: DCFieldType.string,
+        label: "Name",
+        tooltip: "The Name of this object"
+    }];
 
     constructor(public _id: string) {
         this.dataLoaded = false;

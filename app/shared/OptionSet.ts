@@ -17,7 +17,8 @@ export class OptionSet extends DCSerializable {
             {
                 name: 'options',
                 type: DCFieldType.object,
-                label: "Options"
+                label: "Options",
+                tooltip: "An object containing Option names and values"
             }
         ]);
 

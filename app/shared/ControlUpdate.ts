@@ -28,27 +28,33 @@ export class ControlUpdate extends DCSerializable {
         {
             name: 'control_id',
             type: DCFieldType.fk,
-            label: "Control"
+            label: "Control",
+            tooltip: "The updated control"
         },
         {
             name: "value",
             type: DCFieldType.any,
-            label: "Value"
+            label: "Value",
+            tooltip: "The new control value"
         },
         {
             name: "type",
             type: DCFieldType.string,
-            label: "Type"
+            label: "Type",
+            tooltip: "source type of update"
         },
         {
             name: "status",
             type: DCFieldType.string,
-            label: "Status"
+            label: "Status",
+            tooltip: "Status up update"
         },
         {
             name: "source",
             type: DCFieldType.string,
-            label: "Source"
+            label: "Source",
+            tooltip: "source id of update"
+
         }
     ];
 

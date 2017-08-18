@@ -13,7 +13,8 @@ export class EndpointType extends DCSerializable {
         {
             name: "communicatorClass",
             type: DCFieldType.string,
-            label: "Communicator Class"
+            label: "Communicator Class",
+            tooltip: "The path to the communicator class file"
         }
     ];
 

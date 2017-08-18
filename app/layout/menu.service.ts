@@ -52,7 +52,7 @@ export class MenuService {
     static TOPLEVEL_ROOMS = "rooms";
     static TOPLEVEL_DEVICES = "devices";
     static TOPLEVEL_CONFIG = "config";
-    menuList : MSMenuItem[] = [this.menuObj['rooms'], this.menuObj['devices'], this.menuObj['config']];
+    menuList : MSMenuItem[] = [this.menuObj['rooms']]; //, this.menuObj['devices'], this.menuObj['config']];
     _currentTopLevel : string;
     _openTopLevel : string;
     routeData;
@@ -137,6 +137,7 @@ export class MenuService {
             this.menuObj['rooms'].children.push(roomMenu);
         }
 
+        /**
         this.menuObj['devices'].children = [];
         for (let eId in this.endpoints) {
             let endpointMenu = {
@@ -147,6 +148,7 @@ export class MenuService {
 
             this.menuObj['devices'].children.push(endpointMenu);
         };
+         **/
 
         return this.menuList;
     }

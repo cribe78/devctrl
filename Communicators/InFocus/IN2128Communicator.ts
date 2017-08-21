@@ -56,7 +56,7 @@ class IN2128Communicator extends SynchronousTCPCommunicator {
             cmdQueryStr: `(${cmd}?`,
             cmdQueryResponseRE: `\\(0-1,(\\d)`,  // eg. (0-1,1)
             cmdUpdateTemplate: `(${cmd}%i!)`,
-            cmdUpdateResponseTemplate: `(0-1,%i`,
+            cmdUpdateResponseTemplate: `\\(0-1,%i`,
             endpoint_id: this.endpoint_id,
             control_type: Control.CONTROL_TYPE_BOOLEAN,
             usertype: Control.USERTYPE_SWITCH,

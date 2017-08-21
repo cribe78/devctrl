@@ -15,7 +15,6 @@ import {LayoutService} from "../layout/layout.service";
     <div class="devctrl-card">
         <md-toolbar color="primary">
             <div class="devctrl-toolbar-tools">
-                <button md-button *devctrlAdminOnly (click)="addControl($event)">Add Control</button>
                 <button md-button *devctrlAdminOnly (click)="editEndpoint($event)">Edit Device</button>
                 <button md-button *devctrlAdminOnly (click)="generateConfig($event)">Generate Config</button>
                 <span class="devctrl-spacer">&nbsp;</span>
@@ -97,15 +96,6 @@ export class EndpointComponent implements OnInit {
         return !! panel.opened;
     }
 
-    addControl($event) {
-        this.recordService.editRecord($event, '0', 'controls',
-            {
-                endpoint: this.obj,
-                ctid: this.endpointId + "-",
-                poll: false
-            }
-        );
-    }
 
     editEndpoint($event) {
         this.recordService.editRecord($event, this.endpointId, 'endpoints');

@@ -4,8 +4,10 @@ export interface RoomData extends DCSerializableData {
     name: string;
 }
 
+
 export class Room extends DCSerializable {
     static tableStr = "rooms";
+    tableLabel = "Rooms";
     table: string;
 
     constructor(_id: string, data?: RoomData) {

@@ -1,4 +1,4 @@
-import {DCSerializableData, DCSerializable} from "./DCSerializable";
+import {DCSerializableData, DCSerializable, DCFieldType} from "./DCSerializable";
 import {Control} from "./Control";
 import {ControlUpdate, ControlUpdateData} from "./ControlUpdate";
 /**
@@ -32,38 +32,77 @@ export class ActionTrigger extends DCSerializable {
     enabled: boolean = false;
 
     static tableStr = "watcher_rules";
+    tableLabel = "Action Triggers";
     static VALUE_TEST_EQUALS = "=";
     static VALUE_TEST_LESS_THAN = "<";
     static VALUE_TEST_GREATER_THAN = ">";
     static VALUE_TEST_ANY = "any";
 
+    foreignKeys = [
+        {
+            type: Control,
+            fkObjProp: "trigger_control",
+            fkIdProp: "trigger_control_id",
+            fkTable: Control.tableStr
+        },
+        {
+            type: Control,
+            fkObjProp: "action_control",
+            fkIdProp: "action_control_id",
+            fkTable: Control.tableStr
+        }
+    ];
+
 
     constructor(_id: string, data?: ActionTriggerData) {
         super(_id);
         this.table = ActionTrigger.tableStr;
-        this.requiredProperties = [
-            'trigger_control_id',
-            'trigger_value',
-            'value_test',
-            'action_control_id',
-            'action_control_value',
-            'enabled'
-        ];
 
-        this.foreignKeys = [
+
+        this.fieldDefinitions = this.fieldDefinitions.concat([
             {
-                type: Control,
-                fkObjProp: "trigger_control",
-                fkIdProp: "trigger_control_id",
-                fkTable: Control.tableStr
+                name: "trigger_control_id",
+                type: DCFieldType.fk,
+                label: "Trigger Control",
+                tooltip: "The Control which will trigger an action"
             },
             {
-                type: Control,
-                fkObjProp: "action_control",
-                fkIdProp: "action_control_id",
-                fkTable: Control.tableStr
+                name: "action_control_id",
+                type: DCFieldType.fk,
+                label: "Action Control",
+                tooltip: "The Control which will be acted upon"
+            },
+            {
+                name: "action_control_value",
+                type: DCFieldType.watcherActionValue,
+                label: "Action Value",
+                tooltip: "The value the Action Control will be set to"
+            },
+            {
+                name: "enabled",
+                type: DCFieldType.bool,
+                label: "Enabled?",
+                tooltip: "Disabling a rule prevents its execution"
+            },
+            {
+                name: "value_test",
+                type: DCFieldType.selectStatic,
+                label: "Value Test",
+                options: [
+                    { name: "any", value: "any"},
+                    { name: "=", value: "="},
+                    { name: "<", value: "<"},
+                    { name: ">", value: ">"}
+                ],
+                tooltip: "Test the trigger value against a criteria before triggering an action"
+            },
+            {
+                name: "trigger_value",
+                type: DCFieldType.string,
+                label: "Trigger Value",
+                tooltip: "A value of the Trigger Control used in the value test"
             }
-        ];
+        ]);
 
         if (data) {
             this.loadData(data);

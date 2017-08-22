@@ -1,9 +1,11 @@
-import {dataServiceSchema} from "./data-service-schema";
 import {UserSession} from "./shared/UserSession";
 import * as io from "socket.io-client";
-import {IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData} from "./shared/DCSerializable";
+import {
+    IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData,
+    IDCTableDefinition
+} from "./shared/DCSerializable";
 import {ControlUpdateData} from "./shared/ControlUpdate";
-import {DCDataModel, IndexedDataSet} from "./shared/DCDataModel";
+import {DCDataModel, IDCSchema, IndexedDataSet} from "./shared/DCDataModel";
 import {Control} from "./shared/Control";
 import {Endpoint} from "./shared/Endpoint";
 import { Injectable, Inject } from "@angular/core";
@@ -22,7 +24,6 @@ import {ActionLog} from "./shared/ActionLog";
 @Injectable()
 export class DataService {
     socket: SocketIOClient.Socket;
-    schema;
     //private http : Http;
     userSession : UserSession;
     private initialized = false;
@@ -45,8 +46,7 @@ export class DataService {
                 private http : Http,
                 private snackBar : MdSnackBar,
                 private mdDialog : MdDialog) {
-        this.schema = dataServiceSchema;
-
+        /**
         for (let table in this.schema) {
             let tschema = this.schema[table];
             if (tschema.foreign_keys) {
@@ -56,7 +56,7 @@ export class DataService {
                 }
             }
         }
-
+         **/
 
         this.userSession = {
             _id: '',
@@ -319,7 +319,6 @@ module.exports = {
         let ctor = this.dataModel.types[tableName];
 
         let newRow = new ctor("0");
-        newRow.loadDefaults();
         Object.assign(newRow, newData);
 
         return newRow;
@@ -347,9 +346,10 @@ module.exports = {
     }
 
 
-    getSchema(table: string) {
-        return this.schema[table];
+    get schema() : IDCSchema {
+        return this.dataModel.schema;
     }
+
 
     getTable(table: string) : IndexedDataSet<DCSerializable> {
         if (! this.tablePromises[table]) {
@@ -358,6 +358,7 @@ module.exports = {
 
         return this.dataModel[table];
     }
+
 
     /**
      * Get a promise object representing a request for table data
@@ -574,20 +575,6 @@ module.exports = {
         )
     }
 
-    showControlLog($event,ctrl) {
-        var qParams = {
-            'control_id' : ctrl.id
-        };
-
-        this.getMData('control_log', qParams).then(
-            () => {
-
-            },
-            (error) => {
-                this.errorToast(error);
-            }
-        );
-    }
 
     sortedArray(table : string, sortProp : string = 'name') : DCSerializable[] {
         return this.dataModel.sortedArray(table, sortProp);

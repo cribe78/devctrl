@@ -1,25 +1,29 @@
 <md-toolbar color="primary" layout-align="center center">
-    <span *ngIf="obj.id !== '0'">{{schema.label}}[{{obj._id}}]</span>
-    <span *ngIf="obj.id == '0'">New {{schema.label}} Record</span>
+    <span *ngIf="obj.id !== '0'">{{obj.tableLabel}}[{{obj._id}}]</span>
+    <span *ngIf="obj.id == '0'">New {{obj.tableLabel}} Record</span>
 </md-toolbar>
 <div class="record-container">
     <h3 md-subheader>Edit</h3>
     <form >
         <div class="form-container">
-            <ng-template ngFor let-field [ngForOf]="schema.fields" [ngForTrackBy]="trackByName">
+            <ng-template ngFor let-field [ngForOf]="obj.fieldDefinitions" [ngForTrackBy]="trackByName">
                 <div class="field-container" [ngSwitch]="field.type">
                     <md-input-container *ngSwitchCase="'string'">
                         <input mdInput
                                [placeholder]="field.label"
                                [(ngModel)]="obj[field.name]"
-                               name="{{field.name}}">
+                               name="{{field.name}}"
+                               [mdTooltip]="field.tooltip"
+                               [disabled]="field.inputDisabled">
                     </md-input-container>
                     <md-input-container  *ngSwitchCase="'int'">
                         <input mdInput
-                                  type="number"
-                                  [placeholder]="field.label"
-                                  [(ngModel)]="obj[field.name]"
-                                  name="{{field.name}}">
+                               type="number"
+                               [placeholder]="field.label"
+                               [(ngModel)]="obj[field.name]"
+                               name="{{field.name}}"
+                               [mdTooltip]="field.tooltip"
+                               [disabled]="field.inputDisabled">
                     </md-input-container>
                     <fk-autocomplete *ngSwitchCase="'fk'"
                                      [object]="obj"
@@ -30,7 +34,8 @@
                                [placeholder]="field.label"
                                [(ngModel)]="obj[field.name]"
                                name="{{field.name}}"
-                               style="margin-top: 20px; margin-bottom: 6px;">
+                               style="margin-top: 20px; margin-bottom: 6px;"
+                               [mdTooltip]="field.tooltip">
                         <md-option [value]="option.value"
                                    *ngFor="let option of field.options">
                             {{option.name}}
@@ -39,7 +44,8 @@
                     <md-checkbox  *ngSwitchCase="'bool'"
                                   class="md-primary"
                                   [(ngModel)]="obj[field.name]"
-                                  name="{{field.name}}">
+                                  name="{{field.name}}"
+                                  [mdTooltip]="field.tooltip">
                         {{field.label}}
                     </md-checkbox>
                     <devctrl-object-editor *ngSwitchCase="'object'"

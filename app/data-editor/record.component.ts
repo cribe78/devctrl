@@ -1,5 +1,4 @@
 import {Component, Input} from '@angular/core';
-import {DSTableDefinition} from "../data-service-schema";
 import {DCSerializable} from "../shared/DCSerializable";
 import {DataService} from "../data.service";
 import { MdDialogRef } from '@angular/material';
@@ -28,10 +27,8 @@ import { MdDialogRef } from '@angular/material';
 })
 export class RecordComponent {
     newRow : boolean;
-    schema : DSTableDefinition;
     editStack = [];
     obj: DCSerializable;
-
 
     constructor(private dataService: DataService,
                 public dialogRef: MdDialogRef<RecordComponent>) {}
@@ -49,7 +46,6 @@ export class RecordComponent {
     editOtherRow(row : DCSerializable) {
         this.editStack.push(this.obj);
         this.obj = row;
-        this.schema = this.dataService.getSchema(row.table);
     }
 
     fkName(prop) {
@@ -78,7 +74,6 @@ export class RecordComponent {
     close(popStack = false) {
         if (popStack && this.editStack.length > 0) {
             this.obj = this.editStack.pop();
-            this.schema = this.dataService.getSchema(this.obj.table);
         }
         else {
             this.dialogRef.close();

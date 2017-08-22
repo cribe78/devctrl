@@ -36,7 +36,6 @@ import {MenuService} from "../layout/menu.service";
 })
 export class ConfigDataComponent implements OnInit
 {
-    schema;
     schemaArray;
 
     constructor(private route : ActivatedRoute,
@@ -44,10 +43,8 @@ export class ConfigDataComponent implements OnInit
                 private dataService : DataService) {}
 
     ngOnInit() {
-        this.schema = this.dataService.schema;
-        this.schemaArray = Object.keys(this.schema).map((key) => {
-            this.schema[key]['name'] = key;
-            return this.schema[key];
+        this.schemaArray = Object.keys(this.dataService.schema).map( (tableName) => {
+            return this.dataService.schema[tableName];
         });
         this.menu.currentTopLevel = MenuService.TOPLEVEL_CONFIG;
         this.menu.pageTitle = "Data Tables";

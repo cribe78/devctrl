@@ -6,8 +6,6 @@ TODO: roll back data model changes on error
 TODO: reorder device controls
 TODO: Add login page for unauthenticated or unauthorized users
 TODO: dummy control for triggering watcher actions
-TODO: retain selected tab in Room
 TODO: edit client name
-TODO: Field labels missing in record editor
 TODO: resolve routes based on partial GUIDs
-TODO: remove JS files from repo
+TODO: Search box on devices page

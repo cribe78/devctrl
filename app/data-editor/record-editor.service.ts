@@ -26,7 +26,6 @@ export class RecordEditorService {
         let recRef = this.mdDialog.open(RecordComponent);
         recRef.componentInstance.newRow = id == "0";
         recRef.componentInstance.obj = record;
-        recRef.componentInstance.schema = this.dataService.getSchema(tableName);
     }
 
     /**

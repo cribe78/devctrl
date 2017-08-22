@@ -27,7 +27,8 @@
             <md-icon>more_vert</md-icon>
         </button>
         <md-menu #adminmenu="mdMenu">
-            <button md-menu-item (click)="cs.editControl($event)">
+            <button md-menu-item (click)="cs.editControl($event)"
+                    mdTooltip="View Control Details">
                     <md-icon>create</md-icon>
                     Control
             </button>
@@ -39,10 +40,6 @@
                            (click)="cs.editOptions()">
                     <md-icon>create</md-icon>
                     Control Options
-            </button>
-            <button md-menu-item (click)="cs.showLog($event)">
-                    <md-icon>change_history</md-icon>
-                    Control Log
             </button>
         </md-menu>
     </div>

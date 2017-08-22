@@ -23,6 +23,13 @@ import {  ActivatedRoute } from '@angular/router';
             <p>{{subitem.name}}</p>
         </a>
         <md-divider></md-divider>
+        <a md-list-item (click)="menu.go(['devices'])">
+            Devices
+        </a>
+        <md-divider></md-divider>
+        <a md-list-item (click)="menu.go(['config', 'data'])">
+            Browse Data
+        </a>
     </ng-template>
 </md-nav-list>
 `,

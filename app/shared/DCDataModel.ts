@@ -12,13 +12,20 @@ import {Room, RoomData} from "./Room";
 import {Endpoint, EndpointData} from "./Endpoint";
 import {EndpointType, EndpointTypeData} from "./EndpointType";
 import {Control, ControlData} from "./Control";
-import {DCSerializable, IDCForeignKeyDef, DCSerializableData, IDCDataDelete} from "./DCSerializable";
+import {
+    DCSerializable, IDCForeignKeyDef, DCSerializableData, IDCDataDelete,
+    IDCTableDefinition
+} from "./DCSerializable";
 import {ActionTrigger, ActionTriggerData} from "./ActionTrigger";
 import {OptionSet, OptionSetData} from "./OptionSet";
 
 
 export interface IndexedDataSet<T> {
     [index: string] : T;
+}
+
+export interface IDCSchema {
+    [index: string] : IDCTableDefinition;
 }
 
 export class DCDataModel {
@@ -33,20 +40,28 @@ export class DCDataModel {
     debug: (message: any, ...args: any[]) => void;
     sortedArrays : any = {};
 
-    types = {
-        endpoints : Endpoint,
-        endpoint_types : EndpointType,
-        controls : Control,
-        option_sets: OptionSet,
-        panels: Panel,
-        panel_controls: PanelControl,
-        rooms: Room,
-        watcher_rules: ActionTrigger,
-    };
+    typeList = [
+        ActionTrigger,
+        Control,
+        Endpoint,
+        EndpointType,
+        OptionSet,
+        Panel,
+        PanelControl,
+        Room
+    ];
+    types : { [index: string] : { new(id, data?) : DCSerializable}} = {};
+    schema : IDCSchema = {};
 
 
     constructor() {
         this.debug = console.log;
+
+        for (let type of this.typeList) {
+            let tschema = DCSerializable.typeTableDefinition(type);
+            this.types[tschema.name] = type;
+            this.schema[tschema.name]  = tschema;
+        }
     };
 
     loadData(data: any) {

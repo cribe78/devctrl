@@ -9,6 +9,7 @@ ExecStart=/usr/bin/node app.js %i
 #WorkingDirectory=/var/www/html/controller.dwi.ufl.edu
 KillMode=process
 Restart=on-failure
+StopWhenUnneeded=yes
 
 [Install]
 WantedBy=ncontrol.target

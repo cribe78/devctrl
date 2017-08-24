@@ -72,8 +72,9 @@ export class RoomsComponent implements OnInit {
     ngOnInit() {
         console.log("rooms component initialized");
         this.menu.currentTopLevel = MenuService.TOPLEVEL_ROOMS;
-        this.menu.pageTitle = "Locations";
-        this.menu.toolbarSelectDisable();
+        this.menu.pageTitle = "Rooms";
+        //this.menu.toolbarSelectDisable();
+        this.menu.parentName = "";
     }
 
     cols() {

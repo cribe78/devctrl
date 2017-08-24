@@ -107,7 +107,8 @@ export class RoomComponent implements OnInit {
 
             this.menu.currentTopLevel = MenuService.TOPLEVEL_ROOMS;
             this.menu.pageTitle = this.obj.name;
-            this.menu.toolbarSelectTable("rooms", ['rooms'], this.obj._id);
+            this.menu.parentName = "";
+            //this.menu.toolbarSelectTable("rooms", ['rooms'], this.obj._id);
             this.panels = <IndexedDataSet<Panel>>this.obj.referenced[Panel.tableStr];
 
             if (! this.config.rooms[this.obj._id]) {

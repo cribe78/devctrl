@@ -116,6 +116,7 @@ export class TableComponent implements OnInit {
             this.dataService.publishStatusUpdate("table " + this.tableName + " loaded");
 
             this.ms.pageTitle = this.schema.label;
+            this.ms.parentName = "";
         });
     }
 

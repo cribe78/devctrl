@@ -55,6 +55,7 @@ export class EndpointsComponent implements OnInit {
         this.endpointsList = this.dataService.sortedArray('endpoints', 'name') as Endpoint[];
         this.menu.currentTopLevel = MenuService.TOPLEVEL_DEVICES;
         this.menu.pageTitle = "Devices";
+        this.menu.parentName = "";
     }
 
     addEndpoint($event) {

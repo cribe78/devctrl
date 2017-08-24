@@ -18,13 +18,16 @@ export class MenuService {
     items : any[];
     itemsObj : { [index: string] : any};
     private _pageTitle;
+    parentName = "";
+    parentRoute = [];
     menuConfig;
     toolbarSelect;
     endpoints : IndexedDataSet<Endpoint>;
     rooms : IndexedDataSet<Room>;
+    //TODO: clean this up once the new static menu goes into production
     menuObj : { [index: string]: MSMenuItem } = {
         "rooms" : {
-            name: "Locations",
+            name: "Rooms",
             route: ['rooms'],
             isOpened: false,
             children: []
@@ -106,6 +109,10 @@ export class MenuService {
         else {
             this.router.navigate([state.name, state.params]);
         }
+    }
+
+    goToParent() {
+        this.router.navigate(this.parentRoute);
     }
 
     hideSidenavButtons() {

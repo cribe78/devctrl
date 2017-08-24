@@ -23,7 +23,7 @@ import {LayoutService} from "./layout.service";
     </md-toolbar>
     <md-toolbar color="primary" class="devctrl-main-toolbar">
         <div class="devctrl-main-toolbar devctrl-ctrl-select">
-            <md-select *ngIf="menu.toolbarSelect.enabled && ls.desktop"
+            <!-- <md-select *ngIf="menu.toolbarSelect.enabled && ls.desktop"
                         aria-label="Select Page"
                         name="toolbarSelect"
                        [(ngModel)]="menu.toolbarSelect.selected"
@@ -34,7 +34,10 @@ import {LayoutService} from "./layout.service";
                     {{option.name}}
                 </md-option>
             </md-select>
+            -->
             <span class="devctrl-pagetitle text-headline" >
+                <div class="dc-parent-link" *ngIf="menu.parentName" (click)="menu.goToParent()">{{menu.parentName}}</div>
+                <div *ngIf="menu.parentName">&nbsp;>&nbsp;</div>
                 <div>{{menu.pageTitle}}</div>
             </span>
             <div class="devctrl-client-info">
@@ -46,7 +49,7 @@ import {LayoutService} from "./layout.service";
                 <md-icon>more_vert</md-icon>
             </button>
             <md-menu #adminmenu="mdMenu">
-                <button md-menu-item (click)="adminLogin()">
+                <button md-menu-item *devctrlAdminOnly="false" (click)="adminLogin()">
                         Admin Login
                 </button>
                 <button md-menu-item *devctrlAdminOnly (click)="revokeAdmin()">
@@ -55,6 +58,9 @@ import {LayoutService} from "./layout.service";
                 
                 <button md-menu-item *devctrlAdminOnly (click)="editClient($event)">
                         Edit Client
+                </button>
+                <button md-menu-item (click)="openHelp()">
+                    Help                    
                 </button>
             </md-menu>
         </div>
@@ -80,6 +86,10 @@ div.devctrl-main-toolbar {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+}
+
+.dc-parent-link {
+    cursor: pointer;    
 }
 
 .devctrl-client-info {
@@ -178,6 +188,10 @@ export class ToolbarComponent {
         //TODO implement editting of session name
     };
 
+
+    openHelp() {
+        window.open('https://bitbucket.org/ufdwi/devctrl/wiki/Home');
+    }
 
     revokeAdmin() {
         this.dataService.revokeAdminAuth();

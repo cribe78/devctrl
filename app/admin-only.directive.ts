@@ -11,6 +11,8 @@ export class AdminOnlyDirective implements DoCheck {
     private _hasView = false;
     private _inverted = false;
 
+
+
     constructor(
         private _template: TemplateRef<any>,
         private _viewContainer: ViewContainerRef,
@@ -18,26 +20,25 @@ export class AdminOnlyDirective implements DoCheck {
     ) { }
 
     ngDoCheck() {
-        let adminAuthorized = this.dataService.isAdminAuthorized();
-
-
         let test = this.dataService.isAdminAuthorized() != this._inverted;
 
         if (test && !this._hasView) {
-            //console.log(`adminOnly: adminAuthorized is ${adminAuthorized}, creating view`);
+            //console.log(`adminOnly: test is ${test}, creating view`);
             this._hasView = true;
             this._viewContainer.createEmbeddedView(this._template);
         } else if (!test && this._hasView) {
-            //console.log(`adminOnly: adminAuthorized is ${adminAuthorized}, clearing view`);
+            //console.log(`adminOnly: test is ${test}, clearing view`);
             this._hasView = false;
             this._viewContainer.clear();
         }
         else {
-            //console.log(`adminOnly: adminAuthorized is ${adminAuthorized}, doing nothing`);
+            //console.log(`adminOnly: test is ${test}, doing nothing`);
         }
     }
 
-    @Input() set invert(invertVal : any) {
-        this._inverted = !! invertVal;
-    }
+    // Pass in a value of false to invert the behavior. Anything else has
+    // no effect
+    @Input('devctrlAdminOnly') set notInverted(directiveVal : any) {
+        this._inverted = (directiveVal == false);
+    };
 }

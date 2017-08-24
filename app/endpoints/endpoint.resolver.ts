@@ -11,18 +11,23 @@ export class EndpointResolver implements Resolve<Endpoint> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<Endpoint> {
         let id = route.params['id'];
 
+        // Load rooms too, for navigation to endpoint parent
+        let roomsPromise = this.ds.getTablePromise(Room.tableStr);
         let endpointsPromise = this.ds.getTablePromise(Endpoint.tableStr);
 
-        return endpointsPromise.then(loaded => {
-            if (loaded) {
-                let endpoints = this.ds.getTable(Endpoint.tableStr);
-                console.log(`EndpointResolver resolved ${endpoints[id].name}`);
-                return endpoints[id];
-            }
-            else {
-                console.log(`EndpointResolver: endpoints not loaded`);
-                this.router.navigate(['/endpoints']);
-            }
-        });
+        return roomsPromise.then( rooms => {
+                return endpointsPromise;
+            })
+            .then(loaded => {
+                if (loaded) {
+                    let endpoints = this.ds.getTable(Endpoint.tableStr);
+                    console.log(`EndpointResolver resolved ${endpoints[id].name}`);
+                    return endpoints[id];
+                }
+                else {
+                    console.log(`EndpointResolver: endpoints not loaded`);
+                    this.router.navigate(['/endpoints']);
+                }
+            });
     }
 }

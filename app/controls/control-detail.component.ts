@@ -191,6 +191,8 @@ export class ControlDetailComponent implements OnInit {
             console.log(`control ${this.control.id} loaded`);
             if (this.control) {
                 this.menu.pageTitle = this.control.name;
+                this.menu.parentName = this.control.endpoint.name;
+                this.menu.parentRoute = ['devices', this.control.endpoint.id];
             }
             //this.watcherRules = this.control.referenced[ActionTrigger.tableStr] as IndexedDataSet<ActionTrigger>;
         });

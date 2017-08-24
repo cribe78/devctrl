@@ -4,6 +4,7 @@
 
 import {DCFieldType, DCSerializable, DCSerializableData} from "./DCSerializable";
 import {EndpointType} from "./EndpointType";
+import {Room} from "./Room";
 
 export enum EndpointStatus {
     Online,
@@ -25,7 +26,9 @@ export interface EndpointData extends DCSerializableData {
 
 export class Endpoint extends DCSerializable {
     private _type: EndpointType;
+    private _room: Room;
     endpoint_type_id: string;
+    room_id : string;
     status: EndpointStatus = EndpointStatus.Offline;
     ip: string = "";
     port: number = 0;
@@ -42,6 +45,12 @@ export class Endpoint extends DCSerializable {
             fkObjProp: "type",
             fkIdProp: "endpoint_type_id",
             fkTable: EndpointType.tableStr
+        },
+        {
+            type: Room,
+            fkObjProp: "room",
+            fkIdProp: "room_id",
+            fkTable: Room.tableStr
         }
     ];
 
@@ -97,6 +106,13 @@ export class Endpoint extends DCSerializable {
                 type: DCFieldType.bool,
                 label: "Enabled?",
                 tooltip: "Disable to prevent connection attempts to the Endpoint"
+            },
+            {
+                name: "room_id",
+                type: DCFieldType.fk,
+                label: "Room",
+                tooltip: "Assign this endpoint to room for navigation purposes",
+                optional: true
             }
         ]);
 
@@ -127,6 +143,15 @@ export class Endpoint extends DCSerializable {
         for( let opt of optionsList) {
             this.commLogOptionsObj[opt] = true;
         }
+    }
+
+    get room() : Room {
+        return this._room;
+    }
+
+    set room(newRoom : Room) {
+        this.room_id = newRoom._id;
+        this._room = newRoom;
     }
 
     get type(): EndpointType {

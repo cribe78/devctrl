@@ -73,7 +73,11 @@ export class EndpointComponent implements OnInit {
             if (this.obj) {
                 this.menu.pageTitle = this.obj.name;
                 this.controls = <IndexedDataSet<Control>>this.obj.referenced[Control.tableStr];
-                this.menu.toolbarSelectTable(Endpoint.tableStr, ['devices'], this.obj._id);
+                //this.menu.toolbarSelectTable(Endpoint.tableStr, ['devices'], this.obj._id);
+                if (this.obj.room) {
+                    this.menu.parentName = this.obj.room.name;
+                    this.menu.parentRoute = ['/rooms', this.obj.room.name];
+                }
             }
         });
     }

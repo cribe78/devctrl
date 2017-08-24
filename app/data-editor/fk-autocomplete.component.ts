@@ -134,6 +134,7 @@ export class FkAutocompleteComponent implements OnInit
 
     openAcMenu() {
         this.menuVisibility = "visible";
+        this.matches = this.getMatches();
     }
 
     closeAcMenu() {

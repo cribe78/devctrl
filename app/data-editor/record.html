@@ -75,8 +75,11 @@
     <md-divider></md-divider>
     <h3>Referenced by</h3>
     <md-list *ngFor="let tableName of referencedTables()">
-        <md-list-item *ngFor="let ref of referencedArray(tableName)">
+        <md-list-item *ngFor="let ref of referencedArray(tableName) | slice:0:5">
             <button md-button (click)="editOtherRow(ref)">{{tableName}}[{{ref._id}}]</button>
+        </md-list-item>
+        <md-list-item *ngIf="referencedArray(tableName).length > 5">
+          ... and {{referencedArray(tableName).length - 5}} other {{tableName}}
         </md-list-item>
     </md-list>
     <h3 md-subheader>References</h3>

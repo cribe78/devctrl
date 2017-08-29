@@ -2,7 +2,7 @@ import {UserSession} from "./shared/UserSession";
 import * as io from "socket.io-client";
 import {
     IDCDataRequest, IDCDataUpdate, DCSerializable, DCSerializableData,
-    IDCTableDefinition
+    IDCTableDefinition, IDCDataExchange
 } from "./shared/DCSerializable";
 import {ControlUpdateData} from "./shared/ControlUpdate";
 import {DCDataModel, IDCSchema, IndexedDataSet} from "./shared/DCDataModel";
@@ -20,6 +20,7 @@ import {PanelControl} from "./shared/PanelControl";
 import {Room} from "./shared/Room";
 import {ActionTrigger} from "./shared/ActionTrigger";
 import {ActionLog} from "./shared/ActionLog";
+import {UserInfo} from "./shared/UserInfo";
 
 @Injectable()
 export class DataService {
@@ -86,7 +87,7 @@ export class DataService {
     addRow(row : DCSerializable, callback) {
         let req = {};
         req[row.table] = [row.getDataObject()];
-        this.socket.emit('add-data', req, (response) => {
+        this.socket.emit('add-data', req, (response : IDCDataExchange) => {
             if (response.error) {
                 this.errorToast(response.error);
                 return;
@@ -97,7 +98,7 @@ export class DataService {
 
             this.loadData(response);
 
-            let record = this.dataModel[row.table][newId];
+            let record = this.dataModel.tables[row.table][newId];
 
             if (typeof callback == 'function') {
                 callback(record);
@@ -356,7 +357,7 @@ module.exports = {
             this.tablePromises[table] = this.getTablePromise(table);
         }
 
-        return this.dataModel[table];
+        return this.dataModel.tables[table];
     }
 
 
@@ -382,7 +383,7 @@ module.exports = {
         this.tablePromises[table] = this.getMData(table, {})
             .then(
                 () => {
-                    return this.dataModel[table];
+                    return this.dataModel.tables[table];
                 },
                 () => {
                     this.errorToast("getMData " + table + " problem");
@@ -390,20 +391,6 @@ module.exports = {
             );
 
         return this.tablePromises[table];
-    }
-
-    /**
-     * Look up a table object by table name, instantiating the object if
-     * necessary.
-     * @param table
-     * @returns {*}
-     */
-    //TODO: remove this function
-    getTableRef(table: string) : IndexedDataSet<DCSerializable> {
-        if (! this.dataModel[table]) {
-            throw new Error("Error: getTableRef request for invalid table");
-        }
-        return this.dataModel[table];
     }
 
 
@@ -468,7 +455,7 @@ module.exports = {
         );
 
         this.socket.on('control-data', data => {
-            this.loadData(data);
+            this.loadData(<IDCDataExchange>data);
             //console.log("socket control data received");
         });
 
@@ -497,6 +484,7 @@ module.exports = {
                 this.getMData(PanelControl.tableStr, {});
                 this.getMData(Room.tableStr, {});
                 this.getMData(ActionTrigger.tableStr, {});
+                this.getMData(UserInfo.tableStr, {});
             });
         });
 
@@ -524,7 +512,7 @@ module.exports = {
         }
     }
 
-    loadData(data) {
+    loadData(data : IDCDataExchange) {
         try {
             this.dataModel.loadData(data);
         }

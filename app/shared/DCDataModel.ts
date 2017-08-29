@@ -14,10 +14,11 @@ import {EndpointType, EndpointTypeData} from "./EndpointType";
 import {Control, ControlData} from "./Control";
 import {
     DCSerializable, IDCForeignKeyDef, DCSerializableData, IDCDataDelete,
-    IDCTableDefinition
+    IDCTableDefinition, IDCDataExchange
 } from "./DCSerializable";
 import {ActionTrigger, ActionTriggerData} from "./ActionTrigger";
 import {OptionSet, OptionSetData} from "./OptionSet";
+import {UserInfo, UserInfoData} from "./UserInfo";
 
 
 export interface IndexedDataSet<T> {
@@ -29,15 +30,21 @@ export interface IDCSchema {
 }
 
 export class DCDataModel {
+    tables: {
+        [index: string] : IndexedDataSet<DCSerializable>
+    } = {};
+    /**
     endpoints : IndexedDataSet<Endpoint> = {};
-    endpoint_types : IndexedDataSet<EndpointType> = {};
-    controls : IndexedDataSet<Control> = {};
+    //endpoint_types : IndexedDataSet<EndpointType> = {};
+    //controls : IndexedDataSet<Control> = {};
     panels: IndexedDataSet<Panel> = {};
     panel_controls: IndexedDataSet<PanelControl> = {};
     rooms: IndexedDataSet<Room> = {};
     watcher_rules: IndexedDataSet<ActionTrigger> = {};
     option_sets: IndexedDataSet<OptionSet> = {};
-    debug: (message: any, ...args: any[]) => void;
+    userInfo : IndexedDataSet<UserInfo> = {};
+    **/
+     debug: (message: any, ...args: any[]) => void;
     sortedArrays : any = {};
 
     typeList = [
@@ -48,7 +55,8 @@ export class DCDataModel {
         OptionSet,
         Panel,
         PanelControl,
-        Room
+        Room,
+        UserInfo
     ];
     types : { [index: string] : { new(id, data?) : DCSerializable}} = {};
     schema : IDCSchema = {};
@@ -61,10 +69,11 @@ export class DCDataModel {
             let tschema = DCSerializable.typeTableDefinition(type);
             this.types[tschema.name] = type;
             this.schema[tschema.name]  = tschema;
+            this.tables[tschema.name] = {};
         }
     };
 
-    loadData(data: any) {
+    loadData(data: IDCDataExchange) {
         if (data.add) {
             let add = data.add;
 
@@ -79,47 +88,33 @@ export class DCDataModel {
             // There is some boilerplate here that is necessary to allow typescript
             // to perform its type checking magic.
 
-            if (add.endpoint_types) {
-                this.loadTableData<EndpointType,EndpointTypeData>(
-                    add.endpoint_types, this.endpoint_types, EndpointType);
+            for (let t in add) {
+                this.loadTableData(add[t], t);
             }
-            if (add.endpoints) {
-                this.loadTableData<Endpoint,EndpointData>(
-                    add.endpoints, this.endpoints, Endpoint);
-            }
-            if (add.controls) {
-                this.loadTableData<Control,ControlData>(
-                    add.controls, this.controls, Control);
-            }
-            if (add.option_sets) {
-                this.loadTableData<OptionSet, OptionSetData>(
-                    add.option_sets, this.option_sets, OptionSet
-                );
-            }
-            if (add.panels) {
-                this.loadTableData<Panel, PanelData>(
-                    add.panels, this.panels, Panel
-                );
-            }
-            if (add.panel_controls) {
-                this.loadTableData<PanelControl, PanelControlData>(
-                    add.panel_controls, this.panel_controls, PanelControl
-                );
-            }
-            if (add.rooms) {
-                this.loadTableData<Room, RoomData>(
-                    add.rooms, this.rooms, Room
-                );
-            }
-            if (add.watcher_rules) {
-                this.loadTableData<ActionTrigger, ActionTriggerData>(
-                    add.watcher_rules, this.watcher_rules, ActionTrigger
-                );
-            }
-
 
 
             // Call indexForeignKeys if relevant tables have been updated
+            for (let t in this.schema) {
+                let tschema = this.schema[t];
+                let reindex = false;
+
+                if (add[t]) {
+                    reindex = true;
+                }
+                else {
+                    for (let fkDef of tschema.foreignKeys) {
+                        if (add[fkDef.fkTable]) {
+                            reindex = true;
+                        }
+                    }
+                }
+
+                if (reindex) {
+                    this.indexForeignKeys(this.tables[t]);
+                }
+            }
+
+            /**
             if (add.endpoints || add.endpoint_types) {
                 this.indexForeignKeys(this.endpoints);
             }
@@ -135,6 +130,7 @@ export class DCDataModel {
             if (add.controls || add.watcher_rules) {
                 this.indexForeignKeys(this.watcher_rules);
             }
+             **/
         }
 
         if (data.delete) {
@@ -143,8 +139,8 @@ export class DCDataModel {
             let _id = del._id;
 
             // Remove references from foreign key objects
-            if (this[table][_id]) {
-                let deleteRec = (<DCSerializable>this[table][_id]);
+            if (this.tables[table][_id]) {
+                let deleteRec = (<DCSerializable>this.tables[table][_id]);
                 for (let fkDef of deleteRec.foreignKeys) {
                     if (deleteRec[fkDef.fkObjProp]) {
                         deleteRec[fkDef.fkObjProp].removeReference(deleteRec);
@@ -152,7 +148,7 @@ export class DCDataModel {
                 }
 
                 //Delete the object
-                delete this[table][_id];
+                delete this.tables[table][_id];
             }
 
 
@@ -169,7 +165,7 @@ export class DCDataModel {
             let obj = objects[id];
 
             for (let fkDef of obj.foreignKeys) {
-                let fkObjs = this[fkDef.fkTable];
+                let fkObjs = this.tables[fkDef.fkTable];
 
                 if (obj[fkDef.fkIdProp]) {
                     let fkId = obj[fkDef.fkIdProp];  // The the foreign key id value
@@ -189,12 +185,9 @@ export class DCDataModel {
     }
 
 
-    loadTableData<Type extends DCSerializable, TypeData extends DCSerializableData>
-        (newData: IndexedDataSet<TypeData>,
-         modelData: IndexedDataSet<Type>,
-         ctor: { new(id: string, data: any): Type })
-    : void {
-        let table = '';
+    loadTableData(newData: IndexedDataSet<DCSerializableData>, tableName: string) : void {
+        let modelData = this.tables[tableName];
+        let ctor = this.types[tableName];
         for (let id in newData) {
             if (modelData[id]) {
                 modelData[id].loadData(newData[id]);
@@ -202,44 +195,22 @@ export class DCDataModel {
             else {
                 modelData[id] = new ctor(id, newData[id]);
             }
-            if (! table) {
-                table = modelData[id].table;
-            }
         }
 
-        if (table) {
-            this.sortArrays(table);
-        }
+        this.sortArrays(tableName);
     }
 
-    getItem<Type> (id: string, table: string) : Type {
-        if ( this[table][id]) {
-            return (<Type>this[table][id]);
+    getItem(id: string, table: string) : DCSerializable {
+        if ( this.tables[table][id]) {
+            return (this.tables[table][id]);
         }
 
-        this[table][id] = new this.types[table](id);
-        return (<Type>this[table][id]);
+        this.tables[table][id] = new this.types[table](id);
+        return (this.tables[table][id]);
     }
 
     getTableItem(id: string, table: string) : DCSerializable {
-        switch (table) {
-            case Endpoint.tableStr:
-                return this.getItem<Endpoint>(id, table);
-            case EndpointType.tableStr:
-                return this.getItem<EndpointType>(id, table);
-            case Room.tableStr:
-                return this.getItem<Room>(id, table);
-            case OptionSet.tableStr:
-                return this.getItem<OptionSet>(id, table);
-            case Panel.tableStr:
-                return this.getItem<Panel>(id, table);
-            case PanelControl.tableStr:
-                return this.getItem<PanelControl>(id, table);
-            case Control.tableStr:
-                return this.getItem<Control>(id, table);
-            case ActionTrigger.tableStr:
-                return this.getItem<ActionTrigger>(id, table);
-        }
+        return this.getItem(id, table);
     }
 
 
@@ -254,9 +225,9 @@ export class DCDataModel {
     sortArray(table : string, sortProp : string) {
         if (this.sortedArrays[table] && this.sortedArrays[table][sortProp]) {
             this.sortedArrays[table][sortProp].length = 0;
-            let keys = Object.keys(this[table]);
+            let keys = Object.keys(this.tables[table]);
             for (let key of keys) {
-                this.sortedArrays[table][sortProp].push(this[table][key]);
+                this.sortedArrays[table][sortProp].push(this.tables[table][key]);
             }
 
 
@@ -294,7 +265,7 @@ export class DCDataModel {
             return sorted;
         }
 
-        if (! this[table]) {
+        if (! this.tables[table]) {
             throw new Error("Request for invalid table array");
         }
 

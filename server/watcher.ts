@@ -166,8 +166,8 @@ class Watcher {
     loadWatcherRules() {
         //Rebuild watcherRules
         this.watcherRules = {};
-        for (let id in this.dataModel.watcher_rules) {
-            let rule = this.dataModel.watcher_rules[id];
+        for (let id in this.dataModel.tables[ActionTrigger.tableStr]) {
+            let rule = this.dataModel.getItem(id, ActionTrigger.tableStr) as ActionTrigger;
 
             if (! this.watcherRules[rule.trigger_control_id]) {
                 this.watcherRules[rule.trigger_control_id] = {};

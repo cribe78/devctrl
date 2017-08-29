@@ -6,12 +6,13 @@ import * as http from "http";
 import * as url from "url";
 import * as mongo from "mongodb";
 import * as querystring from "querystring";
-import {IDCDataRequest, IDCDataUpdate, IDCDataDelete} from "../app/shared/DCSerializable";
-import {DCDataModel} from "../app/shared/DCDataModel";
+import {IDCDataRequest, IDCDataUpdate, IDCDataDelete, IDCDataAdd, IDCDataExchange} from "../app/shared/DCSerializable";
+import {DCDataModel, IndexedDataSet} from "../app/shared/DCDataModel";
 import {ControlUpdateData} from "../app/shared/ControlUpdate";
 import {Control} from "../app/shared/Control";
 import {UserSession} from "../app/shared/UserSession";
 import {Endpoint, EndpointStatus} from "../app/shared/Endpoint";
+import {ClientType, UserInfo, UserInfoData} from "../app/shared/UserInfo";
 
 
 let debug = console.log;
@@ -82,7 +83,7 @@ class Messenger {
     }
 
 
-    addData(request: any, fn: any) {
+    addData(request: IDCDataAdd, fn: (data: IDCDataExchange) => any) {
         let resp = { add : {}};
         let request_handled = false;
 
@@ -129,13 +130,19 @@ class Messenger {
                     });
                 }
                 else {
+                    //TODO:  is this form of the API used anywhere?
+                    debug("single item add API hit, exiting");
+                    process.exit();
+
+                    /**
                     let doc;
 
+                    /
                     // Sanitize data by creating an object and serializing it
                     try {
                         let data = request[table];
-                        data._id = (new mongo.ObjectID()).toString();
-                        let obj = new this.dataModel.types[table](data._id, data);
+                        let data._id = (new mongo.ObjectID()).toString();
+                        let obj = new this.dataModel.types[table](dataId, data);
                         doc = obj.getDataObject();
                     }
                     catch (e) {
@@ -161,6 +168,7 @@ class Messenger {
                         this.io.emit('control-data', resp);
                         fn(resp);
                     });
+                     **/
                 }
 
                 request_handled = true;
@@ -274,7 +282,7 @@ class Messenger {
 
     broadcastControlValues(updates: ControlUpdateData[], fn: any, socket : SocketIO.Socket) {
         let controlsCollection = this.mongodb.collection(Control.tableStr);
-        let controls = this.dataModel.controls;
+        let controls = this.dataModel.tables[Control.tableStr] as IndexedDataSet<Control>;
 
 
         // Commit value to database for non-ephemeral controls
@@ -308,31 +316,41 @@ class Messenger {
         let parts = url.parse(req.url);
         let clientName = parts.query;
 
-        // New session
-        let session : UserSession = {
-            _id: identifier,
-            login_expires: 0,
-            auth: true,
-            admin_auth: true,
-            admin_auth_expires: -1,
-            client_name: clientName
+        //  Create a new UserInfo object
+        let uiData : UserInfoData = {
+            _id : "0",
+            name : clientName,
+            clientType: ClientType.ncontrol
         };
 
+        this.addData( { userInfo: [uiData]}, (data) => {
+            let newId = Object.keys(data.add.userInfo)[0];
 
-        if (req.headers["oidc_claim_preferred_username"]) {
-            session.username = req.headers["oidc_claim_preferred_username"] as string;
-        }
+            // New session
+            let session : UserSession = {
+                _id: identifier,
+                login_expires: 0,
+                auth: true,
+                admin_auth: true,
+                admin_auth_expires: -1,
+                userInfo_id: newId
+            };
 
-        this.sessions.insertOne(session, (err, result) => {
-            if (err) {
-                this.errorResponse(response, 503, "mongodb error: " + err.message);
-                return;
+
+            if (req.headers["oidc_claim_preferred_username"]) {
+                session.username = req.headers["oidc_claim_preferred_username"] as string;
             }
 
-            response.writeHead(200);
-            response.end(JSON.stringify({ session: session}));
-        });
+            this.sessions.insertOne(session, (err, result) => {
+                if (err) {
+                    this.errorResponse(response, 503, "mongodb error: " + err.message);
+                    return;
+                }
 
+                response.writeHead(200);
+                response.end(JSON.stringify({ session: session}));
+            });
+        });
     }
 
     deleteData(data: IDCDataDelete, fn: any) {
@@ -753,6 +771,7 @@ class Messenger {
 
 
     updateData(request: IDCDataUpdate, fn: any) {
+        //TODO: sanitize table name
         let col = this.mongodb.collection(request.table);
 
         if (request.set._id) {
@@ -793,6 +812,7 @@ class Messenger {
 
         if (! identifier) {
             idProvided = false;
+            // This identifier is secret and known only to this client
             identifier = (new mongo.ObjectID()).toString();
         }
 
@@ -805,8 +825,36 @@ class Messenger {
 
                 if (doc) {
                     let session:UserSession = (<UserSession>doc);
-                    response.writeHead(200);
-                    response.end(JSON.stringify({ session: session }));
+
+                    // Create UserInfo object if necessary
+                    if (! session.userInfo_id) {
+                        let uiData : UserInfoData = {
+                            _id : "0",
+                            name: session.client_name,
+                            clientType: ClientType.web
+                        };
+
+                        this.addData({ userInfo: [uiData]}, (data) => {
+                            let newId = Object.keys(data.add.userInfo)[0];
+                            session.userInfo_id = newId;
+
+                            this.sessions.updateOne({ _id: session._id },
+                                { '$set' : { userInfo_id : newId}},
+                                (err, doc) => {
+                                    if (err) {
+                                        this.errorResponse(response, 503, "mongodb error updating UserSession:" + err.message);
+                                        return;
+                                    }
+
+                                    response.writeHead(200);
+                                    response.end(JSON.stringify({session: session}));
+                                });
+                        });
+                    }
+                    else {
+                        response.writeHead(200);
+                        response.end(JSON.stringify({session: session}));
+                    }
                 }
                 else {
                     // No session found
@@ -815,37 +863,52 @@ class Messenger {
             });
         }
         else {
-            // New session
-            let session : UserSession = {
-                _id: identifier,
-                login_expires: 0,
-                auth: false,
-                admin_auth: false,
-                admin_auth_expires: 0
+            //  Create a new UserInfo object
+            let uiData : UserInfoData = {
+                _id : "0",
+                name : "unknown client",
+                clientType: ClientType.web
             };
 
             if (req.headers['x-forwarded-for']) {
-                session.client_name = req.headers['x-forwarded-for'] as string;
+                uiData.name = req.headers['x-forwarded-for'] as string;
             }
 
-            if (req.headers["oidc_claim_preferred_username"]) {
-                session.username = req.headers["oidc_claim_preferred_username"] as string;
-            }
+            this.addData({ userInfo: [uiData]}, (data) => {
+                let newId = Object.keys(data.add.userInfo)[0];
 
-            this.sessions.insertOne(session, (err, result) => {
-                if (err) {
-                    this.errorResponse(response, 503, "mongodb error: " + err.message);
-                    return;
+
+                // New session
+                let session : UserSession = {
+                    _id: identifier,
+                    login_expires: 0,
+                    auth: false,
+                    admin_auth: false,
+                    admin_auth_expires: 0,
+                    userInfo_id: newId
+                };
+
+
+                if (req.headers["oidc_claim_preferred_username"]) {
+                    session.username = req.headers["oidc_claim_preferred_username"] as string;
                 }
 
-                let oneYear = 1000 * 3600 * 24 * 365;
-                let cookieExpire = new Date(Date.now() + oneYear);
-                let expStr = cookieExpire.toUTCString();
-                let idCookie = `${this.config.identifierName}=${identifier};expires=${expStr};path=/`;
+                this.sessions.insertOne(session, (err, _result) => {
+                    if (err) {
+                        this.errorResponse(response, 503, "mongodb error: " + err.message);
+                        return;
+                    }
 
-                response.setHeader('Set-Cookie', [idCookie]);
-                response.writeHead(200);
-                response.end(JSON.stringify({ session: session}));
+                    let oneYear = 1000 * 3600 * 24 * 365;
+                    let cookieExpire = new Date(Date.now() + oneYear);
+                    let expStr = cookieExpire.toUTCString();
+                    let idCookie = `${this.config.identifierName}=${identifier};expires=${expStr};path=/`;
+
+                    response.setHeader('Set-Cookie', [idCookie]);
+                    response.writeHead(200);
+                    response.end(JSON.stringify({ session: session}));
+                });
+
             });
         }
     }

@@ -34,7 +34,7 @@ import {LayoutService} from "../layout/layout.service";
             </ng-template>
         </md-list>
     </div>
-    <devctrl-action-history [hidden]="!ls.desktopWide"></devctrl-action-history>
+    <!-- <devctrl-action-history [hidden]="!ls.desktopWide"></devctrl-action-history> -->
  </div>
 
 `,

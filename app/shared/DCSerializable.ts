@@ -4,9 +4,24 @@
  * correspond to collections in the database, and the application schema is defined in the subtype definitions.
  */
 
+export interface IDCDataAdd {
+    [index: string] : DCSerializableData[]
+}
+
+
 export interface IDCDataDelete {
     table: string;
     _id: string;
+}
+
+export interface IDCDataExchange {
+    add?: {
+        [index: string] : {
+            [index: string] : DCSerializableData
+        }
+    },
+    delete?: IDCDataDelete,
+    error?: string
 }
 
 export interface IDCDataRequest {

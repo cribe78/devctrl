@@ -1,7 +1,7 @@
 "use strict";
 
 import * as io from "socket.io-client";
-import {DCDataModel} from "../app/shared/DCDataModel";
+import {DCDataModel, IndexedDataSet} from "../app/shared/DCDataModel";
 import { EndpointCommunicator } from "../Communicators/EndpointCommunicator";
 import {IDCDataRequest, IDCDataUpdate} from "../app/shared/DCSerializable";
 import {Control} from "../app/shared/Control";
@@ -22,6 +22,7 @@ class NControl {
     endpoint: Endpoint;
     oldEndpoint: Endpoint;
     dataModel: DCDataModel;
+    controls: IndexedDataSet<Control>;
     config: NControlConfig;
     communicator: EndpointCommunicator;
     syncControlsPassNumber: number = 0;
@@ -33,6 +34,7 @@ class NControl {
     constructor() {
         this.dataModel = new DCDataModel();
         this.dataModel.debug = console.log;
+        this.controls = this.dataModel.tables[Control.tableStr] as IndexedDataSet<Control>;
     }
 
     run(config: any) {
@@ -177,7 +179,7 @@ class NControl {
 
     getEndpointConfig() {
         let self = this;
-        self.endpoint = self.dataModel.getItem<Endpoint>(self.config.endpointId, Endpoint.tableStr);
+        self.endpoint = self.dataModel.getItem(self.config.endpointId, Endpoint.tableStr) as Endpoint;
 
         let reqData = self.endpoint.itemRequestData();
 
@@ -202,24 +204,22 @@ class NControl {
 
     handleControlUpdates(data: ControlUpdateData[]) {
         for (let update of data) {
-            if (this.dataModel.controls[update.control_id]) {
-                let control = this.dataModel.controls[update.control_id];
+            let control = this.dataModel.getItem(update.control_id, Control.tableStr) as Control;
 
-                if (control.endpoint_id && control.endpoint_id == this.endpoint._id
-                && update.status == "requested") {
-                    debug(`control update: ${ control.name } : ${ update.value }`);
+            if (control.endpoint_id && control.endpoint_id == this.endpoint._id
+            && update.status == "requested") {
+                debug(`control update: ${ control.name } : ${ update.value }`);
 
-                    if (control.control_type == Control.CONTROL_TYPE_ECHO) {
-                        // Just update the value and kick it back to the messenger
-                        // This is a "dummy" command that can be used to trigger other
-                        // actions
+                if (control.control_type == Control.CONTROL_TYPE_ECHO) {
+                    // Just update the value and kick it back to the messenger
+                    // This is a "dummy" command that can be used to trigger other
+                    // actions
 
-                        this.pushControlUpdate(control, update.value);
-                        return;
-                    }
-
-                    this.communicator.handleControlUpdateRequest(update);
+                    this.pushControlUpdate(control, update.value);
+                    return;
                 }
+
+                this.communicator.handleControlUpdateRequest(update);
             }
         }
     }
@@ -314,8 +314,8 @@ class NControl {
             let newControls = [];
             let controlsByCtid = {};
 
-            for (let id in this.dataModel.controls) {
-                let ct = this.dataModel.controls[id];
+            for (let id in this.controls) {
+                let ct = this.controls[id];
                 controlsByCtid[ct.ctid] = ct;
             }
 
@@ -339,7 +339,7 @@ class NControl {
         debug("controls successfully synced!");
 
         // Pass completed ControlTemplate set to communicator
-        this.communicator.setTemplates(this.dataModel.controls);
+        this.communicator.setTemplates(<IndexedDataSet<Control>>this.dataModel.tables[Control.tableStr]);
     }
 
 }

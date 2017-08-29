@@ -3,6 +3,9 @@ import {UserSession} from "../shared/UserSession";
 import {MenuService} from "./menu.service";
 import { Component, Inject, Input } from '@angular/core';
 import {LayoutService} from "./layout.service";
+import {RecordEditorService} from "../data-editor/record-editor.service";
+import {UserInfo} from "../shared/UserInfo";
+import {IndexedDataSet} from "../shared/DCDataModel";
 
 
 @Component({
@@ -41,7 +44,7 @@ import {LayoutService} from "./layout.service";
                 <div>{{menu.pageTitle}}</div>
             </span>
             <div class="devctrl-client-info">
-                <div class="text-subhead">{{session.client_name}}</div>
+                <div class="text-subhead">{{userInfo().name}}</div>
                 <span *devctrlAdminOnly class="text-subhead">{{session.username}}</span>
             </div>
     
@@ -161,17 +164,18 @@ md-select /deep/ .mat-select-arrow {
 export class ToolbarComponent {
     menu;
     session : UserSession;
-    $state;
+    userInfos : IndexedDataSet<UserInfo>;
     menuService;
 
     constructor(menuService : MenuService,
                 private dataService : DataService,
-                public ls : LayoutService) {
+                public ls : LayoutService,
+                private rs : RecordEditorService) {
         this.menu = menuService;
         this.menuService = menuService;
         this.session = this.dataService['userSession'];
         console.log("Toolbar Component created");
-
+        this.userInfos = this.dataService.getTable(UserInfo.tableStr) as IndexedDataSet<UserInfo>;
     }
 
     showAdminLogin() {
@@ -184,7 +188,7 @@ export class ToolbarComponent {
     };
 
     editClient($event) {
-        //this.dataService.editRecord($event, self.user.client_id, "clients");
+        this.rs.editRecord($event, this.session.userInfo_id, UserInfo.tableStr);
         //TODO implement editting of session name
     };
 
@@ -200,4 +204,13 @@ export class ToolbarComponent {
     updateConfig() {
         this.dataService.updateConfig();
     };
+
+    userInfo() {
+        if (this.userInfos[this.session.userInfo_id]) {
+            return this.userInfos[this.session.userInfo_id];
+        }
+
+        return { name: "unknown"};
+
+    }
 }

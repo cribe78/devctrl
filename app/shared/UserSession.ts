@@ -7,4 +7,5 @@ export interface UserSession {
     admin_auth_requested?: boolean;
     client_name?: string;
     username?: string;
+    userInfo_id? : string;
 };

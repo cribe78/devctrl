@@ -72,6 +72,28 @@ class EviD31Communicator extends SynchronousTCPCommunicator {
             poll: 1
         };
         this.commands[zoomConfig.cmdStr] = new EviD31Command(zoomConfig);
+
+        let autoExposureConfig : ITCPCommandConfig = {
+            cmdStr: "Auto Exposure Mode",
+            cmdQueryStr: "81090439",
+            cmdQueryResponseRE: /\w050(\w{2})/,
+            cmdUpdateTemplate: "81010439ZZ",
+            cmdUpdateResponseTemplate: "905\\d",
+            endpoint_id: this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_STRING,
+            usertype: Control.USERTYPE_SELECT,
+            templateConfig: {
+                options: {
+                    "00" : "Full Auto",
+                    "03" : "Manual",
+                    "0A" : "Shutter priority",
+                    "0B" : "Iris Priority"
+                 }
+            },
+            poll: 1
+        };
+        this.commands[autoExposureConfig.cmdStr] = new EviD31Command(autoExposureConfig);
+
     }
 
 

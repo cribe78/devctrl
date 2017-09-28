@@ -254,7 +254,8 @@ export class Control extends DCSerializable {
 }
 
 export class ControlXYValue {
-    constructor(public x : number, public y : number) {}
+
+    constructor(public x : number = 0, public y : number = 0) {}
 
     toString() {
         return `(${this.x},${this.y})`;

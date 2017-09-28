@@ -22,6 +22,9 @@ export class EviD31Command extends TCPCommand {
             res = template.replace("XXXX", this.hexNumber(value.x));
             res = res.replace("YYYY", this.hexNumber(value.y));
         }
+        else if (this.control_type == Control.CONTROL_TYPE_STRING) {
+            res = template.replace("ZZ", value);
+        }
 
 
         return res;
@@ -70,7 +73,7 @@ export class EviD31Command extends TCPCommand {
 
             let xy = new ControlXYValue(xVal, yVal);
 
-            if (xy.x )
+            //if (xy.x )
 
             return xy;
         }

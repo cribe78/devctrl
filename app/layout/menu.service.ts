@@ -1,10 +1,14 @@
 import {DataService} from "../data.service";
 import { Injectable, Inject } from '@angular/core';
-import {  Router, ActivatedRoute, Params, UrlSegment } from '@angular/router';
+import {  Router, ActivatedRoute, Params, UrlSegment, NavigationEnd, NavigationStart } from '@angular/router';
 import { appRoutes } from "../app-router.module";
 import {IndexedDataSet} from "../shared/DCDataModel";
 import {Endpoint} from "../shared/Endpoint";
 import {Room} from "../shared/Room";
+import {Observable} from "rxjs/Observable";
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/mergeMap';
 
 export interface MSMenuItem {
     name: string;
@@ -12,6 +16,7 @@ export interface MSMenuItem {
     isOpened : boolean;
     children?: MSMenuItem[];
 }
+
 
 @Injectable()
 export class MenuService {
@@ -22,6 +27,7 @@ export class MenuService {
     parentRoute = [];
     menuConfig;
     toolbarSelect;
+    private _routeData : any = {};
     endpoints : IndexedDataSet<Endpoint>;
     rooms : IndexedDataSet<Room>;
     //TODO: clean this up once the new static menu goes into production
@@ -31,24 +37,6 @@ export class MenuService {
             route: ['rooms'],
             isOpened: false,
             children: []
-        },
-        "devices" : {
-            name: "Devices",
-            route: ['devices'],
-            isOpened: false,
-            children: []
-        },
-        "config" : {
-            name: "Config",
-            route: ['config'],
-            isOpened: false,
-            children: [
-                {
-                    name: "Data Tables",
-                    route: ['config', 'data'],
-                    isOpened: false
-                }
-            ]
         }
     };
 
@@ -57,14 +45,11 @@ export class MenuService {
     static TOPLEVEL_CONFIG = "config";
     menuList : MSMenuItem[] = [this.menuObj['rooms']]; //, this.menuObj['devices'], this.menuObj['config']];
     _currentTopLevel : string;
-    _openTopLevel : string;
-    routeData;
-    routeParams;
-    //private router : Router;
 
     constructor(
                 private router : Router,
-                private dataService: DataService) {
+                private dataService: DataService,
+                private route : ActivatedRoute) {
         this.menuConfig = dataService.config.menu;
         this.items = [];
         this.itemsObj = {};
@@ -78,6 +63,13 @@ export class MenuService {
 
         this.endpoints = this.dataService.getTable(Endpoint.tableStr) as IndexedDataSet<Endpoint>;
         this.rooms = this.dataService.getTable(Room.tableStr) as IndexedDataSet<Room>;
+
+        // Reset routeData on navigation
+        router.events.filter( event => event instanceof NavigationStart)
+            .subscribe((event) => {
+                console.log("clear route data");
+                this._routeData = {};
+            });
     }
 
 
@@ -97,6 +89,18 @@ export class MenuService {
         }
     }
 
+    get fullscreen() : boolean {
+        return !! this._routeData.fullscreen;
+    }
+
+    set routeData(val : any) {
+        console.log("setting route data");
+        this._routeData = val;
+    }
+
+    get routeData() {
+        return this._routeData;
+    }
 
 
     go(state) {
@@ -128,7 +132,7 @@ export class MenuService {
 
 
     isSidenavOpen() {
-        return this.menuConfig.sidenavOpen;
+        return this.menuConfig.sidenavOpen && ! this._routeData.fullscreen;
     }
 
     menuItems() {
@@ -143,19 +147,6 @@ export class MenuService {
 
             this.menuObj['rooms'].children.push(roomMenu);
         }
-
-        /**
-        this.menuObj['devices'].children = [];
-        for (let eId in this.endpoints) {
-            let endpointMenu = {
-                name: this.endpoints[eId].name,
-                route: ['devices', eId],
-                isOpened: false
-            };
-
-            this.menuObj['devices'].children.push(endpointMenu);
-        };
-         **/
 
         return this.menuList;
     }
@@ -198,35 +189,5 @@ export class MenuService {
         else {
             item.isOpened = false;
         }
-    }
-
-    toolbarSelectDisable() {
-        this.toolbarSelect.enabled = false;
-    }
-
-    toolbarSelectTable(tableName, destState, selectedId) {
-        let table = this.dataService.getTable(tableName);
-        this.toolbarSelect.options = [];
-
-        for (let id in table) {
-            this.toolbarSelect.options.push({ id: id, name: table[id].name});
-        }
-
-        this.toolbarSelect.tableName = tableName;
-        this.toolbarSelect.destState = destState;
-        this.toolbarSelect.selected = selectedId;
-        this.toolbarSelect.enabled = true;
-    }
-
-    toolbarSelectUpdate(event) {
-        let row = this.dataService.getRowRef(this.toolbarSelect.tableName, this.toolbarSelect.selected);
-
-        let dest = [this.toolbarSelect.selected];
-        if (Array.isArray(this.toolbarSelect.destState)) {
-            dest = this.toolbarSelect.destState;
-            dest.push(this.toolbarSelect.selected);
-        }
-
-        this.go(dest);
     }
 }

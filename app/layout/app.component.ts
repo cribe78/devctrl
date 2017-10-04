@@ -11,7 +11,7 @@ import {LayoutService} from "./layout.service";
     template: `
 <div (window:resize)="ls.resized($event)">
     <devctrl-toolbar></devctrl-toolbar>    
-    <md-sidenav-container class="dc-sidenav-container">
+    <md-sidenav-container class="dc-sidenav-container" [class.fullscreen]="menuService.fullscreen">
         <md-sidenav class="dc-sidenav"
                     [opened]="menu.isSidenavOpen()"
                     [mode]="sidenavMode()">
@@ -28,6 +28,11 @@ import {LayoutService} from "./layout.service";
         .dc-sidenav-container {
             height: calc(100vh - 64px);
         }
+        
+        
+        .dc-sidenav-container.fullscreen {
+            height: 100vh;           
+        }
 `]
 })
 export class AppComponent implements OnInit {
@@ -36,7 +41,7 @@ export class AppComponent implements OnInit {
     constructor(public route : ActivatedRoute,
                 private router : Router,
                 private dataService: DataService,
-                private menuService: MenuService,
+                public menuService: MenuService,
                 public ls: LayoutService) {
         this.menu = menuService;
     };

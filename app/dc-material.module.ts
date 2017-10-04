@@ -1,5 +1,6 @@
 import { NgModule }      from '@angular/core';
 import {
+    MdAutocompleteModule,
     MdButtonModule,
     MdCardModule,
     MdCheckboxModule,
@@ -20,6 +21,7 @@ import {
 
 @NgModule({
     imports: [
+        MdAutocompleteModule,
         MdButtonModule,
         MdCardModule,
         MdCheckboxModule,
@@ -37,6 +39,7 @@ import {
         MdSidenavModule
     ],
     exports: [
+        MdAutocompleteModule,
         MdButtonModule,
         MdCardModule,
         MdCheckboxModule,

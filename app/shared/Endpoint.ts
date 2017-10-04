@@ -5,6 +5,8 @@
 import {DCFieldType, DCSerializable, DCSerializableData} from "./DCSerializable";
 import {EndpointType} from "./EndpointType";
 import {Room} from "./Room";
+import {IndexedDataSet} from "./DCDataModel";
+import {Control} from "./Control";
 
 export enum EndpointStatus {
     Online,
@@ -161,6 +163,16 @@ export class Endpoint extends DCSerializable {
     set type(newType: EndpointType) {
         this.endpoint_type_id = newType._id;
         this._type = newType;
+    }
+
+    getControlByCtid(ctid: string) {
+        let myControls = <IndexedDataSet<Control>>this.referenced.controls;
+        let controlId =  Object.keys(myControls).find( id => {
+                return myControls[id].ctid == this._id + "-" + ctid || myControls[id].ctid == ctid;
+            });
+
+        return this.referenced.controls[controlId];
+
     }
 
     getDataObject() : EndpointData {

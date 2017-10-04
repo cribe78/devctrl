@@ -63,3 +63,26 @@ div.devctrl-toolbar-tools {
 [hidden] {
     display: none !important;
 }
+
+.mat-sidenav-container.fullscreen .mat-sidenav-content {
+    overflow: hidden
+}
+
+.fullscreen-preset-map .mat-raised-button {
+    height: 86%;
+    width: 8vw;
+    line-height: normal;
+}
+
+.fullscreen-preset-map .wide-button .mat-raised-button {
+    width: 10vw;
+    font-size: 1vw;
+}
+
+
+@font-face {
+    font-family: 'digital-clock';
+    font-weight: normal;
+    font-style: normal;
+    src: url('/css/digitaldreamfatskew.ttf') format('truetype');
+}

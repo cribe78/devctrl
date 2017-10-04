@@ -2,7 +2,7 @@ import { NgModule }      from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent }   from './layout/app.component';
-import { MaterialModule, MdSnackBarModule, MdDialogModule} from '@angular/material';
+import { MdSnackBarModule, MdDialogModule} from '@angular/material';
 import { HttpModule } from '@angular/http';
 import 'hammerjs';
 
@@ -34,6 +34,10 @@ import {ActionHistoryComponent} from "./layout/action-history.component";
 import {DCMaterialModule} from "./dc-material.module";
 import {ControlDetailComponent} from "./controls/control-detail.component";
 import {WatcherActionValueComponent} from "./data-editor/watcher-action-value.component";
+import {ClassroomFullscreenComponent} from "./fullscreen-classroom/classroom-fullscreen.component";
+import {FullscreenPresetMapComponent} from "./fullscreen-classroom/fullscreen-preset-map.component";
+import {LongPressDirective} from "./fullscreen-classroom/long-press.directive";
+import {StudentNameEditorComponent} from "./fullscreen-classroom/student-name-editor.component";
 
 
 
@@ -53,6 +57,7 @@ import {WatcherActionValueComponent} from "./data-editor/watcher-action-value.co
         AdminOnlyDirective,
         AlertDialog,
         AppComponent,
+        ClassroomFullscreenComponent,
         ConfigComponent,
         ConfigDataComponent,
         ControlDetailComponent,
@@ -60,11 +65,14 @@ import {WatcherActionValueComponent} from "./data-editor/watcher-action-value.co
         EndpointsComponent,
         EndpointStatusComponent,
         FkAutocompleteComponent,
+        FullscreenPresetMapComponent,
+        LongPressDirective,
         ObjectEditorComponent,
         PanelComponent,
         RecordComponent,
         RoomComponent,
         RoomsComponent,
+        StudentNameEditorComponent,
         TableComponent,
         ToolbarComponent,
         ActionHistoryComponent,
@@ -73,7 +81,8 @@ import {WatcherActionValueComponent} from "./data-editor/watcher-action-value.co
     entryComponents: [
         AlertDialog,
         MenuComponent,
-        RecordComponent
+        RecordComponent,
+        StudentNameEditorComponent
     ],
     providers:    [
         DataService,

@@ -523,6 +523,7 @@ module.exports = {
 
     logAction(message: string, typeFlags: string[] = [], referenceList: string[] = []) {
         let id = this.guid();
+        /**
         let action = new ActionLog(id,
             {
                 _id: id,
@@ -535,6 +536,7 @@ module.exports = {
         );
 
         this.logs.unshift(action); // Use unshift to make it easier to view recent logs first
+        **/
 
         console.log(`action logged: ${message}`);
     }

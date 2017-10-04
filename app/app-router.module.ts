@@ -11,6 +11,7 @@ import {EndpointResolver} from "./endpoints/endpoint.resolver";
 import {TableComponent} from "./data-editor/table.component";
 import {ControlDetailComponent} from "./controls/control-detail.component";
 import {ControlResolver} from "./controls/control.resolver";
+import {ClassroomFullscreenComponent} from "./fullscreen-classroom/classroom-fullscreen.component";
 
 
 export const appRoutes: Routes = [
@@ -102,6 +103,13 @@ export const appRoutes: Routes = [
                 component: TableComponent
             }
         ]
+    },
+    {
+        path: "pict-fullscreen",
+        component: ClassroomFullscreenComponent,
+        data: {
+            fullscreen: true
+        }
     }
 ];
 

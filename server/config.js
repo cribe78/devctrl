@@ -28,11 +28,11 @@ if (typeof process.argv[2] !== 'undefined') {
     var configArg = process.argv[2];
     var configPath = "./conf/" + configArg + ".js";
     if (fs.existsSync(configPath)) {
-        console.log("loading " + configPath);
+        console.log(`loading ${configPath}`);
         customConfig = require("./conf/" + configArg);
     }
     else {
-        console.log(configPath + " not found");
+        console.log(`${configPath} not found`);
     }
 }
 for (opt in customConfig) {

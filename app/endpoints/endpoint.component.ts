@@ -66,6 +66,7 @@ export class EndpointComponent implements OnInit {
     ngOnInit() {
         this.controls = {};
         this.route.data.subscribe((data: { endpoint: Endpoint }) => {
+            this.menu.routeData = data;
             this.menu.currentTopLevel = MenuService.TOPLEVEL_DEVICES;
             this.endpointId = data.endpoint._id;
             console.log(`endpoint ${this.endpointId} loaded`);

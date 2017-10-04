@@ -12,7 +12,7 @@ import {IndexedDataSet} from "../shared/DCDataModel";
 
     selector: 'devctrl-toolbar',
     template: `
-<div class="outer-div">
+<div class="outer-div" [class.fullscreen]="menu.fullscreen">
     <md-toolbar color="accent" class="devctrl-title-toolbar">
         <div class="devctrl-title-toolbar-inner">
             <button md-icon-button (click)="menu.toggleSidenav()">
@@ -26,18 +26,6 @@ import {IndexedDataSet} from "../shared/DCDataModel";
     </md-toolbar>
     <md-toolbar color="primary" class="devctrl-main-toolbar">
         <div class="devctrl-main-toolbar devctrl-ctrl-select">
-            <!-- <md-select *ngIf="menu.toolbarSelect.enabled && ls.desktop"
-                        aria-label="Select Page"
-                        name="toolbarSelect"
-                       [(ngModel)]="menu.toolbarSelect.selected"
-                       (onClose)="menu.toolbarSelectUpdate($event)">
-                <md-option class="text-headline"
-                            [value]="option.id"
-                           *ngFor="let option of menu.toolbarSelect.options">
-                    {{option.name}}
-                </md-option>
-            </md-select>
-            -->
             <span class="devctrl-pagetitle text-headline" >
                 <div class="dc-parent-link" *ngIf="menu.parentName" (click)="menu.goToParent()">{{menu.parentName}}</div>
                 <div *ngIf="menu.parentName">&nbsp;>&nbsp;</div>
@@ -118,6 +106,10 @@ div.devctrl-main-toolbar {
 
 .devctrl-main-toolbar md-select {
     width: 200px;
+}
+
+.fullscreen {
+    display: none;
 }
 
 md-select /deep/ .mat-select-value {

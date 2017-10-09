@@ -17,7 +17,8 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
                 <img [src]="sourceLeft()" (error)="imgError($event)"/>
             </div>
             <div class="clock-container">
-                <div class="clock">{{currentTime | async | date: 'h:mm'}}</div>
+                <div class="date">{{currentTime | async | date: 'EEEE, MMMM d'}}</div>
+                <div class="clock">{{currentTime | async | date: 'hh:mm'}}</div>
                 <div class="course-row">
                     <div class="course-period">
                         <div class="course-period-title">PERIOD</div>
@@ -29,7 +30,23 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
                         <div class="course-section-content">{{nextSection | async}}</div>
                     </div>
                 </div>
-                <div class="time-remaining">{{timeRemaining | async}}</div>
+                <div class="time-rem-container">
+                    <div class="time-rem-caption">{{timeRemainingCaption}}</div>
+                    <div class="time-rem-inner">
+                        <div class="time-rem-sign">{{timeRemainingSign}}</div>
+                        <div class="time-rem">{{timeRemaining | async}}</div>
+                        <div class="time-rem-after"></div>
+                    </div>
+                    <div class="time-rem-hhmm">
+                        <div class="time-rem-hh">
+                            {{timeRemainingHH}}
+                        </div>
+                        <div class="time-rem-mm">
+                            {{timeRemainingMM}}
+                        </div>
+                    </div>
+                </div>
+                
             </div>
             <div class="right-camera" *ngIf="rightCameraView">
                 <img [src]="sourceRight()" (error)="imgError($event)"/>
@@ -53,11 +70,15 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
         .clock-container div {
             text-align: center;
             vertical-align: middle;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .clock {
             font-size: 4vw;
             font-family: "digital-clock";
+            color: #bb5b5b;
         }
 
         .course-row {
@@ -68,38 +89,44 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
         .course-number {
             flex: 2 2;
             font-size: 3.8vw;
+            color: #404040;
         }
 
         .course-period {
-            display: flex;
             flex-direction: column;
             flex: 1 1;
-            align-items: center;
-            justify-content: center;
         }
 
         .course-period-content {
             font-size: 2vw;
+            color: #505050;
         }
 
         .course-period-title {
             font-size: 1.1vw;
+            color: #606060;
         }
 
         .course-section {
-            display: flex;
             flex-direction: column;
             flex: 1 1;
-            align-items: center;
-            justify-content: center;
+            
         }
 
         .course-section-title {
             font-size: 1.1vw;
+            color: #606060;
         }
 
         .course-section-content {
             font-size: 2vw;
+            color: #505050;
+        }
+        
+        .date {
+            font-size: 1.4vw;
+            text-transform: uppercase;
+            color: #404040;
         }
 
         devctrl-fullscreen-preset-map {
@@ -113,7 +140,7 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
             flex-direction: column;
             width: 100vw;
             height: 100vh;
-            background-color: #c3bfc4;
+            background-color: #dcdcde; 
         }
 
         .top-row {
@@ -133,10 +160,41 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
             width: 32vw;
         }
 
-        .time-remaining {
+        .clock-container .time-rem-inner {
             font-size: 4vw;
             font-family: 'digital-clock';
-            color: #e30f1c;
+            color: #bb5b5b;
+            /* visibility: hidden; */
+            flex-direction: row;
+        }
+        
+        .clock-container .time-rem-after {
+            width: 3vw;
+        }
+        .clock-container .time-rem-sign {
+            font-size: 4vw;
+            width: 3vw;
+        }
+        
+        .time-rem-caption {
+            font-size: 1.1vw;
+            margin-bottom: 0.1vw;
+            color: #525252;
+        }
+        
+        .time-rem-container {
+            flex-direction: column;
+        }
+        
+        .time-rem-hhmm {
+            flex-direction: row;
+        }
+        
+        .time-rem-hh, .time-rem-mm {
+            font-family: 'digital-clock';
+            color: #bb5b5b;
+            font-size: 1.1vw;
+            width: 9.5vw;
         }
     `]
 })
@@ -159,6 +217,11 @@ export class ClassroomFullscreenComponent implements OnInit
     nextPeriod : Observable<string>;
     nextSection : Observable<string>;
     timeRemaining : Observable<string>;
+    instructors: Observable<string>;
+    timeRemainingCaption: string;
+    timeRemainingHH = "HH";
+    timeRemainingMM = "MM";
+    timeRemainingSign = " ";
 
     constructor(private route : ActivatedRoute,
                 public menu : MenuService,
@@ -195,6 +258,7 @@ export class ClassroomFullscreenComponent implements OnInit
         this.nextCourse = this.cs.nextCourse("0205 ");
 
 
+
         this.nextPeriod = this.nextCourse.map( course => {
             let section = course.sections[course.nextSectionIdx];
             let meetTime = section.meetTimes[section.nextMeetTimeIdx];
@@ -209,35 +273,52 @@ export class ClassroomFullscreenComponent implements OnInit
             return section.display;
         });
 
-        this.timeRemaining = this.nextCourse.mergeMap( course =>
-            Observable.interval(1000).startWith(0).map(() => {
+        this.timeRemaining = this.nextCourse.map(course => {
                 let section = course.sections[course.nextSectionIdx];
                 let meetTime = section.meetTimes[section.nextMeetTimeIdx];
 
-                let untilStart = this.cs.timeUntilStarttime(meetTime);
-                let untilEnd = this.cs.timeUntilEndtime(meetTime);
+                let untilStart = meetTime.msUntilStart;
+                let untilEnd = meetTime.msUntilEnd;
 
                 let remainingMs = untilEnd;
-                let sign = "";
+                this.timeRemainingCaption = "REMAINING";
 
                 if (untilStart < untilEnd) {
                     remainingMs = untilStart;
-                    sign = "-";
+                    this.timeRemainingCaption = "BEGINS IN"
+                }
+
+                this.timeRemainingSign = "";
+                if (remainingMs < 0) {
+                    this.timeRemainingSign = "-";
+                    remainingMs =  0 - remainingMs;  // Use the positive number to calculate the minutes and seconds
                 }
 
                 let hourMs = 3600 * 1000;
                 let remainingHours = Math.floor(remainingMs / hourMs);
                 let minuteRemainder = remainingMs - remainingHours * hourMs;
-                let minutes = Math.ceil(minuteRemainder / 60000);
+                let minutes = Math.floor(minuteRemainder / 60000);
                 let secondRemainder = minuteRemainder - minutes * 60000;
                 let seconds = Math.floor(secondRemainder / 1000);
+                let sec = ("00" + seconds).slice(-2);
 
-                let hours = remainingHours; //("0" + remainingHours).slice(-2);
+                let hours = ("00" + remainingHours).slice(-2);
                 let min = ("00" + minutes).slice(-2);
 
-                return `${sign}${hours}:${min}`;
-            })
-        );
+                if (remainingMs < 5 * 60 * 1000) {
+                    // Count down the final 5 minutes by the second
+                    this.timeRemainingHH = "MM";
+                    this.timeRemainingMM = "SS";
+                    return `${min}:${sec}`;
+                }
+
+                this.timeRemainingHH = "HH";
+                this.timeRemainingMM = "MM";
+
+                return `${hours}:${min}`;
+            });
+
+
     }
 
 

@@ -79,7 +79,6 @@ import {Observable} from "rxjs/Observable";
         .button-contents {
             display: flex;
             flex-direction: column;
-            justify
         }
         
         .button-lastname {
@@ -151,6 +150,7 @@ export class FullscreenPresetMapComponent implements OnInit
     @Input() course : Observable<ICourseInfo>;
     courseCode;
     term = '20178';
+    instructor = '';
 
     constructor(
         @Inject('controlServiceLeft') csl : ControlService,

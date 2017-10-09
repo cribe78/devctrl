@@ -15,7 +15,8 @@ export class CourseScheduleService {
     // THis file will need to be updated every semester
     //private queryUrl = "https://one.ufl.edu/apix/soc/schedule/?category=RES&course-code=&course-title=&cred-srch=&credits=&day-f=&day-m=&day-r=&day-s=&day-t=&day-w=&days=false&dept=015851001&eep=&fitsSchedule=false&ge=&ge-b=&ge-c=&ge-d=&ge-h=&ge-m=&ge-n=&ge-p=&ge-s=&instructor=&last-row=0&level-max=--&level-min=--&no-open-seats=false&online-a=&online-c=&online-h=&online-p=&period-b=&period-e=&prog-level=+&term=20178&var-cred=true&writing="
     private queryUrl = "/fullscreen-classroom/courses.json";
-
+    private lastCourseCode = '';
+    public faketime = 1507212911538 + 24 * 60 * 60 * 1000 * 4; // a time
 
     constructor(private http: Http) {
         this.courses = http.get(this.queryUrl).map(res => {
@@ -28,6 +29,10 @@ export class CourseScheduleService {
             console.error("invalid courses data recieved");
             return [];
         });
+
+        Observable.interval(1000).subscribe(() => {
+            this.faketime += 75000;
+        })
     }
 
     courseRoster(course: string, term: string) : Observable<string[]> {
@@ -42,7 +47,7 @@ export class CourseScheduleService {
 
     nextCourse(room: string) : Observable<ICourseInfo> {
         return this.courses.mergeMap(courses =>
-            Observable.interval(60000).startWith(0).map(() => {
+            Observable.interval(1000).startWith(0).map(() => {
                 let nextCourse = nullCourse;
                 let nextCourseOffset = 7 * 24 * 60 * 60 * 1000 + 1;  // 7 days and a millisecond
                 let nextMeetTimeIdx = 0;
@@ -60,6 +65,8 @@ export class CourseScheduleService {
                                     nextCourse = course;
                                     nextMeetTimeIdx = +midx;
                                     nextSectionIdx = +sidx;
+                                    meetTime.msUntilEnd = offset;
+                                    meetTime.msUntilStart = this.timeUntilStarttime(meetTime);
                                 }
                             }
                         }
@@ -71,7 +78,10 @@ export class CourseScheduleService {
                     nextCourse.sections[nextSectionIdx].nextMeetTimeIdx = nextMeetTimeIdx;
                 }
 
-                console.log("CourseScheduleService: next course is " + nextCourse.code);
+                if (nextCourse.code != this.lastCourseCode) {
+                    console.log("CourseScheduleService: next course is " + nextCourse.code);
+                    this.lastCourseCode = nextCourse.code;
+                }
                 return nextCourse;
             })
         ).share();
@@ -82,7 +92,12 @@ export class CourseScheduleService {
     }
 
     timeUntilStarttime(meetTime:  IMeetTime) {
-        return this.timeUntilMeetTime(meetTime.meetTimeBegin, meetTime.meetDays);
+        let startDiff = this.timeUntilMeetTime(meetTime.meetTimeBegin, meetTime.meetDays);
+        if (startDiff < 0) {
+            startDiff += 7 * 24 * 60 * 60 * 1000;
+        }
+
+        return startDiff;
     }
 
 
@@ -107,7 +122,8 @@ export class CourseScheduleService {
         let dayDiff = 8;
         for (let dow of meetDays) {
             let diff = this.dowDiff(dow, now.getDay());
-            if (endTimeOffset < 0 && diff == 0) {
+            // Allow negative endtime offsets up to 5 minutes
+            if (endTimeOffset < -1000 * 60 * 5 && diff == 0) {
                 diff = 7;
             }
 
@@ -192,6 +208,8 @@ export interface IMeetTime {
     meetPeriodEnd: string;
     meetTimeBegin: string;
     meetTimeEnd: string;
+    msUntilStart?: number;
+    msUntilEnd?: number;
 }
 
 let nullSection : ISectionInfo = {

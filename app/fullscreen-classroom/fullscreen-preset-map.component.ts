@@ -150,6 +150,7 @@ export class FullscreenPresetMapComponent implements OnInit
     @Input() course : Observable<ICourseInfo>;
     courseCode;
     term = '20178';
+    sectionCode = '';
     instructor = '';
 
     constructor(
@@ -164,6 +165,7 @@ export class FullscreenPresetMapComponent implements OnInit
     ngOnInit() {
         this.course.subscribe(course => {
             this.courseCode = course.code;
+            this.sectionCode = course.sections[course.nextSectionIdx].display;
         })
     }
 
@@ -230,6 +232,7 @@ export class FullscreenPresetMapComponent implements OnInit
         console.log(`edit seat name ${seat}${section}`);
         let nameRef = this.mdDialog.open(StudentNameEditorComponent);
         nameRef.componentInstance.course = this.courseCode;
+        nameRef.componentInstance.section = this.sectionCode;
         nameRef.componentInstance.name = this.buttonName(seat, section, "full");
         nameRef.componentInstance.seat = seat;
         nameRef.componentInstance.control = this.sectionCs[section].control;

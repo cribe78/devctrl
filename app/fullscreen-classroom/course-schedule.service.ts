@@ -35,12 +35,13 @@ export class CourseScheduleService {
         })
     }
 
-    courseRoster(course: string, term: string) : Observable<string[]> {
-        return this.http.get(`/fullscreen-classroom/rosters/${term}/${course}.json`).map( res => {
-            if (res) {
-                return res.json();
-            }
-            return [];
+    courseRoster(course: string, section: string) : Observable<string[]> {
+        return this.http.get(`/fullscreen-classroom/rosters/course-students?course=${course}&section=${section}`)
+            .map( res => {
+                if (res) {
+                    return res.json();
+                }
+                return [];
         });
     }
 

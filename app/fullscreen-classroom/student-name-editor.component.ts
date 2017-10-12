@@ -47,6 +47,7 @@ export class StudentNameEditorComponent
     _control : Control;
     course: string  = '';
     term: string = '20178'; //TODO: fetch current term
+    section: string = '';
     name: string = '';
     seat: number;
     options = [];
@@ -72,7 +73,7 @@ export class StudentNameEditorComponent
             this._control.config.names[this.term][this.course]["options"] = [];
         }
 
-        this.cs.courseRoster(this.course, this.term).subscribe( roster => {
+        this.cs.courseRoster(this.course, this.section).subscribe( roster => {
             this.options = roster;
         });
 

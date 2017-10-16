@@ -614,7 +614,13 @@ module.exports = {
         };
 
         this.socket.emit('update-data', reqData, data => {
-            console.log("data updated:" + data);
+            if (data.error) {
+                console.error("update data error: " + data.error);
+                this.errorToast(data);
+                return;
+            }
+            console.log("data updated");
+            console.dir(data);
             this.loadData(data);
         });
     }

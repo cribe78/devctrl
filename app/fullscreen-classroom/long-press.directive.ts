@@ -59,6 +59,7 @@ export class LongPressDirective {
         }
     }
 
+
     loop(event) {
         if(this.longPressing) {
             this.timeout = setTimeout(() => {

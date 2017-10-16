@@ -9,6 +9,7 @@ export class CourseScheduleService {
     //private _courses : BehaviorSubject<ICourseInfo[]> = new BehaviorSubject([]);
     //courses = this._courses.asObservable();
     private courses : Observable<ICourseInfo[]>;
+    public courseList : ICourseInfo[] = [];
 
 
     //This is the source URL.  TO get around CORS restrictions, we'll just store a local copy in courses.json
@@ -35,6 +36,8 @@ export class CourseScheduleService {
         })
     }
 
+
+
     courseRoster(course: string, section: string) : Observable<string[]> {
         return this.http.get(`/fullscreen-classroom/rosters/course-students?course=${course}&section=${section}`)
             .map( res => {
@@ -46,28 +49,35 @@ export class CourseScheduleService {
     }
 
 
-    nextCourse(room: string) : Observable<ICourseInfo> {
-        return this.courses.mergeMap(courses =>
-            Observable.interval(1000).startWith(0).map(() => {
+    nextCourse(room: string, courseNumber: BehaviorSubject<string> = new BehaviorSubject('')) : Observable<ICourseInfo> {
+        return Observable.interval(1000).startWith(0).combineLatest(this.courses, courseNumber,
+            (interval, courses, courseNumber) => {
                 let nextCourse = nullCourse;
                 let nextCourseOffset = 7 * 24 * 60 * 60 * 1000 + 1;  // 7 days and a millisecond
                 let nextMeetTimeIdx = 0;
                 let nextSectionIdx = 0;
 
+                this.courseList = courses;
+
                 for (let course of courses) {
-                    for (let sidx in course.sections) {
-                        let section = course.sections[sidx];
-                        for (let midx in section.meetTimes) {
-                            let meetTime = section.meetTimes[midx];
-                            if (meetTime.meetRoom == room) {
-                                let offset = this.timeUntilEndtime(meetTime);
-                                if (offset < nextCourseOffset) {
-                                    nextCourseOffset = offset;
-                                    nextCourse = course;
-                                    nextMeetTimeIdx = +midx;
-                                    nextSectionIdx = +sidx;
-                                    meetTime.msUntilEnd = offset;
-                                    meetTime.msUntilStart = this.timeUntilStarttime(meetTime);
+                    if (courseNumber == '' || courseNumber == course.code ) {
+                        if (courseNumber == course.code) {
+                            nextCourse = course;
+                        }
+                        for (let sidx in course.sections) {
+                            let section = course.sections[sidx];
+                            for (let midx in section.meetTimes) {
+                                let meetTime = section.meetTimes[midx];
+                                if (meetTime.meetRoom == room) {
+                                    let offset = this.timeUntilEndtime(meetTime);
+                                    if (offset < nextCourseOffset) {
+                                        nextCourseOffset = offset;
+                                        nextCourse = course;
+                                        nextMeetTimeIdx = +midx;
+                                        nextSectionIdx = +sidx;
+                                        meetTime.msUntilEnd = offset;
+                                        meetTime.msUntilStart = this.timeUntilStarttime(meetTime);
+                                    }
                                 }
                             }
                         }
@@ -84,7 +94,7 @@ export class CourseScheduleService {
                     this.lastCourseCode = nextCourse.code;
                 }
                 return nextCourse;
-            })
+            }
         ).share();
     }
 
@@ -110,6 +120,11 @@ export class CourseScheduleService {
         let hmSplit = hm.split(":");
 
         let endHour = +hmSplit[0];
+        if (endHour == 12) {
+            // 12 AM is 00:00, 12 PM is 12:00
+            endHour = 0;
+        }
+
         if (amPm == "PM") {
             endHour += 12;
         }

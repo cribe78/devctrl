@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {MenuService} from "../layout/menu.service";
 import {DataService} from "../data.service";
@@ -6,6 +6,7 @@ import {Endpoint} from "../shared/Endpoint";
 import {Control} from "../shared/Control";
 import {Observable} from "rxjs/Rx";
 import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Component({
     selector: 'devctrl-classroom-fullscreen',
@@ -24,7 +25,14 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
                         <div class="course-period-title">PERIOD</div>
                         <div class="course-period-content">{{nextPeriod | async}}</div>
                     </div>
-                    <div class="course-number">{{(nextCourse | async)?.code}}</div>
+                    <div class="course-number" [mdMenuTriggerFor]="coursemenu">{{(nextCourse | async)?.code}}</div>
+                    <md-menu #coursemenu="mdMenu" [overlapTrigger]="false">
+                        <button mat-menu-item (click)="setSelectedCourse('')">Next Course</button>
+                        <button mat-menu-item *ngFor="let course of courseList()"
+                            (click)="setSelectedCourse(course.code)">
+                            {{course.code}}
+                        </button>    
+                    </md-menu>
                     <div class="course-section">
                         <div class="course-section-title">SECTION</div>
                         <div class="course-section-content">{{nextSection | async}}</div>
@@ -90,6 +98,7 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
             flex: 2 2;
             font-size: 3.8vw;
             color: #404040;
+            cursor: pointer;
         }
 
         .course-period {
@@ -200,6 +209,8 @@ import {CourseScheduleService, ICourseInfo} from "./course-schedule.service";
 })
 export class ClassroomFullscreenComponent implements OnInit
 {
+
+
     leftCameraEndpoint : Endpoint;
     rightCameraEndpoint : Endpoint;
     leftCameraView : Control;
@@ -207,12 +218,8 @@ export class ClassroomFullscreenComponent implements OnInit
     leftCameraPresetMap;
     rightCameraPresetMap;
     dataLoaded = false;
-    course : DCScheduledCourse = {
-        number: "DIG3020",
-        section: "197D",
-        period: "4/5"
-    };
 
+    selectedCourseNumber = new BehaviorSubject<string>('');
     nextCourse : Observable<ICourseInfo>;
     nextPeriod : Observable<string>;
     nextSection : Observable<string>;
@@ -222,6 +229,8 @@ export class ClassroomFullscreenComponent implements OnInit
     timeRemainingHH = "HH";
     timeRemainingMM = "MM";
     timeRemainingSign = " ";
+    courses = [];
+    room = "0205 ";
 
     constructor(private route : ActivatedRoute,
                 public menu : MenuService,
@@ -255,8 +264,7 @@ export class ClassroomFullscreenComponent implements OnInit
                 this.dataLoaded = true;
             });
 
-        this.nextCourse = this.cs.nextCourse("0205 ");
-
+        this.nextCourse = this.cs.nextCourse(this.room, this.selectedCourseNumber);
 
 
         this.nextPeriod = this.nextCourse.map( course => {
@@ -322,10 +330,30 @@ export class ClassroomFullscreenComponent implements OnInit
     }
 
 
+    courseList() {
+        return this.cs.courseList.filter((course) => {
+            for (let sidx in course.sections) {
+                let section = course.sections[sidx];
+                for (let midx in section.meetTimes) {
+                    let meetTime = section.meetTimes[midx];
+                    if (meetTime.meetRoom == this.room) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        });
+    }
+
     currentTime = Observable.interval(1000).map(() => new Date());
 
     imgError($event) {
         console.log("error loading camera view");
+    }
+
+    setSelectedCourse(val : string) {
+        this.selectedCourseNumber.next(val);
     }
 
     sourceLeft() {
@@ -366,11 +394,4 @@ export class ClassroomFullscreenComponent implements OnInit
         return proto + host + path;
     }
 
-}
-
-
-export interface DCScheduledCourse {
-    number: string;
-    section: string;
-    period: string;
 }

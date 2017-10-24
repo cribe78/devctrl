@@ -73,6 +73,60 @@ class EviD31Communicator extends SynchronousTCPCommunicator {
         };
         this.commands[zoomConfig.cmdStr] = new EviD31Command(zoomConfig);
 
+        let focusModeConfig : ITCPCommandConfig = {
+            cmdStr: "Focus Mode",
+            cmdQueryStr: "81090438",
+            cmdQueryResponseRE: /\w050(\w{2})/,
+            cmdUpdateTemplate: "81010438ZZ",
+            cmdUpdateResponseTemplate: "905\\d",
+            endpoint_id: this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_STRING,
+            usertype: Control.USERTYPE_SELECT,
+            templateConfig: {
+                options: {
+                    "02" : "Auto",
+                    "03" : "Manual",
+                }
+            },
+            poll: 1
+        };
+        this.commands[focusModeConfig.cmdStr] = new EviD31Command(focusModeConfig);
+
+
+        let focusConfig : ITCPCommandConfig = {
+            cmdStr: "Focus",
+            cmdQueryStr: "81090448",
+            cmdQueryResponseRE: /\w050(\w{8})/,
+            cmdUpdateTemplate: "81010448ZZZZ",
+            cmdUpdateResponseTemplate: "905\\d",
+            endpoint_id: this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_RANGE,
+            usertype: Control.USERTYPE_SLIDER,
+            templateConfig: {
+                min: 4096,
+                max: 40959
+            },
+            poll: 1
+        };
+        this.commands[focusConfig.cmdStr] = new EviD31Command(focusConfig);
+
+        let gainConfig : ITCPCommandConfig = {
+            cmdStr: "Gain",
+            cmdQueryStr: "8109044C",
+            cmdQueryResponseRE: /\w050(\w{8})/,
+            cmdUpdateTemplate: "8101044CZZZZ",
+            cmdUpdateResponseTemplate: "905\\d",
+            endpoint_id: this.config.endpoint._id,
+            control_type: Control.CONTROL_TYPE_RANGE,
+            usertype: Control.USERTYPE_SLIDER,
+            templateConfig: {
+                min: 1,
+                max: 7
+            },
+            poll: 1
+        };
+        this.commands[gainConfig.cmdStr] = new EviD31Command(gainConfig);
+
         let autoExposureConfig : ITCPCommandConfig = {
             cmdStr: "Auto Exposure Mode",
             cmdQueryStr: "81090439",
